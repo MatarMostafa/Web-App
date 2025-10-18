@@ -1,0 +1,386 @@
+openapi: 3.0.3
+info:
+  title: Authentication API
+  version: 1.0.0
+  description: Authentication and user account management endpoints
+
+tags:
+  - name: Auth
+    description: Authentication and user account related endpoints
+
+paths:
+  /auth/register:
+    post:
+      summary: Register a new user
+      description: Create a new user account with rate limiting
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterRequest"
+      responses:
+        "201":
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationError"
+        "429":
+          description: Too many requests
+
+  /auth/login:
+    post:
+      summary: User login
+      description: Authenticate user and return tokens with rate limiting
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "400":
+          description: Validation error
+        "401":
+          description: Invalid credentials
+        "429":
+          description: Too many requests
+
+  /auth/refresh-token:
+    post:
+      summary: Refresh access token
+      description: Get new access token using refresh token with rate limiting
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RefreshTokenRequest"
+      responses:
+        "200":
+          description: New token issued
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TokenResponse"
+        "401":
+          description: Invalid refresh token
+        "429":
+          description: Too many requests
+
+  /auth/forgot-password:
+    post:
+      summary: Request password reset
+      description: Send password reset email with rate limiting
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ForgotPasswordRequest"
+      responses:
+        "200":
+          description: Password reset email sent
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Password reset email sent"
+        "400":
+          description: Validation error
+        "404":
+          description: User not found
+        "429":
+          description: Too many requests
+
+  /auth/reset-password/{token}:
+    post:
+      summary: Reset user password
+      description: Reset password using reset token with rate limiting
+      tags: [Auth]
+      parameters:
+        - in: path
+          name: token
+          required: true
+          schema:
+            type: string
+          description: Password reset token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ResetPasswordRequest"
+      responses:
+        "200":
+          description: Password reset successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Password reset successful"
+        "400":
+          description: Invalid or expired token
+        "429":
+          description: Too many requests
+
+  /auth/verify-email/{token}:
+    get:
+      summary: Verify user email
+      description: Verify email address using verification token
+      tags: [Auth]
+      parameters:
+        - in: path
+          name: token
+          required: true
+          schema:
+            type: string
+          description: Email verification token
+      responses:
+        "200":
+          description: Email verified successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Email verified successfully"
+        "400":
+          description: Invalid or expired token
+
+  /auth/change-password:
+    post:
+      summary: Change user password
+      description: Change password for authenticated user
+      tags: [Auth]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChangePasswordRequest"
+      responses:
+        "200":
+          description: Password changed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Password changed successfully"
+        "400":
+          description: Validation error
+        "401":
+          description: Unauthorized or invalid current password
+
+  /auth/logout:
+    post:
+      summary: Logout user
+      description: Logout authenticated user and invalidate tokens
+      tags: [Auth]
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Logged out successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Logged out successfully"
+        "401":
+          description: Unauthorized
+
+  /auth/profile:
+    get:
+      summary: Get user profile
+      description: Get authenticated user's profile information
+      tags: [Auth]
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: User profile data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserProfile"
+        "401":
+          description: Unauthorized
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    RegisterRequest:
+      type: object
+      required: [email, username, password]
+      properties:
+        email:
+          type: string
+          format: email
+          example: "john@example.com"
+        username:
+          type: string
+          minLength: 3
+          example: "johndoe"
+        password:
+          type: string
+          format: password
+          minLength: 6
+          example: "password123"
+
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+          example: "admin@company.com"
+        password:
+          type: string
+          format: password
+          example: "password123"
+
+    RefreshTokenRequest:
+      type: object
+      required: [refreshToken]
+      properties:
+        refreshToken:
+          type: string
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+
+    ForgotPasswordRequest:
+      type: object
+      required: [email]
+      properties:
+        email:
+          type: string
+          format: email
+          example: "john@example.com"
+
+    ResetPasswordRequest:
+      type: object
+      required: [password]
+      properties:
+        password:
+          type: string
+          format: password
+          minLength: 6
+          example: "newStrongPassword123"
+
+    ChangePasswordRequest:
+      type: object
+      required: [currentPassword, newPassword]
+      properties:
+        currentPassword:
+          type: string
+          format: password
+          example: "oldPassword123"
+        newPassword:
+          type: string
+          format: password
+          minLength: 6
+          example: "newPassword456"
+
+    AuthResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Login successful"
+        user:
+          $ref: "#/components/schemas/UserProfile"
+        accessToken:
+          type: string
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        refreshToken:
+          type: string
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+
+    TokenResponse:
+      type: object
+      properties:
+        accessToken:
+          type: string
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        refreshToken:
+          type: string
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+
+    UserProfile:
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+          format: email
+        username:
+          type: string
+        role:
+          type: string
+          enum: [ADMIN, TEAM_LEADER, EMPLOYEE, HR_MANAGER, SUPER_ADMIN]
+        isActive:
+          type: boolean
+        emailVerified:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    ValidationError:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Validation failed"
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+              message:
+                type: string

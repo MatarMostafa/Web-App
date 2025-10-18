@@ -1,0 +1,374 @@
+openapi: 3.0.3
+info:
+  title: Employee Manager API - Performance
+  version: 1.0.0
+  description: Employee Performance and Performance Thresholds management API
+
+servers:
+  - url: http://localhost:3000/api/performance
+
+paths:
+  /employee-performance:
+    get:
+      summary: Get all employee performance records
+      tags: [Employee Performance]
+      security: [ { bearerAuth: [] } ]
+      parameters:
+        - name: employeeId
+          in: query
+          schema:
+            type: string
+            format: cuid
+        - name: periodStart
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: periodEnd
+          in: query
+          schema:
+            type: string
+            format: date
+      responses:
+        "200":
+          description: List of performance records
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/EmployeePerformance"
+    post:
+      summary: Create employee performance record
+      tags: [Employee Performance]
+      security: [ { bearerAuth: [] } ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateEmployeePerformanceInput"
+      responses:
+        "201":
+          description: Created performance record
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmployeePerformance"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /employee-performance/{id}:
+    get:
+      summary: Get performance record by ID
+      tags: [Employee Performance]
+      security: [ { bearerAuth: [] } ]
+      parameters:
+        - $ref: "#/components/parameters/PerformanceId"
+      responses:
+        "200":
+          description: Performance record details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmployeePerformance"
+        "404":
+          description: Performance record not found
+    put:
+      summary: Update performance record
+      tags: [Employee Performance]
+      security: [ { bearerAuth: [] } ]
+      parameters:
+        - $ref: "#/components/parameters/PerformanceId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateEmployeePerformanceInput"
+      responses:
+        "200":
+          description: Updated performance record
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmployeePerformance"
+    delete:
+      summary: Delete performance record
+      tags: [Employee Performance]
+      security: [ { bearerAuth: [] } ]
+      parameters:
+        - $ref: "#/components/parameters/PerformanceId"
+      responses:
+        "204":
+          description: Deleted successfully
+
+  /employees/{employeeId}/performance:
+    get:
+      summary: Get performance history for specific employee
+      tags: [Employee Performance]
+      security: [ { bearerAuth: [] } ]
+      parameters:
+        - name: employeeId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: cuid
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 10
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+      responses:
+        "200":
+          description: Employee performance history
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  records:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/EmployeePerformance"
+                  total: { type: integer }
+                  currentScore: { type: number }
+                  currentTrafficLight: { $ref: "#/components/schemas/TrafficLightEnum" }
+
+  /performance-thresholds:
+    get:
+      summary: Get all performance thresholds
+      tags: [Performance Thresholds]
+      security: [ { bearerAuth: [] } ]
+      responses:
+        "200":
+          description: List of performance thresholds
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PerformanceThreshold"
+
+  /performance-thresholds/initialize-defaults:
+    post:
+      summary: Initialize default thresholds for all departments
+      tags: [Performance Thresholds]
+      security: [ { bearerAuth: [] } ]
+      responses:
+        "201":
+          description: Default thresholds initialized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message: { type: string }
+                  created: { type: integer }
+
+  /departments/{departmentId}/performance-threshold:
+    get:
+      summary: Get performance threshold for department
+      tags: [Performance Thresholds]
+      security: [ { bearerAuth: [] } ]
+      parameters:
+        - name: departmentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: cuid
+      responses:
+        "200":
+          description: Department performance threshold
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PerformanceThreshold"
+        "404":
+          description: Threshold not found
+    post:
+      summary: Create performance threshold for department
+      tags: [Performance Thresholds]
+      security: [ { bearerAuth: [] } ]
+      parameters:
+        - name: departmentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: cuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreatePerformanceThresholdInput"
+      responses:
+        "201":
+          description: Created performance threshold
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PerformanceThreshold"
+
+  /performance-thresholds/{id}:
+    put:
+      summary: Update performance threshold
+      tags: [Performance Thresholds]
+      security: [ { bearerAuth: [] } ]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: cuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdatePerformanceThresholdInput"
+      responses:
+        "200":
+          description: Updated performance threshold
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PerformanceThreshold"
+    delete:
+      summary: Delete performance threshold
+      tags: [Performance Thresholds]
+      security: [ { bearerAuth: [] } ]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: cuid
+      responses:
+        "204":
+          description: Deleted successfully
+
+components:
+  parameters:
+    PerformanceId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: cuid
+
+
+  schemas:
+    TrafficLightEnum:
+      type: string
+      enum: [RED, YELLOW, GREEN]
+
+    EmployeePerformance:
+      type: object
+      properties:
+        id: { type: string, format: cuid }
+        employeeId: { type: string, format: cuid }
+        periodStart: { type: string, format: date-time }
+        periodEnd: { type: string, format: date-time }
+        score: { type: number, format: decimal }
+        trafficLight: { $ref: "#/components/schemas/TrafficLightEnum" }
+        trafficLightReason: { type: string }
+        metrics: { type: object }
+        manualOverride: { type: boolean }
+        manualOverrideById: { type: string, format: cuid }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+
+    CreateEmployeePerformanceInput:
+      type: object
+      required: [employeeId, periodStart, periodEnd]
+      properties:
+        employeeId: { type: string, format: cuid }
+        periodStart: { type: string, format: date-time }
+        periodEnd: { type: string, format: date-time }
+        metrics: 
+          type: object
+          properties:
+            attendance: { type: number, minimum: 0, maximum: 100 }
+            quality: { type: number, minimum: 0, maximum: 100 }
+            speed: { type: number, minimum: 0, maximum: 100 }
+            teamwork: { type: number, minimum: 0, maximum: 100 }
+        manualOverride: { type: boolean, default: false }
+        score: { type: number, format: decimal }
+        trafficLight: { $ref: "#/components/schemas/TrafficLightEnum" }
+        trafficLightReason: { type: string }
+        manualOverrideById: { type: string, format: cuid }
+
+    UpdateEmployeePerformanceInput:
+      type: object
+      properties:
+        periodStart: { type: string, format: date-time }
+        periodEnd: { type: string, format: date-time }
+        metrics: { type: object }
+        manualOverride: { type: boolean }
+        score: { type: number, format: decimal }
+        trafficLight: { $ref: "#/components/schemas/TrafficLightEnum" }
+        trafficLightReason: { type: string }
+        manualOverrideById: { type: string, format: cuid }
+
+    PerformanceThreshold:
+      type: object
+      properties:
+        id: { type: string, format: cuid }
+        departmentId: { type: string, format: cuid }
+        redMin: { type: integer, minimum: 0, maximum: 100 }
+        redMax: { type: integer, minimum: 0, maximum: 100 }
+        yellowMin: { type: integer, minimum: 0, maximum: 100 }
+        yellowMax: { type: integer, minimum: 0, maximum: 100 }
+        greenMin: { type: integer, minimum: 0, maximum: 100 }
+        greenMax: { type: integer, minimum: 0, maximum: 100 }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+
+    CreatePerformanceThresholdInput:
+      type: object
+      required: [redMin, redMax, yellowMin, yellowMax, greenMin, greenMax]
+      properties:
+        redMin: { type: integer, minimum: 0, maximum: 100, default: 0 }
+        redMax: { type: integer, minimum: 0, maximum: 100, default: 40 }
+        yellowMin: { type: integer, minimum: 0, maximum: 100, default: 41 }
+        yellowMax: { type: integer, minimum: 0, maximum: 100, default: 70 }
+        greenMin: { type: integer, minimum: 0, maximum: 100, default: 71 }
+        greenMax: { type: integer, minimum: 0, maximum: 100, default: 100 }
+
+    UpdatePerformanceThresholdInput:
+      type: object
+      properties:
+        redMin: { type: integer, minimum: 0, maximum: 100 }
+        redMax: { type: integer, minimum: 0, maximum: 100 }
+        yellowMin: { type: integer, minimum: 0, maximum: 100 }
+        yellowMax: { type: integer, minimum: 0, maximum: 100 }
+        greenMin: { type: integer, minimum: 0, maximum: 100 }
+        greenMax: { type: integer, minimum: 0, maximum: 100 }
+
+    ErrorResponse:
+      type: object
+      properties:
+        message: { type: string }
+        error: { type: string }
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
