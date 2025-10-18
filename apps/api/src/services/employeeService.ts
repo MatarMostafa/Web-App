@@ -1,0 +1,214 @@
+import { prisma } from "@repo/db";
+import { Employee } from "../types/employee";
+import { WorkScheduleType } from "../types/enums";
+import bcrypt from "bcryptjs";
+
+const transformUserToEmployee = (user: any): Employee => {
+  const employee = user.employee;
+  return {
+    id: employee?.id || user.id,
+    employeeCode: employee?.employeeCode || `EMP${user.id.slice(-4)}`,
+    firstName: employee?.firstName || "",
+    lastName: employee?.lastName || "",
+    phoneNumber: employee?.phoneNumber || undefined,
+    dateOfBirth: employee?.dateOfBirth?.toISOString(),
+    address: employee?.address || undefined,
+    emergencyContact: employee?.emergencyContact as
+      | Record<string, any>
+      | undefined,
+    hireDate: employee?.hireDate?.toISOString() || user.createdAt.toISOString(),
+    terminationDate: employee?.terminationDate?.toISOString(),
+    departmentId: employee?.departmentId || "",
+    positionId: employee?.positionId || "",
+    managerId: employee?.managerId || undefined,
+    scheduleType:
+      (employee?.scheduleType as WorkScheduleType) ||
+      WorkScheduleType.FULL_TIME,
+    hourlyRate: employee?.hourlyRate?.toNumber(),
+    salary: employee?.salary?.toNumber(),
+    isAvailable: employee?.isAvailable ?? true,
+    priority: employee?.priority || 1,
+    userId: user.id,
+    createdAt: user.createdAt.toISOString(),
+    updatedAt: user.updatedAt.toISOString(),
+    createdBy: user.createdBy || undefined,
+    updatedBy: user.updatedBy || undefined,
+  };
+};
+
+export const getAllEmployees = async (): Promise<Employee[]> => {
+  try {
+    const users = await prisma.user.findMany({
+      where: { role: "EMPLOYEE" },
+      include: {
+        employee: {
+          include: {
+            department: true,
+            position: true,
+          },
+        },
+      },
+    });
+
+    return users.map(transformUserToEmployee);
+  } catch (error) {
+    console.error("Error:", error);
+    throw new Error("Failed to fetch employees");
+  }
+};
+
+export const getEmployeeById = async (id: string): Promise<Employee | null> => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id },
+      include: {
+        employee: {
+          include: {
+            department: true,
+            position: true,
+          },
+        },
+      },
+    });
+
+    if (!user || user.role !== "EMPLOYEE") return null;
+    return transformUserToEmployee(user);
+  } catch (error) {
+    console.error("Error:", error);
+    throw new Error("Failed to fetch employee");
+  }
+};
+
+export const createEmployee = async (data: any): Promise<Employee> => {
+  try {
+    const { email, username, password, ...employeeData } = data;
+
+    // Validate department exists if provided
+    if (employeeData.departmentId) {
+      const department = await prisma.department.findUnique({
+        where: { id: employeeData.departmentId },
+      });
+      if (!department) {
+        throw new Error(
+          `Department with ID ${employeeData.departmentId} not found`
+        );
+      }
+    }
+
+    // Validate position exists if provided
+    if (employeeData.positionId) {
+      const position = await prisma.position.findUnique({
+        where: { id: employeeData.positionId },
+      });
+      if (!position) {
+        throw new Error(
+          `Position with ID ${employeeData.positionId} not found`
+        );
+      }
+    }
+
+    // Validate manager exists if provided
+    if (employeeData.managerId) {
+      const manager = await prisma.user.findUnique({
+        where: { id: employeeData.managerId },
+      });
+      if (!manager) {
+        throw new Error(`Manager with ID ${employeeData.managerId} not found`);
+      }
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const user = await prisma.user.create({
+      data: {
+        email,
+        username,
+        password: hashedPassword,
+        role: "EMPLOYEE",
+        employee: {
+          create: {
+            ...employeeData,
+            hireDate: employeeData.hireDate
+              ? new Date(employeeData.hireDate)
+              : new Date(),
+            dateOfBirth: employeeData.dateOfBirth
+              ? new Date(employeeData.dateOfBirth)
+              : null,
+            terminationDate: employeeData.terminationDate
+              ? new Date(employeeData.terminationDate)
+              : null,
+          },
+        },
+      },
+      include: {
+        employee: {
+          include: {
+            department: true,
+            position: true,
+          },
+        },
+      },
+    });
+
+    return transformUserToEmployee(user);
+  } catch (error) {
+    console.error("Error creating employee:", error);
+    throw error;
+  }
+};
+
+export const updateEmployee = async (
+  id: string,
+  data: any
+): Promise<Employee | null> => {
+  const { email, username, ...employeeData } = data;
+
+  try {
+    const user = await prisma.user.update({
+      where: { id },
+      data: {
+        ...(email && { email }),
+        ...(username && { username }),
+        employee: {
+          update: {
+            ...employeeData,
+            ...(employeeData.hireDate && {
+              hireDate: new Date(employeeData.hireDate),
+            }),
+            ...(employeeData.dateOfBirth && {
+              dateOfBirth: new Date(employeeData.dateOfBirth),
+            }),
+            ...(employeeData.terminationDate && {
+              terminationDate: new Date(employeeData.terminationDate),
+            }),
+          },
+        },
+      },
+      include: {
+        employee: {
+          include: {
+            department: true,
+            position: true,
+          },
+        },
+      },
+    });
+
+    return transformUserToEmployee(user);
+  } catch (error) {
+    console.error("Error:", error);
+    return null;
+  }
+};
+
+export const deleteEmployee = async (id: string): Promise<boolean> => {
+  try {
+    await prisma.user.delete({
+      where: { id },
+    });
+    return true;
+  } catch (error) {
+    console.error("Error:", error);
+    return false;
+  }
+};

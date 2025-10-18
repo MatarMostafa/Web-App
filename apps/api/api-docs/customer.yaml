@@ -1,0 +1,458 @@
+openapi: 3.0.3
+info:
+  title: Customer Management API
+  version: 1.0.0
+  description: API for managing customers and subaccounts
+
+tags:
+  - name: Customers
+    description: Customer management operations
+  - name: SubAccounts
+    description: Subaccount operations under a customer
+
+paths:
+  /customers:
+    get:
+      summary: Get all customers
+      description: Retrieve all customers (ADMIN, HR_MANAGER only)
+      tags: [Customers]
+      security:
+        - bearerAuth: []
+      x-roles:
+        - ADMIN
+        - HR_MANAGER
+      responses:
+        "200":
+          description: List of customers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Customer"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden - Insufficient permissions
+
+    post:
+      summary: Create a new customer
+      description: Create a new customer (ADMIN, HR_MANAGER only)
+      tags: [Customers]
+      security:
+        - bearerAuth: []
+      x-roles:
+        - ADMIN
+        - HR_MANAGER
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateCustomerRequest"
+      responses:
+        "201":
+          description: Customer created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Customer"
+        "400":
+          description: Validation error
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+
+  /customers/{id}:
+    get:
+      summary: Get customer by ID
+      description: Retrieve a customer by ID including subaccounts, orders, and ratings (ADMIN, HR_MANAGER, TEAM_LEADER)
+      tags: [Customers]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: Customer ID
+      security:
+        - bearerAuth: []
+      x-roles:
+        - ADMIN
+        - HR_MANAGER
+        - TEAM_LEADER
+      responses:
+        "200":
+          description: Customer details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Customer"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          description: Customer not found
+
+    put:
+      summary: Update customer
+      description: Update customer details (ADMIN, HR_MANAGER only)
+      tags: [Customers]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: Customer ID
+      security:
+        - bearerAuth: []
+      x-roles:
+        - ADMIN
+        - HR_MANAGER
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateCustomerRequest"
+      responses:
+        "200":
+          description: Customer updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Customer"
+        "400":
+          description: Validation error
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          description: Customer not found
+
+    delete:
+      summary: Delete customer
+      description: Delete customer along with subaccounts, orders, and ratings (ADMIN only)
+      tags: [Customers]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: Customer ID
+      security:
+        - bearerAuth: []
+      x-roles:
+        - ADMIN
+      responses:
+        "200":
+          description: Customer deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Customer deleted successfully
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden - Admin access required
+        "404":
+          description: Customer not found
+
+  /customers/{customerId}/subaccounts:
+    get:
+      summary: Get all subaccounts for a customer
+      description: Retrieve all subaccounts for a specific customer (ADMIN, HR_MANAGER, TEAM_LEADER)
+      tags: [SubAccounts]
+      parameters:
+        - in: path
+          name: customerId
+          required: true
+          schema:
+            type: string
+          description: Customer ID
+      security:
+        - bearerAuth: []
+      x-roles:
+        - ADMIN
+        - HR_MANAGER
+        - TEAM_LEADER
+      responses:
+        "200":
+          description: List of subaccounts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SubAccount"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          description: Customer not found
+
+    post:
+      summary: Create subaccount
+      description: Create a subaccount under a customer (ADMIN, HR_MANAGER)
+      tags: [SubAccounts]
+      parameters:
+        - in: path
+          name: customerId
+          required: true
+          schema:
+            type: string
+          description: Customer ID
+      security:
+        - bearerAuth: []
+      x-roles:
+        - ADMIN
+        - HR_MANAGER
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateSubAccountRequest"
+      responses:
+        "201":
+          description: Subaccount created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SubAccount"
+        "400":
+          description: Validation error
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+
+  /customers/{customerId}/subaccounts/{id}:
+    put:
+      summary: Update subaccount
+      description: Update subaccount details (ADMIN, HR_MANAGER)
+      tags: [SubAccounts]
+      parameters:
+        - in: path
+          name: customerId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      security:
+        - bearerAuth: []
+      x-roles:
+        - ADMIN
+        - HR_MANAGER
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateSubAccountRequest"
+      responses:
+        "200":
+          description: Subaccount updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SubAccount"
+        "400":
+          description: Validation error
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          description: Subaccount not found
+
+    delete:
+      summary: Delete subaccount
+      description: Delete a subaccount (ADMIN only)
+      tags: [SubAccounts]
+      parameters:
+        - in: path
+          name: customerId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      security:
+        - bearerAuth: []
+      x-roles:
+        - ADMIN
+      responses:
+        "200":
+          description: Subaccount deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Subaccount deleted successfully
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          description: Subaccount not found
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Customer:
+      type: object
+      properties:
+        id:
+          type: string
+        companyName:
+          type: string
+        contactEmail:
+          type: string
+          format: email
+          nullable: true
+        contactPhone:
+          type: string
+          nullable: true
+        address:
+          type: object
+          additionalProperties: true
+          nullable: true
+        industry:
+          type: string
+          nullable: true
+        taxNumber:
+          type: string
+          nullable: true
+        isActive:
+          type: boolean
+        subAccounts:
+          type: array
+          items:
+            $ref: "#/components/schemas/SubAccount"
+        orders:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        ratings:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    CreateCustomerRequest:
+      type: object
+      required:
+        - companyName
+      properties:
+        companyName:
+          type: string
+        contactEmail:
+          type: string
+          format: email
+        contactPhone:
+          type: string
+        address:
+          type: object
+          additionalProperties: true
+        industry:
+          type: string
+        taxNumber:
+          type: string
+        isActive:
+          type: boolean
+          default: true
+
+    UpdateCustomerRequest:
+      type: object
+      properties:
+        companyName:
+          type: string
+        contactEmail:
+          type: string
+          format: email
+        contactPhone:
+          type: string
+        address:
+          type: object
+          additionalProperties: true
+        industry:
+          type: string
+        taxNumber:
+          type: string
+        isActive:
+          type: boolean
+
+    SubAccount:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        code:
+          type: string
+          nullable: true
+        isActive:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    CreateSubAccountRequest:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+        code:
+          type: string
+        isActive:
+          type: boolean
+          default: true
+
+    UpdateSubAccountRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        code:
+          type: string
+        isActive:
+          type: boolean

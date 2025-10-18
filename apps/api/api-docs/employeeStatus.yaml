@@ -1,0 +1,287 @@
+openapi: 3.0.3
+info:
+  title: Employee Status API
+  version: 1.0.0
+  description: API for managing employee leave, sick reports, and block/unblock status.
+
+tags:
+  - name: Employee Status
+    description: Manage employee leave, sick reports, and block states.
+
+paths:
+  /employees-status/leave:
+    post:
+      summary: Request leave
+      tags: [Employee Status]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LeaveRequest"
+      responses:
+        "201":
+          description: Leave request created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LeaveResponse"
+        "400":
+          description: Validation error
+        "401":
+          description: Unauthorized
+
+  /employees-status/sick:
+    post:
+      summary: Report sick leave
+      tags: [Employee Status]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SickRequest"
+      responses:
+        "201":
+          description: Sick report created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SickResponse"
+        "400":
+          description: Validation error
+        "401":
+          description: Unauthorized
+
+  /employees-status:
+    get:
+      summary: Get blocked employees
+      tags: [Employee Status]
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: List of blocked employees
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Employee"
+        "401":
+          description: Unauthorized
+
+  /employees-status/block:
+    post:
+      summary: Block an employee
+      tags: [Employee Status]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BlockRequest"
+      responses:
+        "200":
+          description: Employee blocked successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Employee"
+        "400":
+          description: Validation error
+        "401":
+          description: Unauthorized
+
+  /employees-status/unblock:
+    post:
+      summary: Unblock an employee
+      tags: [Employee Status]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UnblockRequest"
+      responses:
+        "200":
+          description: Employee unblocked successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Employee"
+        "400":
+          description: Validation error
+        "401":
+          description: Unauthorized
+
+  /employees-status/status:
+    get:
+      summary: Get all employee statuses
+      tags: [Employee Status]
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: List of employee statuses
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/EmployeeStatus"
+        "401":
+          description: Unauthorized
+
+  /employees-status/status/{id}:
+    get:
+      summary: Get employee status by ID
+      tags: [Employee Status]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: Employee ID
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Employee status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmployeeStatus"
+        "404":
+          description: Employee not found
+        "401":
+          description: Unauthorized
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    LeaveRequest:
+      type: object
+      required: [startDate, endDate]
+      properties:
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+        reason:
+          type: string
+          maxLength: 2000
+
+    LeaveResponse:
+      allOf:
+        - $ref: "#/components/schemas/LeaveRequest"
+        - type: object
+          properties:
+            id:
+              type: string
+            status:
+              type: string
+              enum: [PENDING, APPROVED, REJECTED]
+
+    SickRequest:
+      type: object
+      required: [startDate, endDate]
+      properties:
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+        reason:
+          type: string
+          maxLength: 2000
+        documentUrls:
+          type: array
+          items:
+            type: string
+            format: uri
+
+    SickResponse:
+      allOf:
+        - $ref: "#/components/schemas/SickRequest"
+        - type: object
+          properties:
+            id:
+              type: string
+            status:
+              type: string
+              enum: [PENDING, APPROVED, REJECTED]
+
+    BlockRequest:
+      type: object
+      required: [userId, blockedReason]
+      properties:
+        userId:
+          type: string
+          minLength: 1
+        blockedReason:
+          type: string
+          maxLength: 1000
+
+    UnblockRequest:
+      type: object
+      required: [userId]
+      properties:
+        userId:
+          type: string
+          minLength: 1
+        reason:
+          type: string
+          maxLength: 1000
+
+    Employee:
+      type: object
+      properties:
+        id:
+          type: string
+        userId:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        blockedAt:
+          type: string
+          format: date-time
+          nullable: true
+        blockedReason:
+          type: string
+          nullable: true
+
+    EmployeeStatus:
+      type: object
+      properties:
+        id:
+          type: string
+        employeeId:
+          type: string
+        status:
+          type: string
+          enum: [AVAILABLE, UNAVAILABLE, BLOCKED]
+        updatedAt:
+          type: string
+          format: date-time
