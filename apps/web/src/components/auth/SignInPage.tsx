@@ -1,20 +1,37 @@
+"use client";
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff, LogIn } from "lucide-react";
 import { Button, Input, Label, Card, CardContent, CardHeader } from "@repo/ui";
+import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 
 export default function SignInPage() {
-  const navigate = useNavigate();
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle signin logic here
-    navigate("/dashboard");
+    const result = await signIn("credentials", {
+      email: formData.email,
+      password: formData.password,
+      redirect: false,
+    });
+    
+    if (result?.ok) {
+      // Get session to determine role-based redirect
+      const response = await fetch('/api/auth/session');
+      const session = await response.json();
+      
+      if (session?.user?.role === 'ADMIN') {
+        router.push('/dashboard-admin');
+      } else {
+        router.push('/dashboard-employee');
+      }
+    }
   };
 
   const handleInputChange = (field: string, value: string) => {
@@ -30,7 +47,7 @@ export default function SignInPage() {
         </div>
 
         {/* Main Card */}
-        <Card className="border-0 shadow-xl bg-card/80 backdrop-blur-sm">
+        <Card className="border-0 shadow-xl bg-card/80 backdrop-blur-sm p-5">
           <CardHeader className="text-center space-y-2 pb-6">
             <div className="flex justify-center mb-4">
               <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
@@ -91,7 +108,7 @@ export default function SignInPage() {
               <div className="text-right">
                 <button
                   type="button"
-                  onClick={() => navigate("/auth/forgot-password")}
+                  onClick={() => router.push("/forgot-password")}
                   className="text-sm text-primary hover:underline font-medium"
                 >
                   Forgot Password?
@@ -111,7 +128,7 @@ export default function SignInPage() {
               <p className="text-sm text-muted-foreground">
                 Don't have an account?{" "}
                 <button
-                  onClick={() => navigate("/auth/signup")}
+                  onClick={() => router.push("/signup")}
                   className="text-primary hover:underline font-medium"
                 >
                   Sign up
