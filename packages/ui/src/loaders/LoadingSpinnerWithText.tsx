@@ -4,7 +4,7 @@
  */
 
 import React from "react";
-import { cn } from "@/utils/helpers";
+import { cn } from "../utils/helpers";
 
 export interface LoadingSpinnerWithTextProps {
   size?: "sm" | "md" | "lg" | "xl";

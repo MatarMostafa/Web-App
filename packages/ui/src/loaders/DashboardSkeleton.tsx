@@ -1,7 +1,7 @@
-import React from 'react';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Users, Bell, Calendar, MapPin, Tag, Briefcase } from 'lucide-react';
+import React from "react";
+import { Card, CardHeader, CardTitle, CardContent } from "../card";
+import { Skeleton } from "../skeleton";
+import { Users, Bell, Calendar, MapPin, Tag, Briefcase } from "lucide-react";
 
 const ContactCardSkeleton = () => (
   <Card className="h-68">
@@ -70,7 +70,9 @@ const DashboardSkeleton = () => {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Users className="h-5 w-5 text-lovable-primary" />
-                <CardTitle className="text-lg font-display">Recent Contacts</CardTitle>
+                <CardTitle className="text-lg font-display">
+                  Recent Contacts
+                </CardTitle>
               </div>
               <div className="flex items-center space-x-4">
                 <Skeleton className="h-6 w-32" />
@@ -93,7 +95,9 @@ const DashboardSkeleton = () => {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Bell className="h-5 w-5 text-lovable-accent" />
-                <CardTitle className="text-lg font-display">Reminders</CardTitle>
+                <CardTitle className="text-lg font-display">
+                  Reminders
+                </CardTitle>
               </div>
               <Skeleton className="h-8 w-8 rounded" />
             </div>
@@ -106,7 +110,10 @@ const DashboardSkeleton = () => {
           <CardContent>
             <div className="space-y-3">
               {[...Array(4)].map((_, i) => (
-                <div key={i} className="flex items-center space-x-3 p-3 rounded-lg border">
+                <div
+                  key={i}
+                  className="flex items-center space-x-3 p-3 rounded-lg border"
+                >
                   <Skeleton className="h-10 w-10 rounded-full" />
                   <div className="flex-1">
                     <Skeleton className="h-4 w-32 mb-2" />
@@ -126,7 +133,9 @@ const DashboardSkeleton = () => {
           <CardHeader className="pb-3">
             <div className="flex items-center gap-2">
               <Calendar className="h-5 w-5 text-primary" />
-              <CardTitle className="text-lg font-display">Your Next 2 Weeks</CardTitle>
+              <CardTitle className="text-lg font-display">
+                Your Next 2 Weeks
+              </CardTitle>
             </div>
             <Skeleton className="h-4 w-48" />
           </CardHeader>
@@ -153,7 +162,9 @@ const DashboardSkeleton = () => {
           <CardHeader className="pb-2">
             <div className="flex items-center gap-2">
               <Briefcase className="h-5 w-5 text-purple-500" />
-              <CardTitle className="text-lg font-display">Associated Projects</CardTitle>
+              <CardTitle className="text-lg font-display">
+                Associated Projects
+              </CardTitle>
             </div>
             <Skeleton className="h-4 w-40" />
           </CardHeader>
@@ -179,7 +190,9 @@ const DashboardSkeleton = () => {
           <CardHeader className="pb-2">
             <div className="flex items-center gap-2">
               <MapPin className="h-5 w-5 text-red-500" />
-              <CardTitle className="text-lg font-display">Contacts by Location</CardTitle>
+              <CardTitle className="text-lg font-display">
+                Contacts by Location
+              </CardTitle>
             </div>
             <Skeleton className="h-4 w-40" />
           </CardHeader>
@@ -202,7 +215,9 @@ const DashboardSkeleton = () => {
           <CardHeader className="pb-2">
             <div className="flex items-center gap-2">
               <Tag className="h-5 w-5 text-purple-500" />
-              <CardTitle className="text-lg font-display">Tags Overview</CardTitle>
+              <CardTitle className="text-lg font-display">
+                Tags Overview
+              </CardTitle>
             </div>
             <Skeleton className="h-4 w-32" />
           </CardHeader>

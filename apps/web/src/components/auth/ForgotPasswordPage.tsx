@@ -1,17 +1,23 @@
+"use client";
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { Mail, ArrowLeft, Send } from "lucide-react";
 import { Button, Input, Label, Card, CardContent, CardHeader } from "@repo/ui";
+import { useRouter } from "next/navigation";
+import { api } from "@/lib/api";
 
 export default function ForgotPasswordPage() {
-  const navigate = useNavigate();
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle password reset logic here
-    setIsSubmitted(true);
+    try {
+      await api.forgotPassword(email);
+      setIsSubmitted(true);
+    } catch (error) {
+      console.error("Password reset failed:", error);
+    }
   };
 
   if (isSubmitted) {
@@ -24,7 +30,7 @@ export default function ForgotPasswordPage() {
           </div>
 
           {/* Success Card */}
-          <Card className="border-0 shadow-xl bg-card/80 backdrop-blur-sm">
+          <Card className="border-0 shadow-xl bg-card/80 backdrop-blur-sm p-5">
             <CardHeader className="text-center space-y-2 pb-6">
               <div className="flex justify-center mb-4">
                 <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center">
@@ -58,7 +64,7 @@ export default function ForgotPasswordPage() {
                 </Button>
 
                 <Button
-                  onClick={() => navigate("/auth/signin")}
+                  onClick={() => router.push("/auth/signin")}
                   className="w-full rounded-xl h-12 text-base font-medium bg-primary hover:bg-primary/90"
                 >
                   Back to Sign In
@@ -80,9 +86,9 @@ export default function ForgotPasswordPage() {
         </div>
 
         {/* Main Card */}
-        <Card className="border-0 shadow-xl bg-card/80 backdrop-blur-sm">
+        <Card className="border-0 shadow-xl bg-card/80 backdrop-blur-sm p-5">
           <CardHeader className="text-center space-y-2 pb-6">
-            <div className="flex justify-center mb-4">
+            <div className="flex  justify-center mb-4">
               <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
                 <Mail className="h-8 w-8 text-primary" />
               </div>
@@ -123,7 +129,7 @@ export default function ForgotPasswordPage() {
             {/* Back Link */}
             <div className="text-center pt-4 border-t border-border/50">
               <button
-                onClick={() => navigate("/auth/signin")}
+                onClick={() => router.push("/auth/signin")}
                 className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
               >
                 <ArrowLeft className="h-4 w-4" />

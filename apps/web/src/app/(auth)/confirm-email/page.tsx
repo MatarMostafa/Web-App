@@ -2,7 +2,6 @@
 import { useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
-import { supabase } from "@/lib/supabaseClient";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -10,23 +9,6 @@ export default function ConfirmEmail() {
   const params = useSearchParams();
   const token = params.get("token");
   const email = params.get("email");
-
-  useEffect(() => {
-    if (token && email) {
-      supabase.auth
-        .verifyOtp({
-          type: "signup",
-          token,
-          email,
-        })
-        .then(({ error }) => {
-          if (error) toast.error(error.message);
-          else toast.success("Email verified successfully!");
-        });
-    } else if (!email) {
-      toast.error("Missing email in verification link.");
-    }
-  }, [token, email]);
 
   return (
     <div className="max-w-md mx-auto mt-20">

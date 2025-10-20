@@ -1,3 +1,4 @@
+"use client";
 // Export all components from the UI package
 export * from "./accordion";
 export * from "./alert-dialog";
@@ -5,7 +6,7 @@ export * from "./alert";
 export * from "./aspect-ratio";
 export * from "./avatar";
 export * from "./badge";
-export * from "./buttons";
+export * from "./button";
 export * from "./calendar";
 export * from "./card";
 export * from "./carousel";

@@ -1,10 +1,12 @@
+"use client";
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff, Users, Sparkles } from "lucide-react";
 import { Button, Input, Label, Card, CardContent, CardHeader } from "@repo/ui";
+import { useRouter } from "next/navigation";
+import { api } from "@/lib/api";
 
 export default function SignUpPage() {
-  const navigate = useNavigate();
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     fullName: "",
@@ -12,10 +14,18 @@ export default function SignUpPage() {
     password: "",
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle signup logic here
-    navigate("/auth/email-verification");
+    try {
+      await api.register({
+        email: formData.email,
+        username: formData.fullName,
+        password: formData.password,
+      });
+      router.push("/email-verification");
+    } catch (error) {
+      console.error("Registration failed:", error);
+    }
   };
 
   const handleInputChange = (field: string, value: string) => {
@@ -31,13 +41,13 @@ export default function SignUpPage() {
         </div>
 
         {/* Main Card */}
-        <Card className="border-0 shadow-xl bg-card/80 backdrop-blur-sm">
+        <Card className="border-0 shadow-xl bg-card/80 backdrop-blur-sm p-5 ">
           <CardHeader className="text-center space-y-2 pb-6">
             <h1 className="text-2xl font-bold text-foreground">
-              Welcome to MetMe!
+              Welcome to ERP!
             </h1>
             <p className="text-muted-foreground">
-              Create your account to start building meaningful connections
+              Create your account to start using System
             </p>
           </CardHeader>
 
@@ -131,7 +141,7 @@ export default function SignUpPage() {
               <p className="text-sm text-muted-foreground">
                 Already have an account?{" "}
                 <button
-                  onClick={() => navigate("/auth/signin")}
+                  onClick={() => router.push("/login")}
                   className="text-primary hover:underline font-medium"
                 >
                   Sign in

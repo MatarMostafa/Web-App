@@ -1,10 +1,12 @@
+"use client";
 import React from "react";
-import { useNavigate } from "react-router-dom";
+
 import { Mail, CheckCircle, ArrowLeft } from "lucide-react";
 import { Button, Card, CardContent, CardHeader } from "@repo/ui";
+import { useRouter } from "next/navigation";
 
 export default function EmailVerificationPage() {
-  const navigate = useNavigate();
+  const router = useRouter();
 
   const handleResendEmail = () => {
     // Handle resend email logic here
@@ -20,7 +22,7 @@ export default function EmailVerificationPage() {
         </div>
 
         {/* Main Card */}
-        <Card className="border-0 shadow-xl bg-card/80 backdrop-blur-sm">
+        <Card className="border-0 shadow-xl bg-card/80 backdrop-blur-sm p-5">
           <CardHeader className="text-center space-y-2 pb-6">
             <div className="flex justify-center mb-4">
               <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center">
@@ -57,7 +59,7 @@ export default function EmailVerificationPage() {
               </Button>
 
               <Button
-                onClick={() => navigate("/auth/calendar-connect")}
+                onClick={() => router.push("/auth/calendar-connect")}
                 className="w-full rounded-xl h-12 text-base font-medium bg-primary hover:bg-primary/90"
               >
                 Continue Setup
@@ -67,7 +69,7 @@ export default function EmailVerificationPage() {
             {/* Back Link */}
             <div className="text-center pt-4 border-t border-border/50">
               <button
-                onClick={() => navigate("/auth/signup")}
+                onClick={() => router.push("/auth/signup")}
                 className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
               >
                 <ArrowLeft className="h-4 w-4" />

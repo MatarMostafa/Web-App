@@ -1,12 +1,11 @@
+"use client";
 import React, { useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
 import { Eye, EyeOff, Lock, CheckCircle2, X } from "lucide-react";
 import { Button, Input, Label, Card, CardContent, CardHeader } from "@repo/ui";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function ResetPasswordPage() {
-  const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const token = searchParams.get("token");
+  const router = useRouter();
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -32,7 +31,7 @@ export default function ResetPasswordPage() {
     if (!allRequirementsMet || !passwordsMatch) return;
 
     // Handle password reset logic here
-    navigate("/auth/signin");
+    router.push("/login");
   };
 
   const handleInputChange = (field: string, value: string) => {
@@ -48,7 +47,7 @@ export default function ResetPasswordPage() {
         </div>
 
         {/* Main Card */}
-        <Card className="border-0 shadow-xl bg-card/80 backdrop-blur-sm">
+        <Card className="border-0 shadow-xl bg-card/80 backdrop-blur-sm p-5">
           <CardHeader className="text-center space-y-2 pb-6">
             <div className="flex justify-center mb-4">
               <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
@@ -175,7 +174,7 @@ export default function ResetPasswordPage() {
               <p className="text-sm text-muted-foreground">
                 Remember your password?{" "}
                 <button
-                  onClick={() => navigate("/auth/signin")}
+                  onClick={() => router.push("/login")}
                   className="text-primary hover:underline font-medium"
                 >
                   Sign in
