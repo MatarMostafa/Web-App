@@ -7,7 +7,14 @@ export const api = {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
     });
-    return response.json();
+    
+    const result = await response.json();
+    
+    if (!response.ok) {
+      throw new Error(result.message || 'Registration failed');
+    }
+    
+    return result;
   },
 
   forgotPassword: async (email: string) => {
@@ -16,20 +23,43 @@ export const api = {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email }),
     });
-    return response.json();
+    
+    const result = await response.json();
+    
+    if (!response.ok) {
+      throw new Error(result.message || 'Failed to send reset email');
+    }
+    
+    return result;
   },
 
   resetPassword: async (token: string, newPassword: string) => {
     const response = await fetch(`${API_URL}/api/auth/reset-password/${token}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ newPassword }),
+      body: JSON.stringify({ password: newPassword }),
     });
-    return response.json();
+    
+    const result = await response.json();
+    
+    if (!response.ok) {
+      throw new Error(result.message || 'Failed to reset password');
+    }
+    
+    return result;
   },
 
   verifyEmail: async (token: string) => {
     const response = await fetch(`${API_URL}/api/auth/verify-email/${token}`);
+    return response.json();
+  },
+
+  resendVerificationEmail: async (email: string) => {
+    const response = await fetch(`${API_URL}/api/auth/resend-verification`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
+    });
     return response.json();
   },
 };

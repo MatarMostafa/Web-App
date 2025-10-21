@@ -2,17 +2,31 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "@repo/ui";
 import { Input } from "@repo/ui";
-import { Search, Plus, Users } from "lucide-react";
+import { Search, Plus, Users, LogOut } from "lucide-react";
 import EmployeeTableView from "@/components/admin/EmployeeTableView";
 import AddEmployeeDialog from "@/components/admin/AddEmployeeDialog";
 import { useEmployeeStore } from "@/store/employeeStore";
 import { Employee } from "@/types/employee";
+import { signOut } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 
 const EmployeesPage = () => {
   const { employees, loading, fetchEmployees, deleteEmployee } =
     useEmployeeStore();
   const [searchQuery, setSearchQuery] = useState("");
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    try {
+      await signOut({ redirect: false });
+      toast.success('Logged out successfully!');
+      router.push('/login');
+    } catch (error) {
+      toast.error('Logout failed');
+    }
+  };
 
   useEffect(() => {
     fetchEmployees();
@@ -48,13 +62,23 @@ const EmployeesPage = () => {
             Manage your organization's employees
           </p>
         </div>
-        <AddEmployeeDialog
-          trigger={
-            <Button className="bg-primary hover:bg-primary/90">
-              <Plus className="h-4 w-4 mr-2" /> Add Employee
-            </Button>
-          }
-        />
+        <div className="flex gap-2">
+          <AddEmployeeDialog
+            trigger={
+              <Button className="bg-primary hover:bg-primary/90">
+                <Plus className="h-4 w-4 mr-2" /> Add Employee
+              </Button>
+            }
+          />
+          <Button
+            onClick={handleLogout}
+            variant="outline"
+            className="flex items-center gap-2"
+          >
+            <LogOut className="h-4 w-4" />
+            Logout
+          </Button>
+        </div>
       </div>
 
       <div className="mb-6">

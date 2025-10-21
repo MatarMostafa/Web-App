@@ -66,7 +66,16 @@ export const authOptions: NextAuthOptions = {
           });
 
           if (!response.ok) {
-            return null;
+            const errorData = await response.json().catch(() => ({}));
+            
+            // Throw specific errors that can be caught by NextAuth
+            if (response.status === 429) {
+              throw new Error('RATE_LIMIT');
+            } else if (response.status === 401) {
+              throw new Error('INVALID_CREDENTIALS');
+            } else {
+              throw new Error('LOGIN_FAILED');
+            }
           }
 
           const data = await response.json();
@@ -79,8 +88,9 @@ export const authOptions: NextAuthOptions = {
             accessToken: data.accessToken,
             refreshToken: data.refreshToken,
           };
-        } catch (error) {
-          return null;
+        } catch (error: any) {
+          // Pass the error message to NextAuth
+          throw new Error(error.message || 'LOGIN_FAILED');
         }
       },
     }),
