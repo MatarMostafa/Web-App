@@ -23,7 +23,15 @@ export default withAuth(
   },
   {
     callbacks: {
-      authorized: ({ token }) => !!token,
+      authorized: ({ token }) => {
+        console.log(
+          "Auth check - Token exists:",
+          !!token,
+          "Role:",
+          token?.role
+        );
+        return !!token;
+      },
     },
   }
 );

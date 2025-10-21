@@ -105,7 +105,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => {
 
       <div
         className={cn(
-          "overflow-y-auto border-r border-[#3A2A5A] bg-[#241B39] transition-all duration-300 fixed z-50",
+          "overflow-y-auto border-r border-[#2a3b5a] bg-[#1b2d39] transition-all duration-300 fixed z-50",
           isMobile
             ? cn(
                 "h-screen w-64 left-0 top-0",

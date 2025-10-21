@@ -1,4 +1,5 @@
 import React from "react";
+import { signOut } from "next-auth/react";
 
 import {
   LayoutGrid,
@@ -34,12 +35,12 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
     icon: React.ElementType;
   };
 
-  const navItems: NavItem[] = [
-    { name: "Dashboard", path: "/dashboard", icon: LayoutGrid },
-    { name: "Contacts", path: "/dashboard/contacts", icon: Users },
-    { name: "Calender", path: "/dashboard/reminders", icon: Calendar },
-    // { name: "Present", path: "/present", icon: Presentation },
-  ];
+  // const navItems: NavItem[] = [
+  //   { name: "Dashboard", path: "/dashboard", icon: LayoutGrid },
+  //   { name: "Employees", path: "/dashboard/contacts", icon: Users },
+  //   { name: "Customers", path: "/dashboard/reminders", icon: Calendar },
+  //   // { name: "Present", path: "/present", icon: Presentation },
+  // ];
 
   return (
     <header className="border-b border-border bg-background sticky top-0 z-10 shadow-sm">
@@ -58,15 +59,15 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
           <Link href="/" className="flex items-center gap-2 mr-8">
             <Image
               src="/img/fe441c05-5318-4144-ba3b-7e5227ec2afa.png"
-              alt="MetMe Logo"
+              alt="ERP Logo"
               className="h-8 w-8"
               width={32}
               height={32}
             />
-            <span className="font-display text-2xl font-semibold">MetMe</span>
+            <span className="font-display text-2xl font-semibold">ERP</span>
           </Link>
 
-          <nav className="hidden md:flex space-x-2">
+          {/* <nav className="hidden md:flex space-x-2">
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive =
@@ -92,7 +93,7 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
                 </Button>
               );
             })}
-          </nav>
+          </nav> */}
         </div>
 
         <div className="flex items-center gap-3">
@@ -121,7 +122,12 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
               <DropdownMenuItem asChild>
                 <Link href="/settings">Profile</Link>
               </DropdownMenuItem>
-              <DropdownMenuItem>Log Out</DropdownMenuItem>
+              <DropdownMenuItem
+                className="px-2 py-3 cursor-pointer"
+                onClick={() => signOut()}
+              >
+                Log Out
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

@@ -26,7 +26,7 @@ export default function ForgotPasswordPage() {
         <div className="w-full max-w-md space-y-8">
           {/* Logo */}
           <div className="text-center">
-            {/* <MetMeLogo size="lg" className="mx-auto mb-4" /> */}
+            {/* <ERPLogo size="lg" className="mx-auto mb-4" /> */}
           </div>
 
           {/* Success Card */}
@@ -40,7 +40,7 @@ export default function ForgotPasswordPage() {
               <h1 className="text-2xl font-bold text-foreground">
                 Reset Link Sent
               </h1>
-              <p className="text-muted-foreground">
+              <p className="text-mforeground">
                 We've sent a password reset link to <strong>{email}</strong>.
                 Please check your inbox and follow the instructions.
               </p>
@@ -82,7 +82,7 @@ export default function ForgotPasswordPage() {
       <div className="w-full max-w-md space-y-8">
         {/* Logo */}
         <div className="text-center">
-          {/* <MetMeLogo size="lg" className="mx-auto mb-4" /> */}
+          {/* <ERPLogo size="lg" className="mx-auto mb-4" /> */}
         </div>
 
         {/* Main Card */}
@@ -96,7 +96,7 @@ export default function ForgotPasswordPage() {
             <h1 className="text-2xl font-bold text-foreground">
               Forgot Password?
             </h1>
-            <p className="text-muted-foreground">
+            <p className="text-mforeground">
               Enter your email address and we'll send you a link to reset your
               password
             </p>
@@ -130,7 +130,7 @@ export default function ForgotPasswordPage() {
             <div className="text-center pt-4 border-t border-border/50">
               <button
                 onClick={() => router.push("/auth/signin")}
-                className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                className="inline-flex items-center gap-2 text-sm text-mforeground hover:text-foreground transition-colors"
               >
                 <ArrowLeft className="h-4 w-4" />
                 Back to Sign In

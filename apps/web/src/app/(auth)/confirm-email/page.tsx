@@ -16,12 +16,12 @@ export default function ConfirmEmail() {
         <Link href="/" className="flex items-center gap-2 mr-8">
           <Image
             src="/img/fe441c05-5318-4144-ba3b-7e5227ec2afa.png"
-            alt="MetMe Logo"
+            alt="ERP Logo"
             className="h-8 w-8"
             width={32}
             height={32}
           />
-          <span className="font-display text-2xl font-semibold">MetMe</span>
+          <span className="font-display text-2xl font-semibold">ERP</span>
         </Link>
       </div>
       <h1 className="text-2xl font-bold mb-6">Verifying...</h1>

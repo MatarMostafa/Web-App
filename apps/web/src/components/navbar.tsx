@@ -31,7 +31,7 @@ export function Navbar() {
               <div className="w-8 h-8 bg-gradient-to-r from-primary to-yellow-400 rounded-lg flex items-center justify-center">
                 <div className="w-6 h-6 bg-white rounded-full"></div>
               </div>
-              <span className="text-2xl font-bold" data-testid="logo-metme">
+              <span className="text-2xl font-bold" data-testid="logo-ERP">
                 <span className="text-black">Met</span>
                 <span className="text-primary">Me</span>
               </span>

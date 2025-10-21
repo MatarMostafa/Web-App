@@ -6,27 +6,27 @@
     --foreground: 210 30% 17%;
 
     --card: 210 43% 99%;
-    --card-foreground: 210 30% 17%;
+    --cforeground: 210 30% 17%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 210 30% 17%;
+    --pforeground: 210 30% 17%;
 
     --primary: 210 80% 52%; /* Main brand blue */
-    --primary-foreground: 210 40% 98%;
+    --pforeground: 210 40% 98%;
 
     --secondary: 215 70% 55%;
-    --secondary-foreground: 210 40% 98%;
+    --sforeground: 210 40% 98%;
 
     --tertiary: 215 50% 20%;
 
     --muted: 210 30% 95%;
-    --muted-foreground: 210 20% 50%;
+    --mforeground: 210 20% 50%;
 
     --accent: 210 60% 74%;
-    --accent-foreground: 210 30% 17%;
+    --aforeground: 210 30% 17%;
 
     --destructive: 0 84% 60%;
-    --destructive-foreground: 210 40% 98%;
+    --dforeground: 210 40% 98%;
 
     --border: 210 30% 90%;
     --input: 210 30% 90%;
@@ -37,22 +37,22 @@
     --sidebar-background: 220 30% 17%;
     --sidebar-foreground: 210 40% 98%;
     --sidebar-primary: 210 80% 52%;
-    --sidebar-primary-foreground: 210 40% 98%;
+    --sidebar-pforeground: 210 40% 98%;
     --sidebar-accent: 210 60% 74%;
-    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-aforeground: 210 40% 98%;
     --sidebar-border: 220 30% 30%;
     --sidebar-ring: 210 80% 52%;
 
-    /* MeetMe / Theme-specific blues */
-    --meetme-primary: 210 80% 60%;
-    --meetme-secondary: 215 70% 65%;
-    --meetme-tertiary: 215 50% 20%;
-    --meetme-accent: 210 60% 65%;
-    --meetme-light: 210 30% 15%;
-    --meetme-dark: 210 20% 8%;
-    --meetme-success: 152 48% 54%;
-    --meetme-warning: 42 89% 61%;
-    --meetme-error: 0 68% 69%;
+    /* theme / Theme-specific blues */
+    --theme-primary: 210 80% 60%;
+    --theme-secondary: 215 70% 65%;
+    --theme-tertiary: 215 50% 20%;
+    --theme-accent: 210 60% 65%;
+    --theme-light: 210 30% 15%;
+    --theme-dark: 210 20% 8%;
+    --theme-success: 152 48% 54%;
+    --theme-warning: 42 89% 61%;
+    --theme-error: 0 68% 69%;
   }
 
   .dark {
@@ -60,25 +60,25 @@
     --foreground: 210 30% 98%;
 
     --card: 220 30% 12%;
-    --card-foreground: 210 30% 98%;
+    --cforeground: 210 30% 98%;
 
     --popover: 220 30% 12%;
-    --popover-foreground: 210 30% 98%;
+    --pforeground: 210 30% 98%;
 
     --primary: 210 80% 60%;
-    --primary-foreground: 210 40% 98%;
+    --pforeground: 210 40% 98%;
 
     --secondary: 215 70% 45%;
-    --secondary-foreground: 210 40% 98%;
+    --sforeground: 210 40% 98%;
 
     --muted: 220 30% 20%;
-    --muted-foreground: 210 20% 70%;
+    --mforeground: 210 20% 70%;
 
     --accent: 220 50% 30%;
-    --accent-foreground: 210 30% 98%;
+    --aforeground: 210 30% 98%;
 
     --destructive: 0 84% 60%;
-    --destructive-foreground: 210 40% 98%;
+    --dforeground: 210 40% 98%;
 
     --border: 220 30% 20%;
     --input: 220 30% 20%;
@@ -87,9 +87,9 @@
     --sidebar-background: 220 30% 15%;
     --sidebar-foreground: 210 40% 98%;
     --sidebar-primary: 210 80% 60%;
-    --sidebar-primary-foreground: 210 40% 98%;
+    --sidebar-pforeground: 210 40% 98%;
     --sidebar-accent: 220 30% 20%;
-    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-aforeground: 210 40% 98%;
     --sidebar-border: 220 30% 25%;
     --sidebar-ring: 210 80% 60%;
   }
@@ -121,31 +121,31 @@
   }
 
   .health-strong {
-    @apply [background-color:hsl(var(--meetme-success))];
+    @apply [background-color:hsl(var(--theme-success))];
   }
 
   .health-medium {
-    @apply [background-color:hsl(var(--meetme-warning))];
+    @apply [background-color:hsl(var(--theme-warning))];
   }
 
   .health-weak {
-    @apply [background-color:hsl(var(--meetme-error))];
+    @apply [background-color:hsl(var(--theme-error))];
   }
 
   .feature-illustration-card {
-    @apply bg-white rounded-lg shadow-md border [border-color:hsl(var(--meetme-primary))/30] hover:shadow-lg transition-all;
+    @apply bg-white rounded-lg shadow-md border [border-color:hsl(var(--theme-primary))/30] hover:shadow-lg transition-all;
   }
 
   .feature-illustration-header {
-    @apply [background-color:hsl(var(--meetme-tertiary))]/40 rounded-t-lg p-2;
+    @apply [background-color:hsl(var(--theme-tertiary))]/40 rounded-t-lg p-2;
   }
 
   .network-dot {
-    @apply absolute [background-color:hsl(var(--meetme-primary))] rounded-full transform -translate-x-1/2 -translate-y-1/2 opacity-80 hover:scale-150 transition-transform cursor-pointer z-10;
+    @apply absolute [background-color:hsl(var(--theme-primary))] rounded-full transform -translate-x-1/2 -translate-y-1/2 opacity-80 hover:scale-150 transition-transform cursor-pointer z-10;
   }
 
   .network-pulse {
-    @apply absolute rounded-full [background-color:hsl(var(--meetme-primary))] opacity-30;
+    @apply absolute rounded-full [background-color:hsl(var(--theme-primary))] opacity-30;
     transform: translate(-50%, -50%);
     animation: pulse-soft 3s infinite;
   }
@@ -165,25 +165,25 @@
   --color-foreground: hsl(var(--foreground));
 
   --color-card: hsl(var(--card));
-  --color-card-foreground: hsl(var(--card-foreground));
+  --color-cforeground: hsl(var(--cforeground));
 
   --color-popover: hsl(var(--popover));
-  --color-popover-foreground: hsl(var(--popover-foreground));
+  --color-pforeground: hsl(var(--pforeground));
 
   --color-primary: hsl(var(--primary));
-  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-pforeground: hsl(var(--pforeground));
 
   --color-secondary: hsl(var(--secondary));
-  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-sforeground: hsl(var(--sforeground));
 
   --color-muted: hsl(var(--muted));
-  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-mforeground: hsl(var(--mforeground));
 
   --color-accent: hsl(var(--accent));
-  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-aforeground: hsl(var(--aforeground));
 
   --color-destructive: hsl(var(--destructive));
-  --color-destructive-foreground: hsl(var(--destructive-foreground));
+  --color-dforeground: hsl(var(--dforeground));
 
   --color-border: hsl(var(--border));
   --color-input: hsl(var(--input));
@@ -192,31 +192,31 @@
   --color-sidebar-background: hsl(var(--sidebar-background));
   --color-sidebar-foreground: hsl(var(--sidebar-foreground));
   --color-sidebar-primary: hsl(var(--sidebar-primary));
-  --color-sidebar-primary-foreground: hsl(var(--sidebar-primary-foreground));
+  --color-sidebar-pforeground: hsl(var(--sidebar-pforeground));
   --color-sidebar-accent: hsl(var(--sidebar-accent));
-  --color-sidebar-accent-foreground: hsl(var(--sidebar-accent-foreground));
+  --color-sidebar-aforeground: hsl(var(--sidebar-aforeground));
   --color-sidebar-border: hsl(var(--sidebar-border));
   --color-sidebar-ring: hsl(var(--sidebar-ring));
 
-  --meetme-primary: hsl(210 80% 55%);
-  --meetme-secondary: hsl(215 70% 60%);
-  --meetme-tertiary: hsl(215 100% 93%);
-  --meetme-accent: hsl(210 60% 74%);
-  --meetme-light: hsl(210 100% 98%);
-  --meetme-dark: hsl(220 27% 21%);
-  --meetme-success: hsl(152 48% 54%);
-  --meetme-warning: hsl(42 89% 61%);
-  --meetme-error: hsl(0 68% 69%);
+  --theme-primary: hsl(210 80% 55%);
+  --theme-secondary: hsl(215 70% 60%);
+  --theme-tertiary: hsl(215 100% 93%);
+  --theme-accent: hsl(210 60% 74%);
+  --theme-light: hsl(210 100% 98%);
+  --theme-dark: hsl(220 27% 21%);
+  --theme-success: hsl(152 48% 54%);
+  --theme-warning: hsl(42 89% 61%);
+  --theme-error: hsl(0 68% 69%);
 
-  --color-meetme-primary: hsl(var(--meetme-primary));
-  --color-meetme-secondary: hsl(var(--meetme-secondary));
-  --color-meetme-tertiary: hsl(var(--meetme-tertiary));
-  --color-meetme-accent: hsl(var(--meetme-accent));
-  --color-meetme-light: hsl(var(--meetme-light));
-  --color-meetme-dark: hsl(var(--meetme-dark));
-  --color-meetme-success: hsl(var(--meetme-success));
-  --color-meetme-warning: hsl(var(--meetme-warning));
-  --color-meetme-error: hsl(var(--meetme-error));
+  --color-theme-primary: hsl(var(--theme-primary));
+  --color-theme-secondary: hsl(var(--theme-secondary));
+  --color-theme-tertiary: hsl(var(--theme-tertiary));
+  --color-theme-accent: hsl(var(--theme-accent));
+  --color-theme-light: hsl(var(--theme-light));
+  --color-theme-dark: hsl(var(--theme-dark));
+  --color-theme-success: hsl(var(--theme-success));
+  --color-theme-warning: hsl(var(--theme-warning));
+  --color-theme-error: hsl(var(--theme-error));
 
   --container-xl: 1280px;
 }
