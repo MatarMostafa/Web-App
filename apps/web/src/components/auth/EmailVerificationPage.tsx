@@ -18,7 +18,7 @@ export default function EmailVerificationPage() {
       <div className="w-full max-w-md space-y-8">
         {/* Logo */}
         <div className="text-center">
-          {/* <MetMeLogo size="lg" className="mx-auto mb-4" /> */}
+          {/* <ERPLogo size="lg" className="mx-auto mb-4" /> */}
         </div>
 
         {/* Main Card */}
@@ -35,7 +35,7 @@ export default function EmailVerificationPage() {
             <h1 className="text-2xl font-bold text-foreground">
               Check Your Inbox
             </h1>
-            <p className="text-muted-foreground">
+            <p className="text-mforeground">
               We've sent a verification link to your email address. Please check
               your inbox and click the link to verify your account.
             </p>
@@ -59,18 +59,18 @@ export default function EmailVerificationPage() {
               </Button>
 
               <Button
-                onClick={() => router.push("/auth/calendar-connect")}
+                onClick={() => router.push("/dashboard-employee")}
                 className="w-full rounded-xl h-12 text-base font-medium bg-primary hover:bg-primary/90"
               >
-                Continue Setup
+                Continue
               </Button>
             </div>
 
             {/* Back Link */}
             <div className="text-center pt-4 border-t border-border/50">
               <button
-                onClick={() => router.push("/auth/signup")}
-                className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                onClick={() => router.push("/signup")}
+                className="inline-flex items-center gap-2 text-sm text-mforeground hover:text-foreground transition-colors"
               >
                 <ArrowLeft className="h-4 w-4" />
                 Back to Sign Up

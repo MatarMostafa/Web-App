@@ -9,7 +9,7 @@ export default function SignUpPage() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
-    fullName: "",
+    userName: "",
     email: "",
     password: "",
   });
@@ -19,7 +19,7 @@ export default function SignUpPage() {
     try {
       await api.register({
         email: formData.email,
-        username: formData.fullName,
+        username: formData.userName,
         password: formData.password,
       });
       router.push("/email-verification");
@@ -37,7 +37,7 @@ export default function SignUpPage() {
       <div className="w-full max-w-md space-y-8">
         {/* Logo */}
         <div className="text-center">
-          {/* <MetMeLogo size="lg" className="mx-auto mb-4" /> */}
+          {/* <ERPLogo size="lg" className="mx-auto mb-4" /> */}
         </div>
 
         {/* Main Card */}
@@ -46,7 +46,7 @@ export default function SignUpPage() {
             <h1 className="text-2xl font-bold text-foreground">
               Welcome to ERP!
             </h1>
-            <p className="text-muted-foreground">
+            <p className="text-mforeground">
               Create your account to start using System
             </p>
           </CardHeader>
@@ -65,14 +65,14 @@ export default function SignUpPage() {
             {/* Sign Up Form */}
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="fullName">Full Name</Label>
+                <Label htmlFor="userName">Username</Label>
                 <Input
-                  id="fullName"
+                  id="userName"
                   type="text"
-                  placeholder="Enter your full name"
-                  value={formData.fullName}
+                  placeholder="Enter your username"
+                  value={formData.userName}
                   onChange={(e) =>
-                    handleInputChange("fullName", e.target.value)
+                    handleInputChange("userName", e.target.value)
                   }
                   className="rounded-xl border-border/50 focus:border-primary"
                   required
@@ -109,7 +109,7 @@ export default function SignUpPage() {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-mforeground hover:text-foreground transition-colors"
                   >
                     {showPassword ? (
                       <EyeOff className="h-4 w-4" />
@@ -129,7 +129,7 @@ export default function SignUpPage() {
             </form>
 
             {/* Terms Link */}
-            <p className="text-center text-sm text-muted-foreground">
+            <p className="text-center text-sm text-mforeground">
               By signing up, you agree to our{" "}
               <button className="text-primary hover:underline font-medium">
                 Terms & Conditions
@@ -138,7 +138,7 @@ export default function SignUpPage() {
 
             {/* Sign In Link */}
             <div className="text-center pt-4 border-t border-border/50">
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-mforeground">
                 Already have an account?{" "}
                 <button
                   onClick={() => router.push("/login")}

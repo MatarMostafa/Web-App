@@ -20,16 +20,16 @@ export default function SignInPage() {
       password: formData.password,
       redirect: false,
     });
-    
+
     if (result?.ok) {
       // Get session to determine role-based redirect
-      const response = await fetch('/api/auth/session');
+      const response = await fetch("/api/auth/session");
       const session = await response.json();
-      
-      if (session?.user?.role === 'ADMIN') {
-        router.push('/dashboard-admin');
+
+      if (session?.user?.role === "ADMIN") {
+        router.push("/dashboard-admin");
       } else {
-        router.push('/dashboard-employee');
+        router.push("/dashboard-employee");
       }
     }
   };
@@ -43,7 +43,7 @@ export default function SignInPage() {
       <div className="w-full max-w-md space-y-8">
         {/* Logo */}
         <div className="text-center">
-          {/* <MetMeLogo size="lg" className="mx-auto mb-4" /> */}
+          {/* <ERPLogo size="lg" className="mx-auto mb-4" /> */}
         </div>
 
         {/* Main Card */}
@@ -55,7 +55,7 @@ export default function SignInPage() {
               </div>
             </div>
             <h1 className="text-2xl font-bold text-foreground">Welcome Back</h1>
-            <p className="text-muted-foreground">
+            <p className="text-mforeground">
               Sign in to continue your networking journey
             </p>
           </CardHeader>
@@ -93,7 +93,7 @@ export default function SignInPage() {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-mforeground hover:text-foreground transition-colors"
                   >
                     {showPassword ? (
                       <EyeOff className="h-4 w-4" />
@@ -125,7 +125,7 @@ export default function SignInPage() {
 
             {/* Sign Up Link */}
             <div className="text-center pt-4 border-t border-border/50">
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-mforeground">
                 Don't have an account?{" "}
                 <button
                   onClick={() => router.push("/signup")}

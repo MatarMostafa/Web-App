@@ -65,8 +65,7 @@ function Calendar({
         ),
         month_grid: "w-full border-collapse space-y-1", // updated
         weekdays: "flex",
-        weekday:
-          "text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]", // updated
+        weekday: "text-mforeground rounded-md w-9 font-normal text-[0.8rem]", // updated
         week: "flex w-full mt-2", // updated
         day: "h-9 w-9 text-center text-sm p-0 relative [&:has([aria-selected].range_end)]:rounded-r-md [&:has([aria-selected].outside)]:bg-accent/50 [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20", // was `cell`
         day_button: cn(
@@ -74,13 +73,12 @@ function Calendar({
           "h-9 w-9 p-0 font-normal aria-selected:opacity-100"
         ),
         selected:
-          "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground", // updated
-        today: "bg-accent text-accent-foreground", // updated
+          "bg-primary text-pforeground hover:bg-primary hover:text-pforeground focus:bg-primary focus:text-pforeground", // updated
+        today: "bg-accent text-aforeground", // updated
         outside:
-          "outside text-muted-foreground opacity-50 aria-selected:bg-accent/50 aria-selected:text-muted-foreground aria-selected:opacity-30", // updated
-        disabled: "text-muted-foreground opacity-50", // updated
-        range_middle:
-          "aria-selected:bg-accent aria-selected:text-accent-foreground", // updated
+          "outside text-mforeground opacity-50 aria-selected:bg-accent/50 aria-selected:text-mforeground aria-selected:opacity-30", // updated
+        disabled: "text-mforeground opacity-50", // updated
+        range_middle: "aria-selected:bg-accent aria-selected:text-aforeground", // updated
         hidden: "invisible", // updated
         ...classNames,
       }}

@@ -11,14 +11,14 @@ import { Queue } from "bullmq";
 //   };
 // })();
 
-const connection = process.env.REDIS_URL
-  ? { url: process.env.REDIS_URL } // correct way to use a URL
-  : {
-      host: process.env.REDIS_HOST ?? "127.0.0.1",
-      port: Number(process.env.REDIS_PORT ?? 6379),
-    };
+// const connection = process.env.REDIS_URL
+//   ? { url: process.env.REDIS_URL } // correct way to use a URL
+//   : {
+//       host: process.env.REDIS_HOST ?? "127.0.0.1",
+//       port: Number(process.env.REDIS_PORT ?? 6379),
+//     };
 
-const notificationQueue = new Queue("notifications", { connection });
+// const notificationQueue = new Queue("notifications", { connection });
 
 /**
  * Types

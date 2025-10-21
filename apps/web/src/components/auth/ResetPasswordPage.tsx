@@ -43,7 +43,7 @@ export default function ResetPasswordPage() {
       <div className="w-full max-w-md space-y-8">
         {/* Logo */}
         <div className="text-center">
-          {/* <MetMeLogo size="lg" className="mx-auto mb-4" /> */}
+          {/* <ERPLogo size="lg" className="mx-auto mb-4" /> */}
         </div>
 
         {/* Main Card */}
@@ -57,9 +57,7 @@ export default function ResetPasswordPage() {
             <h1 className="text-2xl font-bold text-foreground">
               Reset Your Password
             </h1>
-            <p className="text-muted-foreground">
-              Enter your new password below
-            </p>
+            <p className="text-mforeground">Enter your new password below</p>
           </CardHeader>
 
           <CardContent className="space-y-6">
@@ -82,7 +80,7 @@ export default function ResetPasswordPage() {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-mforeground hover:text-foreground transition-colors"
                   >
                     {showPassword ? (
                       <EyeOff className="h-4 w-4" />
@@ -107,11 +105,11 @@ export default function ResetPasswordPage() {
                       {req.met ? (
                         <CheckCircle2 className="h-4 w-4 text-green-600" />
                       ) : (
-                        <X className="h-4 w-4 text-muted-foreground" />
+                        <X className="h-4 w-4 text-mforeground" />
                       )}
                       <span
                         className={
-                          req.met ? "text-green-600" : "text-muted-foreground"
+                          req.met ? "text-green-600" : "text-mforeground"
                         }
                       >
                         {req.text}
@@ -138,7 +136,7 @@ export default function ResetPasswordPage() {
                   <button
                     type="button"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-mforeground hover:text-foreground transition-colors"
                   >
                     {showConfirmPassword ? (
                       <EyeOff className="h-4 w-4" />
@@ -171,7 +169,7 @@ export default function ResetPasswordPage() {
 
             {/* Sign In Link */}
             <div className="text-center pt-4 border-t border-border/50">
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-mforeground">
                 Remember your password?{" "}
                 <button
                   onClick={() => router.push("/login")}
