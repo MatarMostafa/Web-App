@@ -1,18 +1,30 @@
 "use client";
-import React, { useState } from "react";
-import { Eye, EyeOff, Lock, CheckCircle2, X } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { Eye, EyeOff, Lock, CheckCircle2, X, Loader2 } from "lucide-react";
 import { Button, Input, Label, Card, CardContent, CardHeader } from "@repo/ui";
 import { useRouter, useSearchParams } from "next/navigation";
+import { api } from "@/lib/api";
+import toast from "react-hot-toast";
 
 export default function ResetPasswordPage() {
   const router = useRouter();
-
+  const searchParams = useSearchParams();
+  const token = searchParams.get('token');
+  
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     password: "",
     confirmPassword: "",
   });
+  
+  useEffect(() => {
+    if (!token) {
+      toast.error('Invalid reset link');
+      router.push('/forgot-password');
+    }
+  }, [token, router]);
 
   const passwordRequirements = [
     { text: "At least 8 characters", met: formData.password.length >= 8 },
@@ -26,12 +38,22 @@ export default function ResetPasswordPage() {
     formData.password === formData.confirmPassword &&
     formData.confirmPassword.length > 0;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!allRequirementsMet || !passwordsMatch) return;
-
-    // Handle password reset logic here
-    router.push("/login");
+    if (!allRequirementsMet || !passwordsMatch || !token) return;
+    
+    setIsLoading(true);
+    
+    try {
+      await api.resetPassword(token, formData.password);
+      toast.success('Password reset successful!');
+      router.push('/login');
+    } catch (error: any) {
+      const errorMessage = error.message || 'Failed to reset password';
+      toast.error(errorMessage);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleInputChange = (field: string, value: string) => {
@@ -160,10 +182,17 @@ export default function ResetPasswordPage() {
 
               <Button
                 type="submit"
-                disabled={!allRequirementsMet || !passwordsMatch}
+                disabled={!allRequirementsMet || !passwordsMatch || isLoading}
                 className="w-full rounded-xl h-12 text-base font-medium bg-primary hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Reset Password
+                {isLoading ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Resetting...
+                  </>
+                ) : (
+                  'Reset Password'
+                )}
               </Button>
             </form>
 

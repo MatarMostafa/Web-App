@@ -15,6 +15,7 @@ import {
   forgotPassword,
   resetPassword,
   verifyEmail,
+  resendVerificationEmail,
   changePassword,
   logout,
   getProfile,
@@ -42,6 +43,7 @@ router.post(
 );
 
 router.get("/verify-email/:token", verifyEmail);
+router.post("/resend-verification", authRateLimit, resendVerificationEmail);
 
 // Protected routes
 router.post(
