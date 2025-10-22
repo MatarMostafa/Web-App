@@ -37,6 +37,8 @@ import {
 import { useIsMobile } from "@/hooks/use-mobile";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { signOut } from "next-auth/react";
+import toast from "react-hot-toast";
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => {
   const isMobile = useIsMobile();
@@ -65,6 +67,16 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => {
   const handleNavClick = () => {
     if (isMobile && onClose) {
       onClose();
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await signOut({ redirect: false });
+      toast.success('Logged out successfully!');
+      router.push('/login');
+    } catch (error) {
+      toast.error('Logout failed');
     }
   };
 
@@ -215,6 +227,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => {
                       <TooltipTrigger asChild>
                         <Button
                           variant="ghost"
+                          onClick={handleLogout}
                           className={cn(
                             "w-full justify-start text-[#BFDBFE] hover:text-white hover:bg-[#1D4ED8]/60",
                             collapsed ? "px-2" : "px-3"
@@ -266,6 +279,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => {
                       <TooltipTrigger asChild>
                         <Button
                           variant="ghost"
+                          onClick={handleLogout}
                           className={cn(
                             "w-full justify-start text-[#BFDBFE] hover:text-white hover:bg-[#1D4ED8]/60",
                             collapsed ? "px-2" : "px-3"
