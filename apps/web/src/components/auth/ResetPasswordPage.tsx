@@ -1,7 +1,14 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { Eye, EyeOff, Lock, CheckCircle2, X, Loader2 } from "lucide-react";
-import { Button, Input, Label, Card, CardContent, CardHeader } from "@repo/ui";
+import {
+  Button,
+  Input,
+  Label,
+  Card,
+  CardContent,
+  CardHeader,
+} from "@/components/ui";
 import { useRouter, useSearchParams } from "next/navigation";
 import { api } from "@/lib/api";
 import toast from "react-hot-toast";
@@ -9,8 +16,8 @@ import toast from "react-hot-toast";
 export default function ResetPasswordPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const token = searchParams.get('token');
-  
+  const token = searchParams.get("token");
+
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -18,11 +25,11 @@ export default function ResetPasswordPage() {
     password: "",
     confirmPassword: "",
   });
-  
+
   useEffect(() => {
     if (!token) {
-      toast.error('Invalid reset link');
-      router.push('/forgot-password');
+      toast.error("Invalid reset link");
+      router.push("/forgot-password");
     }
   }, [token, router]);
 
@@ -41,15 +48,15 @@ export default function ResetPasswordPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!allRequirementsMet || !passwordsMatch || !token) return;
-    
+
     setIsLoading(true);
-    
+
     try {
       await api.resetPassword(token, formData.password);
-      toast.success('Password reset successful!');
-      router.push('/login');
+      toast.success("Password reset successful!");
+      router.push("/login");
     } catch (error: any) {
-      const errorMessage = error.message || 'Failed to reset password';
+      const errorMessage = error.message || "Failed to reset password";
       toast.error(errorMessage);
     } finally {
       setIsLoading(false);
@@ -191,7 +198,7 @@ export default function ResetPasswordPage() {
                     Resetting...
                   </>
                 ) : (
-                  'Reset Password'
+                  "Reset Password"
                 )}
               </Button>
             </form>

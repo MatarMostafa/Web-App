@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { useEmployeeStore } from "@/store/employeeStore";
-import { Employee, UpdateEmployeeData, WorkScheduleType } from "@/types/employee";
+import {
+  Employee,
+  UpdateEmployeeData,
+  WorkScheduleType,
+} from "@/types/employee";
 import { apiClient } from "@/lib/api-client";
 
 import {
@@ -10,26 +14,19 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@repo/ui";
-import { Button } from "@repo/ui";
-import { Input } from "@repo/ui";
-import { Label } from "@repo/ui";
+} from "@/components/ui";
+import { Button } from "@/components/ui";
+import { Input } from "@/components/ui";
+import { Label } from "@/components/ui";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@repo/ui";
+} from "@/components/ui";
 
-import {
-  User,
-  Mail,
-  Phone,
-  Building,
-  MapPin,
-  Loader2,
-} from "lucide-react";
+import { User, Mail, Phone, Building, MapPin, Loader2 } from "lucide-react";
 import { format } from "date-fns";
 
 interface EditEmployeeDialogProps {
@@ -111,7 +108,9 @@ export default function EditEmployeeDialog({
         firstName: employee.firstName,
         lastName: employee.lastName,
         phoneNumber: employee.phoneNumber || "",
-        dateOfBirth: employee.dateOfBirth ? new Date(employee.dateOfBirth) : undefined,
+        dateOfBirth: employee.dateOfBirth
+          ? new Date(employee.dateOfBirth)
+          : undefined,
         address: employee.address || "",
         hireDate: new Date(employee.hireDate),
         departmentId: employee.departmentId,
@@ -154,10 +153,7 @@ export default function EditEmployeeDialog({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (
-      !formData.firstName.trim() ||
-      !formData.lastName.trim()
-    ) {
+    if (!formData.firstName.trim() || !formData.lastName.trim()) {
       toast.error("Please fill in all required fields");
       return;
     }
@@ -204,9 +200,7 @@ export default function EditEmployeeDialog({
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         {trigger || (
-          <Button onClick={() => setIsOpen(true)}>
-            Edit Employee
-          </Button>
+          <Button onClick={() => setIsOpen(true)}>Edit Employee</Button>
         )}
       </DialogTrigger>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">

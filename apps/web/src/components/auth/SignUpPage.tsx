@@ -1,7 +1,14 @@
 "use client";
 import React, { useState } from "react";
 import { Eye, EyeOff, Users, Sparkles, Loader2 } from "lucide-react";
-import { Button, Input, Label, Card, CardContent, CardHeader } from "@repo/ui";
+import {
+  Button,
+  Input,
+  Label,
+  Card,
+  CardContent,
+  CardHeader,
+} from "@/components/ui";
 import { useRouter } from "next/navigation";
 import { api } from "@/lib/api";
 import toast from "react-hot-toast";
@@ -35,12 +42,13 @@ export default function SignUpPage() {
   };
 
   const validatePassword = (password: string) => {
-    if (!password || password.length < 8) return "Password must be at least 8 characters";
+    if (!password || password.length < 8)
+      return "Password must be at least 8 characters";
     return "";
   };
 
   // Check if form is valid
-  const isFormValid = 
+  const isFormValid =
     (formData.userName || "").length >= 3 &&
     validateEmail(formData.email || "") === "" &&
     (formData.password || "").length >= 8;
@@ -48,16 +56,19 @@ export default function SignUpPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    
+
     try {
       await api.register({
         email: formData.email,
         username: formData.userName,
         password: formData.password,
       });
-      router.push(`/email-verification?email=${encodeURIComponent(formData.email)}`);
+      router.push(
+        `/email-verification?email=${encodeURIComponent(formData.email)}`
+      );
     } catch (error: any) {
-      const errorMessage = error.message || 'Registration failed. Please try again.';
+      const errorMessage =
+        error.message || "Registration failed. Please try again.";
       toast.error(errorMessage);
     } finally {
       setIsLoading(false);
@@ -66,7 +77,7 @@ export default function SignUpPage() {
 
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
-    
+
     // Real-time validation - only show errors if user has started typing
     let error = "";
     if (value.length > 0) {
@@ -78,7 +89,7 @@ export default function SignUpPage() {
         error = validatePassword(value);
       }
     }
-    
+
     setErrors((prev) => ({ ...prev, [field]: error }));
   };
 
@@ -196,7 +207,7 @@ export default function SignUpPage() {
                     Creating Account...
                   </>
                 ) : (
-                  'Create Account'
+                  "Create Account"
                 )}
               </Button>
             </form>
