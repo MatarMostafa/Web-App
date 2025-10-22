@@ -1,4 +1,4 @@
-import express from "express";
+import express, { Request, Response } from "express";
 import { authMiddleware } from "../middleware/authMiddleware";
 import { roleMiddleware } from "../middleware/roleMiddleware";
 import { validateRequest } from "../middleware/validateRequest";
@@ -20,6 +20,8 @@ import {
   updateOrderRatingSchema,
   autoAssignEmployeesSchema,
 } from "../validation/orderSchemas";
+import { z } from "zod";
+import { prisma } from "@repo/db";
 import {
   getAllOrders,
   getOrderById,
@@ -152,6 +154,47 @@ router.post(
   roleMiddleware(["ADMIN", "TEAM_LEADER"]),
   validateRequest(autoAssignEmployeesSchema),
   autoAssignEmployees
+);
+
+router.post(
+  "/:orderId/assignments/bulk",
+  authMiddleware,
+  roleMiddleware(["ADMIN", "TEAM_LEADER"]),
+  validateRequest(z.object({
+    params: z.object({ orderId: z.string().cuid() }),
+    body: z.object({ employeeIds: z.array(z.string().cuid()) })
+  })),
+  async (req: Request, res: Response) => {
+    try {
+      const { orderId } = req.params;
+      const { employeeIds } = req.body;
+      
+      // Remove existing assignments
+      await prisma.assignment.deleteMany({ where: { orderId } });
+      
+      // Create new assignments
+      const assignments = await Promise.all(
+        employeeIds.map((employeeId: string) =>
+          prisma.assignment.create({
+            data: {
+              orderId,
+              employeeId,
+              assignedDate: new Date(),
+              status: "ASSIGNED",
+            },
+          })
+        )
+      );
+      
+      res.json({ message: "Employees assigned successfully", assignments });
+    } catch (error) {
+      console.error("Bulk assignment error:", error);
+      res.status(400).json({ 
+        message: "Failed to assign employees", 
+        error: error instanceof Error ? error.message : String(error)
+      });
+    }
+  }
 );
 
 /**

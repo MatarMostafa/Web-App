@@ -51,20 +51,74 @@ export const getOrderByIdService = async (id: string) => {
   });
 };
 
-export const createOrderService = async (data: OrderCreateInput) => {
-  return prisma.order.create({
-    data,
+export const createOrderService = async (data: OrderCreateInput & { assignedEmployeeIds?: string[] }) => {
+  const { assignedEmployeeIds, ...orderData } = data;
+  
+  const order = await prisma.order.create({
+    data: orderData,
   });
+
+  // Create assignments if employees are specified
+  if (assignedEmployeeIds && assignedEmployeeIds.length > 0) {
+    await Promise.all(
+      assignedEmployeeIds.map(employeeId =>
+        prisma.assignment.create({
+          data: {
+            orderId: order.id,
+            employeeId,
+            assignedDate: new Date(),
+            startDate: order.startTime || order.scheduledDate,
+            endDate: order.endTime,
+            status: "ASSIGNED",
+            estimatedHours: order.duration ? order.duration / 60 : undefined,
+          },
+        })
+      )
+    );
+  }
+
+  return order;
 };
 
 export const updateOrderService = async (
   id: string,
-  data: OrderUpdateInput
+  data: OrderUpdateInput & { assignedEmployeeIds?: string[] }
 ) => {
-  return prisma.order.update({
+  const { assignedEmployeeIds, ...orderData } = data;
+  
+  const order = await prisma.order.update({
     where: { id },
-    data,
+    data: orderData,
   });
+
+  // Handle employee assignments if specified
+  if (assignedEmployeeIds !== undefined) {
+    // Remove existing assignments
+    await prisma.assignment.deleteMany({
+      where: { orderId: id },
+    });
+
+    // Create new assignments
+    if (assignedEmployeeIds.length > 0) {
+      await Promise.all(
+        assignedEmployeeIds.map(employeeId =>
+          prisma.assignment.create({
+            data: {
+              orderId: id,
+              employeeId,
+              assignedDate: new Date(),
+              startDate: order.startTime || order.scheduledDate,
+              endDate: order.endTime,
+              status: "ASSIGNED",
+              estimatedHours: order.duration ? order.duration / 60 : undefined,
+            },
+          })
+        )
+      );
+    }
+  }
+
+  return order;
 };
 
 export const deleteOrderService = async (id: string) => {
