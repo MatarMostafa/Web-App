@@ -6,10 +6,10 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@repo/ui";
-import { Badge } from "@repo/ui";
-import { Button } from "@repo/ui";
-import { Avatar, AvatarFallback } from "@repo/ui";
+} from "@/components/ui";
+import { Badge } from "@/components/ui";
+import { Button } from "@/components/ui";
+import { Avatar, AvatarFallback } from "@/components/ui";
 import { Edit3, Trash2 } from "lucide-react";
 import { format } from "date-fns";
 import { Employee } from "@/types/employee";

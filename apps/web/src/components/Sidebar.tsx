@@ -25,13 +25,13 @@ interface SidebarProps {
   onClose?: () => void;
 }
 import { cn } from "@/lib/utils/helpers";
-import { Button } from "@repo/ui";
+import { Button } from "@/components/ui";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@repo/ui";
+} from "@/components/ui";
 import { useIsMobile } from "@/hooks/use-mobile";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";

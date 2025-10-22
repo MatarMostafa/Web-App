@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Button } from "@repo/ui";
-import { Input } from "@repo/ui";
+import { Button } from "@/components/ui";
+import { Input } from "@/components/ui";
 import { Search, Plus, Users, LogOut } from "lucide-react";
 import EmployeeTableView from "@/components/admin/EmployeeTableView";
 import AddEmployeeDialog from "@/components/admin/AddEmployeeDialog";

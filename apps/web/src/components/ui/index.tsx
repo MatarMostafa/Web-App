@@ -1,5 +1,4 @@
 "use client";
-
 // Export all components from the UI package
 export * from "./accordion";
 export * from "./alert-dialog";

@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 import EmployeeSummary from "@/components/admin/EmployeeSummary";
 import EmployeeProfile from "@/components/admin/EmployeeProfile";
 import { useEmployeeStore } from "@/store/employeeStore";
-import { LoadingSpinnerWithText } from "@repo/ui";
+import { LoadingSpinnerWithText } from "@/components/ui";
 
 const EmployeeDetailPage = () => {
   const params = useParams();

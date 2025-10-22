@@ -1,7 +1,14 @@
 "use client";
 import React, { useState } from "react";
 import { Eye, EyeOff, LogIn, Loader2 } from "lucide-react";
-import { Button, Input, Label, Card, CardContent, CardHeader } from "@repo/ui";
+import {
+  Button,
+  Input,
+  Label,
+  Card,
+  CardContent,
+  CardHeader,
+} from "@/components/ui";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import toast from "react-hot-toast";
@@ -18,48 +25,50 @@ export default function SignInPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    
+
     try {
       const result = await signIn("credentials", {
         email: formData.email,
         password: formData.password,
         redirect: false,
       });
-      
-      console.log('NextAuth result:', result);
-      
+
+      console.log("NextAuth result:", result);
+
       if (result?.ok) {
-        toast.success('Login successful!');
-        
+        toast.success("Login successful!");
+
         // Get session to determine role-based redirect
-        const response = await fetch('/api/auth/session');
+        const response = await fetch("/api/auth/session");
         const session = await response.json();
-        
-        if (session?.user?.role === 'ADMIN') {
-          router.push('/dashboard-admin');
+
+        if (session?.user?.role === "ADMIN") {
+          router.push("/dashboard-admin");
         } else {
-          router.push('/dashboard-employee');
+          router.push("/dashboard-employee");
         }
       } else {
         // Handle different error cases
-        console.log('Login failed. Error:', result?.error);
-        
+        console.log("Login failed. Error:", result?.error);
+
         // Handle specific error types
-        if (result?.error === 'RATE_LIMIT') {
-          toast.error('Too many login attempts. Please wait before trying again.');
-        } else if (result?.error === 'INVALID_CREDENTIALS') {
-          toast.error('Invalid email or password');
-        } else if (result?.error === 'CredentialsSignin') {
-          toast.error('Invalid email or password');
+        if (result?.error === "RATE_LIMIT") {
+          toast.error(
+            "Too many login attempts. Please wait before trying again."
+          );
+        } else if (result?.error === "INVALID_CREDENTIALS") {
+          toast.error("Invalid email or password");
+        } else if (result?.error === "CredentialsSignin") {
+          toast.error("Invalid email or password");
         } else if (result?.error) {
-          toast.error('Login failed. Please try again.');
+          toast.error("Login failed. Please try again.");
         } else {
-          toast.error('Login failed. Please try again.');
+          toast.error("Login failed. Please try again.");
         }
       }
     } catch (error) {
-      console.log('Catch error:', error);
-      toast.error('An unexpected error occurred');
+      console.log("Catch error:", error);
+      toast.error("An unexpected error occurred");
     } finally {
       setIsLoading(false);
     }
@@ -157,7 +166,7 @@ export default function SignInPage() {
                     Signing In...
                   </>
                 ) : (
-                  'Sign In'
+                  "Sign In"
                 )}
               </Button>
             </form>
