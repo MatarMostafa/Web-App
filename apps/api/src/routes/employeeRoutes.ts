@@ -8,6 +8,7 @@ import {
   updateEmployee,
   deleteEmployee,
 } from "../controllers/employeeController";
+import { prisma } from "@repo/db";
 
 const router = express.Router();
 
@@ -47,6 +48,40 @@ router.delete(
   authMiddleware,
   roleMiddleware(["ADMIN"]),
   deleteEmployee
+);
+
+// Get employee assignments
+router.get(
+  "/:id/assignments",
+  authMiddleware,
+  roleMiddleware(["ADMIN", "TEAM_LEADER", "HR_MANAGER", "EMPLOYEE"]),
+  async (req, res) => {
+    try {
+      const assignments = await prisma.assignment.findMany({
+        where: { employeeId: req.params.id },
+        include: {
+          order: {
+            select: {
+              id: true,
+              orderNumber: true,
+              title: true,
+              scheduledDate: true,
+              status: true,
+              priority: true,
+            },
+          },
+        },
+        orderBy: { assignedDate: 'desc' },
+      });
+      res.json(assignments);
+    } catch (error) {
+      console.error("Get employee assignments error:", error);
+      res.status(400).json({ 
+        message: "Failed to fetch employee assignments", 
+        error: error instanceof Error ? error.message : String(error)
+      });
+    }
+  }
 );
 
 export default router;

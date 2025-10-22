@@ -20,6 +20,8 @@ import {
   ArrowLeft,
   FileBox,
   Contact,
+  Briefcase,
+  UserCheck,
 } from "lucide-react";
 
 interface SidebarProps {
@@ -53,6 +55,12 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => {
     { name: "Employees", path: "/dashboard-admin/employees", icon: Users },
     { name: "Customers", path: "/dashboard-admin/customers", icon: Contact },
     { name: "Orders", path: "/dashboard-admin/orders", icon: FileBox },
+    {
+      name: "Departments",
+      path: "/dashboard-admin/departments",
+      icon: Briefcase,
+    },
+    { name: "Positions", path: "/dashboard-admin/positions", icon: UserCheck },
   ];
 
   const settingsNavItems = [

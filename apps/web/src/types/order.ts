@@ -1,0 +1,64 @@
+export enum OrderStatus {
+  DRAFT = "DRAFT",
+  OPEN = "OPEN",
+  ACTIVE = "ACTIVE",
+  IN_PROGRESS = "IN_PROGRESS",
+  COMPLETED = "COMPLETED",
+  CANCELLED = "CANCELLED",
+  EXPIRED = "EXPIRED"
+}
+
+export interface Order {
+  id: string;
+  orderNumber: string;
+  title: string;
+  description?: string;
+  scheduledDate: string;
+  startTime?: string;
+  endTime?: string;
+  duration?: number;
+  location?: string;
+  requiredEmployees: number;
+  priority: number;
+  specialInstructions?: string;
+  status: OrderStatus;
+  customerId?: string;
+  createdAt: string;
+  updatedAt: string;
+  createdBy?: string;
+  updatedBy?: string;
+}
+
+export interface CreateOrderData {
+  orderNumber: string;
+  title: string;
+  description?: string;
+  scheduledDate: string;
+  startTime?: string;
+  endTime?: string;
+  duration?: number;
+  location?: string;
+  requiredEmployees?: number;
+  priority?: number;
+  specialInstructions?: string;
+  status?: OrderStatus;
+  customerId?: string;
+  assignedEmployeeIds?: string[];
+}
+
+export interface UpdateOrderData {
+  orderNumber?: string;
+  title?: string;
+  description?: string;
+  scheduledDate?: string;
+  startTime?: string;
+  endTime?: string;
+  duration?: number;
+  location?: string;
+  requiredEmployees?: number;
+  priority?: number;
+  specialInstructions?: string;
+  status?: OrderStatus;
+  customerId?: string;
+  assignedEmployeeIds?: string[];
+}

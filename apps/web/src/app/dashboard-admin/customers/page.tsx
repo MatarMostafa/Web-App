@@ -1,7 +1,7 @@
-import React from "react";
+import CustomersPage from "@/components/pages/admin/CustomersPage";
 
 const Page = () => {
-  return <div>Page</div>;
+  return <CustomersPage />;
 };
 
 export default Page;
