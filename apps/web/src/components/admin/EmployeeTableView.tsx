@@ -13,6 +13,7 @@ import { Avatar, AvatarFallback } from "@repo/ui";
 import { Edit3, Trash2 } from "lucide-react";
 import { format } from "date-fns";
 import { Employee } from "@/types/employee";
+import { useRouter } from "next/navigation";
 
 interface EmployeeTableViewProps {
   employees: Employee[];
@@ -28,9 +29,9 @@ const EmployeeTableView: React.FC<EmployeeTableViewProps> = ({
   onDelete,
 }) => {
   const getInitials = (firstName: string, lastName: string) => {
-    return `${firstName[0] || ''}${lastName[0] || ''}`.toUpperCase();
+    return `${firstName[0] || ""}${lastName[0] || ""}`.toUpperCase();
   };
-
+  const router = useRouter();
   return (
     <div className="border rounded-lg overflow-hidden">
       <div className="overflow-x-auto">
@@ -65,14 +66,19 @@ const EmployeeTableView: React.FC<EmployeeTableViewProps> = ({
                 <TableRow key={employee.id} className="hover:bg-muted/50">
                   {/* Employee Name */}
                   <TableCell>
-                    <div className="flex items-center space-x-3">
+                    <div
+                      className="flex items-center space-x-3 cursor-pointer hover:bg-muted/50 p-2 rounded-md transition-colors"
+                      onClick={() =>
+                        router.push(`/dashboard-admin/employees/${employee.id}`)
+                      }
+                    >
                       <Avatar className="h-8 w-8">
                         <AvatarFallback className="text-xs">
                           {getInitials(employee.firstName, employee.lastName)}
                         </AvatarFallback>
                       </Avatar>
                       <div>
-                        <p className="font-medium">
+                        <p className="font-medium text-primary hover:underline">
                           {employee.firstName} {employee.lastName}
                         </p>
                       </div>
@@ -81,7 +87,9 @@ const EmployeeTableView: React.FC<EmployeeTableViewProps> = ({
 
                   {/* Employee Code */}
                   <TableCell>
-                    <span className="text-sm font-mono">{employee.employeeCode}</span>
+                    <span className="text-sm font-mono">
+                      {employee.employeeCode}
+                    </span>
                   </TableCell>
 
                   {/* User ID */}
@@ -108,13 +116,13 @@ const EmployeeTableView: React.FC<EmployeeTableViewProps> = ({
                   {/* Schedule Type */}
                   <TableCell>
                     <Badge variant="outline" className="text-xs">
-                      {employee.scheduleType.replace('_', ' ')}
+                      {employee.scheduleType.replace("_", " ")}
                     </Badge>
                   </TableCell>
 
                   {/* Status */}
                   <TableCell>
-                    <Badge 
+                    <Badge
                       variant={employee.isAvailable ? "default" : "destructive"}
                       className="text-xs"
                     >
