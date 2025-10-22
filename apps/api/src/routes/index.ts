@@ -8,6 +8,9 @@ import employeePerformanceRoutes from "./employeePerformanceRoutes";
 import performanceThresholdRoutes from "./performanceThresholdRoutes";
 import notificationRoutes from "./notificationRoutes";
 import adminRoutes from "./adminRoutes";
+import departmentRoutes from "./departmentRoutes";
+import positionRoutes from "./positionRoutes";
+import managerRoutes from "./managerRoutes";
 
 const router = express.Router();
 
@@ -17,6 +20,11 @@ router.use("/auth", authRoutes);
 // Employee routes
 router.use("/employees", employeeRoutes);
 router.use("/employees-status", employeeStatusRoutes);
+
+// Organization structure
+router.use("/departments", departmentRoutes);
+router.use("/positions", positionRoutes);
+router.use("/managers", managerRoutes);
 
 // Customers
 router.use("/customers", customerRoutes);

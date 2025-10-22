@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { useEmployeeStore } from "@/store/employeeStore";
-import { CreateEmployeeData, WorkScheduleType } from "@/types/employee";
+import { Employee, UpdateEmployeeData, WorkScheduleType } from "@/types/employee";
 import { apiClient } from "@/lib/api-client";
 
 import {
@@ -28,13 +28,12 @@ import {
   Phone,
   Building,
   MapPin,
-  Calendar as CalendarIcon,
   Loader2,
 } from "lucide-react";
 import { format } from "date-fns";
-import { cn } from "@/lib/utils/helpers";
 
-interface AddEmployeeDialogProps {
+interface EditEmployeeDialogProps {
+  employee: Employee;
   trigger?: React.ReactNode;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
@@ -43,7 +42,6 @@ interface AddEmployeeDialogProps {
 interface EmployeeFormData {
   email: string;
   username: string;
-  password: string;
   firstName: string;
   lastName: string;
   phoneNumber?: string;
@@ -66,23 +64,21 @@ const scheduleTypeOptions = [
   { value: WorkScheduleType.INTERN, label: "Intern" },
 ];
 
-export default function AddEmployeeDialog({
+export default function EditEmployeeDialog({
+  employee,
   trigger,
   open,
   onOpenChange,
-}: AddEmployeeDialogProps) {
-  const { createEmployee } = useEmployeeStore();
+}: EditEmployeeDialogProps) {
+  const { updateEmployee } = useEmployeeStore();
 
   const [internalOpen, setInternalOpen] = useState(false);
-
-  // Use controlled props if provided, otherwise use internal state
   const isOpen = open !== undefined ? open : internalOpen;
   const setIsOpen = onOpenChange || setInternalOpen;
 
   const [formData, setFormData] = useState<EmployeeFormData>({
     email: "",
     username: "",
-    password: "",
     firstName: "",
     lastName: "",
     phoneNumber: "",
@@ -106,6 +102,27 @@ export default function AddEmployeeDialog({
   const [managers, setManagers] = useState<
     { id: string; employee: { firstName: string; lastName: string } }[]
   >([]);
+
+  useEffect(() => {
+    if (employee && isOpen) {
+      setFormData({
+        email: employee.userId ? "" : "", // We'll fetch this from user data
+        username: "", // We'll fetch this from user data
+        firstName: employee.firstName,
+        lastName: employee.lastName,
+        phoneNumber: employee.phoneNumber || "",
+        dateOfBirth: employee.dateOfBirth ? new Date(employee.dateOfBirth) : undefined,
+        address: employee.address || "",
+        hireDate: new Date(employee.hireDate),
+        departmentId: employee.departmentId,
+        positionId: employee.positionId,
+        managerId: employee.managerId || "",
+        scheduleType: employee.scheduleType,
+        hourlyRate: employee.hourlyRate,
+        salary: employee.salary,
+      });
+    }
+  }, [employee, isOpen]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -134,35 +151,12 @@ export default function AddEmployeeDialog({
     }));
   };
 
-  const resetForm = () => {
-    setFormData({
-      email: "",
-      username: "",
-      password: "",
-      firstName: "",
-      lastName: "",
-      phoneNumber: "",
-      dateOfBirth: undefined,
-      address: "",
-      hireDate: new Date(),
-      departmentId: "",
-      positionId: "",
-      managerId: "",
-      scheduleType: WorkScheduleType.FULL_TIME,
-      hourlyRate: undefined,
-      salary: undefined,
-    });
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (
       !formData.firstName.trim() ||
-      !formData.lastName.trim() ||
-      !formData.email.trim() ||
-      !formData.username.trim() ||
-      !formData.password.trim()
+      !formData.lastName.trim()
     ) {
       toast.error("Please fill in all required fields");
       return;
@@ -176,10 +170,7 @@ export default function AddEmployeeDialog({
     try {
       setLoading(true);
 
-      const employeeData: CreateEmployeeData = {
-        email: formData.email,
-        username: formData.username,
-        password: formData.password,
+      const employeeData: UpdateEmployeeData = {
         firstName: formData.firstName,
         lastName: formData.lastName,
         phoneNumber: formData.phoneNumber || undefined,
@@ -194,48 +185,34 @@ export default function AddEmployeeDialog({
         salary: formData.salary,
       };
 
-      await createEmployee(employeeData);
+      await updateEmployee(employee.id, employeeData);
       toast.success(
-        `Employee ${formData.firstName} ${formData.lastName} created successfully!`
+        `Employee ${formData.firstName} ${formData.lastName} updated successfully!`
       );
       setIsOpen(false);
-      resetForm();
     } catch (error) {
-      console.error("Employee creation failed:", error);
+      console.error("Employee update failed:", error);
       toast.error(
-        error instanceof Error ? error.message : "Failed to create employee"
+        error instanceof Error ? error.message : "Failed to update employee"
       );
     } finally {
       setLoading(false);
     }
   };
 
-  console.log("Dialog state:", { isOpen, trigger });
-
   return (
-    <Dialog
-      open={isOpen}
-      onOpenChange={(open) => {
-        console.log("Dialog onOpenChange:", open);
-        setIsOpen(open);
-      }}
-    >
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         {trigger || (
-          <Button
-            onClick={() => {
-              console.log("Default button clicked");
-              setIsOpen(true);
-            }}
-          >
-            Add Employee
+          <Button onClick={() => setIsOpen(true)}>
+            Edit Employee
           </Button>
         )}
       </DialogTrigger>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold text-foreground">
-            Add New Employee
+            Edit Employee
           </DialogTitle>
         </DialogHeader>
 
@@ -278,67 +255,20 @@ export default function AddEmployeeDialog({
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="email">Email *</Label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    id="email"
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) => handleInputChange("email", e.target.value)}
-                    placeholder="employee@company.com"
-                    className="pl-10 rounded-lg"
-                    required
-                  />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="username">Username *</Label>
+            <div className="space-y-2">
+              <Label htmlFor="phoneNumber">Phone Number</Label>
+              <div className="relative">
+                <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
-                  id="username"
-                  value={formData.username}
+                  id="phoneNumber"
+                  type="tel"
+                  value={formData.phoneNumber}
                   onChange={(e) =>
-                    handleInputChange("username", e.target.value)
+                    handleInputChange("phoneNumber", e.target.value)
                   }
-                  placeholder="Enter username"
-                  required
-                  className="rounded-lg"
+                  placeholder="+1 (555) 000-0000"
+                  className="pl-10 rounded-lg"
                 />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="password">Password *</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  value={formData.password}
-                  onChange={(e) =>
-                    handleInputChange("password", e.target.value)
-                  }
-                  placeholder="Enter password"
-                  required
-                  className="rounded-lg"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="phoneNumber">Phone Number</Label>
-                <div className="relative">
-                  <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    id="phoneNumber"
-                    type="tel"
-                    value={formData.phoneNumber}
-                    onChange={(e) =>
-                      handleInputChange("phoneNumber", e.target.value)
-                    }
-                    placeholder="+1 (555) 000-0000"
-                    className="pl-10 rounded-lg"
-                  />
-                </div>
               </div>
             </div>
 
@@ -354,6 +284,26 @@ export default function AddEmployeeDialog({
                   className="pl-10 rounded-lg"
                 />
               </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="dateOfBirth">Date of Birth</Label>
+              <Input
+                id="dateOfBirth"
+                type="date"
+                value={
+                  formData.dateOfBirth
+                    ? format(formData.dateOfBirth, "yyyy-MM-dd")
+                    : ""
+                }
+                onChange={(e) =>
+                  handleInputChange(
+                    "dateOfBirth",
+                    e.target.value ? new Date(e.target.value) : undefined
+                  )
+                }
+                className="rounded-lg"
+              />
             </div>
           </div>
 
@@ -528,10 +478,10 @@ export default function AddEmployeeDialog({
               {loading ? (
                 <>
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Creating...
+                  Updating...
                 </>
               ) : (
-                "Add Employee"
+                "Update Employee"
               )}
             </Button>
           </div>

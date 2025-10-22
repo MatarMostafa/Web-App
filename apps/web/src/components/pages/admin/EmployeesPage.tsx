@@ -5,6 +5,7 @@ import { Input } from "@repo/ui";
 import { Search, Plus, Users } from "lucide-react";
 import EmployeeTableView from "@/components/admin/EmployeeTableView";
 import AddEmployeeDialog from "@/components/admin/AddEmployeeDialog";
+import EditEmployeeDialog from "@/components/admin/EditEmployeeDialog";
 import { useEmployeeStore } from "@/store/employeeStore";
 import { Employee } from "@/types/employee";
 
@@ -13,6 +14,8 @@ const EmployeesPage = () => {
   const { employees, loading, fetchEmployees, deleteEmployee } =
     useEmployeeStore();
   const [searchQuery, setSearchQuery] = useState("");
+  const [editingEmployee, setEditingEmployee] = useState<Employee | null>(null);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
 
   useEffect(() => {
     fetchEmployees();
@@ -28,8 +31,8 @@ const EmployeesPage = () => {
   );
 
   const handleEdit = (employee: Employee) => {
-    // TODO: Implement edit functionality
-    console.log("Edit employee:", employee);
+    setEditingEmployee(employee);
+    setEditDialogOpen(true);
   };
 
   const handleDelete = async (id: string) => {
@@ -75,6 +78,17 @@ const EmployeesPage = () => {
         onEdit={handleEdit}
         onDelete={handleDelete}
       />
+
+      {editingEmployee && (
+        <EditEmployeeDialog
+          employee={editingEmployee}
+          open={editDialogOpen}
+          onOpenChange={(open) => {
+            setEditDialogOpen(open);
+            if (!open) setEditingEmployee(null);
+          }}
+        />
+      )}
 
       {!loading && employees.length === 0 && (
         <div className="flex flex-col items-center justify-center text-center p-12 border rounded-lg">

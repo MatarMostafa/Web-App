@@ -5,11 +5,14 @@ import toast from "react-hot-toast";
 
 interface EmployeeState {
   employees: Employee[];
+  currentEmployee: Employee | null;
   loading: boolean;
+  isLoadingEmployee: boolean;
   error: string | null;
   
   // Actions
   fetchEmployees: () => Promise<void>;
+  fetchEmployee: (id: string) => Promise<void>;
   getEmployeeById: (id: string) => Promise<Employee | null>;
   createEmployee: (data: CreateEmployeeData) => Promise<void>;
   updateEmployee: (id: string, data: UpdateEmployeeData) => Promise<void>;
@@ -19,7 +22,9 @@ interface EmployeeState {
 
 export const useEmployeeStore = create<EmployeeState>((set, get) => ({
   employees: [],
+  currentEmployee: null,
   loading: false,
+  isLoadingEmployee: false,
   error: null,
 
   fetchEmployees: async () => {
@@ -34,6 +39,16 @@ export const useEmployeeStore = create<EmployeeState>((set, get) => ({
       const errorMessage = error instanceof Error ? error.message : "Failed to fetch employees";
       set({ error: errorMessage, loading: false });
       toast.error(errorMessage);
+    }
+  },
+
+  fetchEmployee: async (id: string) => {
+    set({ isLoadingEmployee: true, error: null });
+    try {
+      const employee = await apiClient.get<Employee>(`/api/employees/${id}`);
+      set({ currentEmployee: employee, isLoadingEmployee: false });
+    } catch (error) {
+      set({ error: error instanceof Error ? error.message : "Failed to fetch employee", isLoadingEmployee: false });
     }
   },
 
