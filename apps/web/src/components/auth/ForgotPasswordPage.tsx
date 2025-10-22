@@ -1,7 +1,14 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { Mail, ArrowLeft, Send, Loader2, Clock } from "lucide-react";
-import { Button, Input, Label, Card, CardContent, CardHeader } from "@repo/ui";
+import {
+  Button,
+  Input,
+  Label,
+  Card,
+  CardContent,
+  CardHeader,
+} from "@/components/ui";
 import { useRouter } from "next/navigation";
 import { api } from "@/lib/api";
 import toast from "react-hot-toast";
@@ -18,7 +25,7 @@ export default function ForgotPasswordPage() {
     let interval: NodeJS.Timeout;
     if (cooldownTime > 0) {
       interval = setInterval(() => {
-        setCooldownTime(prev => {
+        setCooldownTime((prev) => {
           if (prev <= 1) {
             return 0;
           }
@@ -32,25 +39,25 @@ export default function ForgotPasswordPage() {
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
+    return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    
+
     try {
       await api.forgotPassword(email);
       setIsSubmitted(true);
       setLastSentTime(Date.now());
       setCooldownTime(300); // 5 minutes
-      toast.success('Reset link sent to your email!');
+      toast.success("Reset link sent to your email!");
     } catch (error: any) {
-      const errorMessage = error.message || 'Failed to send reset email';
+      const errorMessage = error.message || "Failed to send reset email";
       toast.error(errorMessage);
-      
+
       // If error mentions waiting time, set cooldown
-      if (errorMessage.includes('5 minutes') || errorMessage.includes('wait')) {
+      if (errorMessage.includes("5 minutes") || errorMessage.includes("wait")) {
         setCooldownTime(300);
       }
     } finally {
@@ -60,7 +67,7 @@ export default function ForgotPasswordPage() {
 
   const handleResend = async () => {
     setIsSubmitted(false);
-    await handleSubmit(new Event('submit') as any);
+    await handleSubmit(new Event("submit") as any);
   };
 
   const isResendDisabled = isLoading || cooldownTime > 0;
@@ -105,9 +112,9 @@ export default function ForgotPasswordPage() {
                   disabled={isResendDisabled}
                   variant="outline"
                   className={`w-full rounded-xl h-12 text-base font-medium transition-colors ${
-                    isResendDisabled 
-                      ? 'border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed hover:bg-gray-50 hover:border-gray-200' 
-                      : 'border-primary/30 hover:bg-primary/5 hover:border-primary/50'
+                    isResendDisabled
+                      ? "border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed hover:bg-gray-50 hover:border-gray-200"
+                      : "border-primary/30 hover:bg-primary/5 hover:border-primary/50"
                   }`}
                 >
                   {isLoading ? (
@@ -121,14 +128,15 @@ export default function ForgotPasswordPage() {
                       Resend in {formatTime(cooldownTime)}
                     </>
                   ) : (
-                    'Send Another Link'
+                    "Send Another Link"
                   )}
                 </Button>
-                
+
                 {cooldownTime > 0 && (
                   <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-center">
                     <p className="text-sm text-blue-700">
-                      Please wait {formatTime(cooldownTime)} before requesting another reset email.
+                      Please wait {formatTime(cooldownTime)} before requesting
+                      another reset email.
                     </p>
                   </div>
                 )}
@@ -199,7 +207,7 @@ export default function ForgotPasswordPage() {
                     Sending...
                   </>
                 ) : (
-                  'Send Reset Link'
+                  "Send Reset Link"
                 )}
               </Button>
             </form>

@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { Button } from "@repo/ui";
+import { Button } from "@/components/ui";
 import { Menu, X, User } from "lucide-react";
 import Link from "next/link";
 import {
@@ -8,7 +8,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@repo/ui";
+} from "@/components/ui";
 
 export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);

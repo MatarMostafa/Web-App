@@ -15,7 +15,7 @@ import {
 interface HeaderProps {
   onMenuClick?: () => void;
 }
-import { Button } from "@repo/ui";
+import { Button } from "@/components/ui";
 import { cn } from "@/lib/utils/helpers";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -25,7 +25,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@repo/ui";
+} from "@/components/ui";
 
 const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
   const pathname = usePathname();

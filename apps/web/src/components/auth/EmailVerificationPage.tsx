@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { Mail, CheckCircle, ArrowLeft, Loader2, Clock } from "lucide-react";
-import { Button, Card, CardContent, CardHeader } from "@repo/ui";
+import { Button, Card, CardContent, CardHeader } from "@/components/ui";
 import { useRouter, useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
 import { api } from "@/lib/api";
@@ -9,20 +9,18 @@ import { api } from "@/lib/api";
 export default function EmailVerificationPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const email = searchParams.get('email') || '';
+  const email = searchParams.get("email") || "";
   const [isResending, setIsResending] = useState(false);
   const [cooldownTime, setCooldownTime] = useState(0);
   const [lastResendTime, setLastResendTime] = useState<number | null>(null);
-  
-  const isDisabled = isResending || cooldownTime > 0;
-  
 
+  const isDisabled = isResending || cooldownTime > 0;
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
     if (cooldownTime > 0) {
       interval = setInterval(() => {
-        setCooldownTime(prev => {
+        setCooldownTime((prev) => {
           if (prev <= 1) {
             return 0;
           }
@@ -35,31 +33,31 @@ export default function EmailVerificationPage() {
 
   const handleResendEmail = async () => {
     if (!email) {
-      toast.error('Email not found. Please sign up again.');
+      toast.error("Email not found. Please sign up again.");
       return;
     }
 
     setIsResending(true);
     try {
       const result = await api.resendVerificationEmail(email);
-      toast.success('Verification email sent!');
+      toast.success("Verification email sent!");
       setLastResendTime(Date.now());
       setCooldownTime(300); // 5 minutes = 300 seconds
     } catch (error: any) {
-      console.log('Resend error:', error);
-      let errorMessage = 'Failed to resend email';
-      
+      console.log("Resend error:", error);
+      let errorMessage = "Failed to resend email";
+
       // Parse error response
       if (error.message) {
         errorMessage = error.message;
-      } else if (typeof error === 'string') {
+      } else if (typeof error === "string") {
         errorMessage = error;
       }
-      
+
       toast.error(errorMessage);
-      
+
       // If error mentions waiting time, set cooldown
-      if (errorMessage.includes('5 minutes') || errorMessage.includes('wait')) {
+      if (errorMessage.includes("5 minutes") || errorMessage.includes("wait")) {
         setCooldownTime(300);
       }
     } finally {
@@ -70,7 +68,7 @@ export default function EmailVerificationPage() {
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
+    return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
   return (
@@ -115,9 +113,9 @@ export default function EmailVerificationPage() {
                 disabled={isDisabled}
                 variant="outline"
                 className={`w-full rounded-xl h-12 text-base font-medium transition-colors ${
-                  isDisabled 
-                    ? 'border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed hover:bg-gray-50 hover:border-gray-200' 
-                    : 'border-primary/30 hover:bg-primary/5 hover:border-primary/50'
+                  isDisabled
+                    ? "border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed hover:bg-gray-50 hover:border-gray-200"
+                    : "border-primary/30 hover:bg-primary/5 hover:border-primary/50"
                 }`}
               >
                 {isResending ? (
@@ -131,19 +129,18 @@ export default function EmailVerificationPage() {
                     Resend in {formatTime(cooldownTime)}
                   </>
                 ) : (
-                  'Resend Verification Email'
+                  "Resend Verification Email"
                 )}
               </Button>
-              
+
               {cooldownTime > 0 && (
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-center">
                   <p className="text-sm text-blue-700">
-                    Please wait {formatTime(cooldownTime)} before requesting another email to prevent spam.
+                    Please wait {formatTime(cooldownTime)} before requesting
+                    another email to prevent spam.
                   </p>
                 </div>
               )}
-
-              
             </div>
 
             {/* Back Link */}

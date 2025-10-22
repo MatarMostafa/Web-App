@@ -10,9 +10,9 @@ import {
   Clock,
   DollarSign,
 } from "lucide-react";
-import { Avatar, AvatarFallback } from "@repo/ui";
-import { Badge } from "@repo/ui";
-import { Card, CardContent } from "@repo/ui";
+import { Avatar, AvatarFallback } from "@/components/ui";
+import { Badge } from "@/components/ui";
+import { Card, CardContent } from "@/components/ui";
 import { format } from "date-fns";
 import { Employee } from "@/types/employee";
 
@@ -22,7 +22,7 @@ interface EmployeeSummaryProps {
 
 const EmployeeSummary: React.FC<EmployeeSummaryProps> = ({ employee }) => {
   const getInitials = (firstName: string, lastName: string) => {
-    return `${firstName[0] || ''}${lastName[0] || ''}`.toUpperCase();
+    return `${firstName[0] || ""}${lastName[0] || ""}`.toUpperCase();
   };
 
   const getFullName = () => {
@@ -39,9 +39,9 @@ const EmployeeSummary: React.FC<EmployeeSummaryProps> = ({ employee }) => {
 
   const formatCurrency = (amount?: number) => {
     if (!amount) return "N/A";
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD'
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
     }).format(amount);
   };
 
@@ -56,7 +56,7 @@ const EmployeeSummary: React.FC<EmployeeSummaryProps> = ({ employee }) => {
               </AvatarFallback>
             </Avatar>
           </div>
-          
+
           <div>
             <h1 className="text-2xl font-bold text-foreground">
               {getFullName()}
@@ -65,14 +65,14 @@ const EmployeeSummary: React.FC<EmployeeSummaryProps> = ({ employee }) => {
               Employee Code: {employee.employeeCode}
             </p>
             <div className="flex items-center gap-2 mt-2">
-              <Badge 
+              <Badge
                 variant={employee.isAvailable ? "default" : "destructive"}
                 className="text-xs"
               >
                 {employee.isAvailable ? "Available" : "Unavailable"}
               </Badge>
               <Badge variant="outline" className="text-xs">
-                {employee.scheduleType.replace('_', ' ')}
+                {employee.scheduleType.replace("_", " ")}
               </Badge>
             </div>
           </div>
@@ -156,7 +156,7 @@ const EmployeeSummary: React.FC<EmployeeSummaryProps> = ({ employee }) => {
                 <Clock className="h-4 w-4 text-muted-foreground" />
                 <span className="text-muted-foreground">Schedule:</span>
                 <span className="font-medium text-foreground">
-                  {employee.scheduleType.replace('_', ' ')}
+                  {employee.scheduleType.replace("_", " ")}
                 </span>
               </div>
             </div>
