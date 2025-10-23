@@ -29,7 +29,6 @@ export const authMiddleware = async (
       token,
       process.env.JWT_SECRET || "your-secret-key"
     ) as any;
-    console.log(decoded);
     const user = await prisma.user.findUnique({
       where: { id: decoded.id },
       select: {
