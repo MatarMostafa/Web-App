@@ -97,7 +97,7 @@ export const useDepartmentStore = create<DepartmentState>((set, get) => ({
   updateDepartmentStatus: async (id: string, isActive: boolean) => {
     set({ loading: true, error: null });
     try {
-      const updatedDepartment = await apiClient.patch<Department>(`/api/departments/${id}/status`, { isActive });
+      const updatedDepartment = await apiClient.put<Department>(`/api/departments/${id}/status`, { isActive });
       set(state => ({
         departments: state.departments.map(dept => dept.id === id ? updatedDepartment : dept),
         loading: false

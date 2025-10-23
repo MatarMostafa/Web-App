@@ -156,15 +156,15 @@ export const createNotification = async (input: CreateNotificationInput) => {
 
       // try enqueueing
       try {
-        await notificationQueue.add(
-          "processNotification",
-          { notificationId: notif.id },
-          {
-            removeOnComplete: true,
-            attempts: 5,
-            backoff: { type: "exponential", delay: 1000 },
-          }
-        );
+        // await notificationQueue.add(
+        //   "processNotification",
+        //   { notificationId: notif.id },
+        //   {
+        //     removeOnComplete: true,
+        //     attempts: 5,
+        //     backoff: { type: "exponential", delay: 1000 },
+        //   }
+        // );
       } catch (queueErr) {
         console.error(
           "Failed to enqueue notification job; saving to outbox",

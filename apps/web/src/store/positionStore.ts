@@ -97,7 +97,7 @@ export const usePositionStore = create<PositionState>((set, get) => ({
   updatePositionStatus: async (id: string, isActive: boolean) => {
     set({ loading: true, error: null });
     try {
-      const updatedPosition = await apiClient.patch<Position>(`/api/positions/${id}/status`, { isActive });
+      const updatedPosition = await apiClient.put<Position>(`/api/positions/${id}/status`, { isActive });
       set(state => ({
         positions: state.positions.map(pos => pos.id === id ? updatedPosition : pos),
         loading: false

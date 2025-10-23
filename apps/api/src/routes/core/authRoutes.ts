@@ -24,26 +24,24 @@ import {
 const router = express.Router();
 
 // Public routes with rate limiting and validation
-router.post("/register", authRateLimit, registerValidation, register);
-router.post("/login", authRateLimit, loginValidation, login);
-router.post("/refresh-token", authRateLimit, refreshToken);
+router.post("/register", registerValidation, register);
+router.post("/login", loginValidation, login);
+router.post("/refresh-token", refreshToken);
 
 router.post(
   "/forgot-password",
-  authRateLimit,
   forgotPasswordValidation,
   forgotPassword
 );
 
 router.post(
   "/reset-password/:token",
-  authRateLimit,
   resetPasswordValidation,
   resetPassword
 );
 
 router.get("/verify-email/:token", verifyEmail);
-router.post("/resend-verification", authRateLimit, resendVerificationEmail);
+router.post("/resend-verification", resendVerificationEmail);
 
 // Protected routes
 router.post(

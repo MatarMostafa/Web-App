@@ -18,7 +18,7 @@ router.post(
   "/upload",
   authMiddleware,
   roleMiddleware(["ADMIN", "TEAM_LEADER", "HR_MANAGER", "EMPLOYEE"]),
-  uploadSingle,
+  // uploadSingle,
   handleUploadError,
   uploadFile
 );
@@ -28,7 +28,7 @@ router.post(
   "/upload-multiple",
   authMiddleware,
   roleMiddleware(["ADMIN", "TEAM_LEADER", "HR_MANAGER", "EMPLOYEE"]),
-  uploadMultiple,
+  // uploadMultiple,
   handleUploadError,
   uploadMultipleFiles
 );
