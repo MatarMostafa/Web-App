@@ -33,11 +33,7 @@ export const getEmployeeHistory = async (req: Request, res: Response) => {
     const { id: employeeId } = req.params;
     const history = await performanceService.getEmployeeHistory(employeeId);
 
-    if (!history || history.length === 0) {
-      return res.status(404).json({ message: "No performance records found for this employee" });
-    }
-
-    res.json(history);
+    res.json(history || []);
   } catch (error) {
     res.status(500).json({ message: "Error fetching employee performance history", error });
   }

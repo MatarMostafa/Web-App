@@ -387,6 +387,16 @@ async function main() {
         approvedAt: new Date(),
       },
     }),
+    prisma.absence.create({
+      data: {
+        employeeId: users[2].employee!.id,
+        type: "PERSONAL_LEAVE",
+        startDate: new Date("2024-04-01"),
+        endDate: new Date("2024-04-02"),
+        reason: "Personal matters",
+        status: "PENDING",
+      },
+    }),
   ]);
 
   // Create ratings
@@ -445,6 +455,155 @@ async function main() {
     }),
   ]);
 
+  // Create performance thresholds
+  await Promise.all([
+    prisma.performanceThreshold.create({
+      data: {
+        departmentId: departments[0].id, // IT
+        redMin: 0,
+        redMax: 60,
+        yellowMin: 61,
+        yellowMax: 80,
+        greenMin: 81,
+        greenMax: 100,
+      },
+    }),
+    prisma.performanceThreshold.create({
+      data: {
+        departmentId: departments[1].id, // HR
+        redMin: 0,
+        redMax: 65,
+        yellowMin: 66,
+        yellowMax: 85,
+        greenMin: 86,
+        greenMax: 100,
+      },
+    }),
+  ]);
+
+  // Create employee performance records
+  await Promise.all([
+    prisma.employeePerformance.create({
+      data: {
+        employeeId: users[2].employee!.id,
+        periodStart: new Date("2024-01-01"),
+        periodEnd: new Date("2024-01-31"),
+        score: 92,
+        trafficLight: "GREEN",
+        trafficLightReason: "Excellent performance with high efficiency and quality",
+        metrics: {
+          efficiency: 0.95,
+          quality: 0.92,
+          punctuality: 0.98,
+          teamwork: 0.90,
+        },
+        manualOverride: false,
+      },
+    }),
+    prisma.employeePerformance.create({
+      data: {
+        employeeId: users[2].employee!.id,
+        periodStart: new Date("2023-12-01"),
+        periodEnd: new Date("2023-12-31"),
+        score: 75,
+        trafficLight: "YELLOW",
+        trafficLightReason: "Good performance but room for improvement in efficiency",
+        metrics: {
+          efficiency: 0.88,
+          quality: 0.90,
+          punctuality: 0.85,
+          teamwork: 0.92,
+        },
+        manualOverride: false,
+      },
+    }),
+    prisma.employeePerformance.create({
+      data: {
+        employeeId: users[3].employee!.id,
+        periodStart: new Date("2024-01-01"),
+        periodEnd: new Date("2024-01-31"),
+        score: 55,
+        trafficLight: "RED",
+        trafficLightReason: "Below expectations, needs improvement in multiple areas",
+        metrics: {
+          efficiency: 0.65,
+          quality: 0.70,
+          punctuality: 0.75,
+          teamwork: 0.80,
+        },
+        manualOverride: false,
+      },
+    }),
+  ]);
+
+  // Create sample files
+  await Promise.all([
+    prisma.file.create({
+      data: {
+        filename: "resume_john_admin.pdf",
+        originalName: "John_Admin_Resume.pdf",
+        mimeType: "application/pdf",
+        size: 245760,
+        path: "/uploads/resume_john_admin.pdf",
+        documentType: "RESUME",
+        description: "Employee resume and CV",
+        employeeId: users[0].employee!.id,
+        uploadedBy: users[1].id,
+        isVerified: true,
+        isPublic: false,
+      },
+    }),
+    prisma.file.create({
+      data: {
+        filename: "contract_mike_developer.pdf",
+        originalName: "Employment_Contract_Mike.pdf",
+        mimeType: "application/pdf",
+        size: 189440,
+        path: "/uploads/contract_mike_developer.pdf",
+        documentType: "CONTRACT",
+        description: "Employment contract",
+        employeeId: users[2].employee!.id,
+        uploadedBy: users[1].id,
+        isVerified: true,
+        isPublic: false,
+      },
+    }),
+    prisma.file.create({
+      data: {
+        filename: "certificate_javascript.jpg",
+        originalName: "JavaScript_Certificate.jpg",
+        mimeType: "image/jpeg",
+        size: 156672,
+        path: "/uploads/certificate_javascript.jpg",
+        documentType: "CERTIFICATE",
+        description: "JavaScript programming certification",
+        employeeId: users[2].employee!.id,
+        uploadedBy: users[2].id,
+        isVerified: false,
+        isPublic: false,
+        expiryDate: new Date("2026-12-31"),
+      },
+    }),
+  ]);
+
+  // Update employee performance scores
+  await Promise.all([
+    prisma.employee.update({
+      where: { id: users[2].employee!.id },
+      data: {
+        performanceScore: 92,
+        trafficLight: "GREEN",
+      },
+    }),
+    prisma.employee.update({
+      where: { id: users[3].employee!.id },
+      data: {
+        performanceScore: 55,
+        trafficLight: "RED",
+      },
+    }),
+  ]);
+
   // Create system config
   await Promise.all([
     prisma.systemConfig.create({
@@ -472,6 +631,8 @@ async function main() {
   console.log(`- ${qualifications.length} qualifications`);
   console.log(`- ${orders.length} orders`);
   console.log(`- Sample assignments, absences, ratings, and work statistics`);
+  console.log(`- Performance thresholds and employee performance records`);
+  console.log(`- Sample employee documents and files`);
 }
 
 main()
