@@ -1,6 +1,6 @@
 import { create } from "zustand";
-import { Employee, CreateEmployeeData, UpdateEmployeeData } from "@/types/employee";
 import { apiClient } from "@/lib/api-client";
+import { Employee, CreateEmployeeData, UpdateEmployeeData } from "@/types/employee";
 import { getSession } from "next-auth/react";
 import toast from "react-hot-toast";
 
@@ -105,7 +105,6 @@ interface EmployeeState {
   isLoadingFiles: boolean;
   error: string | null;
   
-  // Actions
   fetchEmployees: () => Promise<void>;
   fetchEmployee: (id: string) => Promise<void>;
   getEmployeeById: (id: string) => Promise<Employee | null>;
@@ -146,12 +145,9 @@ export const useEmployeeStore = create<EmployeeState>((set, get) => ({
   fetchEmployees: async () => {
     set({ loading: true, error: null });
     try {
-      console.log('Fetching employees...');
       const employees = await apiClient.get<Employee[]>("/api/employees");
-      console.log('Employees fetched successfully:', employees);
       set({ employees, loading: false });
     } catch (error) {
-      console.error('Error fetching employees:', error);
       const errorMessage = error instanceof Error ? error.message : "Failed to fetch employees";
       set({ error: errorMessage, loading: false });
       toast.error(errorMessage);
@@ -164,19 +160,9 @@ export const useEmployeeStore = create<EmployeeState>((set, get) => ({
       const employee = await apiClient.get<Employee>(`/api/employees/${id}`);
       set({ currentEmployee: employee, isLoadingEmployee: false });
     } catch (error) {
-      set({ error: error instanceof Error ? error.message : "Failed to fetch employee", isLoadingEmployee: false });
-    }
-  },
-
-  getEmployeeById: async (id: string) => {
-    set({ loading: true, error: null });
-    try {
-      const employee = await apiClient.get<Employee>(`/api/employees/${id}`);
-      set({ loading: false });
-      return employee;
-    } catch (error) {
-      set({ error: error instanceof Error ? error.message : "Failed to fetch employee", loading: false });
-      return null;
+      const errorMessage = error instanceof Error ? error.message : "Failed to fetch employee";
+      set({ error: errorMessage, isLoadingEmployee: false });
+      toast.error(errorMessage);
     }
   },
 
@@ -225,6 +211,18 @@ export const useEmployeeStore = create<EmployeeState>((set, get) => ({
     }
   },
 
+  getEmployeeById: async (id: string) => {
+    set({ loading: true, error: null });
+    try {
+      const employee = await apiClient.get<Employee>(`/api/employees/${id}`);
+      set({ loading: false });
+      return employee;
+    } catch (error) {
+      set({ error: error instanceof Error ? error.message : "Failed to fetch employee", loading: false });
+      return null;
+    }
+  },
+
   fetchEmployeeAssignments: async (employeeId: string) => {
     set({ isLoadingAssignments: true, error: null });
     try {
@@ -233,7 +231,8 @@ export const useEmployeeStore = create<EmployeeState>((set, get) => ({
     } catch (error) {
       console.error('Error fetching employee assignments:', error);
       const errorMessage = error instanceof Error ? error.message : "Failed to fetch assignments";
-      set({ error: errorMessage, isLoadingAssignments: false, employeeAssignments: [] });
+      set({ error: errorMessage, isLoadingAssignments: false });
+      toast.error(errorMessage);
     }
   },
 

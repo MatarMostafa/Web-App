@@ -107,7 +107,7 @@ export default function ConfirmEmail() {
                 </div>
                 <Link
                   href="/signup"
-                  className="block w-full text-center bg-primary text-primary-foreground py-2 px-4 rounded-lg hover:bg-primary/90 transition-colors"
+                  className="block w-full text-center bg-primary text-pforeground py-2 px-4 rounded-lg hover:bg-primary/90 transition-colors"
                 >
                   Back to Sign Up
                 </Link>

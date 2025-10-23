@@ -19,7 +19,9 @@ const transformUserToEmployee = (user: any): Employee => {
     hireDate: employee?.hireDate?.toISOString() || user.createdAt.toISOString(),
     terminationDate: employee?.terminationDate?.toISOString(),
     departmentId: employee?.departmentId || "",
+    departmentName: employee?.department?.name || undefined,
     positionId: employee?.positionId || "",
+    positionTitle: employee?.position?.title || undefined,
     managerId: employee?.managerId || undefined,
     scheduleType:
       (employee?.scheduleType as WorkScheduleType) ||
@@ -39,7 +41,11 @@ const transformUserToEmployee = (user: any): Employee => {
 export const getAllEmployees = async (): Promise<Employee[]> => {
   try {
     const users = await prisma.user.findMany({
-      where: { role: "EMPLOYEE" },
+      where: {
+        NOT: {
+          role: "ADMIN",
+        },
+      },
       include: {
         employee: {
           include: {
@@ -69,47 +75,47 @@ export const getEmployeeById = async (id: string): Promise<Employee | null> => {
         manager: {
           include: {
             employee: {
-              select: { firstName: true, lastName: true }
-            }
-          }
+              select: { firstName: true, lastName: true },
+            },
+          },
         },
         qualifications: {
           include: {
-            qualification: true
-          }
+            qualification: true,
+          },
         },
         assignments: {
           include: {
-            order: true
-          }
+            order: true,
+          },
         },
         absences: {
-          orderBy: { startDate: 'desc' },
-          take: 10
+          orderBy: { startDate: "desc" },
+          take: 10,
         },
         ratings: {
-          orderBy: { ratingDate: 'desc' },
-          take: 10
+          orderBy: { ratingDate: "desc" },
+          take: 10,
         },
         workStatistics: {
-          orderBy: { date: 'desc' },
-          take: 30
+          orderBy: { date: "desc" },
+          take: 30,
         },
         performanceRecords: {
-          orderBy: { periodStart: 'desc' },
-          take: 10
-        }
+          orderBy: { periodStart: "desc" },
+          take: 10,
+        },
       },
     });
 
     if (!employee || employee.user.role !== "EMPLOYEE") return null;
-    
+
     // Transform to match the expected format
     const userWithEmployee = {
       ...employee.user,
-      employee: employee
+      employee: employee,
     };
-    
+
     return transformUserToEmployee(userWithEmployee);
   } catch (error) {
     console.error("Error:", error);
@@ -206,9 +212,9 @@ export const updateEmployee = async (
     // First find the employee to get the userId
     const employee = await prisma.employee.findUnique({
       where: { id },
-      select: { userId: true }
+      select: { userId: true },
     });
-    
+
     if (!employee) {
       throw new Error(`Employee with ID ${id} not found`);
     }
@@ -255,13 +261,13 @@ export const deleteEmployee = async (id: string): Promise<boolean> => {
     // First find the user by employee ID
     const employee = await prisma.employee.findUnique({
       where: { id },
-      select: { userId: true }
+      select: { userId: true },
     });
-    
+
     if (!employee) {
       return false;
     }
-    
+
     // Delete the user (which will cascade delete the employee)
     await prisma.user.delete({
       where: { id: employee.userId },
