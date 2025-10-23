@@ -150,11 +150,11 @@ model Employee {
 
   hireDate        DateTime
   terminationDate DateTime?
-  department      Department @relation(fields: [departmentId], references: [id], onDelete: Cascade)
-  departmentId    String
-  position        Position   @relation(fields: [positionId], references: [id], onDelete: Cascade)
-  positionId      String
-  manager         User?      @relation("ManagerSubordinate", fields: [managerId], references: [id], onDelete: Cascade)
+  department      Department? @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  departmentId    String?
+  position        Position?   @relation(fields: [positionId], references: [id], onDelete: Cascade)
+  positionId      String?
+  manager         User?       @relation("ManagerSubordinate", fields: [managerId], references: [id], onDelete: Cascade)
   managerId       String?
 
   scheduleType WorkScheduleType @default(FULL_TIME)

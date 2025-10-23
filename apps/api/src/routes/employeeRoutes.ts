@@ -57,10 +57,17 @@ router.get(
   roleMiddleware(["ADMIN", "TEAM_LEADER", "HR_MANAGER", "EMPLOYEE"]),
   async (req, res) => {
     try {
-      // First find the employee by userId
-      const employee = await prisma.employee.findUnique({
-        where: { userId: req.params.id },
+      // Try to find employee by ID first, then by userId
+      let employee = await prisma.employee.findUnique({
+        where: { id: req.params.id },
       });
+
+      if (!employee) {
+        // If not found by employee ID, try by userId
+        employee = await prisma.employee.findUnique({
+          where: { userId: req.params.id },
+        });
+      }
 
       if (!employee) {
         return res.status(404).json({ message: "Employee not found" });
@@ -100,8 +107,23 @@ router.get(
   roleMiddleware(["ADMIN", "TEAM_LEADER", "HR_MANAGER", "EMPLOYEE"]),
   async (req, res) => {
     try {
+      // Try to find employee by ID first, then by userId
+      let employee = await prisma.employee.findUnique({
+        where: { id: req.params.id },
+      });
+
+      if (!employee) {
+        employee = await prisma.employee.findUnique({
+          where: { userId: req.params.id },
+        });
+      }
+
+      if (!employee) {
+        return res.status(404).json({ message: "Employee not found" });
+      }
+
       const absences = await prisma.absence.findMany({
-        where: { employeeId: req.params.id },
+        where: { employeeId: employee.id },
         orderBy: { startDate: 'desc' },
       });
       res.json(absences);
@@ -122,8 +144,23 @@ router.get(
   roleMiddleware(["ADMIN", "TEAM_LEADER", "HR_MANAGER", "EMPLOYEE"]),
   async (req, res) => {
     try {
+      // Try to find employee by ID first, then by userId
+      let employee = await prisma.employee.findUnique({
+        where: { id: req.params.id },
+      });
+
+      if (!employee) {
+        employee = await prisma.employee.findUnique({
+          where: { userId: req.params.id },
+        });
+      }
+
+      if (!employee) {
+        return res.status(404).json({ message: "Employee not found" });
+      }
+
       const { startDate, endDate } = req.query;
-      const where: any = { employeeId: req.params.id };
+      const where: any = { employeeId: employee.id };
       
       if (startDate && endDate) {
         where.date = {

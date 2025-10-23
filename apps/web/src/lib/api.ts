@@ -1,7 +1,7 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
 export const api = {
-  register: async (data: { email: string; username: string; password: string; role?: string }) => {
+  register: async (data: { name: string; email: string; username: string; password: string; role?: string }) => {
     const response = await fetch(`${API_URL}/api/auth/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
