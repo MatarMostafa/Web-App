@@ -132,7 +132,7 @@ const EmployeeSummary: React.FC<EmployeeSummaryProps> = ({ employee }) => {
                 <Briefcase className="h-4 w-4 text-muted-foreground" />
                 <span className="text-muted-foreground">Department:</span>
                 <span className="font-medium text-foreground">
-                  {employee.departmentId}
+                  {employee.departmentName || employee.departmentId || "N/A"}
                 </span>
               </div>
 
@@ -140,7 +140,7 @@ const EmployeeSummary: React.FC<EmployeeSummaryProps> = ({ employee }) => {
                 <User className="h-4 w-4 text-muted-foreground" />
                 <span className="text-muted-foreground">Position:</span>
                 <span className="font-medium text-foreground">
-                  {employee.positionId}
+                  {employee.positionTitle || employee.positionId || "N/A"}
                 </span>
               </div>
 

@@ -41,8 +41,7 @@ import {
 import { useIsMobile } from "@/hooks/use-mobile";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { signOut } from "next-auth/react";
-import toast from "react-hot-toast";
+import { useAuthStore } from "@/store/authStore";
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => {
   const isMobile = useIsMobile();
@@ -81,14 +80,10 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => {
     }
   };
 
+  const { logout } = useAuthStore();
+
   const handleLogout = async () => {
-    try {
-      await signOut({ redirect: false });
-      toast.success("Logged out successfully!");
-      router.push("/login");
-    } catch (error) {
-      toast.error("Logout failed");
-    }
+    await logout();
   };
 
   if (isMobile && !isOpen) return null;
@@ -97,14 +92,14 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => {
     <>
       {isMobile && isOpen && (
         <div
-          className="fixed inset-0 bg-black/50 z-40 md:hidden"
+          className="fixed inset-0 bg-white/10 z-40 md:hidden"
           onClick={onClose}
         />
       )}
 
       <div
         className={cn(
-          "overflow-y-auto border-r border-[#1e3a8a] bg-[#0f172a] transition-all duration-300 fixed z-50",
+          "overflow-y-auto border-r border-white/20 bg-linear-to-b from-[#0a2358] via-[#0a2358]/80 to-[#24386e] backdrop-blur-xl shadow-2xl transition-all duration-300 fixed z-50",
           isMobile
             ? cn(
                 "h-screen w-64 left-0 top-0",
@@ -124,7 +119,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => {
                   variant="ghost"
                   size="icon"
                   onClick={onClose}
-                  className="text-[#BFDBFE] hover:text-white"
+                  className="text-white hover:bg-white/10 hover:text-white"
                 >
                   <X className="h-5 w-5" />
                 </Button>
@@ -133,7 +128,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => {
                   variant="ghost"
                   size="icon"
                   onClick={() => setCollapsed(!collapsed)}
-                  className="text-[#BFDBFE] hover:text-white"
+                  className="text-white hover:bg-white/10 hover:text-white"
                 >
                   {collapsed ? (
                     <ChevronRight className="h-5 w-5" />
@@ -168,8 +163,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => {
                           className={cn(
                             "w-full justify-start",
                             isActive
-                              ? "bg-[#1E3A8A] hover:bg-[#1E40AF]/90 text-white font-medium"
-                              : "text-[#BFDBFE] hover:text-white hover:bg-[#1D4ED8]/60",
+                              ? "bg-primary hover:bg-[#1E40AF]/90 text-white font-medium"
+                              : "text-[#BFDBFE] hover:text-white hover:bg-[#ffffff]/10",
                             collapsed && !isMobile ? "px-2" : "px-3"
                           )}
                           asChild
@@ -199,7 +194,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => {
             </nav>
           </div>
 
-          <div className="mt-auto pt-4 border-t border-[#1E40AF]">
+          <div className="mt-auto pt-4 border-t border-[#416cfa]">
             <TooltipProvider delayDuration={collapsed ? 100 : 1000}>
               <div className="space-y-1">
                 {isSettingsPath ? (
@@ -240,7 +235,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => {
                           variant="ghost"
                           onClick={handleLogout}
                           className={cn(
-                            "w-full justify-start text-[#BFDBFE] hover:text-white hover:bg-[#1D4ED8]/60",
+                            "w-full justify-start text-[#BFDBFE] hover:text-white hover:bg-[#ffffff]/10",
                             collapsed ? "px-2" : "px-3"
                           )}
                         >
@@ -260,7 +255,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => {
                   </>
                 ) : (
                   <>
-                    <Tooltip>
+                    {/* <Tooltip>
                       <TooltipTrigger asChild>
                         <Button
                           variant="ghost"
@@ -284,7 +279,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => {
                       {collapsed && !isMobile && (
                         <TooltipContent side="right">Settings</TooltipContent>
                       )}
-                    </Tooltip>
+                    </Tooltip> */}
 
                     <Tooltip>
                       <TooltipTrigger asChild>
@@ -292,7 +287,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => {
                           variant="ghost"
                           onClick={handleLogout}
                           className={cn(
-                            "w-full justify-start text-[#BFDBFE] hover:text-white hover:bg-[#1D4ED8]/60",
+                            "w-full justify-start text-[#BFDBFE] hover:text-white hover:bg-[#ffffff]/10",
                             collapsed ? "px-2" : "px-3"
                           )}
                         >

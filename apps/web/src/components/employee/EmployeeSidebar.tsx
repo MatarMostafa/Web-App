@@ -18,6 +18,10 @@ import {
   Bell,
   Shield,
   ArrowLeft,
+  FileBox,
+  Contact,
+  Briefcase,
+  UserCheck,
 } from "lucide-react";
 
 interface SidebarProps {
@@ -35,14 +39,12 @@ import {
 import { useIsMobile } from "@/hooks/use-mobile";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-// import { SidebarSearch } from "./SidebarSearch";
+import { useAuthStore } from "@/store/authStore";
 
-/**
- * Application Sidebar component
- *
- * Provides navigation links and collapsible functionality
- */
-const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => {
+const EmployeeSidebar: React.FC<SidebarProps> = ({
+  isOpen = false,
+  onClose,
+}) => {
   const isMobile = useIsMobile();
   const [collapsed, setCollapsed] = useState(false);
   const pathname = usePathname();
@@ -51,51 +53,35 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => {
   const isSettingsPath = pathname.startsWith("/settings");
 
   const dashboardNavItems = [
-    { name: "Dashboard", path: "/dashboard", icon: LayoutGrid },
-    { name: "Contacts", path: "/dashboard/contacts", icon: Users },
-    {
-      name: "Collaborations",
-      path: "/dashboard/collaboration",
-      icon: FolderOpen,
-    },
-    {
-      name: "Data Management",
-      path: "/dashboard/data-management",
-      icon: Database,
-    },
-    { name: "Calendar", path: "/dashboard/reminders", icon: Calendar },
-    { name: "AI Search", path: "/dashboard/search", icon: Search },
+    { name: "Dashboard", path: "/dashboard-employee", icon: LayoutGrid },
+    { name: "Orders", path: "/dashboard-employee/orders", icon: FileBox },
   ];
 
   const settingsNavItems = [
     { name: "Profile", path: "/settings", icon: User },
-    {
-      name: "Subscription & Billing",
-      path: "/settings/subscription",
-      icon: CreditCard,
-    },
-    // { name: "Data Management", path: "/settings/data", icon: Database },
     { name: "Notifications", path: "/settings/notifications", icon: Bell },
     { name: "Privacy & Security", path: "/settings/privacy", icon: Shield },
     { name: "Help & Support", path: "/settings/help", icon: HelpCircle },
-    // { name: "Sign Out", path: "/settings/signout", icon: LogOut },
   ];
 
   const navItems = isSettingsPath ? settingsNavItems : dashboardNavItems;
 
-  // Handle mobile drawer close when clicking on nav items
   const handleNavClick = () => {
     if (isMobile && onClose) {
       onClose();
     }
   };
 
-  // Don't render on mobile unless it's open as a drawer
+  const { logout } = useAuthStore();
+
+  const handleLogout = async () => {
+    await logout();
+  };
+
   if (isMobile && !isOpen) return null;
 
   return (
     <>
-      {/* Mobile overlay */}
       {isMobile && isOpen && (
         <div
           className="fixed inset-0 bg-black/50 z-40 md:hidden"
@@ -105,7 +91,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => {
 
       <div
         className={cn(
-          "overflow-y-auto border-r border-[#2a3b5a] bg-[#1b2d39] transition-all duration-300 fixed z-50",
+          "overflow-y-auto border-r border-[#1e3a8a] bg-[#0f172a] transition-all duration-300 fixed z-50",
           isMobile
             ? cn(
                 "h-screen w-64 left-0 top-0",
@@ -118,7 +104,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => {
         )}
       >
         <div className="flex flex-col justify-between h-full p-3">
-          {/* Main Navigation */}
           <div>
             <div className="flex items-center justify-end mb-6">
               {isMobile ? (
@@ -126,7 +111,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => {
                   variant="ghost"
                   size="icon"
                   onClick={onClose}
-                  className="text-[#D1C4E9] hover:text-white"
+                  className="text-[#BFDBFE] hover:text-white"
                 >
                   <X className="h-5 w-5" />
                 </Button>
@@ -135,7 +120,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => {
                   variant="ghost"
                   size="icon"
                   onClick={() => setCollapsed(!collapsed)}
-                  className="text-[#D1C4E9] hover:text-white"
+                  className="text-[#BFDBFE] hover:text-white"
                 >
                   {collapsed ? (
                     <ChevronRight className="h-5 w-5" />
@@ -146,17 +131,16 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => {
               )}
             </div>
 
-            {/* <SidebarSearch collapsed={collapsed} /> */}
             <nav className="space-y-1">
               {navItems.map((item) => {
                 const isActive =
                   pathname === item.path ||
-                  (item.path === "/dashboard/contacts" &&
-                    pathname.startsWith("/dashboard/contacts/")) ||
-                  (item.path === "/dashboard/collaboration" &&
-                    pathname.startsWith("/dashboard/collaboration/")) ||
-                  (item.path === "/dashboard/data-management" &&
-                    pathname.startsWith("/dashboard/data-management/"));
+                  (item.path === "/dashboard-admin/employees" &&
+                    pathname.startsWith("/dashboard-admin/employees")) ||
+                  (item.path === "/dashboard-admin/customers" &&
+                    pathname.startsWith("/dashboard-admin/customers/")) ||
+                  (item.path === "/dashboard-admin/orders" &&
+                    pathname.startsWith("/dashboard-admin/orders/"));
                 const Icon = item.icon;
 
                 return (
@@ -171,8 +155,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => {
                           className={cn(
                             "w-full justify-start",
                             isActive
-                              ? "bg-[#3A2A5A] hover:bg-[#3A2A5A]/90 text-white font-medium"
-                              : "text-[#D1C4E9] hover:text-white hover:bg-[#2F2550]/60",
+                              ? "bg-[#1E3A8A] hover:bg-[#1E40AF]/90 text-white font-medium"
+                              : "text-[#BFDBFE] hover:text-white hover:bg-[#1D4ED8]/60",
                             collapsed && !isMobile ? "px-2" : "px-3"
                           )}
                           asChild
@@ -202,8 +186,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => {
             </nav>
           </div>
 
-          {/* Bottom Actions */}
-          <div className="mt-auto pt-4 border-t border-[#3A2A5A]">
+          <div className="mt-auto pt-4 border-t border-[#1E40AF]">
             <TooltipProvider delayDuration={collapsed ? 100 : 1000}>
               <div className="space-y-1">
                 {isSettingsPath ? (
@@ -213,12 +196,15 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => {
                         <Button
                           variant="ghost"
                           className={cn(
-                            "w-full justify-start text-[#D1C4E9] hover:text-white hover:bg-[#2F2550]/60",
+                            "w-full justify-start text-[#BFDBFE] hover:text-white hover:bg-[#1D4ED8]/60",
                             collapsed ? "px-2" : "px-3"
                           )}
                           asChild
                         >
-                          <Link href="/dashboard" onClick={handleNavClick}>
+                          <Link
+                            href="/dashboard-employee"
+                            onClick={handleNavClick}
+                          >
                             <ArrowLeft
                               className={cn(
                                 "h-5 w-5",
@@ -242,8 +228,9 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => {
                       <TooltipTrigger asChild>
                         <Button
                           variant="ghost"
+                          onClick={handleLogout}
                           className={cn(
-                            "w-full justify-start text-[#D1C4E9] hover:text-white hover:bg-[#2F2550]/60",
+                            "w-full justify-start text-[#BFDBFE] hover:text-white hover:bg-[#1D4ED8]/60",
                             collapsed ? "px-2" : "px-3"
                           )}
                         >
@@ -267,34 +254,9 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => {
                       <TooltipTrigger asChild>
                         <Button
                           variant="ghost"
+                          onClick={handleLogout}
                           className={cn(
-                            "w-full justify-start text-[#D1C4E9] hover:text-white hover:bg-[#2F2550]/60",
-                            collapsed ? "px-2" : "px-3"
-                          )}
-                          asChild
-                        >
-                          <Link href="/settings" onClick={handleNavClick}>
-                            <Settings
-                              className={cn(
-                                "h-5 w-5",
-                                collapsed && !isMobile ? "mr-0" : "mr-2"
-                              )}
-                            />
-                            {(!collapsed || isMobile) && <span>Settings</span>}
-                          </Link>
-                        </Button>
-                      </TooltipTrigger>
-                      {collapsed && !isMobile && (
-                        <TooltipContent side="right">Settings</TooltipContent>
-                      )}
-                    </Tooltip>
-
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          className={cn(
-                            "w-full justify-start text-[#D1C4E9] hover:text-white hover:bg-[#2F2550]/60",
+                            "w-full justify-start text-[#BFDBFE] hover:text-white hover:bg-[#1D4ED8]/60",
                             collapsed ? "px-2" : "px-3"
                           )}
                         >
@@ -322,4 +284,4 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => {
   );
 };
 
-export default Sidebar;
+export default EmployeeSidebar;
