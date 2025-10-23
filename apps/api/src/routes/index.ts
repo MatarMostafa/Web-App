@@ -11,6 +11,9 @@ import adminRoutes from "./adminRoutes";
 import departmentRoutes from "./departmentRoutes";
 import positionRoutes from "./positionRoutes";
 import managerRoutes from "./managerRoutes";
+import fileRoutes from "./fileRoutes";
+import qualificationRoutes from "./qualificationRoutes";
+import absenceRoutes from "./absenceRoutes";
 
 const router = express.Router();
 
@@ -41,5 +44,14 @@ router.use("/notifications", notificationRoutes);
 
 // Admin routes
 router.use("/admin", adminRoutes);
+
+// File management routes
+router.use("/files", fileRoutes);
+
+// Qualification routes
+router.use("/qualifications", qualificationRoutes);
+
+// Absence approval routes
+router.use("/absences", absenceRoutes);
 
 export default router;

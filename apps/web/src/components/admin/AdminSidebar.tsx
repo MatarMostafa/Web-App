@@ -22,6 +22,8 @@ import {
   Contact,
   Briefcase,
   UserCheck,
+  ClipboardList,
+  CalendarCheck,
 } from "lucide-react";
 
 interface SidebarProps {
@@ -53,6 +55,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => {
   const dashboardNavItems = [
     { name: "Dashboard", path: "/dashboard-admin", icon: LayoutGrid },
     { name: "Employees", path: "/dashboard-admin/employees", icon: Users },
+    { name: "Leave Management", path: "/dashboard-admin/leave-management", icon: CalendarCheck },
     { name: "Customers", path: "/dashboard-admin/customers", icon: Contact },
     { name: "Orders", path: "/dashboard-admin/orders", icon: FileBox },
     {

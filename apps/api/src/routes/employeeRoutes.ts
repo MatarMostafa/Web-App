@@ -84,4 +84,58 @@ router.get(
   }
 );
 
+// Get employee absences
+router.get(
+  "/:id/absences",
+  authMiddleware,
+  roleMiddleware(["ADMIN", "TEAM_LEADER", "HR_MANAGER", "EMPLOYEE"]),
+  async (req, res) => {
+    try {
+      const absences = await prisma.absence.findMany({
+        where: { employeeId: req.params.id },
+        orderBy: { startDate: 'desc' },
+      });
+      res.json(absences);
+    } catch (error) {
+      console.error("Get employee absences error:", error);
+      res.status(400).json({ 
+        message: "Failed to fetch employee absences", 
+        error: error instanceof Error ? error.message : String(error)
+      });
+    }
+  }
+);
+
+// Get employee work statistics
+router.get(
+  "/:id/work-statistics",
+  authMiddleware,
+  roleMiddleware(["ADMIN", "TEAM_LEADER", "HR_MANAGER", "EMPLOYEE"]),
+  async (req, res) => {
+    try {
+      const { startDate, endDate } = req.query;
+      const where: any = { employeeId: req.params.id };
+      
+      if (startDate && endDate) {
+        where.date = {
+          gte: new Date(startDate as string),
+          lte: new Date(endDate as string),
+        };
+      }
+      
+      const workStats = await prisma.workStatistic.findMany({
+        where,
+        orderBy: { date: 'desc' },
+      });
+      res.json(workStats);
+    } catch (error) {
+      console.error("Get employee work statistics error:", error);
+      res.status(400).json({ 
+        message: "Failed to fetch employee work statistics", 
+        error: error instanceof Error ? error.message : String(error)
+      });
+    }
+  }
+);
+
 export default router;
