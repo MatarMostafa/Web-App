@@ -2,15 +2,12 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui";
 import { Input } from "@/components/ui";
-import { Search, Plus, Users, LogOut } from "lucide-react";
+import { Search, Plus, Users } from "lucide-react";
 import EmployeeTableView from "@/components/admin/EmployeeTableView";
 import AddEmployeeDialog from "@/components/admin/AddEmployeeDialog";
 import EditEmployeeDialog from "@/components/admin/EditEmployeeDialog";
 import { useEmployeeStore } from "@/store/employeeStore";
 import { Employee } from "@/types/employee";
-import { signOut } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import toast from "react-hot-toast";
 
 const EmployeesPage = () => {
   const { employees, loading, fetchEmployees, deleteEmployee } =
@@ -18,7 +15,6 @@ const EmployeesPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [editingEmployee, setEditingEmployee] = useState<Employee | null>(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
-  const router = useRouter();
 
   useEffect(() => {
     fetchEmployees();

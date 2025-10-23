@@ -1,7 +1,7 @@
-import React from "react";
+import DepartmentsPage from "@/components/pages/admin/DepartmentsPage";
 
 const Page = () => {
-  return <div>Page</div>;
+  return <DepartmentsPage />;
 };
 
 export default Page;

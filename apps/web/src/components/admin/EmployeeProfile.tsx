@@ -27,10 +27,10 @@ const EmployeeProfile: React.FC<EmployeeProfileProps> = ({ employee }) => {
   } = useEmployeeStore();
 
   useEffect(() => {
-    if (employee.id && activeTab === "assignments") {
-      fetchEmployeeAssignments(employee.id);
+    if (employee.userId && activeTab === "assignments") {
+      fetchEmployeeAssignments(employee.userId);
     }
-  }, [employee.id, activeTab, fetchEmployeeAssignments]);
+  }, [employee.userId, activeTab, fetchEmployeeAssignments]);
 
   return (
     <div className="space-y-6">

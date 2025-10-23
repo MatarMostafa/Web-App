@@ -1,7 +1,7 @@
-import React from "react";
+import PositionsPage from "@/components/pages/admin/PositionsPage";
 
 const Page = () => {
-  return <div>Page</div>;
+  return <PositionsPage />;
 };
 
 export default Page;

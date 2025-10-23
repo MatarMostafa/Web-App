@@ -24,7 +24,9 @@ export interface Employee {
   hireDate: string; // ISO string
   terminationDate?: string;
   departmentId: string;
+  departmentName?: string;
   positionId: string;
+  positionTitle?: string;
   managerId?: string;
   subordinates?: Employee[]; // recursive relation
 
