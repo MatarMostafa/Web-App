@@ -1,14 +1,6 @@
-# Turborepo Docker starter
+# ERP Beta — Monorepo
 
-This is a community-maintained example. If you experience a problem, please submit a pull request with a fix. GitHub Issues will be closed.
-
-## Using this example
-
-Run the following command:
-
-```sh
-npx create-turbo@latest -e with-docker
-```
+This repository contains the codebase for the ERP Beta project. It's organized as a Turborepo monorepo with backend and frontend applications, shared packages, and Docker tooling to run the system locally or in containers.
 
 ## What's inside?
 
@@ -29,7 +21,7 @@ Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
 
 This repo is configured to be built with Docker, and Docker compose. To build all apps in this repo:
 
-```
+````
 # Install dependencies
 yarn install
 
@@ -40,35 +32,130 @@ docker network create app_network
 # Build prod using new BuildKit engine
 COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker-compose -f docker-compose.yml build
 
-# Start prod in detached mode
-docker-compose -f docker-compose.yml up -d
+# ERP Beta — Monorepo
+
+This repository contains the codebase for the ERP Beta project. It's organized as a Turborepo monorepo with backend and frontend applications, shared packages, and Docker tooling to run the system locally or in containers.
+
+This README gives a short overview, how to run the apps (Docker and local), testing, and where to find important projects inside the workspace.
+
+## Quick overview
+
+- Apps:
+	- `apps/web` — Next.js frontend
+	- `apps/api` — Express API server
+- Packages:
+	- `packages/*` — shared utilities, Prisma schema, and tooling
+- Tooling:
+	- Turborepo for task orchestration
+	- Docker + docker-compose for containerized dev/prod
+	- TypeScript, ESLint, Jest, Prettier
+
+## Repo structure (top-level)
+
+- `apps/` — production apps (web, api)
+- `packages/` — shared libraries and Prisma migration/seed
+- `docker-compose.yml` — compose setup for running services together
+- `turbo.json` — turborepo pipeline configuration
+
+## Local development (recommended)
+
+Prereqs: Node.js (18+ recommended), pnpm or npm/yarn, Docker (optional for containers).
+
+1. Install dependencies from the repo root:
+
+```powershell
+pnpm install
+````
+
+2. Start API and web apps in development mode (run in separate terminals or use turborepo):
+
+```powershell
+# API (from repo root)
+pnpm --filter api dev
+
+# Web (from repo root)
+pnpm --filter web dev
 ```
 
-Open http://localhost:3000.
+By default:
 
-To shutdown all running containers:
+- Frontend: http://localhost:3000
+- API: http://localhost:3001 (check `apps/api/src/server.ts` for exact port)
 
+## Docker quickstart (containers)
+
+Use Docker when you want an environment similar to production or to run the full stack together.
+
+1. Build images and start services (from repo root):
+
+```powershell
+# create a network (one-time)
+Docker network create app_network;
+
+# build and bring up services
+$env:COMPOSE_DOCKER_CLI_BUILD=1; $env:DOCKER_BUILDKIT=1; docker-compose -f docker-compose.yml up --build -d
 ```
-# Stop running containers started by docker-compse
- docker-compose -f docker-compose.yml down
+
+2. View logs or stop containers:
+
+```powershell
+# View logs
+docker-compose -f docker-compose.yml logs -f
+
+# Stop and remove containers
+docker-compose -f docker-compose.yml down
 ```
 
-### Remote Caching
+## Database and Prisma
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
+Database schema and migrations live under `packages/db/prisma`. To apply migrations locally (when running the API against a local DB), use Prisma CLI from that package. Example (run from repo root):
 
-This example includes optional remote caching. In the Dockerfiles of the apps, uncomment the build arguments for `TURBO_TEAM` and `TURBO_TOKEN`. Then, pass these build arguments to your Docker build.
+```powershell
+pnpm --filter @repo/db prisma migrate dev --schema=packages/db/prisma/schema.prisma
+```
 
-You can test this behavior using a command like:
+Seeds are in `packages/db/prisma/seed.ts`.
 
-`docker build -f apps/web/Dockerfile . --build-arg TURBO_TEAM=“your-team-name” --build-arg TURBO_TOKEN=“your-token“ --no-cache`
+## Tests and linting
 
-### Utilities
+Run all tests with:
 
-This Turborepo has some additional tools already setup for you:
+```powershell
+pnpm test
+```
 
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Jest](https://jestjs.io) test runner for all things JavaScript
-- [Prettier](https://prettier.io) for code formatting
+Run linting and type checks:
+
+```powershell
+pnpm lint
+pnpm typecheck
+```
+
+## Environment variables
+
+Each app reads environment variables from its own `.env` file (not committed). Example files or required variables are documented at the top of each app's `README` and in `apps/*/Dockerfile` where relevant.
+
+Common envs (examples):
+
+- DATABASE_URL — Prisma connection string
+- NODE_ENV — development|production
+- PORT — service port
+
+## Contributing
+
+1. Create a branch off `dev`.
+2. Follow existing code style (TypeScript, ESLint, Prettier).
+3. Add tests for new behavior.
+4. Open a PR targeting `dev` with a clear description.
+
+## Notes and pointers
+
+- Frontend source: `apps/web/src`
+- API source: `apps/api/src`
+- Prisma schema and migrations: `packages/db/prisma`
+- Shared utilities and configs: `packages/*`
+
+If you want, I can also:
+
+- Add a short `CONTRIBUTING.md` and per-app READMEs
+- Add npm scripts to simplify common tasks (start:api, start:web, etc.)
