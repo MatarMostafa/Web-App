@@ -1,6 +1,6 @@
 // src/workers/notificationWorker.ts
 import { Worker } from "bullmq";
-import { prisma } from "../lib/prisma";
+import { prisma } from "@repo/db";
 import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
