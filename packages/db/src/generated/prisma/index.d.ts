@@ -5319,8 +5319,8 @@ export namespace Prisma {
     emergencyContact: JsonValue | null
     hireDate: Date
     terminationDate: Date | null
-    departmentId: string
-    positionId: string
+    departmentId: string | null
+    positionId: string | null
     managerId: string | null
     scheduleType: $Enums.WorkScheduleType
     hourlyRate: Decimal | null
@@ -5385,8 +5385,8 @@ export namespace Prisma {
     updatedAt?: boolean
     createdBy?: boolean
     updatedBy?: boolean
-    department?: boolean | DepartmentDefaultArgs<ExtArgs>
-    position?: boolean | PositionDefaultArgs<ExtArgs>
+    department?: boolean | Employee$departmentArgs<ExtArgs>
+    position?: boolean | Employee$positionArgs<ExtArgs>
     manager?: boolean | Employee$managerArgs<ExtArgs>
     performanceRecords?: boolean | Employee$performanceRecordsArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -5428,8 +5428,8 @@ export namespace Prisma {
     updatedAt?: boolean
     createdBy?: boolean
     updatedBy?: boolean
-    department?: boolean | DepartmentDefaultArgs<ExtArgs>
-    position?: boolean | PositionDefaultArgs<ExtArgs>
+    department?: boolean | Employee$departmentArgs<ExtArgs>
+    position?: boolean | Employee$positionArgs<ExtArgs>
     manager?: boolean | Employee$managerArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["employee"]>
@@ -5462,8 +5462,8 @@ export namespace Prisma {
     updatedAt?: boolean
     createdBy?: boolean
     updatedBy?: boolean
-    department?: boolean | DepartmentDefaultArgs<ExtArgs>
-    position?: boolean | PositionDefaultArgs<ExtArgs>
+    department?: boolean | Employee$departmentArgs<ExtArgs>
+    position?: boolean | Employee$positionArgs<ExtArgs>
     manager?: boolean | Employee$managerArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["employee"]>
@@ -5500,8 +5500,8 @@ export namespace Prisma {
 
   export type EmployeeOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "employeeCode" | "firstName" | "lastName" | "phoneNumber" | "dateOfBirth" | "address" | "emergencyContact" | "hireDate" | "terminationDate" | "departmentId" | "positionId" | "managerId" | "scheduleType" | "hourlyRate" | "salary" | "isAvailable" | "priority" | "blockedAt" | "blockedReason" | "performanceScore" | "trafficLight" | "userId" | "createdAt" | "updatedAt" | "createdBy" | "updatedBy", ExtArgs["result"]["employee"]>
   export type EmployeeInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    department?: boolean | DepartmentDefaultArgs<ExtArgs>
-    position?: boolean | PositionDefaultArgs<ExtArgs>
+    department?: boolean | Employee$departmentArgs<ExtArgs>
+    position?: boolean | Employee$positionArgs<ExtArgs>
     manager?: boolean | Employee$managerArgs<ExtArgs>
     performanceRecords?: boolean | Employee$performanceRecordsArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -5515,14 +5515,14 @@ export namespace Prisma {
     _count?: boolean | EmployeeCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type EmployeeIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    department?: boolean | DepartmentDefaultArgs<ExtArgs>
-    position?: boolean | PositionDefaultArgs<ExtArgs>
+    department?: boolean | Employee$departmentArgs<ExtArgs>
+    position?: boolean | Employee$positionArgs<ExtArgs>
     manager?: boolean | Employee$managerArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
   }
   export type EmployeeIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    department?: boolean | DepartmentDefaultArgs<ExtArgs>
-    position?: boolean | PositionDefaultArgs<ExtArgs>
+    department?: boolean | Employee$departmentArgs<ExtArgs>
+    position?: boolean | Employee$positionArgs<ExtArgs>
     manager?: boolean | Employee$managerArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
   }
@@ -5530,8 +5530,8 @@ export namespace Prisma {
   export type $EmployeePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Employee"
     objects: {
-      department: Prisma.$DepartmentPayload<ExtArgs>
-      position: Prisma.$PositionPayload<ExtArgs>
+      department: Prisma.$DepartmentPayload<ExtArgs> | null
+      position: Prisma.$PositionPayload<ExtArgs> | null
       manager: Prisma.$UserPayload<ExtArgs> | null
       performanceRecords: Prisma.$EmployeePerformancePayload<ExtArgs>[]
       user: Prisma.$UserPayload<ExtArgs>
@@ -5554,8 +5554,8 @@ export namespace Prisma {
       emergencyContact: Prisma.JsonValue | null
       hireDate: Date
       terminationDate: Date | null
-      departmentId: string
-      positionId: string
+      departmentId: string | null
+      positionId: string | null
       managerId: string | null
       scheduleType: $Enums.WorkScheduleType
       hourlyRate: Prisma.Decimal | null
@@ -5965,8 +5965,8 @@ export namespace Prisma {
    */
   export interface Prisma__EmployeeClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    department<T extends DepartmentDefaultArgs<ExtArgs> = {}>(args?: Subset<T, DepartmentDefaultArgs<ExtArgs>>): Prisma__DepartmentClient<$Result.GetResult<Prisma.$DepartmentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-    position<T extends PositionDefaultArgs<ExtArgs> = {}>(args?: Subset<T, PositionDefaultArgs<ExtArgs>>): Prisma__PositionClient<$Result.GetResult<Prisma.$PositionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    department<T extends Employee$departmentArgs<ExtArgs> = {}>(args?: Subset<T, Employee$departmentArgs<ExtArgs>>): Prisma__DepartmentClient<$Result.GetResult<Prisma.$DepartmentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    position<T extends Employee$positionArgs<ExtArgs> = {}>(args?: Subset<T, Employee$positionArgs<ExtArgs>>): Prisma__PositionClient<$Result.GetResult<Prisma.$PositionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     manager<T extends Employee$managerArgs<ExtArgs> = {}>(args?: Subset<T, Employee$managerArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     performanceRecords<T extends Employee$performanceRecordsArgs<ExtArgs> = {}>(args?: Subset<T, Employee$performanceRecordsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EmployeePerformancePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
@@ -6426,6 +6426,44 @@ export namespace Prisma {
      * Limit how many Employees to delete.
      */
     limit?: number
+  }
+
+  /**
+   * Employee.department
+   */
+  export type Employee$departmentArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Department
+     */
+    select?: DepartmentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Department
+     */
+    omit?: DepartmentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DepartmentInclude<ExtArgs> | null
+    where?: DepartmentWhereInput
+  }
+
+  /**
+   * Employee.position
+   */
+  export type Employee$positionArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Position
+     */
+    select?: PositionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Position
+     */
+    omit?: PositionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PositionInclude<ExtArgs> | null
+    where?: PositionWhereInput
   }
 
   /**
@@ -34557,8 +34595,8 @@ export namespace Prisma {
     emergencyContact?: JsonNullableFilter<"Employee">
     hireDate?: DateTimeFilter<"Employee"> | Date | string
     terminationDate?: DateTimeNullableFilter<"Employee"> | Date | string | null
-    departmentId?: StringFilter<"Employee"> | string
-    positionId?: StringFilter<"Employee"> | string
+    departmentId?: StringNullableFilter<"Employee"> | string | null
+    positionId?: StringNullableFilter<"Employee"> | string | null
     managerId?: StringNullableFilter<"Employee"> | string | null
     scheduleType?: EnumWorkScheduleTypeFilter<"Employee"> | $Enums.WorkScheduleType
     hourlyRate?: DecimalNullableFilter<"Employee"> | Decimal | DecimalJsLike | number | string | null
@@ -34574,8 +34612,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Employee"> | Date | string
     createdBy?: StringNullableFilter<"Employee"> | string | null
     updatedBy?: StringNullableFilter<"Employee"> | string | null
-    department?: XOR<DepartmentScalarRelationFilter, DepartmentWhereInput>
-    position?: XOR<PositionScalarRelationFilter, PositionWhereInput>
+    department?: XOR<DepartmentNullableScalarRelationFilter, DepartmentWhereInput> | null
+    position?: XOR<PositionNullableScalarRelationFilter, PositionWhereInput> | null
     manager?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     performanceRecords?: EmployeePerformanceListRelationFilter
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
@@ -34599,8 +34637,8 @@ export namespace Prisma {
     emergencyContact?: SortOrderInput | SortOrder
     hireDate?: SortOrder
     terminationDate?: SortOrderInput | SortOrder
-    departmentId?: SortOrder
-    positionId?: SortOrder
+    departmentId?: SortOrderInput | SortOrder
+    positionId?: SortOrderInput | SortOrder
     managerId?: SortOrderInput | SortOrder
     scheduleType?: SortOrder
     hourlyRate?: SortOrderInput | SortOrder
@@ -34645,8 +34683,8 @@ export namespace Prisma {
     emergencyContact?: JsonNullableFilter<"Employee">
     hireDate?: DateTimeFilter<"Employee"> | Date | string
     terminationDate?: DateTimeNullableFilter<"Employee"> | Date | string | null
-    departmentId?: StringFilter<"Employee"> | string
-    positionId?: StringFilter<"Employee"> | string
+    departmentId?: StringNullableFilter<"Employee"> | string | null
+    positionId?: StringNullableFilter<"Employee"> | string | null
     managerId?: StringNullableFilter<"Employee"> | string | null
     scheduleType?: EnumWorkScheduleTypeFilter<"Employee"> | $Enums.WorkScheduleType
     hourlyRate?: DecimalNullableFilter<"Employee"> | Decimal | DecimalJsLike | number | string | null
@@ -34661,8 +34699,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Employee"> | Date | string
     createdBy?: StringNullableFilter<"Employee"> | string | null
     updatedBy?: StringNullableFilter<"Employee"> | string | null
-    department?: XOR<DepartmentScalarRelationFilter, DepartmentWhereInput>
-    position?: XOR<PositionScalarRelationFilter, PositionWhereInput>
+    department?: XOR<DepartmentNullableScalarRelationFilter, DepartmentWhereInput> | null
+    position?: XOR<PositionNullableScalarRelationFilter, PositionWhereInput> | null
     manager?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     performanceRecords?: EmployeePerformanceListRelationFilter
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
@@ -34686,8 +34724,8 @@ export namespace Prisma {
     emergencyContact?: SortOrderInput | SortOrder
     hireDate?: SortOrder
     terminationDate?: SortOrderInput | SortOrder
-    departmentId?: SortOrder
-    positionId?: SortOrder
+    departmentId?: SortOrderInput | SortOrder
+    positionId?: SortOrderInput | SortOrder
     managerId?: SortOrderInput | SortOrder
     scheduleType?: SortOrder
     hourlyRate?: SortOrderInput | SortOrder
@@ -34724,8 +34762,8 @@ export namespace Prisma {
     emergencyContact?: JsonNullableWithAggregatesFilter<"Employee">
     hireDate?: DateTimeWithAggregatesFilter<"Employee"> | Date | string
     terminationDate?: DateTimeNullableWithAggregatesFilter<"Employee"> | Date | string | null
-    departmentId?: StringWithAggregatesFilter<"Employee"> | string
-    positionId?: StringWithAggregatesFilter<"Employee"> | string
+    departmentId?: StringNullableWithAggregatesFilter<"Employee"> | string | null
+    positionId?: StringNullableWithAggregatesFilter<"Employee"> | string | null
     managerId?: StringNullableWithAggregatesFilter<"Employee"> | string | null
     scheduleType?: EnumWorkScheduleTypeWithAggregatesFilter<"Employee"> | $Enums.WorkScheduleType
     hourlyRate?: DecimalNullableWithAggregatesFilter<"Employee"> | Decimal | DecimalJsLike | number | string | null
@@ -36926,8 +36964,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     createdBy?: string | null
     updatedBy?: string | null
-    department: DepartmentCreateNestedOneWithoutEmployeesInput
-    position: PositionCreateNestedOneWithoutEmployeesInput
+    department?: DepartmentCreateNestedOneWithoutEmployeesInput
+    position?: PositionCreateNestedOneWithoutEmployeesInput
     manager?: UserCreateNestedOneWithoutSubordinatesInput
     performanceRecords?: EmployeePerformanceCreateNestedManyWithoutEmployeeInput
     user: UserCreateNestedOneWithoutEmployeeInput
@@ -36951,8 +36989,8 @@ export namespace Prisma {
     emergencyContact?: NullableJsonNullValueInput | InputJsonValue
     hireDate: Date | string
     terminationDate?: Date | string | null
-    departmentId: string
-    positionId: string
+    departmentId?: string | null
+    positionId?: string | null
     managerId?: string | null
     scheduleType?: $Enums.WorkScheduleType
     hourlyRate?: Decimal | DecimalJsLike | number | string | null
@@ -37002,8 +37040,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
-    department?: DepartmentUpdateOneRequiredWithoutEmployeesNestedInput
-    position?: PositionUpdateOneRequiredWithoutEmployeesNestedInput
+    department?: DepartmentUpdateOneWithoutEmployeesNestedInput
+    position?: PositionUpdateOneWithoutEmployeesNestedInput
     manager?: UserUpdateOneWithoutSubordinatesNestedInput
     performanceRecords?: EmployeePerformanceUpdateManyWithoutEmployeeNestedInput
     user?: UserUpdateOneRequiredWithoutEmployeeNestedInput
@@ -37027,8 +37065,8 @@ export namespace Prisma {
     emergencyContact?: NullableJsonNullValueInput | InputJsonValue
     hireDate?: DateTimeFieldUpdateOperationsInput | Date | string
     terminationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    departmentId?: StringFieldUpdateOperationsInput | string
-    positionId?: StringFieldUpdateOperationsInput | string
+    departmentId?: NullableStringFieldUpdateOperationsInput | string | null
+    positionId?: NullableStringFieldUpdateOperationsInput | string | null
     managerId?: NullableStringFieldUpdateOperationsInput | string | null
     scheduleType?: EnumWorkScheduleTypeFieldUpdateOperationsInput | $Enums.WorkScheduleType
     hourlyRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
@@ -37065,8 +37103,8 @@ export namespace Prisma {
     emergencyContact?: NullableJsonNullValueInput | InputJsonValue
     hireDate: Date | string
     terminationDate?: Date | string | null
-    departmentId: string
-    positionId: string
+    departmentId?: string | null
+    positionId?: string | null
     managerId?: string | null
     scheduleType?: $Enums.WorkScheduleType
     hourlyRate?: Decimal | DecimalJsLike | number | string | null
@@ -37121,8 +37159,8 @@ export namespace Prisma {
     emergencyContact?: NullableJsonNullValueInput | InputJsonValue
     hireDate?: DateTimeFieldUpdateOperationsInput | Date | string
     terminationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    departmentId?: StringFieldUpdateOperationsInput | string
-    positionId?: StringFieldUpdateOperationsInput | string
+    departmentId?: NullableStringFieldUpdateOperationsInput | string | null
+    positionId?: NullableStringFieldUpdateOperationsInput | string | null
     managerId?: NullableStringFieldUpdateOperationsInput | string | null
     scheduleType?: EnumWorkScheduleTypeFieldUpdateOperationsInput | $Enums.WorkScheduleType
     hourlyRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
@@ -39657,14 +39695,14 @@ export namespace Prisma {
     not?: NestedEnumTrafficLightNullableFilter<$PrismaModel> | $Enums.TrafficLight | null
   }
 
-  export type DepartmentScalarRelationFilter = {
-    is?: DepartmentWhereInput
-    isNot?: DepartmentWhereInput
+  export type DepartmentNullableScalarRelationFilter = {
+    is?: DepartmentWhereInput | null
+    isNot?: DepartmentWhereInput | null
   }
 
-  export type PositionScalarRelationFilter = {
-    is?: PositionWhereInput
-    isNot?: PositionWhereInput
+  export type PositionNullableScalarRelationFilter = {
+    is?: PositionWhereInput | null
+    isNot?: PositionWhereInput | null
   }
 
   export type UserNullableScalarRelationFilter = {
@@ -40027,6 +40065,11 @@ export namespace Prisma {
     _max?: NestedEnumTrafficLightFilter<$PrismaModel>
   }
 
+  export type DepartmentScalarRelationFilter = {
+    is?: DepartmentWhereInput
+    isNot?: DepartmentWhereInput
+  }
+
   export type PerformanceThresholdCountOrderByAggregateInput = {
     id?: SortOrder
     departmentId?: SortOrder
@@ -40082,11 +40125,6 @@ export namespace Prisma {
     yellowMax?: SortOrder
     greenMin?: SortOrder
     greenMax?: SortOrder
-  }
-
-  export type DepartmentNullableScalarRelationFilter = {
-    is?: DepartmentWhereInput | null
-    isNot?: DepartmentWhereInput | null
   }
 
   export type DepartmentListRelationFilter = {
@@ -41735,18 +41773,22 @@ export namespace Prisma {
     set?: $Enums.TrafficLight | null
   }
 
-  export type DepartmentUpdateOneRequiredWithoutEmployeesNestedInput = {
+  export type DepartmentUpdateOneWithoutEmployeesNestedInput = {
     create?: XOR<DepartmentCreateWithoutEmployeesInput, DepartmentUncheckedCreateWithoutEmployeesInput>
     connectOrCreate?: DepartmentCreateOrConnectWithoutEmployeesInput
     upsert?: DepartmentUpsertWithoutEmployeesInput
+    disconnect?: DepartmentWhereInput | boolean
+    delete?: DepartmentWhereInput | boolean
     connect?: DepartmentWhereUniqueInput
     update?: XOR<XOR<DepartmentUpdateToOneWithWhereWithoutEmployeesInput, DepartmentUpdateWithoutEmployeesInput>, DepartmentUncheckedUpdateWithoutEmployeesInput>
   }
 
-  export type PositionUpdateOneRequiredWithoutEmployeesNestedInput = {
+  export type PositionUpdateOneWithoutEmployeesNestedInput = {
     create?: XOR<PositionCreateWithoutEmployeesInput, PositionUncheckedCreateWithoutEmployeesInput>
     connectOrCreate?: PositionCreateOrConnectWithoutEmployeesInput
     upsert?: PositionUpsertWithoutEmployeesInput
+    disconnect?: PositionWhereInput | boolean
+    delete?: PositionWhereInput | boolean
     connect?: PositionWhereUniqueInput
     update?: XOR<XOR<PositionUpdateToOneWithWhereWithoutEmployeesInput, PositionUpdateWithoutEmployeesInput>, PositionUncheckedUpdateWithoutEmployeesInput>
   }
@@ -43746,8 +43788,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     createdBy?: string | null
     updatedBy?: string | null
-    department: DepartmentCreateNestedOneWithoutEmployeesInput
-    position: PositionCreateNestedOneWithoutEmployeesInput
+    department?: DepartmentCreateNestedOneWithoutEmployeesInput
+    position?: PositionCreateNestedOneWithoutEmployeesInput
     manager?: UserCreateNestedOneWithoutSubordinatesInput
     performanceRecords?: EmployeePerformanceCreateNestedManyWithoutEmployeeInput
     qualifications?: EmployeeQualificationCreateNestedManyWithoutEmployeeInput
@@ -43770,8 +43812,8 @@ export namespace Prisma {
     emergencyContact?: NullableJsonNullValueInput | InputJsonValue
     hireDate: Date | string
     terminationDate?: Date | string | null
-    departmentId: string
-    positionId: string
+    departmentId?: string | null
+    positionId?: string | null
     managerId?: string | null
     scheduleType?: $Enums.WorkScheduleType
     hourlyRate?: Decimal | DecimalJsLike | number | string | null
@@ -43863,8 +43905,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     createdBy?: string | null
     updatedBy?: string | null
-    department: DepartmentCreateNestedOneWithoutEmployeesInput
-    position: PositionCreateNestedOneWithoutEmployeesInput
+    department?: DepartmentCreateNestedOneWithoutEmployeesInput
+    position?: PositionCreateNestedOneWithoutEmployeesInput
     performanceRecords?: EmployeePerformanceCreateNestedManyWithoutEmployeeInput
     user: UserCreateNestedOneWithoutEmployeeInput
     qualifications?: EmployeeQualificationCreateNestedManyWithoutEmployeeInput
@@ -43887,8 +43929,8 @@ export namespace Prisma {
     emergencyContact?: NullableJsonNullValueInput | InputJsonValue
     hireDate: Date | string
     terminationDate?: Date | string | null
-    departmentId: string
-    positionId: string
+    departmentId?: string | null
+    positionId?: string | null
     scheduleType?: $Enums.WorkScheduleType
     hourlyRate?: Decimal | DecimalJsLike | number | string | null
     salary?: Decimal | DecimalJsLike | number | string | null
@@ -44017,8 +44059,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
-    department?: DepartmentUpdateOneRequiredWithoutEmployeesNestedInput
-    position?: PositionUpdateOneRequiredWithoutEmployeesNestedInput
+    department?: DepartmentUpdateOneWithoutEmployeesNestedInput
+    position?: PositionUpdateOneWithoutEmployeesNestedInput
     manager?: UserUpdateOneWithoutSubordinatesNestedInput
     performanceRecords?: EmployeePerformanceUpdateManyWithoutEmployeeNestedInput
     qualifications?: EmployeeQualificationUpdateManyWithoutEmployeeNestedInput
@@ -44041,8 +44083,8 @@ export namespace Prisma {
     emergencyContact?: NullableJsonNullValueInput | InputJsonValue
     hireDate?: DateTimeFieldUpdateOperationsInput | Date | string
     terminationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    departmentId?: StringFieldUpdateOperationsInput | string
-    positionId?: StringFieldUpdateOperationsInput | string
+    departmentId?: NullableStringFieldUpdateOperationsInput | string | null
+    positionId?: NullableStringFieldUpdateOperationsInput | string | null
     managerId?: NullableStringFieldUpdateOperationsInput | string | null
     scheduleType?: EnumWorkScheduleTypeFieldUpdateOperationsInput | $Enums.WorkScheduleType
     hourlyRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
@@ -44131,8 +44173,8 @@ export namespace Prisma {
     emergencyContact?: JsonNullableFilter<"Employee">
     hireDate?: DateTimeFilter<"Employee"> | Date | string
     terminationDate?: DateTimeNullableFilter<"Employee"> | Date | string | null
-    departmentId?: StringFilter<"Employee"> | string
-    positionId?: StringFilter<"Employee"> | string
+    departmentId?: StringNullableFilter<"Employee"> | string | null
+    positionId?: StringNullableFilter<"Employee"> | string | null
     managerId?: StringNullableFilter<"Employee"> | string | null
     scheduleType?: EnumWorkScheduleTypeFilter<"Employee"> | $Enums.WorkScheduleType
     hourlyRate?: DecimalNullableFilter<"Employee"> | Decimal | DecimalJsLike | number | string | null
@@ -45186,8 +45228,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     createdBy?: string | null
     updatedBy?: string | null
-    department: DepartmentCreateNestedOneWithoutEmployeesInput
-    position: PositionCreateNestedOneWithoutEmployeesInput
+    department?: DepartmentCreateNestedOneWithoutEmployeesInput
+    position?: PositionCreateNestedOneWithoutEmployeesInput
     manager?: UserCreateNestedOneWithoutSubordinatesInput
     user: UserCreateNestedOneWithoutEmployeeInput
     qualifications?: EmployeeQualificationCreateNestedManyWithoutEmployeeInput
@@ -45210,8 +45252,8 @@ export namespace Prisma {
     emergencyContact?: NullableJsonNullValueInput | InputJsonValue
     hireDate: Date | string
     terminationDate?: Date | string | null
-    departmentId: string
-    positionId: string
+    departmentId?: string | null
+    positionId?: string | null
     managerId?: string | null
     scheduleType?: $Enums.WorkScheduleType
     hourlyRate?: Decimal | DecimalJsLike | number | string | null
@@ -45333,8 +45375,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
-    department?: DepartmentUpdateOneRequiredWithoutEmployeesNestedInput
-    position?: PositionUpdateOneRequiredWithoutEmployeesNestedInput
+    department?: DepartmentUpdateOneWithoutEmployeesNestedInput
+    position?: PositionUpdateOneWithoutEmployeesNestedInput
     manager?: UserUpdateOneWithoutSubordinatesNestedInput
     user?: UserUpdateOneRequiredWithoutEmployeeNestedInput
     qualifications?: EmployeeQualificationUpdateManyWithoutEmployeeNestedInput
@@ -45357,8 +45399,8 @@ export namespace Prisma {
     emergencyContact?: NullableJsonNullValueInput | InputJsonValue
     hireDate?: DateTimeFieldUpdateOperationsInput | Date | string
     terminationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    departmentId?: StringFieldUpdateOperationsInput | string
-    positionId?: StringFieldUpdateOperationsInput | string
+    departmentId?: NullableStringFieldUpdateOperationsInput | string | null
+    positionId?: NullableStringFieldUpdateOperationsInput | string | null
     managerId?: NullableStringFieldUpdateOperationsInput | string | null
     scheduleType?: EnumWorkScheduleTypeFieldUpdateOperationsInput | $Enums.WorkScheduleType
     hourlyRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
@@ -45613,7 +45655,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     createdBy?: string | null
     updatedBy?: string | null
-    position: PositionCreateNestedOneWithoutEmployeesInput
+    position?: PositionCreateNestedOneWithoutEmployeesInput
     manager?: UserCreateNestedOneWithoutSubordinatesInput
     performanceRecords?: EmployeePerformanceCreateNestedManyWithoutEmployeeInput
     user: UserCreateNestedOneWithoutEmployeeInput
@@ -45637,7 +45679,7 @@ export namespace Prisma {
     emergencyContact?: NullableJsonNullValueInput | InputJsonValue
     hireDate: Date | string
     terminationDate?: Date | string | null
-    positionId: string
+    positionId?: string | null
     managerId?: string | null
     scheduleType?: $Enums.WorkScheduleType
     hourlyRate?: Decimal | DecimalJsLike | number | string | null
@@ -45947,7 +45989,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     createdBy?: string | null
     updatedBy?: string | null
-    department: DepartmentCreateNestedOneWithoutEmployeesInput
+    department?: DepartmentCreateNestedOneWithoutEmployeesInput
     manager?: UserCreateNestedOneWithoutSubordinatesInput
     performanceRecords?: EmployeePerformanceCreateNestedManyWithoutEmployeeInput
     user: UserCreateNestedOneWithoutEmployeeInput
@@ -45971,7 +46013,7 @@ export namespace Prisma {
     emergencyContact?: NullableJsonNullValueInput | InputJsonValue
     hireDate: Date | string
     terminationDate?: Date | string | null
-    departmentId: string
+    departmentId?: string | null
     managerId?: string | null
     scheduleType?: $Enums.WorkScheduleType
     hourlyRate?: Decimal | DecimalJsLike | number | string | null
@@ -46814,8 +46856,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     createdBy?: string | null
     updatedBy?: string | null
-    department: DepartmentCreateNestedOneWithoutEmployeesInput
-    position: PositionCreateNestedOneWithoutEmployeesInput
+    department?: DepartmentCreateNestedOneWithoutEmployeesInput
+    position?: PositionCreateNestedOneWithoutEmployeesInput
     manager?: UserCreateNestedOneWithoutSubordinatesInput
     performanceRecords?: EmployeePerformanceCreateNestedManyWithoutEmployeeInput
     user: UserCreateNestedOneWithoutEmployeeInput
@@ -46838,8 +46880,8 @@ export namespace Prisma {
     emergencyContact?: NullableJsonNullValueInput | InputJsonValue
     hireDate: Date | string
     terminationDate?: Date | string | null
-    departmentId: string
-    positionId: string
+    departmentId?: string | null
+    positionId?: string | null
     managerId?: string | null
     scheduleType?: $Enums.WorkScheduleType
     hourlyRate?: Decimal | DecimalJsLike | number | string | null
@@ -46935,8 +46977,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
-    department?: DepartmentUpdateOneRequiredWithoutEmployeesNestedInput
-    position?: PositionUpdateOneRequiredWithoutEmployeesNestedInput
+    department?: DepartmentUpdateOneWithoutEmployeesNestedInput
+    position?: PositionUpdateOneWithoutEmployeesNestedInput
     manager?: UserUpdateOneWithoutSubordinatesNestedInput
     performanceRecords?: EmployeePerformanceUpdateManyWithoutEmployeeNestedInput
     user?: UserUpdateOneRequiredWithoutEmployeeNestedInput
@@ -46959,8 +47001,8 @@ export namespace Prisma {
     emergencyContact?: NullableJsonNullValueInput | InputJsonValue
     hireDate?: DateTimeFieldUpdateOperationsInput | Date | string
     terminationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    departmentId?: StringFieldUpdateOperationsInput | string
-    positionId?: StringFieldUpdateOperationsInput | string
+    departmentId?: NullableStringFieldUpdateOperationsInput | string | null
+    positionId?: NullableStringFieldUpdateOperationsInput | string | null
     managerId?: NullableStringFieldUpdateOperationsInput | string | null
     scheduleType?: EnumWorkScheduleTypeFieldUpdateOperationsInput | $Enums.WorkScheduleType
     hourlyRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
@@ -47285,8 +47327,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     createdBy?: string | null
     updatedBy?: string | null
-    department: DepartmentCreateNestedOneWithoutEmployeesInput
-    position: PositionCreateNestedOneWithoutEmployeesInput
+    department?: DepartmentCreateNestedOneWithoutEmployeesInput
+    position?: PositionCreateNestedOneWithoutEmployeesInput
     manager?: UserCreateNestedOneWithoutSubordinatesInput
     performanceRecords?: EmployeePerformanceCreateNestedManyWithoutEmployeeInput
     user: UserCreateNestedOneWithoutEmployeeInput
@@ -47309,8 +47351,8 @@ export namespace Prisma {
     emergencyContact?: NullableJsonNullValueInput | InputJsonValue
     hireDate: Date | string
     terminationDate?: Date | string | null
-    departmentId: string
-    positionId: string
+    departmentId?: string | null
+    positionId?: string | null
     managerId?: string | null
     scheduleType?: $Enums.WorkScheduleType
     hourlyRate?: Decimal | DecimalJsLike | number | string | null
@@ -47484,8 +47526,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
-    department?: DepartmentUpdateOneRequiredWithoutEmployeesNestedInput
-    position?: PositionUpdateOneRequiredWithoutEmployeesNestedInput
+    department?: DepartmentUpdateOneWithoutEmployeesNestedInput
+    position?: PositionUpdateOneWithoutEmployeesNestedInput
     manager?: UserUpdateOneWithoutSubordinatesNestedInput
     performanceRecords?: EmployeePerformanceUpdateManyWithoutEmployeeNestedInput
     user?: UserUpdateOneRequiredWithoutEmployeeNestedInput
@@ -47508,8 +47550,8 @@ export namespace Prisma {
     emergencyContact?: NullableJsonNullValueInput | InputJsonValue
     hireDate?: DateTimeFieldUpdateOperationsInput | Date | string
     terminationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    departmentId?: StringFieldUpdateOperationsInput | string
-    positionId?: StringFieldUpdateOperationsInput | string
+    departmentId?: NullableStringFieldUpdateOperationsInput | string | null
+    positionId?: NullableStringFieldUpdateOperationsInput | string | null
     managerId?: NullableStringFieldUpdateOperationsInput | string | null
     scheduleType?: EnumWorkScheduleTypeFieldUpdateOperationsInput | $Enums.WorkScheduleType
     hourlyRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
@@ -47629,8 +47671,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     createdBy?: string | null
     updatedBy?: string | null
-    department: DepartmentCreateNestedOneWithoutEmployeesInput
-    position: PositionCreateNestedOneWithoutEmployeesInput
+    department?: DepartmentCreateNestedOneWithoutEmployeesInput
+    position?: PositionCreateNestedOneWithoutEmployeesInput
     manager?: UserCreateNestedOneWithoutSubordinatesInput
     performanceRecords?: EmployeePerformanceCreateNestedManyWithoutEmployeeInput
     user: UserCreateNestedOneWithoutEmployeeInput
@@ -47653,8 +47695,8 @@ export namespace Prisma {
     emergencyContact?: NullableJsonNullValueInput | InputJsonValue
     hireDate: Date | string
     terminationDate?: Date | string | null
-    departmentId: string
-    positionId: string
+    departmentId?: string | null
+    positionId?: string | null
     managerId?: string | null
     scheduleType?: $Enums.WorkScheduleType
     hourlyRate?: Decimal | DecimalJsLike | number | string | null
@@ -47780,8 +47822,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
-    department?: DepartmentUpdateOneRequiredWithoutEmployeesNestedInput
-    position?: PositionUpdateOneRequiredWithoutEmployeesNestedInput
+    department?: DepartmentUpdateOneWithoutEmployeesNestedInput
+    position?: PositionUpdateOneWithoutEmployeesNestedInput
     manager?: UserUpdateOneWithoutSubordinatesNestedInput
     performanceRecords?: EmployeePerformanceUpdateManyWithoutEmployeeNestedInput
     user?: UserUpdateOneRequiredWithoutEmployeeNestedInput
@@ -47804,8 +47846,8 @@ export namespace Prisma {
     emergencyContact?: NullableJsonNullValueInput | InputJsonValue
     hireDate?: DateTimeFieldUpdateOperationsInput | Date | string
     terminationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    departmentId?: StringFieldUpdateOperationsInput | string
-    positionId?: StringFieldUpdateOperationsInput | string
+    departmentId?: NullableStringFieldUpdateOperationsInput | string | null
+    positionId?: NullableStringFieldUpdateOperationsInput | string | null
     managerId?: NullableStringFieldUpdateOperationsInput | string | null
     scheduleType?: EnumWorkScheduleTypeFieldUpdateOperationsInput | $Enums.WorkScheduleType
     hourlyRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
@@ -47854,8 +47896,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     createdBy?: string | null
     updatedBy?: string | null
-    department: DepartmentCreateNestedOneWithoutEmployeesInput
-    position: PositionCreateNestedOneWithoutEmployeesInput
+    department?: DepartmentCreateNestedOneWithoutEmployeesInput
+    position?: PositionCreateNestedOneWithoutEmployeesInput
     manager?: UserCreateNestedOneWithoutSubordinatesInput
     performanceRecords?: EmployeePerformanceCreateNestedManyWithoutEmployeeInput
     user: UserCreateNestedOneWithoutEmployeeInput
@@ -47878,8 +47920,8 @@ export namespace Prisma {
     emergencyContact?: NullableJsonNullValueInput | InputJsonValue
     hireDate: Date | string
     terminationDate?: Date | string | null
-    departmentId: string
-    positionId: string
+    departmentId?: string | null
+    positionId?: string | null
     managerId?: string | null
     scheduleType?: $Enums.WorkScheduleType
     hourlyRate?: Decimal | DecimalJsLike | number | string | null
@@ -47944,8 +47986,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
-    department?: DepartmentUpdateOneRequiredWithoutEmployeesNestedInput
-    position?: PositionUpdateOneRequiredWithoutEmployeesNestedInput
+    department?: DepartmentUpdateOneWithoutEmployeesNestedInput
+    position?: PositionUpdateOneWithoutEmployeesNestedInput
     manager?: UserUpdateOneWithoutSubordinatesNestedInput
     performanceRecords?: EmployeePerformanceUpdateManyWithoutEmployeeNestedInput
     user?: UserUpdateOneRequiredWithoutEmployeeNestedInput
@@ -47968,8 +48010,8 @@ export namespace Prisma {
     emergencyContact?: NullableJsonNullValueInput | InputJsonValue
     hireDate?: DateTimeFieldUpdateOperationsInput | Date | string
     terminationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    departmentId?: StringFieldUpdateOperationsInput | string
-    positionId?: StringFieldUpdateOperationsInput | string
+    departmentId?: NullableStringFieldUpdateOperationsInput | string | null
+    positionId?: NullableStringFieldUpdateOperationsInput | string | null
     managerId?: NullableStringFieldUpdateOperationsInput | string | null
     scheduleType?: EnumWorkScheduleTypeFieldUpdateOperationsInput | $Enums.WorkScheduleType
     hourlyRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
@@ -48073,8 +48115,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     createdBy?: string | null
     updatedBy?: string | null
-    department: DepartmentCreateNestedOneWithoutEmployeesInput
-    position: PositionCreateNestedOneWithoutEmployeesInput
+    department?: DepartmentCreateNestedOneWithoutEmployeesInput
+    position?: PositionCreateNestedOneWithoutEmployeesInput
     manager?: UserCreateNestedOneWithoutSubordinatesInput
     performanceRecords?: EmployeePerformanceCreateNestedManyWithoutEmployeeInput
     user: UserCreateNestedOneWithoutEmployeeInput
@@ -48097,8 +48139,8 @@ export namespace Prisma {
     emergencyContact?: NullableJsonNullValueInput | InputJsonValue
     hireDate: Date | string
     terminationDate?: Date | string | null
-    departmentId: string
-    positionId: string
+    departmentId?: string | null
+    positionId?: string | null
     managerId?: string | null
     scheduleType?: $Enums.WorkScheduleType
     hourlyRate?: Decimal | DecimalJsLike | number | string | null
@@ -48259,8 +48301,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
-    department?: DepartmentUpdateOneRequiredWithoutEmployeesNestedInput
-    position?: PositionUpdateOneRequiredWithoutEmployeesNestedInput
+    department?: DepartmentUpdateOneWithoutEmployeesNestedInput
+    position?: PositionUpdateOneWithoutEmployeesNestedInput
     manager?: UserUpdateOneWithoutSubordinatesNestedInput
     performanceRecords?: EmployeePerformanceUpdateManyWithoutEmployeeNestedInput
     user?: UserUpdateOneRequiredWithoutEmployeeNestedInput
@@ -48283,8 +48325,8 @@ export namespace Prisma {
     emergencyContact?: NullableJsonNullValueInput | InputJsonValue
     hireDate?: DateTimeFieldUpdateOperationsInput | Date | string
     terminationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    departmentId?: StringFieldUpdateOperationsInput | string
-    positionId?: StringFieldUpdateOperationsInput | string
+    departmentId?: NullableStringFieldUpdateOperationsInput | string | null
+    positionId?: NullableStringFieldUpdateOperationsInput | string | null
     managerId?: NullableStringFieldUpdateOperationsInput | string | null
     scheduleType?: EnumWorkScheduleTypeFieldUpdateOperationsInput | $Enums.WorkScheduleType
     hourlyRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
@@ -48374,8 +48416,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     createdBy?: string | null
     updatedBy?: string | null
-    department: DepartmentCreateNestedOneWithoutEmployeesInput
-    position: PositionCreateNestedOneWithoutEmployeesInput
+    department?: DepartmentCreateNestedOneWithoutEmployeesInput
+    position?: PositionCreateNestedOneWithoutEmployeesInput
     manager?: UserCreateNestedOneWithoutSubordinatesInput
     performanceRecords?: EmployeePerformanceCreateNestedManyWithoutEmployeeInput
     user: UserCreateNestedOneWithoutEmployeeInput
@@ -48398,8 +48440,8 @@ export namespace Prisma {
     emergencyContact?: NullableJsonNullValueInput | InputJsonValue
     hireDate: Date | string
     terminationDate?: Date | string | null
-    departmentId: string
-    positionId: string
+    departmentId?: string | null
+    positionId?: string | null
     managerId?: string | null
     scheduleType?: $Enums.WorkScheduleType
     hourlyRate?: Decimal | DecimalJsLike | number | string | null
@@ -48464,8 +48506,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
-    department?: DepartmentUpdateOneRequiredWithoutEmployeesNestedInput
-    position?: PositionUpdateOneRequiredWithoutEmployeesNestedInput
+    department?: DepartmentUpdateOneWithoutEmployeesNestedInput
+    position?: PositionUpdateOneWithoutEmployeesNestedInput
     manager?: UserUpdateOneWithoutSubordinatesNestedInput
     performanceRecords?: EmployeePerformanceUpdateManyWithoutEmployeeNestedInput
     user?: UserUpdateOneRequiredWithoutEmployeeNestedInput
@@ -48488,8 +48530,8 @@ export namespace Prisma {
     emergencyContact?: NullableJsonNullValueInput | InputJsonValue
     hireDate?: DateTimeFieldUpdateOperationsInput | Date | string
     terminationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    departmentId?: StringFieldUpdateOperationsInput | string
-    positionId?: StringFieldUpdateOperationsInput | string
+    departmentId?: NullableStringFieldUpdateOperationsInput | string | null
+    positionId?: NullableStringFieldUpdateOperationsInput | string | null
     managerId?: NullableStringFieldUpdateOperationsInput | string | null
     scheduleType?: EnumWorkScheduleTypeFieldUpdateOperationsInput | $Enums.WorkScheduleType
     hourlyRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
@@ -49035,8 +49077,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     createdBy?: string | null
     updatedBy?: string | null
-    department: DepartmentCreateNestedOneWithoutEmployeesInput
-    position: PositionCreateNestedOneWithoutEmployeesInput
+    department?: DepartmentCreateNestedOneWithoutEmployeesInput
+    position?: PositionCreateNestedOneWithoutEmployeesInput
     manager?: UserCreateNestedOneWithoutSubordinatesInput
     performanceRecords?: EmployeePerformanceCreateNestedManyWithoutEmployeeInput
     user: UserCreateNestedOneWithoutEmployeeInput
@@ -49059,8 +49101,8 @@ export namespace Prisma {
     emergencyContact?: NullableJsonNullValueInput | InputJsonValue
     hireDate: Date | string
     terminationDate?: Date | string | null
-    departmentId: string
-    positionId: string
+    departmentId?: string | null
+    positionId?: string | null
     managerId?: string | null
     scheduleType?: $Enums.WorkScheduleType
     hourlyRate?: Decimal | DecimalJsLike | number | string | null
@@ -49221,8 +49263,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
-    department?: DepartmentUpdateOneRequiredWithoutEmployeesNestedInput
-    position?: PositionUpdateOneRequiredWithoutEmployeesNestedInput
+    department?: DepartmentUpdateOneWithoutEmployeesNestedInput
+    position?: PositionUpdateOneWithoutEmployeesNestedInput
     manager?: UserUpdateOneWithoutSubordinatesNestedInput
     performanceRecords?: EmployeePerformanceUpdateManyWithoutEmployeeNestedInput
     user?: UserUpdateOneRequiredWithoutEmployeeNestedInput
@@ -49245,8 +49287,8 @@ export namespace Prisma {
     emergencyContact?: NullableJsonNullValueInput | InputJsonValue
     hireDate?: DateTimeFieldUpdateOperationsInput | Date | string
     terminationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    departmentId?: StringFieldUpdateOperationsInput | string
-    positionId?: StringFieldUpdateOperationsInput | string
+    departmentId?: NullableStringFieldUpdateOperationsInput | string | null
+    positionId?: NullableStringFieldUpdateOperationsInput | string | null
     managerId?: NullableStringFieldUpdateOperationsInput | string | null
     scheduleType?: EnumWorkScheduleTypeFieldUpdateOperationsInput | $Enums.WorkScheduleType
     hourlyRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
@@ -49404,8 +49446,8 @@ export namespace Prisma {
     emergencyContact?: NullableJsonNullValueInput | InputJsonValue
     hireDate: Date | string
     terminationDate?: Date | string | null
-    departmentId: string
-    positionId: string
+    departmentId?: string | null
+    positionId?: string | null
     scheduleType?: $Enums.WorkScheduleType
     hourlyRate?: Decimal | DecimalJsLike | number | string | null
     salary?: Decimal | DecimalJsLike | number | string | null
@@ -49500,8 +49542,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
-    department?: DepartmentUpdateOneRequiredWithoutEmployeesNestedInput
-    position?: PositionUpdateOneRequiredWithoutEmployeesNestedInput
+    department?: DepartmentUpdateOneWithoutEmployeesNestedInput
+    position?: PositionUpdateOneWithoutEmployeesNestedInput
     performanceRecords?: EmployeePerformanceUpdateManyWithoutEmployeeNestedInput
     user?: UserUpdateOneRequiredWithoutEmployeeNestedInput
     qualifications?: EmployeeQualificationUpdateManyWithoutEmployeeNestedInput
@@ -49524,8 +49566,8 @@ export namespace Prisma {
     emergencyContact?: NullableJsonNullValueInput | InputJsonValue
     hireDate?: DateTimeFieldUpdateOperationsInput | Date | string
     terminationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    departmentId?: StringFieldUpdateOperationsInput | string
-    positionId?: StringFieldUpdateOperationsInput | string
+    departmentId?: NullableStringFieldUpdateOperationsInput | string | null
+    positionId?: NullableStringFieldUpdateOperationsInput | string | null
     scheduleType?: EnumWorkScheduleTypeFieldUpdateOperationsInput | $Enums.WorkScheduleType
     hourlyRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     salary?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
@@ -49561,8 +49603,8 @@ export namespace Prisma {
     emergencyContact?: NullableJsonNullValueInput | InputJsonValue
     hireDate?: DateTimeFieldUpdateOperationsInput | Date | string
     terminationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    departmentId?: StringFieldUpdateOperationsInput | string
-    positionId?: StringFieldUpdateOperationsInput | string
+    departmentId?: NullableStringFieldUpdateOperationsInput | string | null
+    positionId?: NullableStringFieldUpdateOperationsInput | string | null
     scheduleType?: EnumWorkScheduleTypeFieldUpdateOperationsInput | $Enums.WorkScheduleType
     hourlyRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     salary?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
@@ -50098,7 +50140,7 @@ export namespace Prisma {
     emergencyContact?: NullableJsonNullValueInput | InputJsonValue
     hireDate: Date | string
     terminationDate?: Date | string | null
-    positionId: string
+    positionId?: string | null
     managerId?: string | null
     scheduleType?: $Enums.WorkScheduleType
     hourlyRate?: Decimal | DecimalJsLike | number | string | null
@@ -50190,7 +50232,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
-    position?: PositionUpdateOneRequiredWithoutEmployeesNestedInput
+    position?: PositionUpdateOneWithoutEmployeesNestedInput
     manager?: UserUpdateOneWithoutSubordinatesNestedInput
     performanceRecords?: EmployeePerformanceUpdateManyWithoutEmployeeNestedInput
     user?: UserUpdateOneRequiredWithoutEmployeeNestedInput
@@ -50214,7 +50256,7 @@ export namespace Prisma {
     emergencyContact?: NullableJsonNullValueInput | InputJsonValue
     hireDate?: DateTimeFieldUpdateOperationsInput | Date | string
     terminationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    positionId?: StringFieldUpdateOperationsInput | string
+    positionId?: NullableStringFieldUpdateOperationsInput | string | null
     managerId?: NullableStringFieldUpdateOperationsInput | string | null
     scheduleType?: EnumWorkScheduleTypeFieldUpdateOperationsInput | $Enums.WorkScheduleType
     hourlyRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
@@ -50251,7 +50293,7 @@ export namespace Prisma {
     emergencyContact?: NullableJsonNullValueInput | InputJsonValue
     hireDate?: DateTimeFieldUpdateOperationsInput | Date | string
     terminationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    positionId?: StringFieldUpdateOperationsInput | string
+    positionId?: NullableStringFieldUpdateOperationsInput | string | null
     managerId?: NullableStringFieldUpdateOperationsInput | string | null
     scheduleType?: EnumWorkScheduleTypeFieldUpdateOperationsInput | $Enums.WorkScheduleType
     hourlyRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
@@ -50318,7 +50360,7 @@ export namespace Prisma {
     emergencyContact?: NullableJsonNullValueInput | InputJsonValue
     hireDate: Date | string
     terminationDate?: Date | string | null
-    departmentId: string
+    departmentId?: string | null
     managerId?: string | null
     scheduleType?: $Enums.WorkScheduleType
     hourlyRate?: Decimal | DecimalJsLike | number | string | null
@@ -50360,7 +50402,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
-    department?: DepartmentUpdateOneRequiredWithoutEmployeesNestedInput
+    department?: DepartmentUpdateOneWithoutEmployeesNestedInput
     manager?: UserUpdateOneWithoutSubordinatesNestedInput
     performanceRecords?: EmployeePerformanceUpdateManyWithoutEmployeeNestedInput
     user?: UserUpdateOneRequiredWithoutEmployeeNestedInput
@@ -50384,7 +50426,7 @@ export namespace Prisma {
     emergencyContact?: NullableJsonNullValueInput | InputJsonValue
     hireDate?: DateTimeFieldUpdateOperationsInput | Date | string
     terminationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    departmentId?: StringFieldUpdateOperationsInput | string
+    departmentId?: NullableStringFieldUpdateOperationsInput | string | null
     managerId?: NullableStringFieldUpdateOperationsInput | string | null
     scheduleType?: EnumWorkScheduleTypeFieldUpdateOperationsInput | $Enums.WorkScheduleType
     hourlyRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
@@ -50421,7 +50463,7 @@ export namespace Prisma {
     emergencyContact?: NullableJsonNullValueInput | InputJsonValue
     hireDate?: DateTimeFieldUpdateOperationsInput | Date | string
     terminationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    departmentId?: StringFieldUpdateOperationsInput | string
+    departmentId?: NullableStringFieldUpdateOperationsInput | string | null
     managerId?: NullableStringFieldUpdateOperationsInput | string | null
     scheduleType?: EnumWorkScheduleTypeFieldUpdateOperationsInput | $Enums.WorkScheduleType
     hourlyRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
