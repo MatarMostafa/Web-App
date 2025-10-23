@@ -17,14 +17,24 @@ export const generateTokens = (userId: string, email: string, role: any) => {
 };
 
 export const register = async (userData: any) => {
-  const { email, username, password, role = "EMPLOYEE" } = userData;
+  const { name, email, username, password, role = "EMPLOYEE" } = userData;
 
-  const existingUser = await prisma.user.findFirst({
-    where: { OR: [{ email }, { username }] },
+  // Check for existing email
+  const existingEmail = await prisma.user.findUnique({
+    where: { email },
   });
 
-  if (existingUser) {
-    throw new Error("User already exists");
+  if (existingEmail) {
+    throw new Error("Email already exists");
+  }
+
+  // Check for existing username
+  const existingUsername = await prisma.user.findUnique({
+    where: { username },
+  });
+
+  if (existingUsername) {
+    throw new Error("Username is not available");
   }
 
   const hashedPassword = await bcrypt.hash(password, 12);
@@ -38,6 +48,21 @@ export const register = async (userData: any) => {
       isActive: false,
     },
   });
+
+  // Create employee record if role is EMPLOYEE
+  if (role === "EMPLOYEE") {
+    await prisma.employee.create({
+      data: {
+        userId: user.id,
+        firstName: name.split(' ')[0] || name,
+        lastName: name.split(' ').slice(1).join(' ') || '',
+        employeeCode: `EMP${Date.now().toString().slice(-6)}`,
+        hireDate: new Date(),
+        isAvailable: true,
+        priority: 1,
+      },
+    });
+  }
 
   try {
     await sendEmail({

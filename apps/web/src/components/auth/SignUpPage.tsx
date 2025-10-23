@@ -17,20 +17,30 @@ export default function SignUpPage() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
+    name: "",
     userName: "",
     email: "",
     password: "",
   });
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({
+    name: "",
     userName: "",
     email: "",
     password: "",
   });
 
   // Validation functions
-  const validateFullName = (name: string) => {
-    if (!name || name.length < 3) return "Name must be at least 3 characters";
+  const validateName = (name: string) => {
+    if (!name || name.length < 2) return "Name must be at least 2 characters";
+    if (!/^[a-zA-Z\s]+$/.test(name)) return "Name can only contain letters and spaces";
+    return "";
+  };
+
+  const validateUsername = (username: string) => {
+    if (!username || username.length < 3) return "Username must be at least 3 characters";
+    if (!/^[a-zA-Z0-9._-]+$/.test(username)) return "Username can only contain letters, numbers, dots, hyphens, and underscores";
+    if (/\s/.test(username)) return "Username cannot contain spaces";
     return "";
   };
 
@@ -49,7 +59,8 @@ export default function SignUpPage() {
 
   // Check if form is valid
   const isFormValid =
-    (formData.userName || "").length >= 3 &&
+    validateName(formData.name || "") === "" &&
+    validateUsername(formData.userName || "") === "" &&
     validateEmail(formData.email || "") === "" &&
     (formData.password || "").length >= 8;
 
@@ -59,6 +70,7 @@ export default function SignUpPage() {
 
     try {
       await api.register({
+        name: formData.name,
         email: formData.email,
         username: formData.userName,
         password: formData.password,
@@ -81,8 +93,10 @@ export default function SignUpPage() {
     // Real-time validation - only show errors if user has started typing
     let error = "";
     if (value.length > 0) {
-      if (field === "userName") {
-        error = validateFullName(value);
+      if (field === "name") {
+        error = validateName(value);
+      } else if (field === "userName") {
+        error = validateUsername(value);
       } else if (field === "email") {
         error = validateEmail(value);
       } else if (field === "password") {
@@ -126,15 +140,37 @@ export default function SignUpPage() {
             {/* Sign Up Form */}
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
+                <Label htmlFor="name">Full Name</Label>
+                <Input
+                  id="name"
+                  type="text"
+                  placeholder="Enter your full name"
+                  value={formData.name}
+                  onChange={(e) => {
+                    const value = e.target.value.replace(/[^a-zA-Z\s]/g, '');
+                    handleInputChange("name", value);
+                  }}
+                  className={`rounded-xl border-border/50 focus:border-primary ${
+                    errors.name ? "border-red-500" : ""
+                  }`}
+                  required
+                />
+                {errors.name && (
+                  <p className="text-sm text-red-500">{errors.name}</p>
+                )}
+              </div>
+
+              <div className="space-y-2">
                 <Label htmlFor="userName">Username</Label>
                 <Input
                   id="userName"
                   type="text"
                   placeholder="Enter your username"
                   value={formData.userName}
-                  onChange={(e) =>
-                    handleInputChange("userName", e.target.value)
-                  }
+                  onChange={(e) => {
+                    const value = e.target.value.replace(/[^a-zA-Z0-9._-]/g, '');
+                    handleInputChange("userName", value);
+                  }}
                   className={`rounded-xl border-border/50 focus:border-primary ${
                     errors.userName ? "border-red-500" : ""
                   }`}
