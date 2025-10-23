@@ -124,6 +124,11 @@ export type NotificationOutbox = $Result.DefaultSelection<Prisma.$NotificationOu
  */
 export type NotificationPreference = $Result.DefaultSelection<Prisma.$NotificationPreferencePayload>
 /**
+ * Model File
+ * 
+ */
+export type File = $Result.DefaultSelection<Prisma.$FilePayload>
+/**
  * Model SystemConfig
  * 
  */
@@ -192,6 +197,29 @@ export const AssignmentStatus: {
 export type AssignmentStatus = (typeof AssignmentStatus)[keyof typeof AssignmentStatus]
 
 
+export const AssignmentTier: {
+  PRIMARY: 'PRIMARY',
+  BACKUP: 'BACKUP',
+  FALLBACK: 'FALLBACK'
+};
+
+export type AssignmentTier = (typeof AssignmentTier)[keyof typeof AssignmentTier]
+
+
+export const DocumentType: {
+  RESUME: 'RESUME',
+  ID_CARD: 'ID_CARD',
+  PASSPORT: 'PASSPORT',
+  CONTRACT: 'CONTRACT',
+  CERTIFICATE: 'CERTIFICATE',
+  WORK_EVIDENCE: 'WORK_EVIDENCE',
+  PROFILE_PICTURE: 'PROFILE_PICTURE',
+  OTHER: 'OTHER'
+};
+
+export type DocumentType = (typeof DocumentType)[keyof typeof DocumentType]
+
+
 export const AbsenceType: {
   SICK_LEAVE: 'SICK_LEAVE',
   VACATION: 'VACATION',
@@ -246,6 +274,14 @@ export const RequestStatus: typeof $Enums.RequestStatus
 export type AssignmentStatus = $Enums.AssignmentStatus
 
 export const AssignmentStatus: typeof $Enums.AssignmentStatus
+
+export type AssignmentTier = $Enums.AssignmentTier
+
+export const AssignmentTier: typeof $Enums.AssignmentTier
+
+export type DocumentType = $Enums.DocumentType
+
+export const DocumentType: typeof $Enums.DocumentType
 
 export type AbsenceType = $Enums.AbsenceType
 
@@ -596,6 +632,16 @@ export class PrismaClient<
     * ```
     */
   get notificationPreference(): Prisma.NotificationPreferenceDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.file`: Exposes CRUD operations for the **File** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Files
+    * const files = await prisma.file.findMany()
+    * ```
+    */
+  get file(): Prisma.FileDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.systemConfig`: Exposes CRUD operations for the **SystemConfig** model.
@@ -1078,6 +1124,7 @@ export namespace Prisma {
     NotificationRecipient: 'NotificationRecipient',
     NotificationOutbox: 'NotificationOutbox',
     NotificationPreference: 'NotificationPreference',
+    File: 'File',
     SystemConfig: 'SystemConfig',
     AuditLog: 'AuditLog'
   };
@@ -1098,7 +1145,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "employee" | "employeePerformance" | "performanceThreshold" | "department" | "position" | "customer" | "subAccount" | "order" | "qualification" | "employeeQualification" | "orderQualification" | "assignment" | "orderAssignment" | "absence" | "rating" | "workStatistic" | "notificationTemplate" | "notification" | "notificationRecipient" | "notificationOutbox" | "notificationPreference" | "systemConfig" | "auditLog"
+      modelProps: "user" | "employee" | "employeePerformance" | "performanceThreshold" | "department" | "position" | "customer" | "subAccount" | "order" | "qualification" | "employeeQualification" | "orderQualification" | "assignment" | "orderAssignment" | "absence" | "rating" | "workStatistic" | "notificationTemplate" | "notification" | "notificationRecipient" | "notificationOutbox" | "notificationPreference" | "file" | "systemConfig" | "auditLog"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -2730,6 +2777,80 @@ export namespace Prisma {
           }
         }
       }
+      File: {
+        payload: Prisma.$FilePayload<ExtArgs>
+        fields: Prisma.FileFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.FileFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FilePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.FileFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FilePayload>
+          }
+          findFirst: {
+            args: Prisma.FileFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FilePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.FileFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FilePayload>
+          }
+          findMany: {
+            args: Prisma.FileFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FilePayload>[]
+          }
+          create: {
+            args: Prisma.FileCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FilePayload>
+          }
+          createMany: {
+            args: Prisma.FileCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.FileCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FilePayload>[]
+          }
+          delete: {
+            args: Prisma.FileDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FilePayload>
+          }
+          update: {
+            args: Prisma.FileUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FilePayload>
+          }
+          deleteMany: {
+            args: Prisma.FileDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.FileUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.FileUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FilePayload>[]
+          }
+          upsert: {
+            args: Prisma.FileUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FilePayload>
+          }
+          aggregate: {
+            args: Prisma.FileAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateFile>
+          }
+          groupBy: {
+            args: Prisma.FileGroupByArgs<ExtArgs>
+            result: $Utils.Optional<FileGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.FileCountArgs<ExtArgs>
+            result: $Utils.Optional<FileCountAggregateOutputType> | number
+          }
+        }
+      }
       SystemConfig: {
         payload: Prisma.$SystemConfigPayload<ExtArgs>
         fields: Prisma.SystemConfigFieldRefs
@@ -2996,6 +3117,7 @@ export namespace Prisma {
     notificationRecipient?: NotificationRecipientOmit
     notificationOutbox?: NotificationOutboxOmit
     notificationPreference?: NotificationPreferenceOmit
+    file?: FileOmit
     systemConfig?: SystemConfigOmit
     auditLog?: AuditLogOmit
   }
@@ -3134,6 +3256,7 @@ export namespace Prisma {
     ratings: number
     workStatistics: number
     orderAssignments: number
+    files: number
   }
 
   export type EmployeeCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -3144,6 +3267,7 @@ export namespace Prisma {
     ratings?: boolean | EmployeeCountOutputTypeCountRatingsArgs
     workStatistics?: boolean | EmployeeCountOutputTypeCountWorkStatisticsArgs
     orderAssignments?: boolean | EmployeeCountOutputTypeCountOrderAssignmentsArgs
+    files?: boolean | EmployeeCountOutputTypeCountFilesArgs
   }
 
   // Custom InputTypes
@@ -3204,6 +3328,13 @@ export namespace Prisma {
    */
   export type EmployeeCountOutputTypeCountOrderAssignmentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: OrderAssignmentWhereInput
+  }
+
+  /**
+   * EmployeeCountOutputType without action
+   */
+  export type EmployeeCountOutputTypeCountFilesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: FileWhereInput
   }
 
 
@@ -3345,6 +3476,7 @@ export namespace Prisma {
     orderAssignments: number
     employeeAssignments: number
     ratings: number
+    files: number
   }
 
   export type OrderCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -3352,6 +3484,7 @@ export namespace Prisma {
     orderAssignments?: boolean | OrderCountOutputTypeCountOrderAssignmentsArgs
     employeeAssignments?: boolean | OrderCountOutputTypeCountEmployeeAssignmentsArgs
     ratings?: boolean | OrderCountOutputTypeCountRatingsArgs
+    files?: boolean | OrderCountOutputTypeCountFilesArgs
   }
 
   // Custom InputTypes
@@ -3393,6 +3526,13 @@ export namespace Prisma {
     where?: RatingWhereInput
   }
 
+  /**
+   * OrderCountOutputType without action
+   */
+  export type OrderCountOutputTypeCountFilesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: FileWhereInput
+  }
+
 
   /**
    * Count Type QualificationCountOutputType
@@ -3431,6 +3571,37 @@ export namespace Prisma {
    */
   export type QualificationCountOutputTypeCountOrderQualificationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: OrderQualificationWhereInput
+  }
+
+
+  /**
+   * Count Type AssignmentCountOutputType
+   */
+
+  export type AssignmentCountOutputType = {
+    files: number
+  }
+
+  export type AssignmentCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    files?: boolean | AssignmentCountOutputTypeCountFilesArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * AssignmentCountOutputType without action
+   */
+  export type AssignmentCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AssignmentCountOutputType
+     */
+    select?: AssignmentCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * AssignmentCountOutputType without action
+   */
+  export type AssignmentCountOutputTypeCountFilesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: FileWhereInput
   }
 
 
@@ -5225,6 +5396,7 @@ export namespace Prisma {
     ratings?: boolean | Employee$ratingsArgs<ExtArgs>
     workStatistics?: boolean | Employee$workStatisticsArgs<ExtArgs>
     orderAssignments?: boolean | Employee$orderAssignmentsArgs<ExtArgs>
+    files?: boolean | Employee$filesArgs<ExtArgs>
     _count?: boolean | EmployeeCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["employee"]>
 
@@ -5339,6 +5511,7 @@ export namespace Prisma {
     ratings?: boolean | Employee$ratingsArgs<ExtArgs>
     workStatistics?: boolean | Employee$workStatisticsArgs<ExtArgs>
     orderAssignments?: boolean | Employee$orderAssignmentsArgs<ExtArgs>
+    files?: boolean | Employee$filesArgs<ExtArgs>
     _count?: boolean | EmployeeCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type EmployeeIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -5368,6 +5541,7 @@ export namespace Prisma {
       ratings: Prisma.$RatingPayload<ExtArgs>[]
       workStatistics: Prisma.$WorkStatisticPayload<ExtArgs>[]
       orderAssignments: Prisma.$OrderAssignmentPayload<ExtArgs>[]
+      files: Prisma.$FilePayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -5802,6 +5976,7 @@ export namespace Prisma {
     ratings<T extends Employee$ratingsArgs<ExtArgs> = {}>(args?: Subset<T, Employee$ratingsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RatingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     workStatistics<T extends Employee$workStatisticsArgs<ExtArgs> = {}>(args?: Subset<T, Employee$workStatisticsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WorkStatisticPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     orderAssignments<T extends Employee$orderAssignmentsArgs<ExtArgs> = {}>(args?: Subset<T, Employee$orderAssignmentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderAssignmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    files<T extends Employee$filesArgs<ExtArgs> = {}>(args?: Subset<T, Employee$filesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FilePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -6438,6 +6613,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: OrderAssignmentScalarFieldEnum | OrderAssignmentScalarFieldEnum[]
+  }
+
+  /**
+   * Employee.files
+   */
+  export type Employee$filesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the File
+     */
+    select?: FileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the File
+     */
+    omit?: FileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FileInclude<ExtArgs> | null
+    where?: FileWhereInput
+    orderBy?: FileOrderByWithRelationInput | FileOrderByWithRelationInput[]
+    cursor?: FileWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: FileScalarFieldEnum | FileScalarFieldEnum[]
   }
 
   /**
@@ -13848,6 +14047,7 @@ export namespace Prisma {
     orderAssignments?: boolean | Order$orderAssignmentsArgs<ExtArgs>
     employeeAssignments?: boolean | Order$employeeAssignmentsArgs<ExtArgs>
     ratings?: boolean | Order$ratingsArgs<ExtArgs>
+    files?: boolean | Order$filesArgs<ExtArgs>
     _count?: boolean | OrderCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["order"]>
 
@@ -13923,6 +14123,7 @@ export namespace Prisma {
     orderAssignments?: boolean | Order$orderAssignmentsArgs<ExtArgs>
     employeeAssignments?: boolean | Order$employeeAssignmentsArgs<ExtArgs>
     ratings?: boolean | Order$ratingsArgs<ExtArgs>
+    files?: boolean | Order$filesArgs<ExtArgs>
     _count?: boolean | OrderCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type OrderIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -13940,6 +14141,7 @@ export namespace Prisma {
       orderAssignments: Prisma.$OrderAssignmentPayload<ExtArgs>[]
       employeeAssignments: Prisma.$AssignmentPayload<ExtArgs>[]
       ratings: Prisma.$RatingPayload<ExtArgs>[]
+      files: Prisma.$FilePayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -14359,6 +14561,7 @@ export namespace Prisma {
     orderAssignments<T extends Order$orderAssignmentsArgs<ExtArgs> = {}>(args?: Subset<T, Order$orderAssignmentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderAssignmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     employeeAssignments<T extends Order$employeeAssignmentsArgs<ExtArgs> = {}>(args?: Subset<T, Order$employeeAssignmentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AssignmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     ratings<T extends Order$ratingsArgs<ExtArgs> = {}>(args?: Subset<T, Order$ratingsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RatingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    files<T extends Order$filesArgs<ExtArgs> = {}>(args?: Subset<T, Order$filesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FilePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -14914,6 +15117,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: RatingScalarFieldEnum | RatingScalarFieldEnum[]
+  }
+
+  /**
+   * Order.files
+   */
+  export type Order$filesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the File
+     */
+    select?: FileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the File
+     */
+    omit?: FileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FileInclude<ExtArgs> | null
+    where?: FileWhereInput
+    orderBy?: FileOrderByWithRelationInput | FileOrderByWithRelationInput[]
+    cursor?: FileWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: FileScalarFieldEnum | FileScalarFieldEnum[]
   }
 
   /**
@@ -18414,6 +18641,7 @@ export namespace Prisma {
     startDate: Date | null
     endDate: Date | null
     status: $Enums.AssignmentStatus | null
+    tier: $Enums.AssignmentTier | null
     estimatedHours: Decimal | null
     actualHours: Decimal | null
     notes: string | null
@@ -18431,6 +18659,7 @@ export namespace Prisma {
     startDate: Date | null
     endDate: Date | null
     status: $Enums.AssignmentStatus | null
+    tier: $Enums.AssignmentTier | null
     estimatedHours: Decimal | null
     actualHours: Decimal | null
     notes: string | null
@@ -18448,6 +18677,7 @@ export namespace Prisma {
     startDate: number
     endDate: number
     status: number
+    tier: number
     estimatedHours: number
     actualHours: number
     notes: number
@@ -18477,6 +18707,7 @@ export namespace Prisma {
     startDate?: true
     endDate?: true
     status?: true
+    tier?: true
     estimatedHours?: true
     actualHours?: true
     notes?: true
@@ -18494,6 +18725,7 @@ export namespace Prisma {
     startDate?: true
     endDate?: true
     status?: true
+    tier?: true
     estimatedHours?: true
     actualHours?: true
     notes?: true
@@ -18511,6 +18743,7 @@ export namespace Prisma {
     startDate?: true
     endDate?: true
     status?: true
+    tier?: true
     estimatedHours?: true
     actualHours?: true
     notes?: true
@@ -18615,6 +18848,7 @@ export namespace Prisma {
     startDate: Date | null
     endDate: Date | null
     status: $Enums.AssignmentStatus
+    tier: $Enums.AssignmentTier
     estimatedHours: Decimal | null
     actualHours: Decimal | null
     notes: string | null
@@ -18651,6 +18885,7 @@ export namespace Prisma {
     startDate?: boolean
     endDate?: boolean
     status?: boolean
+    tier?: boolean
     estimatedHours?: boolean
     actualHours?: boolean
     notes?: boolean
@@ -18660,6 +18895,8 @@ export namespace Prisma {
     updatedBy?: boolean
     order?: boolean | Assignment$orderArgs<ExtArgs>
     employee?: boolean | EmployeeDefaultArgs<ExtArgs>
+    files?: boolean | Assignment$filesArgs<ExtArgs>
+    _count?: boolean | AssignmentCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["assignment"]>
 
   export type AssignmentSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -18670,6 +18907,7 @@ export namespace Prisma {
     startDate?: boolean
     endDate?: boolean
     status?: boolean
+    tier?: boolean
     estimatedHours?: boolean
     actualHours?: boolean
     notes?: boolean
@@ -18689,6 +18927,7 @@ export namespace Prisma {
     startDate?: boolean
     endDate?: boolean
     status?: boolean
+    tier?: boolean
     estimatedHours?: boolean
     actualHours?: boolean
     notes?: boolean
@@ -18708,6 +18947,7 @@ export namespace Prisma {
     startDate?: boolean
     endDate?: boolean
     status?: boolean
+    tier?: boolean
     estimatedHours?: boolean
     actualHours?: boolean
     notes?: boolean
@@ -18717,10 +18957,12 @@ export namespace Prisma {
     updatedBy?: boolean
   }
 
-  export type AssignmentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "orderId" | "employeeId" | "assignedDate" | "startDate" | "endDate" | "status" | "estimatedHours" | "actualHours" | "notes" | "createdAt" | "updatedAt" | "createdBy" | "updatedBy", ExtArgs["result"]["assignment"]>
+  export type AssignmentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "orderId" | "employeeId" | "assignedDate" | "startDate" | "endDate" | "status" | "tier" | "estimatedHours" | "actualHours" | "notes" | "createdAt" | "updatedAt" | "createdBy" | "updatedBy", ExtArgs["result"]["assignment"]>
   export type AssignmentInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     order?: boolean | Assignment$orderArgs<ExtArgs>
     employee?: boolean | EmployeeDefaultArgs<ExtArgs>
+    files?: boolean | Assignment$filesArgs<ExtArgs>
+    _count?: boolean | AssignmentCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type AssignmentIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     order?: boolean | Assignment$orderArgs<ExtArgs>
@@ -18736,6 +18978,7 @@ export namespace Prisma {
     objects: {
       order: Prisma.$OrderPayload<ExtArgs> | null
       employee: Prisma.$EmployeePayload<ExtArgs>
+      files: Prisma.$FilePayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -18745,6 +18988,7 @@ export namespace Prisma {
       startDate: Date | null
       endDate: Date | null
       status: $Enums.AssignmentStatus
+      tier: $Enums.AssignmentTier
       estimatedHours: Prisma.Decimal | null
       actualHours: Prisma.Decimal | null
       notes: string | null
@@ -19148,6 +19392,7 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     order<T extends Assignment$orderArgs<ExtArgs> = {}>(args?: Subset<T, Assignment$orderArgs<ExtArgs>>): Prisma__OrderClient<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     employee<T extends EmployeeDefaultArgs<ExtArgs> = {}>(args?: Subset<T, EmployeeDefaultArgs<ExtArgs>>): Prisma__EmployeeClient<$Result.GetResult<Prisma.$EmployeePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    files<T extends Assignment$filesArgs<ExtArgs> = {}>(args?: Subset<T, Assignment$filesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FilePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -19184,6 +19429,7 @@ export namespace Prisma {
     readonly startDate: FieldRef<"Assignment", 'DateTime'>
     readonly endDate: FieldRef<"Assignment", 'DateTime'>
     readonly status: FieldRef<"Assignment", 'AssignmentStatus'>
+    readonly tier: FieldRef<"Assignment", 'AssignmentTier'>
     readonly estimatedHours: FieldRef<"Assignment", 'Decimal'>
     readonly actualHours: FieldRef<"Assignment", 'Decimal'>
     readonly notes: FieldRef<"Assignment", 'String'>
@@ -19603,6 +19849,30 @@ export namespace Prisma {
      */
     include?: OrderInclude<ExtArgs> | null
     where?: OrderWhereInput
+  }
+
+  /**
+   * Assignment.files
+   */
+  export type Assignment$filesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the File
+     */
+    select?: FileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the File
+     */
+    omit?: FileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FileInclude<ExtArgs> | null
+    where?: FileWhereInput
+    orderBy?: FileOrderByWithRelationInput | FileOrderByWithRelationInput[]
+    cursor?: FileWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: FileScalarFieldEnum | FileScalarFieldEnum[]
   }
 
   /**
@@ -29998,6 +30268,1327 @@ export namespace Prisma {
 
 
   /**
+   * Model File
+   */
+
+  export type AggregateFile = {
+    _count: FileCountAggregateOutputType | null
+    _avg: FileAvgAggregateOutputType | null
+    _sum: FileSumAggregateOutputType | null
+    _min: FileMinAggregateOutputType | null
+    _max: FileMaxAggregateOutputType | null
+  }
+
+  export type FileAvgAggregateOutputType = {
+    size: number | null
+  }
+
+  export type FileSumAggregateOutputType = {
+    size: number | null
+  }
+
+  export type FileMinAggregateOutputType = {
+    id: string | null
+    filename: string | null
+    originalName: string | null
+    mimeType: string | null
+    size: number | null
+    path: string | null
+    documentType: $Enums.DocumentType | null
+    description: string | null
+    expiryDate: Date | null
+    employeeId: string | null
+    orderId: string | null
+    assignmentId: string | null
+    uploadedBy: string | null
+    isVerified: boolean | null
+    isPublic: boolean | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type FileMaxAggregateOutputType = {
+    id: string | null
+    filename: string | null
+    originalName: string | null
+    mimeType: string | null
+    size: number | null
+    path: string | null
+    documentType: $Enums.DocumentType | null
+    description: string | null
+    expiryDate: Date | null
+    employeeId: string | null
+    orderId: string | null
+    assignmentId: string | null
+    uploadedBy: string | null
+    isVerified: boolean | null
+    isPublic: boolean | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type FileCountAggregateOutputType = {
+    id: number
+    filename: number
+    originalName: number
+    mimeType: number
+    size: number
+    path: number
+    documentType: number
+    description: number
+    expiryDate: number
+    employeeId: number
+    orderId: number
+    assignmentId: number
+    uploadedBy: number
+    isVerified: number
+    isPublic: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type FileAvgAggregateInputType = {
+    size?: true
+  }
+
+  export type FileSumAggregateInputType = {
+    size?: true
+  }
+
+  export type FileMinAggregateInputType = {
+    id?: true
+    filename?: true
+    originalName?: true
+    mimeType?: true
+    size?: true
+    path?: true
+    documentType?: true
+    description?: true
+    expiryDate?: true
+    employeeId?: true
+    orderId?: true
+    assignmentId?: true
+    uploadedBy?: true
+    isVerified?: true
+    isPublic?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type FileMaxAggregateInputType = {
+    id?: true
+    filename?: true
+    originalName?: true
+    mimeType?: true
+    size?: true
+    path?: true
+    documentType?: true
+    description?: true
+    expiryDate?: true
+    employeeId?: true
+    orderId?: true
+    assignmentId?: true
+    uploadedBy?: true
+    isVerified?: true
+    isPublic?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type FileCountAggregateInputType = {
+    id?: true
+    filename?: true
+    originalName?: true
+    mimeType?: true
+    size?: true
+    path?: true
+    documentType?: true
+    description?: true
+    expiryDate?: true
+    employeeId?: true
+    orderId?: true
+    assignmentId?: true
+    uploadedBy?: true
+    isVerified?: true
+    isPublic?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type FileAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which File to aggregate.
+     */
+    where?: FileWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Files to fetch.
+     */
+    orderBy?: FileOrderByWithRelationInput | FileOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: FileWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Files from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Files.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Files
+    **/
+    _count?: true | FileCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: FileAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: FileSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: FileMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: FileMaxAggregateInputType
+  }
+
+  export type GetFileAggregateType<T extends FileAggregateArgs> = {
+        [P in keyof T & keyof AggregateFile]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateFile[P]>
+      : GetScalarType<T[P], AggregateFile[P]>
+  }
+
+
+
+
+  export type FileGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: FileWhereInput
+    orderBy?: FileOrderByWithAggregationInput | FileOrderByWithAggregationInput[]
+    by: FileScalarFieldEnum[] | FileScalarFieldEnum
+    having?: FileScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: FileCountAggregateInputType | true
+    _avg?: FileAvgAggregateInputType
+    _sum?: FileSumAggregateInputType
+    _min?: FileMinAggregateInputType
+    _max?: FileMaxAggregateInputType
+  }
+
+  export type FileGroupByOutputType = {
+    id: string
+    filename: string
+    originalName: string
+    mimeType: string
+    size: number
+    path: string
+    documentType: $Enums.DocumentType
+    description: string | null
+    expiryDate: Date | null
+    employeeId: string | null
+    orderId: string | null
+    assignmentId: string | null
+    uploadedBy: string | null
+    isVerified: boolean
+    isPublic: boolean
+    createdAt: Date
+    updatedAt: Date
+    _count: FileCountAggregateOutputType | null
+    _avg: FileAvgAggregateOutputType | null
+    _sum: FileSumAggregateOutputType | null
+    _min: FileMinAggregateOutputType | null
+    _max: FileMaxAggregateOutputType | null
+  }
+
+  type GetFileGroupByPayload<T extends FileGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<FileGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof FileGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], FileGroupByOutputType[P]>
+            : GetScalarType<T[P], FileGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type FileSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    filename?: boolean
+    originalName?: boolean
+    mimeType?: boolean
+    size?: boolean
+    path?: boolean
+    documentType?: boolean
+    description?: boolean
+    expiryDate?: boolean
+    employeeId?: boolean
+    orderId?: boolean
+    assignmentId?: boolean
+    uploadedBy?: boolean
+    isVerified?: boolean
+    isPublic?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    employee?: boolean | File$employeeArgs<ExtArgs>
+    order?: boolean | File$orderArgs<ExtArgs>
+    assignment?: boolean | File$assignmentArgs<ExtArgs>
+  }, ExtArgs["result"]["file"]>
+
+  export type FileSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    filename?: boolean
+    originalName?: boolean
+    mimeType?: boolean
+    size?: boolean
+    path?: boolean
+    documentType?: boolean
+    description?: boolean
+    expiryDate?: boolean
+    employeeId?: boolean
+    orderId?: boolean
+    assignmentId?: boolean
+    uploadedBy?: boolean
+    isVerified?: boolean
+    isPublic?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    employee?: boolean | File$employeeArgs<ExtArgs>
+    order?: boolean | File$orderArgs<ExtArgs>
+    assignment?: boolean | File$assignmentArgs<ExtArgs>
+  }, ExtArgs["result"]["file"]>
+
+  export type FileSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    filename?: boolean
+    originalName?: boolean
+    mimeType?: boolean
+    size?: boolean
+    path?: boolean
+    documentType?: boolean
+    description?: boolean
+    expiryDate?: boolean
+    employeeId?: boolean
+    orderId?: boolean
+    assignmentId?: boolean
+    uploadedBy?: boolean
+    isVerified?: boolean
+    isPublic?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    employee?: boolean | File$employeeArgs<ExtArgs>
+    order?: boolean | File$orderArgs<ExtArgs>
+    assignment?: boolean | File$assignmentArgs<ExtArgs>
+  }, ExtArgs["result"]["file"]>
+
+  export type FileSelectScalar = {
+    id?: boolean
+    filename?: boolean
+    originalName?: boolean
+    mimeType?: boolean
+    size?: boolean
+    path?: boolean
+    documentType?: boolean
+    description?: boolean
+    expiryDate?: boolean
+    employeeId?: boolean
+    orderId?: boolean
+    assignmentId?: boolean
+    uploadedBy?: boolean
+    isVerified?: boolean
+    isPublic?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type FileOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "filename" | "originalName" | "mimeType" | "size" | "path" | "documentType" | "description" | "expiryDate" | "employeeId" | "orderId" | "assignmentId" | "uploadedBy" | "isVerified" | "isPublic" | "createdAt" | "updatedAt", ExtArgs["result"]["file"]>
+  export type FileInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    employee?: boolean | File$employeeArgs<ExtArgs>
+    order?: boolean | File$orderArgs<ExtArgs>
+    assignment?: boolean | File$assignmentArgs<ExtArgs>
+  }
+  export type FileIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    employee?: boolean | File$employeeArgs<ExtArgs>
+    order?: boolean | File$orderArgs<ExtArgs>
+    assignment?: boolean | File$assignmentArgs<ExtArgs>
+  }
+  export type FileIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    employee?: boolean | File$employeeArgs<ExtArgs>
+    order?: boolean | File$orderArgs<ExtArgs>
+    assignment?: boolean | File$assignmentArgs<ExtArgs>
+  }
+
+  export type $FilePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "File"
+    objects: {
+      employee: Prisma.$EmployeePayload<ExtArgs> | null
+      order: Prisma.$OrderPayload<ExtArgs> | null
+      assignment: Prisma.$AssignmentPayload<ExtArgs> | null
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      filename: string
+      originalName: string
+      mimeType: string
+      size: number
+      path: string
+      documentType: $Enums.DocumentType
+      description: string | null
+      expiryDate: Date | null
+      employeeId: string | null
+      orderId: string | null
+      assignmentId: string | null
+      uploadedBy: string | null
+      isVerified: boolean
+      isPublic: boolean
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["file"]>
+    composites: {}
+  }
+
+  type FileGetPayload<S extends boolean | null | undefined | FileDefaultArgs> = $Result.GetResult<Prisma.$FilePayload, S>
+
+  type FileCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<FileFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: FileCountAggregateInputType | true
+    }
+
+  export interface FileDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['File'], meta: { name: 'File' } }
+    /**
+     * Find zero or one File that matches the filter.
+     * @param {FileFindUniqueArgs} args - Arguments to find a File
+     * @example
+     * // Get one File
+     * const file = await prisma.file.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends FileFindUniqueArgs>(args: SelectSubset<T, FileFindUniqueArgs<ExtArgs>>): Prisma__FileClient<$Result.GetResult<Prisma.$FilePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one File that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {FileFindUniqueOrThrowArgs} args - Arguments to find a File
+     * @example
+     * // Get one File
+     * const file = await prisma.file.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends FileFindUniqueOrThrowArgs>(args: SelectSubset<T, FileFindUniqueOrThrowArgs<ExtArgs>>): Prisma__FileClient<$Result.GetResult<Prisma.$FilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first File that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FileFindFirstArgs} args - Arguments to find a File
+     * @example
+     * // Get one File
+     * const file = await prisma.file.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends FileFindFirstArgs>(args?: SelectSubset<T, FileFindFirstArgs<ExtArgs>>): Prisma__FileClient<$Result.GetResult<Prisma.$FilePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first File that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FileFindFirstOrThrowArgs} args - Arguments to find a File
+     * @example
+     * // Get one File
+     * const file = await prisma.file.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends FileFindFirstOrThrowArgs>(args?: SelectSubset<T, FileFindFirstOrThrowArgs<ExtArgs>>): Prisma__FileClient<$Result.GetResult<Prisma.$FilePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Files that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FileFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Files
+     * const files = await prisma.file.findMany()
+     * 
+     * // Get first 10 Files
+     * const files = await prisma.file.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const fileWithIdOnly = await prisma.file.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends FileFindManyArgs>(args?: SelectSubset<T, FileFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FilePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a File.
+     * @param {FileCreateArgs} args - Arguments to create a File.
+     * @example
+     * // Create one File
+     * const File = await prisma.file.create({
+     *   data: {
+     *     // ... data to create a File
+     *   }
+     * })
+     * 
+     */
+    create<T extends FileCreateArgs>(args: SelectSubset<T, FileCreateArgs<ExtArgs>>): Prisma__FileClient<$Result.GetResult<Prisma.$FilePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Files.
+     * @param {FileCreateManyArgs} args - Arguments to create many Files.
+     * @example
+     * // Create many Files
+     * const file = await prisma.file.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends FileCreateManyArgs>(args?: SelectSubset<T, FileCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Files and returns the data saved in the database.
+     * @param {FileCreateManyAndReturnArgs} args - Arguments to create many Files.
+     * @example
+     * // Create many Files
+     * const file = await prisma.file.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Files and only return the `id`
+     * const fileWithIdOnly = await prisma.file.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends FileCreateManyAndReturnArgs>(args?: SelectSubset<T, FileCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FilePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a File.
+     * @param {FileDeleteArgs} args - Arguments to delete one File.
+     * @example
+     * // Delete one File
+     * const File = await prisma.file.delete({
+     *   where: {
+     *     // ... filter to delete one File
+     *   }
+     * })
+     * 
+     */
+    delete<T extends FileDeleteArgs>(args: SelectSubset<T, FileDeleteArgs<ExtArgs>>): Prisma__FileClient<$Result.GetResult<Prisma.$FilePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one File.
+     * @param {FileUpdateArgs} args - Arguments to update one File.
+     * @example
+     * // Update one File
+     * const file = await prisma.file.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends FileUpdateArgs>(args: SelectSubset<T, FileUpdateArgs<ExtArgs>>): Prisma__FileClient<$Result.GetResult<Prisma.$FilePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Files.
+     * @param {FileDeleteManyArgs} args - Arguments to filter Files to delete.
+     * @example
+     * // Delete a few Files
+     * const { count } = await prisma.file.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends FileDeleteManyArgs>(args?: SelectSubset<T, FileDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Files.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FileUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Files
+     * const file = await prisma.file.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends FileUpdateManyArgs>(args: SelectSubset<T, FileUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Files and returns the data updated in the database.
+     * @param {FileUpdateManyAndReturnArgs} args - Arguments to update many Files.
+     * @example
+     * // Update many Files
+     * const file = await prisma.file.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Files and only return the `id`
+     * const fileWithIdOnly = await prisma.file.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends FileUpdateManyAndReturnArgs>(args: SelectSubset<T, FileUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FilePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one File.
+     * @param {FileUpsertArgs} args - Arguments to update or create a File.
+     * @example
+     * // Update or create a File
+     * const file = await prisma.file.upsert({
+     *   create: {
+     *     // ... data to create a File
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the File we want to update
+     *   }
+     * })
+     */
+    upsert<T extends FileUpsertArgs>(args: SelectSubset<T, FileUpsertArgs<ExtArgs>>): Prisma__FileClient<$Result.GetResult<Prisma.$FilePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Files.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FileCountArgs} args - Arguments to filter Files to count.
+     * @example
+     * // Count the number of Files
+     * const count = await prisma.file.count({
+     *   where: {
+     *     // ... the filter for the Files we want to count
+     *   }
+     * })
+    **/
+    count<T extends FileCountArgs>(
+      args?: Subset<T, FileCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], FileCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a File.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FileAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends FileAggregateArgs>(args: Subset<T, FileAggregateArgs>): Prisma.PrismaPromise<GetFileAggregateType<T>>
+
+    /**
+     * Group by File.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FileGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends FileGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: FileGroupByArgs['orderBy'] }
+        : { orderBy?: FileGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, FileGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetFileGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the File model
+   */
+  readonly fields: FileFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for File.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__FileClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    employee<T extends File$employeeArgs<ExtArgs> = {}>(args?: Subset<T, File$employeeArgs<ExtArgs>>): Prisma__EmployeeClient<$Result.GetResult<Prisma.$EmployeePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    order<T extends File$orderArgs<ExtArgs> = {}>(args?: Subset<T, File$orderArgs<ExtArgs>>): Prisma__OrderClient<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    assignment<T extends File$assignmentArgs<ExtArgs> = {}>(args?: Subset<T, File$assignmentArgs<ExtArgs>>): Prisma__AssignmentClient<$Result.GetResult<Prisma.$AssignmentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the File model
+   */
+  interface FileFieldRefs {
+    readonly id: FieldRef<"File", 'String'>
+    readonly filename: FieldRef<"File", 'String'>
+    readonly originalName: FieldRef<"File", 'String'>
+    readonly mimeType: FieldRef<"File", 'String'>
+    readonly size: FieldRef<"File", 'Int'>
+    readonly path: FieldRef<"File", 'String'>
+    readonly documentType: FieldRef<"File", 'DocumentType'>
+    readonly description: FieldRef<"File", 'String'>
+    readonly expiryDate: FieldRef<"File", 'DateTime'>
+    readonly employeeId: FieldRef<"File", 'String'>
+    readonly orderId: FieldRef<"File", 'String'>
+    readonly assignmentId: FieldRef<"File", 'String'>
+    readonly uploadedBy: FieldRef<"File", 'String'>
+    readonly isVerified: FieldRef<"File", 'Boolean'>
+    readonly isPublic: FieldRef<"File", 'Boolean'>
+    readonly createdAt: FieldRef<"File", 'DateTime'>
+    readonly updatedAt: FieldRef<"File", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * File findUnique
+   */
+  export type FileFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the File
+     */
+    select?: FileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the File
+     */
+    omit?: FileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FileInclude<ExtArgs> | null
+    /**
+     * Filter, which File to fetch.
+     */
+    where: FileWhereUniqueInput
+  }
+
+  /**
+   * File findUniqueOrThrow
+   */
+  export type FileFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the File
+     */
+    select?: FileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the File
+     */
+    omit?: FileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FileInclude<ExtArgs> | null
+    /**
+     * Filter, which File to fetch.
+     */
+    where: FileWhereUniqueInput
+  }
+
+  /**
+   * File findFirst
+   */
+  export type FileFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the File
+     */
+    select?: FileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the File
+     */
+    omit?: FileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FileInclude<ExtArgs> | null
+    /**
+     * Filter, which File to fetch.
+     */
+    where?: FileWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Files to fetch.
+     */
+    orderBy?: FileOrderByWithRelationInput | FileOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Files.
+     */
+    cursor?: FileWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Files from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Files.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Files.
+     */
+    distinct?: FileScalarFieldEnum | FileScalarFieldEnum[]
+  }
+
+  /**
+   * File findFirstOrThrow
+   */
+  export type FileFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the File
+     */
+    select?: FileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the File
+     */
+    omit?: FileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FileInclude<ExtArgs> | null
+    /**
+     * Filter, which File to fetch.
+     */
+    where?: FileWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Files to fetch.
+     */
+    orderBy?: FileOrderByWithRelationInput | FileOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Files.
+     */
+    cursor?: FileWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Files from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Files.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Files.
+     */
+    distinct?: FileScalarFieldEnum | FileScalarFieldEnum[]
+  }
+
+  /**
+   * File findMany
+   */
+  export type FileFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the File
+     */
+    select?: FileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the File
+     */
+    omit?: FileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FileInclude<ExtArgs> | null
+    /**
+     * Filter, which Files to fetch.
+     */
+    where?: FileWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Files to fetch.
+     */
+    orderBy?: FileOrderByWithRelationInput | FileOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Files.
+     */
+    cursor?: FileWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Files from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Files.
+     */
+    skip?: number
+    distinct?: FileScalarFieldEnum | FileScalarFieldEnum[]
+  }
+
+  /**
+   * File create
+   */
+  export type FileCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the File
+     */
+    select?: FileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the File
+     */
+    omit?: FileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FileInclude<ExtArgs> | null
+    /**
+     * The data needed to create a File.
+     */
+    data: XOR<FileCreateInput, FileUncheckedCreateInput>
+  }
+
+  /**
+   * File createMany
+   */
+  export type FileCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Files.
+     */
+    data: FileCreateManyInput | FileCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * File createManyAndReturn
+   */
+  export type FileCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the File
+     */
+    select?: FileSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the File
+     */
+    omit?: FileOmit<ExtArgs> | null
+    /**
+     * The data used to create many Files.
+     */
+    data: FileCreateManyInput | FileCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FileIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * File update
+   */
+  export type FileUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the File
+     */
+    select?: FileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the File
+     */
+    omit?: FileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FileInclude<ExtArgs> | null
+    /**
+     * The data needed to update a File.
+     */
+    data: XOR<FileUpdateInput, FileUncheckedUpdateInput>
+    /**
+     * Choose, which File to update.
+     */
+    where: FileWhereUniqueInput
+  }
+
+  /**
+   * File updateMany
+   */
+  export type FileUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Files.
+     */
+    data: XOR<FileUpdateManyMutationInput, FileUncheckedUpdateManyInput>
+    /**
+     * Filter which Files to update
+     */
+    where?: FileWhereInput
+    /**
+     * Limit how many Files to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * File updateManyAndReturn
+   */
+  export type FileUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the File
+     */
+    select?: FileSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the File
+     */
+    omit?: FileOmit<ExtArgs> | null
+    /**
+     * The data used to update Files.
+     */
+    data: XOR<FileUpdateManyMutationInput, FileUncheckedUpdateManyInput>
+    /**
+     * Filter which Files to update
+     */
+    where?: FileWhereInput
+    /**
+     * Limit how many Files to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FileIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * File upsert
+   */
+  export type FileUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the File
+     */
+    select?: FileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the File
+     */
+    omit?: FileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FileInclude<ExtArgs> | null
+    /**
+     * The filter to search for the File to update in case it exists.
+     */
+    where: FileWhereUniqueInput
+    /**
+     * In case the File found by the `where` argument doesn't exist, create a new File with this data.
+     */
+    create: XOR<FileCreateInput, FileUncheckedCreateInput>
+    /**
+     * In case the File was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<FileUpdateInput, FileUncheckedUpdateInput>
+  }
+
+  /**
+   * File delete
+   */
+  export type FileDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the File
+     */
+    select?: FileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the File
+     */
+    omit?: FileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FileInclude<ExtArgs> | null
+    /**
+     * Filter which File to delete.
+     */
+    where: FileWhereUniqueInput
+  }
+
+  /**
+   * File deleteMany
+   */
+  export type FileDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Files to delete
+     */
+    where?: FileWhereInput
+    /**
+     * Limit how many Files to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * File.employee
+   */
+  export type File$employeeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Employee
+     */
+    select?: EmployeeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Employee
+     */
+    omit?: EmployeeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EmployeeInclude<ExtArgs> | null
+    where?: EmployeeWhereInput
+  }
+
+  /**
+   * File.order
+   */
+  export type File$orderArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Order
+     */
+    select?: OrderSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Order
+     */
+    omit?: OrderOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderInclude<ExtArgs> | null
+    where?: OrderWhereInput
+  }
+
+  /**
+   * File.assignment
+   */
+  export type File$assignmentArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Assignment
+     */
+    select?: AssignmentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Assignment
+     */
+    omit?: AssignmentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssignmentInclude<ExtArgs> | null
+    where?: AssignmentWhereInput
+  }
+
+  /**
+   * File without action
+   */
+  export type FileDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the File
+     */
+    select?: FileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the File
+     */
+    omit?: FileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FileInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Model SystemConfig
    */
 
@@ -32318,6 +33909,7 @@ export namespace Prisma {
     startDate: 'startDate',
     endDate: 'endDate',
     status: 'status',
+    tier: 'tier',
     estimatedHours: 'estimatedHours',
     actualHours: 'actualHours',
     notes: 'notes',
@@ -32472,6 +34064,29 @@ export namespace Prisma {
   };
 
   export type NotificationPreferenceScalarFieldEnum = (typeof NotificationPreferenceScalarFieldEnum)[keyof typeof NotificationPreferenceScalarFieldEnum]
+
+
+  export const FileScalarFieldEnum: {
+    id: 'id',
+    filename: 'filename',
+    originalName: 'originalName',
+    mimeType: 'mimeType',
+    size: 'size',
+    path: 'path',
+    documentType: 'documentType',
+    description: 'description',
+    expiryDate: 'expiryDate',
+    employeeId: 'employeeId',
+    orderId: 'orderId',
+    assignmentId: 'assignmentId',
+    uploadedBy: 'uploadedBy',
+    isVerified: 'isVerified',
+    isPublic: 'isPublic',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type FileScalarFieldEnum = (typeof FileScalarFieldEnum)[keyof typeof FileScalarFieldEnum]
 
 
   export const SystemConfigScalarFieldEnum: {
@@ -32705,6 +34320,20 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'AssignmentTier'
+   */
+  export type EnumAssignmentTierFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AssignmentTier'>
+    
+
+
+  /**
+   * Reference to a field of type 'AssignmentTier[]'
+   */
+  export type ListEnumAssignmentTierFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AssignmentTier[]'>
+    
+
+
+  /**
    * Reference to a field of type 'AbsenceType'
    */
   export type EnumAbsenceTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AbsenceType'>
@@ -32743,6 +34372,20 @@ export namespace Prisma {
    * Reference to a field of type 'RatingStatus[]'
    */
   export type ListEnumRatingStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'RatingStatus[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'DocumentType'
+   */
+  export type EnumDocumentTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DocumentType'>
+    
+
+
+  /**
+   * Reference to a field of type 'DocumentType[]'
+   */
+  export type ListEnumDocumentTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DocumentType[]'>
     
 
 
@@ -32942,6 +34585,7 @@ export namespace Prisma {
     ratings?: RatingListRelationFilter
     workStatistics?: WorkStatisticListRelationFilter
     orderAssignments?: OrderAssignmentListRelationFilter
+    files?: FileListRelationFilter
   }
 
   export type EmployeeOrderByWithRelationInput = {
@@ -32983,6 +34627,7 @@ export namespace Prisma {
     ratings?: RatingOrderByRelationAggregateInput
     workStatistics?: WorkStatisticOrderByRelationAggregateInput
     orderAssignments?: OrderAssignmentOrderByRelationAggregateInput
+    files?: FileOrderByRelationAggregateInput
   }
 
   export type EmployeeWhereUniqueInput = Prisma.AtLeast<{
@@ -33027,6 +34672,7 @@ export namespace Prisma {
     ratings?: RatingListRelationFilter
     workStatistics?: WorkStatisticListRelationFilter
     orderAssignments?: OrderAssignmentListRelationFilter
+    files?: FileListRelationFilter
   }, "id" | "employeeCode" | "userId">
 
   export type EmployeeOrderByWithAggregationInput = {
@@ -33621,6 +35267,7 @@ export namespace Prisma {
     orderAssignments?: OrderAssignmentListRelationFilter
     employeeAssignments?: AssignmentListRelationFilter
     ratings?: RatingListRelationFilter
+    files?: FileListRelationFilter
   }
 
   export type OrderOrderByWithRelationInput = {
@@ -33647,6 +35294,7 @@ export namespace Prisma {
     orderAssignments?: OrderAssignmentOrderByRelationAggregateInput
     employeeAssignments?: AssignmentOrderByRelationAggregateInput
     ratings?: RatingOrderByRelationAggregateInput
+    files?: FileOrderByRelationAggregateInput
   }
 
   export type OrderWhereUniqueInput = Prisma.AtLeast<{
@@ -33676,6 +35324,7 @@ export namespace Prisma {
     orderAssignments?: OrderAssignmentListRelationFilter
     employeeAssignments?: AssignmentListRelationFilter
     ratings?: RatingListRelationFilter
+    files?: FileListRelationFilter
   }, "id" | "orderNumber">
 
   export type OrderOrderByWithAggregationInput = {
@@ -33966,6 +35615,7 @@ export namespace Prisma {
     startDate?: DateTimeNullableFilter<"Assignment"> | Date | string | null
     endDate?: DateTimeNullableFilter<"Assignment"> | Date | string | null
     status?: EnumAssignmentStatusFilter<"Assignment"> | $Enums.AssignmentStatus
+    tier?: EnumAssignmentTierFilter<"Assignment"> | $Enums.AssignmentTier
     estimatedHours?: DecimalNullableFilter<"Assignment"> | Decimal | DecimalJsLike | number | string | null
     actualHours?: DecimalNullableFilter<"Assignment"> | Decimal | DecimalJsLike | number | string | null
     notes?: StringNullableFilter<"Assignment"> | string | null
@@ -33975,6 +35625,7 @@ export namespace Prisma {
     updatedBy?: StringNullableFilter<"Assignment"> | string | null
     order?: XOR<OrderNullableScalarRelationFilter, OrderWhereInput> | null
     employee?: XOR<EmployeeScalarRelationFilter, EmployeeWhereInput>
+    files?: FileListRelationFilter
   }
 
   export type AssignmentOrderByWithRelationInput = {
@@ -33985,6 +35636,7 @@ export namespace Prisma {
     startDate?: SortOrderInput | SortOrder
     endDate?: SortOrderInput | SortOrder
     status?: SortOrder
+    tier?: SortOrder
     estimatedHours?: SortOrderInput | SortOrder
     actualHours?: SortOrderInput | SortOrder
     notes?: SortOrderInput | SortOrder
@@ -33994,6 +35646,7 @@ export namespace Prisma {
     updatedBy?: SortOrderInput | SortOrder
     order?: OrderOrderByWithRelationInput
     employee?: EmployeeOrderByWithRelationInput
+    files?: FileOrderByRelationAggregateInput
   }
 
   export type AssignmentWhereUniqueInput = Prisma.AtLeast<{
@@ -34007,6 +35660,7 @@ export namespace Prisma {
     startDate?: DateTimeNullableFilter<"Assignment"> | Date | string | null
     endDate?: DateTimeNullableFilter<"Assignment"> | Date | string | null
     status?: EnumAssignmentStatusFilter<"Assignment"> | $Enums.AssignmentStatus
+    tier?: EnumAssignmentTierFilter<"Assignment"> | $Enums.AssignmentTier
     estimatedHours?: DecimalNullableFilter<"Assignment"> | Decimal | DecimalJsLike | number | string | null
     actualHours?: DecimalNullableFilter<"Assignment"> | Decimal | DecimalJsLike | number | string | null
     notes?: StringNullableFilter<"Assignment"> | string | null
@@ -34016,6 +35670,7 @@ export namespace Prisma {
     updatedBy?: StringNullableFilter<"Assignment"> | string | null
     order?: XOR<OrderNullableScalarRelationFilter, OrderWhereInput> | null
     employee?: XOR<EmployeeScalarRelationFilter, EmployeeWhereInput>
+    files?: FileListRelationFilter
   }, "id">
 
   export type AssignmentOrderByWithAggregationInput = {
@@ -34026,6 +35681,7 @@ export namespace Prisma {
     startDate?: SortOrderInput | SortOrder
     endDate?: SortOrderInput | SortOrder
     status?: SortOrder
+    tier?: SortOrder
     estimatedHours?: SortOrderInput | SortOrder
     actualHours?: SortOrderInput | SortOrder
     notes?: SortOrderInput | SortOrder
@@ -34051,6 +35707,7 @@ export namespace Prisma {
     startDate?: DateTimeNullableWithAggregatesFilter<"Assignment"> | Date | string | null
     endDate?: DateTimeNullableWithAggregatesFilter<"Assignment"> | Date | string | null
     status?: EnumAssignmentStatusWithAggregatesFilter<"Assignment"> | $Enums.AssignmentStatus
+    tier?: EnumAssignmentTierWithAggregatesFilter<"Assignment"> | $Enums.AssignmentTier
     estimatedHours?: DecimalNullableWithAggregatesFilter<"Assignment"> | Decimal | DecimalJsLike | number | string | null
     actualHours?: DecimalNullableWithAggregatesFilter<"Assignment"> | Decimal | DecimalJsLike | number | string | null
     notes?: StringNullableWithAggregatesFilter<"Assignment"> | string | null
@@ -34804,6 +36461,129 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"NotificationPreference"> | Date | string
   }
 
+  export type FileWhereInput = {
+    AND?: FileWhereInput | FileWhereInput[]
+    OR?: FileWhereInput[]
+    NOT?: FileWhereInput | FileWhereInput[]
+    id?: StringFilter<"File"> | string
+    filename?: StringFilter<"File"> | string
+    originalName?: StringFilter<"File"> | string
+    mimeType?: StringFilter<"File"> | string
+    size?: IntFilter<"File"> | number
+    path?: StringFilter<"File"> | string
+    documentType?: EnumDocumentTypeFilter<"File"> | $Enums.DocumentType
+    description?: StringNullableFilter<"File"> | string | null
+    expiryDate?: DateTimeNullableFilter<"File"> | Date | string | null
+    employeeId?: StringNullableFilter<"File"> | string | null
+    orderId?: StringNullableFilter<"File"> | string | null
+    assignmentId?: StringNullableFilter<"File"> | string | null
+    uploadedBy?: StringNullableFilter<"File"> | string | null
+    isVerified?: BoolFilter<"File"> | boolean
+    isPublic?: BoolFilter<"File"> | boolean
+    createdAt?: DateTimeFilter<"File"> | Date | string
+    updatedAt?: DateTimeFilter<"File"> | Date | string
+    employee?: XOR<EmployeeNullableScalarRelationFilter, EmployeeWhereInput> | null
+    order?: XOR<OrderNullableScalarRelationFilter, OrderWhereInput> | null
+    assignment?: XOR<AssignmentNullableScalarRelationFilter, AssignmentWhereInput> | null
+  }
+
+  export type FileOrderByWithRelationInput = {
+    id?: SortOrder
+    filename?: SortOrder
+    originalName?: SortOrder
+    mimeType?: SortOrder
+    size?: SortOrder
+    path?: SortOrder
+    documentType?: SortOrder
+    description?: SortOrderInput | SortOrder
+    expiryDate?: SortOrderInput | SortOrder
+    employeeId?: SortOrderInput | SortOrder
+    orderId?: SortOrderInput | SortOrder
+    assignmentId?: SortOrderInput | SortOrder
+    uploadedBy?: SortOrderInput | SortOrder
+    isVerified?: SortOrder
+    isPublic?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    employee?: EmployeeOrderByWithRelationInput
+    order?: OrderOrderByWithRelationInput
+    assignment?: AssignmentOrderByWithRelationInput
+  }
+
+  export type FileWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: FileWhereInput | FileWhereInput[]
+    OR?: FileWhereInput[]
+    NOT?: FileWhereInput | FileWhereInput[]
+    filename?: StringFilter<"File"> | string
+    originalName?: StringFilter<"File"> | string
+    mimeType?: StringFilter<"File"> | string
+    size?: IntFilter<"File"> | number
+    path?: StringFilter<"File"> | string
+    documentType?: EnumDocumentTypeFilter<"File"> | $Enums.DocumentType
+    description?: StringNullableFilter<"File"> | string | null
+    expiryDate?: DateTimeNullableFilter<"File"> | Date | string | null
+    employeeId?: StringNullableFilter<"File"> | string | null
+    orderId?: StringNullableFilter<"File"> | string | null
+    assignmentId?: StringNullableFilter<"File"> | string | null
+    uploadedBy?: StringNullableFilter<"File"> | string | null
+    isVerified?: BoolFilter<"File"> | boolean
+    isPublic?: BoolFilter<"File"> | boolean
+    createdAt?: DateTimeFilter<"File"> | Date | string
+    updatedAt?: DateTimeFilter<"File"> | Date | string
+    employee?: XOR<EmployeeNullableScalarRelationFilter, EmployeeWhereInput> | null
+    order?: XOR<OrderNullableScalarRelationFilter, OrderWhereInput> | null
+    assignment?: XOR<AssignmentNullableScalarRelationFilter, AssignmentWhereInput> | null
+  }, "id">
+
+  export type FileOrderByWithAggregationInput = {
+    id?: SortOrder
+    filename?: SortOrder
+    originalName?: SortOrder
+    mimeType?: SortOrder
+    size?: SortOrder
+    path?: SortOrder
+    documentType?: SortOrder
+    description?: SortOrderInput | SortOrder
+    expiryDate?: SortOrderInput | SortOrder
+    employeeId?: SortOrderInput | SortOrder
+    orderId?: SortOrderInput | SortOrder
+    assignmentId?: SortOrderInput | SortOrder
+    uploadedBy?: SortOrderInput | SortOrder
+    isVerified?: SortOrder
+    isPublic?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: FileCountOrderByAggregateInput
+    _avg?: FileAvgOrderByAggregateInput
+    _max?: FileMaxOrderByAggregateInput
+    _min?: FileMinOrderByAggregateInput
+    _sum?: FileSumOrderByAggregateInput
+  }
+
+  export type FileScalarWhereWithAggregatesInput = {
+    AND?: FileScalarWhereWithAggregatesInput | FileScalarWhereWithAggregatesInput[]
+    OR?: FileScalarWhereWithAggregatesInput[]
+    NOT?: FileScalarWhereWithAggregatesInput | FileScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"File"> | string
+    filename?: StringWithAggregatesFilter<"File"> | string
+    originalName?: StringWithAggregatesFilter<"File"> | string
+    mimeType?: StringWithAggregatesFilter<"File"> | string
+    size?: IntWithAggregatesFilter<"File"> | number
+    path?: StringWithAggregatesFilter<"File"> | string
+    documentType?: EnumDocumentTypeWithAggregatesFilter<"File"> | $Enums.DocumentType
+    description?: StringNullableWithAggregatesFilter<"File"> | string | null
+    expiryDate?: DateTimeNullableWithAggregatesFilter<"File"> | Date | string | null
+    employeeId?: StringNullableWithAggregatesFilter<"File"> | string | null
+    orderId?: StringNullableWithAggregatesFilter<"File"> | string | null
+    assignmentId?: StringNullableWithAggregatesFilter<"File"> | string | null
+    uploadedBy?: StringNullableWithAggregatesFilter<"File"> | string | null
+    isVerified?: BoolWithAggregatesFilter<"File"> | boolean
+    isPublic?: BoolWithAggregatesFilter<"File"> | boolean
+    createdAt?: DateTimeWithAggregatesFilter<"File"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"File"> | Date | string
+  }
+
   export type SystemConfigWhereInput = {
     AND?: SystemConfigWhereInput | SystemConfigWhereInput[]
     OR?: SystemConfigWhereInput[]
@@ -35157,6 +36937,7 @@ export namespace Prisma {
     ratings?: RatingCreateNestedManyWithoutEmployeeInput
     workStatistics?: WorkStatisticCreateNestedManyWithoutEmployeeInput
     orderAssignments?: OrderAssignmentCreateNestedManyWithoutEmployeeInput
+    files?: FileCreateNestedManyWithoutEmployeeInput
   }
 
   export type EmployeeUncheckedCreateInput = {
@@ -35194,6 +36975,7 @@ export namespace Prisma {
     ratings?: RatingUncheckedCreateNestedManyWithoutEmployeeInput
     workStatistics?: WorkStatisticUncheckedCreateNestedManyWithoutEmployeeInput
     orderAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutEmployeeInput
+    files?: FileUncheckedCreateNestedManyWithoutEmployeeInput
   }
 
   export type EmployeeUpdateInput = {
@@ -35231,6 +37013,7 @@ export namespace Prisma {
     ratings?: RatingUpdateManyWithoutEmployeeNestedInput
     workStatistics?: WorkStatisticUpdateManyWithoutEmployeeNestedInput
     orderAssignments?: OrderAssignmentUpdateManyWithoutEmployeeNestedInput
+    files?: FileUpdateManyWithoutEmployeeNestedInput
   }
 
   export type EmployeeUncheckedUpdateInput = {
@@ -35268,6 +37051,7 @@ export namespace Prisma {
     ratings?: RatingUncheckedUpdateManyWithoutEmployeeNestedInput
     workStatistics?: WorkStatisticUncheckedUpdateManyWithoutEmployeeNestedInput
     orderAssignments?: OrderAssignmentUncheckedUpdateManyWithoutEmployeeNestedInput
+    files?: FileUncheckedUpdateManyWithoutEmployeeNestedInput
   }
 
   export type EmployeeCreateManyInput = {
@@ -35930,6 +37714,7 @@ export namespace Prisma {
     orderAssignments?: OrderAssignmentCreateNestedManyWithoutOrderInput
     employeeAssignments?: AssignmentCreateNestedManyWithoutOrderInput
     ratings?: RatingCreateNestedManyWithoutOrderInput
+    files?: FileCreateNestedManyWithoutOrderInput
   }
 
   export type OrderUncheckedCreateInput = {
@@ -35955,6 +37740,7 @@ export namespace Prisma {
     orderAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutOrderInput
     employeeAssignments?: AssignmentUncheckedCreateNestedManyWithoutOrderInput
     ratings?: RatingUncheckedCreateNestedManyWithoutOrderInput
+    files?: FileUncheckedCreateNestedManyWithoutOrderInput
   }
 
   export type OrderUpdateInput = {
@@ -35980,6 +37766,7 @@ export namespace Prisma {
     orderAssignments?: OrderAssignmentUpdateManyWithoutOrderNestedInput
     employeeAssignments?: AssignmentUpdateManyWithoutOrderNestedInput
     ratings?: RatingUpdateManyWithoutOrderNestedInput
+    files?: FileUpdateManyWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateInput = {
@@ -36005,6 +37792,7 @@ export namespace Prisma {
     orderAssignments?: OrderAssignmentUncheckedUpdateManyWithoutOrderNestedInput
     employeeAssignments?: AssignmentUncheckedUpdateManyWithoutOrderNestedInput
     ratings?: RatingUncheckedUpdateManyWithoutOrderNestedInput
+    files?: FileUncheckedUpdateManyWithoutOrderNestedInput
   }
 
   export type OrderCreateManyInput = {
@@ -36310,6 +38098,7 @@ export namespace Prisma {
     startDate?: Date | string | null
     endDate?: Date | string | null
     status?: $Enums.AssignmentStatus
+    tier?: $Enums.AssignmentTier
     estimatedHours?: Decimal | DecimalJsLike | number | string | null
     actualHours?: Decimal | DecimalJsLike | number | string | null
     notes?: string | null
@@ -36319,6 +38108,7 @@ export namespace Prisma {
     updatedBy?: string | null
     order?: OrderCreateNestedOneWithoutEmployeeAssignmentsInput
     employee: EmployeeCreateNestedOneWithoutAssignmentsInput
+    files?: FileCreateNestedManyWithoutAssignmentInput
   }
 
   export type AssignmentUncheckedCreateInput = {
@@ -36329,6 +38119,7 @@ export namespace Prisma {
     startDate?: Date | string | null
     endDate?: Date | string | null
     status?: $Enums.AssignmentStatus
+    tier?: $Enums.AssignmentTier
     estimatedHours?: Decimal | DecimalJsLike | number | string | null
     actualHours?: Decimal | DecimalJsLike | number | string | null
     notes?: string | null
@@ -36336,6 +38127,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     createdBy?: string | null
     updatedBy?: string | null
+    files?: FileUncheckedCreateNestedManyWithoutAssignmentInput
   }
 
   export type AssignmentUpdateInput = {
@@ -36344,6 +38136,7 @@ export namespace Prisma {
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: EnumAssignmentStatusFieldUpdateOperationsInput | $Enums.AssignmentStatus
+    tier?: EnumAssignmentTierFieldUpdateOperationsInput | $Enums.AssignmentTier
     estimatedHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     actualHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
@@ -36353,6 +38146,7 @@ export namespace Prisma {
     updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
     order?: OrderUpdateOneWithoutEmployeeAssignmentsNestedInput
     employee?: EmployeeUpdateOneRequiredWithoutAssignmentsNestedInput
+    files?: FileUpdateManyWithoutAssignmentNestedInput
   }
 
   export type AssignmentUncheckedUpdateInput = {
@@ -36363,6 +38157,7 @@ export namespace Prisma {
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: EnumAssignmentStatusFieldUpdateOperationsInput | $Enums.AssignmentStatus
+    tier?: EnumAssignmentTierFieldUpdateOperationsInput | $Enums.AssignmentTier
     estimatedHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     actualHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
@@ -36370,6 +38165,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    files?: FileUncheckedUpdateManyWithoutAssignmentNestedInput
   }
 
   export type AssignmentCreateManyInput = {
@@ -36380,6 +38176,7 @@ export namespace Prisma {
     startDate?: Date | string | null
     endDate?: Date | string | null
     status?: $Enums.AssignmentStatus
+    tier?: $Enums.AssignmentTier
     estimatedHours?: Decimal | DecimalJsLike | number | string | null
     actualHours?: Decimal | DecimalJsLike | number | string | null
     notes?: string | null
@@ -36395,6 +38192,7 @@ export namespace Prisma {
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: EnumAssignmentStatusFieldUpdateOperationsInput | $Enums.AssignmentStatus
+    tier?: EnumAssignmentTierFieldUpdateOperationsInput | $Enums.AssignmentTier
     estimatedHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     actualHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
@@ -36412,6 +38210,7 @@ export namespace Prisma {
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: EnumAssignmentStatusFieldUpdateOperationsInput | $Enums.AssignmentStatus
+    tier?: EnumAssignmentTierFieldUpdateOperationsInput | $Enums.AssignmentTier
     estimatedHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     actualHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
@@ -37237,6 +39036,143 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type FileCreateInput = {
+    id?: string
+    filename: string
+    originalName: string
+    mimeType: string
+    size: number
+    path: string
+    documentType?: $Enums.DocumentType
+    description?: string | null
+    expiryDate?: Date | string | null
+    uploadedBy?: string | null
+    isVerified?: boolean
+    isPublic?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    employee?: EmployeeCreateNestedOneWithoutFilesInput
+    order?: OrderCreateNestedOneWithoutFilesInput
+    assignment?: AssignmentCreateNestedOneWithoutFilesInput
+  }
+
+  export type FileUncheckedCreateInput = {
+    id?: string
+    filename: string
+    originalName: string
+    mimeType: string
+    size: number
+    path: string
+    documentType?: $Enums.DocumentType
+    description?: string | null
+    expiryDate?: Date | string | null
+    employeeId?: string | null
+    orderId?: string | null
+    assignmentId?: string | null
+    uploadedBy?: string | null
+    isVerified?: boolean
+    isPublic?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type FileUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    filename?: StringFieldUpdateOperationsInput | string
+    originalName?: StringFieldUpdateOperationsInput | string
+    mimeType?: StringFieldUpdateOperationsInput | string
+    size?: IntFieldUpdateOperationsInput | number
+    path?: StringFieldUpdateOperationsInput | string
+    documentType?: EnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    expiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    uploadedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    isVerified?: BoolFieldUpdateOperationsInput | boolean
+    isPublic?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    employee?: EmployeeUpdateOneWithoutFilesNestedInput
+    order?: OrderUpdateOneWithoutFilesNestedInput
+    assignment?: AssignmentUpdateOneWithoutFilesNestedInput
+  }
+
+  export type FileUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    filename?: StringFieldUpdateOperationsInput | string
+    originalName?: StringFieldUpdateOperationsInput | string
+    mimeType?: StringFieldUpdateOperationsInput | string
+    size?: IntFieldUpdateOperationsInput | number
+    path?: StringFieldUpdateOperationsInput | string
+    documentType?: EnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    expiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    employeeId?: NullableStringFieldUpdateOperationsInput | string | null
+    orderId?: NullableStringFieldUpdateOperationsInput | string | null
+    assignmentId?: NullableStringFieldUpdateOperationsInput | string | null
+    uploadedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    isVerified?: BoolFieldUpdateOperationsInput | boolean
+    isPublic?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type FileCreateManyInput = {
+    id?: string
+    filename: string
+    originalName: string
+    mimeType: string
+    size: number
+    path: string
+    documentType?: $Enums.DocumentType
+    description?: string | null
+    expiryDate?: Date | string | null
+    employeeId?: string | null
+    orderId?: string | null
+    assignmentId?: string | null
+    uploadedBy?: string | null
+    isVerified?: boolean
+    isPublic?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type FileUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    filename?: StringFieldUpdateOperationsInput | string
+    originalName?: StringFieldUpdateOperationsInput | string
+    mimeType?: StringFieldUpdateOperationsInput | string
+    size?: IntFieldUpdateOperationsInput | number
+    path?: StringFieldUpdateOperationsInput | string
+    documentType?: EnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    expiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    uploadedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    isVerified?: BoolFieldUpdateOperationsInput | boolean
+    isPublic?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type FileUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    filename?: StringFieldUpdateOperationsInput | string
+    originalName?: StringFieldUpdateOperationsInput | string
+    mimeType?: StringFieldUpdateOperationsInput | string
+    size?: IntFieldUpdateOperationsInput | number
+    path?: StringFieldUpdateOperationsInput | string
+    documentType?: EnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    expiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    employeeId?: NullableStringFieldUpdateOperationsInput | string | null
+    orderId?: NullableStringFieldUpdateOperationsInput | string | null
+    assignmentId?: NullableStringFieldUpdateOperationsInput | string | null
+    uploadedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    isVerified?: BoolFieldUpdateOperationsInput | boolean
+    isPublic?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type SystemConfigCreateInput = {
     id?: string
     key: string
@@ -37777,6 +39713,12 @@ export namespace Prisma {
     none?: OrderAssignmentWhereInput
   }
 
+  export type FileListRelationFilter = {
+    every?: FileWhereInput
+    some?: FileWhereInput
+    none?: FileWhereInput
+  }
+
   export type EmployeeQualificationOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
@@ -37798,6 +39740,10 @@ export namespace Prisma {
   }
 
   export type OrderAssignmentOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type FileOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -38638,6 +40584,13 @@ export namespace Prisma {
     not?: NestedEnumAssignmentStatusFilter<$PrismaModel> | $Enums.AssignmentStatus
   }
 
+  export type EnumAssignmentTierFilter<$PrismaModel = never> = {
+    equals?: $Enums.AssignmentTier | EnumAssignmentTierFieldRefInput<$PrismaModel>
+    in?: $Enums.AssignmentTier[] | ListEnumAssignmentTierFieldRefInput<$PrismaModel>
+    notIn?: $Enums.AssignmentTier[] | ListEnumAssignmentTierFieldRefInput<$PrismaModel>
+    not?: NestedEnumAssignmentTierFilter<$PrismaModel> | $Enums.AssignmentTier
+  }
+
   export type OrderNullableScalarRelationFilter = {
     is?: OrderWhereInput | null
     isNot?: OrderWhereInput | null
@@ -38651,6 +40604,7 @@ export namespace Prisma {
     startDate?: SortOrder
     endDate?: SortOrder
     status?: SortOrder
+    tier?: SortOrder
     estimatedHours?: SortOrder
     actualHours?: SortOrder
     notes?: SortOrder
@@ -38673,6 +40627,7 @@ export namespace Prisma {
     startDate?: SortOrder
     endDate?: SortOrder
     status?: SortOrder
+    tier?: SortOrder
     estimatedHours?: SortOrder
     actualHours?: SortOrder
     notes?: SortOrder
@@ -38690,6 +40645,7 @@ export namespace Prisma {
     startDate?: SortOrder
     endDate?: SortOrder
     status?: SortOrder
+    tier?: SortOrder
     estimatedHours?: SortOrder
     actualHours?: SortOrder
     notes?: SortOrder
@@ -38712,6 +40668,16 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumAssignmentStatusFilter<$PrismaModel>
     _max?: NestedEnumAssignmentStatusFilter<$PrismaModel>
+  }
+
+  export type EnumAssignmentTierWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.AssignmentTier | EnumAssignmentTierFieldRefInput<$PrismaModel>
+    in?: $Enums.AssignmentTier[] | ListEnumAssignmentTierFieldRefInput<$PrismaModel>
+    notIn?: $Enums.AssignmentTier[] | ListEnumAssignmentTierFieldRefInput<$PrismaModel>
+    not?: NestedEnumAssignmentTierWithAggregatesFilter<$PrismaModel> | $Enums.AssignmentTier
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumAssignmentTierFilter<$PrismaModel>
+    _max?: NestedEnumAssignmentTierFilter<$PrismaModel>
   }
 
   export type OrderAssignmentOrderIdEmployeeIdCompoundUniqueInput = {
@@ -39239,6 +41205,96 @@ export namespace Prisma {
     quietHoursEnd?: SortOrder
   }
 
+  export type EnumDocumentTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.DocumentType | EnumDocumentTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.DocumentType[] | ListEnumDocumentTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.DocumentType[] | ListEnumDocumentTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumDocumentTypeFilter<$PrismaModel> | $Enums.DocumentType
+  }
+
+  export type AssignmentNullableScalarRelationFilter = {
+    is?: AssignmentWhereInput | null
+    isNot?: AssignmentWhereInput | null
+  }
+
+  export type FileCountOrderByAggregateInput = {
+    id?: SortOrder
+    filename?: SortOrder
+    originalName?: SortOrder
+    mimeType?: SortOrder
+    size?: SortOrder
+    path?: SortOrder
+    documentType?: SortOrder
+    description?: SortOrder
+    expiryDate?: SortOrder
+    employeeId?: SortOrder
+    orderId?: SortOrder
+    assignmentId?: SortOrder
+    uploadedBy?: SortOrder
+    isVerified?: SortOrder
+    isPublic?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type FileAvgOrderByAggregateInput = {
+    size?: SortOrder
+  }
+
+  export type FileMaxOrderByAggregateInput = {
+    id?: SortOrder
+    filename?: SortOrder
+    originalName?: SortOrder
+    mimeType?: SortOrder
+    size?: SortOrder
+    path?: SortOrder
+    documentType?: SortOrder
+    description?: SortOrder
+    expiryDate?: SortOrder
+    employeeId?: SortOrder
+    orderId?: SortOrder
+    assignmentId?: SortOrder
+    uploadedBy?: SortOrder
+    isVerified?: SortOrder
+    isPublic?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type FileMinOrderByAggregateInput = {
+    id?: SortOrder
+    filename?: SortOrder
+    originalName?: SortOrder
+    mimeType?: SortOrder
+    size?: SortOrder
+    path?: SortOrder
+    documentType?: SortOrder
+    description?: SortOrder
+    expiryDate?: SortOrder
+    employeeId?: SortOrder
+    orderId?: SortOrder
+    assignmentId?: SortOrder
+    uploadedBy?: SortOrder
+    isVerified?: SortOrder
+    isPublic?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type FileSumOrderByAggregateInput = {
+    size?: SortOrder
+  }
+
+  export type EnumDocumentTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.DocumentType | EnumDocumentTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.DocumentType[] | ListEnumDocumentTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.DocumentType[] | ListEnumDocumentTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumDocumentTypeWithAggregatesFilter<$PrismaModel> | $Enums.DocumentType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumDocumentTypeFilter<$PrismaModel>
+    _max?: NestedEnumDocumentTypeFilter<$PrismaModel>
+  }
+
   export type SystemConfigCountOrderByAggregateInput = {
     id?: SortOrder
     key?: SortOrder
@@ -39592,6 +41648,13 @@ export namespace Prisma {
     connect?: OrderAssignmentWhereUniqueInput | OrderAssignmentWhereUniqueInput[]
   }
 
+  export type FileCreateNestedManyWithoutEmployeeInput = {
+    create?: XOR<FileCreateWithoutEmployeeInput, FileUncheckedCreateWithoutEmployeeInput> | FileCreateWithoutEmployeeInput[] | FileUncheckedCreateWithoutEmployeeInput[]
+    connectOrCreate?: FileCreateOrConnectWithoutEmployeeInput | FileCreateOrConnectWithoutEmployeeInput[]
+    createMany?: FileCreateManyEmployeeInputEnvelope
+    connect?: FileWhereUniqueInput | FileWhereUniqueInput[]
+  }
+
   export type EmployeePerformanceUncheckedCreateNestedManyWithoutEmployeeInput = {
     create?: XOR<EmployeePerformanceCreateWithoutEmployeeInput, EmployeePerformanceUncheckedCreateWithoutEmployeeInput> | EmployeePerformanceCreateWithoutEmployeeInput[] | EmployeePerformanceUncheckedCreateWithoutEmployeeInput[]
     connectOrCreate?: EmployeePerformanceCreateOrConnectWithoutEmployeeInput | EmployeePerformanceCreateOrConnectWithoutEmployeeInput[]
@@ -39639,6 +41702,13 @@ export namespace Prisma {
     connectOrCreate?: OrderAssignmentCreateOrConnectWithoutEmployeeInput | OrderAssignmentCreateOrConnectWithoutEmployeeInput[]
     createMany?: OrderAssignmentCreateManyEmployeeInputEnvelope
     connect?: OrderAssignmentWhereUniqueInput | OrderAssignmentWhereUniqueInput[]
+  }
+
+  export type FileUncheckedCreateNestedManyWithoutEmployeeInput = {
+    create?: XOR<FileCreateWithoutEmployeeInput, FileUncheckedCreateWithoutEmployeeInput> | FileCreateWithoutEmployeeInput[] | FileUncheckedCreateWithoutEmployeeInput[]
+    connectOrCreate?: FileCreateOrConnectWithoutEmployeeInput | FileCreateOrConnectWithoutEmployeeInput[]
+    createMany?: FileCreateManyEmployeeInputEnvelope
+    connect?: FileWhereUniqueInput | FileWhereUniqueInput[]
   }
 
   export type EnumWorkScheduleTypeFieldUpdateOperationsInput = {
@@ -39797,6 +41867,20 @@ export namespace Prisma {
     deleteMany?: OrderAssignmentScalarWhereInput | OrderAssignmentScalarWhereInput[]
   }
 
+  export type FileUpdateManyWithoutEmployeeNestedInput = {
+    create?: XOR<FileCreateWithoutEmployeeInput, FileUncheckedCreateWithoutEmployeeInput> | FileCreateWithoutEmployeeInput[] | FileUncheckedCreateWithoutEmployeeInput[]
+    connectOrCreate?: FileCreateOrConnectWithoutEmployeeInput | FileCreateOrConnectWithoutEmployeeInput[]
+    upsert?: FileUpsertWithWhereUniqueWithoutEmployeeInput | FileUpsertWithWhereUniqueWithoutEmployeeInput[]
+    createMany?: FileCreateManyEmployeeInputEnvelope
+    set?: FileWhereUniqueInput | FileWhereUniqueInput[]
+    disconnect?: FileWhereUniqueInput | FileWhereUniqueInput[]
+    delete?: FileWhereUniqueInput | FileWhereUniqueInput[]
+    connect?: FileWhereUniqueInput | FileWhereUniqueInput[]
+    update?: FileUpdateWithWhereUniqueWithoutEmployeeInput | FileUpdateWithWhereUniqueWithoutEmployeeInput[]
+    updateMany?: FileUpdateManyWithWhereWithoutEmployeeInput | FileUpdateManyWithWhereWithoutEmployeeInput[]
+    deleteMany?: FileScalarWhereInput | FileScalarWhereInput[]
+  }
+
   export type EmployeePerformanceUncheckedUpdateManyWithoutEmployeeNestedInput = {
     create?: XOR<EmployeePerformanceCreateWithoutEmployeeInput, EmployeePerformanceUncheckedCreateWithoutEmployeeInput> | EmployeePerformanceCreateWithoutEmployeeInput[] | EmployeePerformanceUncheckedCreateWithoutEmployeeInput[]
     connectOrCreate?: EmployeePerformanceCreateOrConnectWithoutEmployeeInput | EmployeePerformanceCreateOrConnectWithoutEmployeeInput[]
@@ -39893,6 +41977,20 @@ export namespace Prisma {
     update?: OrderAssignmentUpdateWithWhereUniqueWithoutEmployeeInput | OrderAssignmentUpdateWithWhereUniqueWithoutEmployeeInput[]
     updateMany?: OrderAssignmentUpdateManyWithWhereWithoutEmployeeInput | OrderAssignmentUpdateManyWithWhereWithoutEmployeeInput[]
     deleteMany?: OrderAssignmentScalarWhereInput | OrderAssignmentScalarWhereInput[]
+  }
+
+  export type FileUncheckedUpdateManyWithoutEmployeeNestedInput = {
+    create?: XOR<FileCreateWithoutEmployeeInput, FileUncheckedCreateWithoutEmployeeInput> | FileCreateWithoutEmployeeInput[] | FileUncheckedCreateWithoutEmployeeInput[]
+    connectOrCreate?: FileCreateOrConnectWithoutEmployeeInput | FileCreateOrConnectWithoutEmployeeInput[]
+    upsert?: FileUpsertWithWhereUniqueWithoutEmployeeInput | FileUpsertWithWhereUniqueWithoutEmployeeInput[]
+    createMany?: FileCreateManyEmployeeInputEnvelope
+    set?: FileWhereUniqueInput | FileWhereUniqueInput[]
+    disconnect?: FileWhereUniqueInput | FileWhereUniqueInput[]
+    delete?: FileWhereUniqueInput | FileWhereUniqueInput[]
+    connect?: FileWhereUniqueInput | FileWhereUniqueInput[]
+    update?: FileUpdateWithWhereUniqueWithoutEmployeeInput | FileUpdateWithWhereUniqueWithoutEmployeeInput[]
+    updateMany?: FileUpdateManyWithWhereWithoutEmployeeInput | FileUpdateManyWithWhereWithoutEmployeeInput[]
+    deleteMany?: FileScalarWhereInput | FileScalarWhereInput[]
   }
 
   export type EmployeeCreateNestedOneWithoutPerformanceRecordsInput = {
@@ -40355,6 +42453,13 @@ export namespace Prisma {
     connect?: RatingWhereUniqueInput | RatingWhereUniqueInput[]
   }
 
+  export type FileCreateNestedManyWithoutOrderInput = {
+    create?: XOR<FileCreateWithoutOrderInput, FileUncheckedCreateWithoutOrderInput> | FileCreateWithoutOrderInput[] | FileUncheckedCreateWithoutOrderInput[]
+    connectOrCreate?: FileCreateOrConnectWithoutOrderInput | FileCreateOrConnectWithoutOrderInput[]
+    createMany?: FileCreateManyOrderInputEnvelope
+    connect?: FileWhereUniqueInput | FileWhereUniqueInput[]
+  }
+
   export type OrderQualificationUncheckedCreateNestedManyWithoutOrderInput = {
     create?: XOR<OrderQualificationCreateWithoutOrderInput, OrderQualificationUncheckedCreateWithoutOrderInput> | OrderQualificationCreateWithoutOrderInput[] | OrderQualificationUncheckedCreateWithoutOrderInput[]
     connectOrCreate?: OrderQualificationCreateOrConnectWithoutOrderInput | OrderQualificationCreateOrConnectWithoutOrderInput[]
@@ -40381,6 +42486,13 @@ export namespace Prisma {
     connectOrCreate?: RatingCreateOrConnectWithoutOrderInput | RatingCreateOrConnectWithoutOrderInput[]
     createMany?: RatingCreateManyOrderInputEnvelope
     connect?: RatingWhereUniqueInput | RatingWhereUniqueInput[]
+  }
+
+  export type FileUncheckedCreateNestedManyWithoutOrderInput = {
+    create?: XOR<FileCreateWithoutOrderInput, FileUncheckedCreateWithoutOrderInput> | FileCreateWithoutOrderInput[] | FileUncheckedCreateWithoutOrderInput[]
+    connectOrCreate?: FileCreateOrConnectWithoutOrderInput | FileCreateOrConnectWithoutOrderInput[]
+    createMany?: FileCreateManyOrderInputEnvelope
+    connect?: FileWhereUniqueInput | FileWhereUniqueInput[]
   }
 
   export type NullableIntFieldUpdateOperationsInput = {
@@ -40461,6 +42573,20 @@ export namespace Prisma {
     deleteMany?: RatingScalarWhereInput | RatingScalarWhereInput[]
   }
 
+  export type FileUpdateManyWithoutOrderNestedInput = {
+    create?: XOR<FileCreateWithoutOrderInput, FileUncheckedCreateWithoutOrderInput> | FileCreateWithoutOrderInput[] | FileUncheckedCreateWithoutOrderInput[]
+    connectOrCreate?: FileCreateOrConnectWithoutOrderInput | FileCreateOrConnectWithoutOrderInput[]
+    upsert?: FileUpsertWithWhereUniqueWithoutOrderInput | FileUpsertWithWhereUniqueWithoutOrderInput[]
+    createMany?: FileCreateManyOrderInputEnvelope
+    set?: FileWhereUniqueInput | FileWhereUniqueInput[]
+    disconnect?: FileWhereUniqueInput | FileWhereUniqueInput[]
+    delete?: FileWhereUniqueInput | FileWhereUniqueInput[]
+    connect?: FileWhereUniqueInput | FileWhereUniqueInput[]
+    update?: FileUpdateWithWhereUniqueWithoutOrderInput | FileUpdateWithWhereUniqueWithoutOrderInput[]
+    updateMany?: FileUpdateManyWithWhereWithoutOrderInput | FileUpdateManyWithWhereWithoutOrderInput[]
+    deleteMany?: FileScalarWhereInput | FileScalarWhereInput[]
+  }
+
   export type OrderQualificationUncheckedUpdateManyWithoutOrderNestedInput = {
     create?: XOR<OrderQualificationCreateWithoutOrderInput, OrderQualificationUncheckedCreateWithoutOrderInput> | OrderQualificationCreateWithoutOrderInput[] | OrderQualificationUncheckedCreateWithoutOrderInput[]
     connectOrCreate?: OrderQualificationCreateOrConnectWithoutOrderInput | OrderQualificationCreateOrConnectWithoutOrderInput[]
@@ -40515,6 +42641,20 @@ export namespace Prisma {
     update?: RatingUpdateWithWhereUniqueWithoutOrderInput | RatingUpdateWithWhereUniqueWithoutOrderInput[]
     updateMany?: RatingUpdateManyWithWhereWithoutOrderInput | RatingUpdateManyWithWhereWithoutOrderInput[]
     deleteMany?: RatingScalarWhereInput | RatingScalarWhereInput[]
+  }
+
+  export type FileUncheckedUpdateManyWithoutOrderNestedInput = {
+    create?: XOR<FileCreateWithoutOrderInput, FileUncheckedCreateWithoutOrderInput> | FileCreateWithoutOrderInput[] | FileUncheckedCreateWithoutOrderInput[]
+    connectOrCreate?: FileCreateOrConnectWithoutOrderInput | FileCreateOrConnectWithoutOrderInput[]
+    upsert?: FileUpsertWithWhereUniqueWithoutOrderInput | FileUpsertWithWhereUniqueWithoutOrderInput[]
+    createMany?: FileCreateManyOrderInputEnvelope
+    set?: FileWhereUniqueInput | FileWhereUniqueInput[]
+    disconnect?: FileWhereUniqueInput | FileWhereUniqueInput[]
+    delete?: FileWhereUniqueInput | FileWhereUniqueInput[]
+    connect?: FileWhereUniqueInput | FileWhereUniqueInput[]
+    update?: FileUpdateWithWhereUniqueWithoutOrderInput | FileUpdateWithWhereUniqueWithoutOrderInput[]
+    updateMany?: FileUpdateManyWithWhereWithoutOrderInput | FileUpdateManyWithWhereWithoutOrderInput[]
+    deleteMany?: FileScalarWhereInput | FileScalarWhereInput[]
   }
 
   export type EmployeeQualificationCreateNestedManyWithoutQualificationInput = {
@@ -40669,8 +42809,26 @@ export namespace Prisma {
     connect?: EmployeeWhereUniqueInput
   }
 
+  export type FileCreateNestedManyWithoutAssignmentInput = {
+    create?: XOR<FileCreateWithoutAssignmentInput, FileUncheckedCreateWithoutAssignmentInput> | FileCreateWithoutAssignmentInput[] | FileUncheckedCreateWithoutAssignmentInput[]
+    connectOrCreate?: FileCreateOrConnectWithoutAssignmentInput | FileCreateOrConnectWithoutAssignmentInput[]
+    createMany?: FileCreateManyAssignmentInputEnvelope
+    connect?: FileWhereUniqueInput | FileWhereUniqueInput[]
+  }
+
+  export type FileUncheckedCreateNestedManyWithoutAssignmentInput = {
+    create?: XOR<FileCreateWithoutAssignmentInput, FileUncheckedCreateWithoutAssignmentInput> | FileCreateWithoutAssignmentInput[] | FileUncheckedCreateWithoutAssignmentInput[]
+    connectOrCreate?: FileCreateOrConnectWithoutAssignmentInput | FileCreateOrConnectWithoutAssignmentInput[]
+    createMany?: FileCreateManyAssignmentInputEnvelope
+    connect?: FileWhereUniqueInput | FileWhereUniqueInput[]
+  }
+
   export type EnumAssignmentStatusFieldUpdateOperationsInput = {
     set?: $Enums.AssignmentStatus
+  }
+
+  export type EnumAssignmentTierFieldUpdateOperationsInput = {
+    set?: $Enums.AssignmentTier
   }
 
   export type OrderUpdateOneWithoutEmployeeAssignmentsNestedInput = {
@@ -40689,6 +42847,34 @@ export namespace Prisma {
     upsert?: EmployeeUpsertWithoutAssignmentsInput
     connect?: EmployeeWhereUniqueInput
     update?: XOR<XOR<EmployeeUpdateToOneWithWhereWithoutAssignmentsInput, EmployeeUpdateWithoutAssignmentsInput>, EmployeeUncheckedUpdateWithoutAssignmentsInput>
+  }
+
+  export type FileUpdateManyWithoutAssignmentNestedInput = {
+    create?: XOR<FileCreateWithoutAssignmentInput, FileUncheckedCreateWithoutAssignmentInput> | FileCreateWithoutAssignmentInput[] | FileUncheckedCreateWithoutAssignmentInput[]
+    connectOrCreate?: FileCreateOrConnectWithoutAssignmentInput | FileCreateOrConnectWithoutAssignmentInput[]
+    upsert?: FileUpsertWithWhereUniqueWithoutAssignmentInput | FileUpsertWithWhereUniqueWithoutAssignmentInput[]
+    createMany?: FileCreateManyAssignmentInputEnvelope
+    set?: FileWhereUniqueInput | FileWhereUniqueInput[]
+    disconnect?: FileWhereUniqueInput | FileWhereUniqueInput[]
+    delete?: FileWhereUniqueInput | FileWhereUniqueInput[]
+    connect?: FileWhereUniqueInput | FileWhereUniqueInput[]
+    update?: FileUpdateWithWhereUniqueWithoutAssignmentInput | FileUpdateWithWhereUniqueWithoutAssignmentInput[]
+    updateMany?: FileUpdateManyWithWhereWithoutAssignmentInput | FileUpdateManyWithWhereWithoutAssignmentInput[]
+    deleteMany?: FileScalarWhereInput | FileScalarWhereInput[]
+  }
+
+  export type FileUncheckedUpdateManyWithoutAssignmentNestedInput = {
+    create?: XOR<FileCreateWithoutAssignmentInput, FileUncheckedCreateWithoutAssignmentInput> | FileCreateWithoutAssignmentInput[] | FileUncheckedCreateWithoutAssignmentInput[]
+    connectOrCreate?: FileCreateOrConnectWithoutAssignmentInput | FileCreateOrConnectWithoutAssignmentInput[]
+    upsert?: FileUpsertWithWhereUniqueWithoutAssignmentInput | FileUpsertWithWhereUniqueWithoutAssignmentInput[]
+    createMany?: FileCreateManyAssignmentInputEnvelope
+    set?: FileWhereUniqueInput | FileWhereUniqueInput[]
+    disconnect?: FileWhereUniqueInput | FileWhereUniqueInput[]
+    delete?: FileWhereUniqueInput | FileWhereUniqueInput[]
+    connect?: FileWhereUniqueInput | FileWhereUniqueInput[]
+    update?: FileUpdateWithWhereUniqueWithoutAssignmentInput | FileUpdateWithWhereUniqueWithoutAssignmentInput[]
+    updateMany?: FileUpdateManyWithWhereWithoutAssignmentInput | FileUpdateManyWithWhereWithoutAssignmentInput[]
+    deleteMany?: FileScalarWhereInput | FileScalarWhereInput[]
   }
 
   export type OrderCreateNestedOneWithoutOrderAssignmentsInput = {
@@ -40994,6 +43180,58 @@ export namespace Prisma {
     upsert?: UserUpsertWithoutNotificationPreferencesInput
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutNotificationPreferencesInput, UserUpdateWithoutNotificationPreferencesInput>, UserUncheckedUpdateWithoutNotificationPreferencesInput>
+  }
+
+  export type EmployeeCreateNestedOneWithoutFilesInput = {
+    create?: XOR<EmployeeCreateWithoutFilesInput, EmployeeUncheckedCreateWithoutFilesInput>
+    connectOrCreate?: EmployeeCreateOrConnectWithoutFilesInput
+    connect?: EmployeeWhereUniqueInput
+  }
+
+  export type OrderCreateNestedOneWithoutFilesInput = {
+    create?: XOR<OrderCreateWithoutFilesInput, OrderUncheckedCreateWithoutFilesInput>
+    connectOrCreate?: OrderCreateOrConnectWithoutFilesInput
+    connect?: OrderWhereUniqueInput
+  }
+
+  export type AssignmentCreateNestedOneWithoutFilesInput = {
+    create?: XOR<AssignmentCreateWithoutFilesInput, AssignmentUncheckedCreateWithoutFilesInput>
+    connectOrCreate?: AssignmentCreateOrConnectWithoutFilesInput
+    connect?: AssignmentWhereUniqueInput
+  }
+
+  export type EnumDocumentTypeFieldUpdateOperationsInput = {
+    set?: $Enums.DocumentType
+  }
+
+  export type EmployeeUpdateOneWithoutFilesNestedInput = {
+    create?: XOR<EmployeeCreateWithoutFilesInput, EmployeeUncheckedCreateWithoutFilesInput>
+    connectOrCreate?: EmployeeCreateOrConnectWithoutFilesInput
+    upsert?: EmployeeUpsertWithoutFilesInput
+    disconnect?: EmployeeWhereInput | boolean
+    delete?: EmployeeWhereInput | boolean
+    connect?: EmployeeWhereUniqueInput
+    update?: XOR<XOR<EmployeeUpdateToOneWithWhereWithoutFilesInput, EmployeeUpdateWithoutFilesInput>, EmployeeUncheckedUpdateWithoutFilesInput>
+  }
+
+  export type OrderUpdateOneWithoutFilesNestedInput = {
+    create?: XOR<OrderCreateWithoutFilesInput, OrderUncheckedCreateWithoutFilesInput>
+    connectOrCreate?: OrderCreateOrConnectWithoutFilesInput
+    upsert?: OrderUpsertWithoutFilesInput
+    disconnect?: OrderWhereInput | boolean
+    delete?: OrderWhereInput | boolean
+    connect?: OrderWhereUniqueInput
+    update?: XOR<XOR<OrderUpdateToOneWithWhereWithoutFilesInput, OrderUpdateWithoutFilesInput>, OrderUncheckedUpdateWithoutFilesInput>
+  }
+
+  export type AssignmentUpdateOneWithoutFilesNestedInput = {
+    create?: XOR<AssignmentCreateWithoutFilesInput, AssignmentUncheckedCreateWithoutFilesInput>
+    connectOrCreate?: AssignmentCreateOrConnectWithoutFilesInput
+    upsert?: AssignmentUpsertWithoutFilesInput
+    disconnect?: AssignmentWhereInput | boolean
+    delete?: AssignmentWhereInput | boolean
+    connect?: AssignmentWhereUniqueInput
+    update?: XOR<XOR<AssignmentUpdateToOneWithWhereWithoutFilesInput, AssignmentUpdateWithoutFilesInput>, AssignmentUncheckedUpdateWithoutFilesInput>
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -41366,6 +43604,13 @@ export namespace Prisma {
     not?: NestedEnumAssignmentStatusFilter<$PrismaModel> | $Enums.AssignmentStatus
   }
 
+  export type NestedEnumAssignmentTierFilter<$PrismaModel = never> = {
+    equals?: $Enums.AssignmentTier | EnumAssignmentTierFieldRefInput<$PrismaModel>
+    in?: $Enums.AssignmentTier[] | ListEnumAssignmentTierFieldRefInput<$PrismaModel>
+    notIn?: $Enums.AssignmentTier[] | ListEnumAssignmentTierFieldRefInput<$PrismaModel>
+    not?: NestedEnumAssignmentTierFilter<$PrismaModel> | $Enums.AssignmentTier
+  }
+
   export type NestedEnumAssignmentStatusWithAggregatesFilter<$PrismaModel = never> = {
     equals?: $Enums.AssignmentStatus | EnumAssignmentStatusFieldRefInput<$PrismaModel>
     in?: $Enums.AssignmentStatus[] | ListEnumAssignmentStatusFieldRefInput<$PrismaModel>
@@ -41374,6 +43619,16 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumAssignmentStatusFilter<$PrismaModel>
     _max?: NestedEnumAssignmentStatusFilter<$PrismaModel>
+  }
+
+  export type NestedEnumAssignmentTierWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.AssignmentTier | EnumAssignmentTierFieldRefInput<$PrismaModel>
+    in?: $Enums.AssignmentTier[] | ListEnumAssignmentTierFieldRefInput<$PrismaModel>
+    notIn?: $Enums.AssignmentTier[] | ListEnumAssignmentTierFieldRefInput<$PrismaModel>
+    not?: NestedEnumAssignmentTierWithAggregatesFilter<$PrismaModel> | $Enums.AssignmentTier
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumAssignmentTierFilter<$PrismaModel>
+    _max?: NestedEnumAssignmentTierFilter<$PrismaModel>
   }
 
   export type NestedEnumAbsenceTypeFilter<$PrismaModel = never> = {
@@ -41450,6 +43705,23 @@ export namespace Prisma {
     not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
   }
 
+  export type NestedEnumDocumentTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.DocumentType | EnumDocumentTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.DocumentType[] | ListEnumDocumentTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.DocumentType[] | ListEnumDocumentTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumDocumentTypeFilter<$PrismaModel> | $Enums.DocumentType
+  }
+
+  export type NestedEnumDocumentTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.DocumentType | EnumDocumentTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.DocumentType[] | ListEnumDocumentTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.DocumentType[] | ListEnumDocumentTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumDocumentTypeWithAggregatesFilter<$PrismaModel> | $Enums.DocumentType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumDocumentTypeFilter<$PrismaModel>
+    _max?: NestedEnumDocumentTypeFilter<$PrismaModel>
+  }
+
   export type EmployeeCreateWithoutUserInput = {
     id?: string
     employeeCode: string
@@ -41484,6 +43756,7 @@ export namespace Prisma {
     ratings?: RatingCreateNestedManyWithoutEmployeeInput
     workStatistics?: WorkStatisticCreateNestedManyWithoutEmployeeInput
     orderAssignments?: OrderAssignmentCreateNestedManyWithoutEmployeeInput
+    files?: FileCreateNestedManyWithoutEmployeeInput
   }
 
   export type EmployeeUncheckedCreateWithoutUserInput = {
@@ -41520,6 +43793,7 @@ export namespace Prisma {
     ratings?: RatingUncheckedCreateNestedManyWithoutEmployeeInput
     workStatistics?: WorkStatisticUncheckedCreateNestedManyWithoutEmployeeInput
     orderAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutEmployeeInput
+    files?: FileUncheckedCreateNestedManyWithoutEmployeeInput
   }
 
   export type EmployeeCreateOrConnectWithoutUserInput = {
@@ -41599,6 +43873,7 @@ export namespace Prisma {
     ratings?: RatingCreateNestedManyWithoutEmployeeInput
     workStatistics?: WorkStatisticCreateNestedManyWithoutEmployeeInput
     orderAssignments?: OrderAssignmentCreateNestedManyWithoutEmployeeInput
+    files?: FileCreateNestedManyWithoutEmployeeInput
   }
 
   export type EmployeeUncheckedCreateWithoutManagerInput = {
@@ -41635,6 +43910,7 @@ export namespace Prisma {
     ratings?: RatingUncheckedCreateNestedManyWithoutEmployeeInput
     workStatistics?: WorkStatisticUncheckedCreateNestedManyWithoutEmployeeInput
     orderAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutEmployeeInput
+    files?: FileUncheckedCreateNestedManyWithoutEmployeeInput
   }
 
   export type EmployeeCreateOrConnectWithoutManagerInput = {
@@ -41751,6 +44027,7 @@ export namespace Prisma {
     ratings?: RatingUpdateManyWithoutEmployeeNestedInput
     workStatistics?: WorkStatisticUpdateManyWithoutEmployeeNestedInput
     orderAssignments?: OrderAssignmentUpdateManyWithoutEmployeeNestedInput
+    files?: FileUpdateManyWithoutEmployeeNestedInput
   }
 
   export type EmployeeUncheckedUpdateWithoutUserInput = {
@@ -41787,6 +44064,7 @@ export namespace Prisma {
     ratings?: RatingUncheckedUpdateManyWithoutEmployeeNestedInput
     workStatistics?: WorkStatisticUncheckedUpdateManyWithoutEmployeeNestedInput
     orderAssignments?: OrderAssignmentUncheckedUpdateManyWithoutEmployeeNestedInput
+    files?: FileUncheckedUpdateManyWithoutEmployeeNestedInput
   }
 
   export type EmployeePerformanceUpsertWithWhereUniqueWithoutManualOverrideByInput = {
@@ -42191,6 +44469,7 @@ export namespace Prisma {
     startDate?: Date | string | null
     endDate?: Date | string | null
     status?: $Enums.AssignmentStatus
+    tier?: $Enums.AssignmentTier
     estimatedHours?: Decimal | DecimalJsLike | number | string | null
     actualHours?: Decimal | DecimalJsLike | number | string | null
     notes?: string | null
@@ -42199,6 +44478,7 @@ export namespace Prisma {
     createdBy?: string | null
     updatedBy?: string | null
     order?: OrderCreateNestedOneWithoutEmployeeAssignmentsInput
+    files?: FileCreateNestedManyWithoutAssignmentInput
   }
 
   export type AssignmentUncheckedCreateWithoutEmployeeInput = {
@@ -42208,6 +44488,7 @@ export namespace Prisma {
     startDate?: Date | string | null
     endDate?: Date | string | null
     status?: $Enums.AssignmentStatus
+    tier?: $Enums.AssignmentTier
     estimatedHours?: Decimal | DecimalJsLike | number | string | null
     actualHours?: Decimal | DecimalJsLike | number | string | null
     notes?: string | null
@@ -42215,6 +44496,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     createdBy?: string | null
     updatedBy?: string | null
+    files?: FileUncheckedCreateNestedManyWithoutAssignmentInput
   }
 
   export type AssignmentCreateOrConnectWithoutEmployeeInput = {
@@ -42370,6 +44652,54 @@ export namespace Prisma {
 
   export type OrderAssignmentCreateManyEmployeeInputEnvelope = {
     data: OrderAssignmentCreateManyEmployeeInput | OrderAssignmentCreateManyEmployeeInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type FileCreateWithoutEmployeeInput = {
+    id?: string
+    filename: string
+    originalName: string
+    mimeType: string
+    size: number
+    path: string
+    documentType?: $Enums.DocumentType
+    description?: string | null
+    expiryDate?: Date | string | null
+    uploadedBy?: string | null
+    isVerified?: boolean
+    isPublic?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    order?: OrderCreateNestedOneWithoutFilesInput
+    assignment?: AssignmentCreateNestedOneWithoutFilesInput
+  }
+
+  export type FileUncheckedCreateWithoutEmployeeInput = {
+    id?: string
+    filename: string
+    originalName: string
+    mimeType: string
+    size: number
+    path: string
+    documentType?: $Enums.DocumentType
+    description?: string | null
+    expiryDate?: Date | string | null
+    orderId?: string | null
+    assignmentId?: string | null
+    uploadedBy?: string | null
+    isVerified?: boolean
+    isPublic?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type FileCreateOrConnectWithoutEmployeeInput = {
+    where: FileWhereUniqueInput
+    create: XOR<FileCreateWithoutEmployeeInput, FileUncheckedCreateWithoutEmployeeInput>
+  }
+
+  export type FileCreateManyEmployeeInputEnvelope = {
+    data: FileCreateManyEmployeeInput | FileCreateManyEmployeeInput[]
     skipDuplicates?: boolean
   }
 
@@ -42650,6 +44980,7 @@ export namespace Prisma {
     startDate?: DateTimeNullableFilter<"Assignment"> | Date | string | null
     endDate?: DateTimeNullableFilter<"Assignment"> | Date | string | null
     status?: EnumAssignmentStatusFilter<"Assignment"> | $Enums.AssignmentStatus
+    tier?: EnumAssignmentTierFilter<"Assignment"> | $Enums.AssignmentTier
     estimatedHours?: DecimalNullableFilter<"Assignment"> | Decimal | DecimalJsLike | number | string | null
     actualHours?: DecimalNullableFilter<"Assignment"> | Decimal | DecimalJsLike | number | string | null
     notes?: StringNullableFilter<"Assignment"> | string | null
@@ -42792,6 +45123,45 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"OrderAssignment"> | Date | string
   }
 
+  export type FileUpsertWithWhereUniqueWithoutEmployeeInput = {
+    where: FileWhereUniqueInput
+    update: XOR<FileUpdateWithoutEmployeeInput, FileUncheckedUpdateWithoutEmployeeInput>
+    create: XOR<FileCreateWithoutEmployeeInput, FileUncheckedCreateWithoutEmployeeInput>
+  }
+
+  export type FileUpdateWithWhereUniqueWithoutEmployeeInput = {
+    where: FileWhereUniqueInput
+    data: XOR<FileUpdateWithoutEmployeeInput, FileUncheckedUpdateWithoutEmployeeInput>
+  }
+
+  export type FileUpdateManyWithWhereWithoutEmployeeInput = {
+    where: FileScalarWhereInput
+    data: XOR<FileUpdateManyMutationInput, FileUncheckedUpdateManyWithoutEmployeeInput>
+  }
+
+  export type FileScalarWhereInput = {
+    AND?: FileScalarWhereInput | FileScalarWhereInput[]
+    OR?: FileScalarWhereInput[]
+    NOT?: FileScalarWhereInput | FileScalarWhereInput[]
+    id?: StringFilter<"File"> | string
+    filename?: StringFilter<"File"> | string
+    originalName?: StringFilter<"File"> | string
+    mimeType?: StringFilter<"File"> | string
+    size?: IntFilter<"File"> | number
+    path?: StringFilter<"File"> | string
+    documentType?: EnumDocumentTypeFilter<"File"> | $Enums.DocumentType
+    description?: StringNullableFilter<"File"> | string | null
+    expiryDate?: DateTimeNullableFilter<"File"> | Date | string | null
+    employeeId?: StringNullableFilter<"File"> | string | null
+    orderId?: StringNullableFilter<"File"> | string | null
+    assignmentId?: StringNullableFilter<"File"> | string | null
+    uploadedBy?: StringNullableFilter<"File"> | string | null
+    isVerified?: BoolFilter<"File"> | boolean
+    isPublic?: BoolFilter<"File"> | boolean
+    createdAt?: DateTimeFilter<"File"> | Date | string
+    updatedAt?: DateTimeFilter<"File"> | Date | string
+  }
+
   export type EmployeeCreateWithoutPerformanceRecordsInput = {
     id?: string
     employeeCode: string
@@ -42826,6 +45196,7 @@ export namespace Prisma {
     ratings?: RatingCreateNestedManyWithoutEmployeeInput
     workStatistics?: WorkStatisticCreateNestedManyWithoutEmployeeInput
     orderAssignments?: OrderAssignmentCreateNestedManyWithoutEmployeeInput
+    files?: FileCreateNestedManyWithoutEmployeeInput
   }
 
   export type EmployeeUncheckedCreateWithoutPerformanceRecordsInput = {
@@ -42862,6 +45233,7 @@ export namespace Prisma {
     ratings?: RatingUncheckedCreateNestedManyWithoutEmployeeInput
     workStatistics?: WorkStatisticUncheckedCreateNestedManyWithoutEmployeeInput
     orderAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutEmployeeInput
+    files?: FileUncheckedCreateNestedManyWithoutEmployeeInput
   }
 
   export type EmployeeCreateOrConnectWithoutPerformanceRecordsInput = {
@@ -42971,6 +45343,7 @@ export namespace Prisma {
     ratings?: RatingUpdateManyWithoutEmployeeNestedInput
     workStatistics?: WorkStatisticUpdateManyWithoutEmployeeNestedInput
     orderAssignments?: OrderAssignmentUpdateManyWithoutEmployeeNestedInput
+    files?: FileUpdateManyWithoutEmployeeNestedInput
   }
 
   export type EmployeeUncheckedUpdateWithoutPerformanceRecordsInput = {
@@ -43007,6 +45380,7 @@ export namespace Prisma {
     ratings?: RatingUncheckedUpdateManyWithoutEmployeeNestedInput
     workStatistics?: WorkStatisticUncheckedUpdateManyWithoutEmployeeNestedInput
     orderAssignments?: OrderAssignmentUncheckedUpdateManyWithoutEmployeeNestedInput
+    files?: FileUncheckedUpdateManyWithoutEmployeeNestedInput
   }
 
   export type UserUpsertWithoutManualOverridesInput = {
@@ -43249,6 +45623,7 @@ export namespace Prisma {
     ratings?: RatingCreateNestedManyWithoutEmployeeInput
     workStatistics?: WorkStatisticCreateNestedManyWithoutEmployeeInput
     orderAssignments?: OrderAssignmentCreateNestedManyWithoutEmployeeInput
+    files?: FileCreateNestedManyWithoutEmployeeInput
   }
 
   export type EmployeeUncheckedCreateWithoutDepartmentInput = {
@@ -43285,6 +45660,7 @@ export namespace Prisma {
     ratings?: RatingUncheckedCreateNestedManyWithoutEmployeeInput
     workStatistics?: WorkStatisticUncheckedCreateNestedManyWithoutEmployeeInput
     orderAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutEmployeeInput
+    files?: FileUncheckedCreateNestedManyWithoutEmployeeInput
   }
 
   export type EmployeeCreateOrConnectWithoutDepartmentInput = {
@@ -43581,6 +45957,7 @@ export namespace Prisma {
     ratings?: RatingCreateNestedManyWithoutEmployeeInput
     workStatistics?: WorkStatisticCreateNestedManyWithoutEmployeeInput
     orderAssignments?: OrderAssignmentCreateNestedManyWithoutEmployeeInput
+    files?: FileCreateNestedManyWithoutEmployeeInput
   }
 
   export type EmployeeUncheckedCreateWithoutPositionInput = {
@@ -43617,6 +45994,7 @@ export namespace Prisma {
     ratings?: RatingUncheckedCreateNestedManyWithoutEmployeeInput
     workStatistics?: WorkStatisticUncheckedCreateNestedManyWithoutEmployeeInput
     orderAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutEmployeeInput
+    files?: FileUncheckedCreateNestedManyWithoutEmployeeInput
   }
 
   export type EmployeeCreateOrConnectWithoutPositionInput = {
@@ -43734,6 +46112,7 @@ export namespace Prisma {
     orderAssignments?: OrderAssignmentCreateNestedManyWithoutOrderInput
     employeeAssignments?: AssignmentCreateNestedManyWithoutOrderInput
     ratings?: RatingCreateNestedManyWithoutOrderInput
+    files?: FileCreateNestedManyWithoutOrderInput
   }
 
   export type OrderUncheckedCreateWithoutCustomerInput = {
@@ -43758,6 +46137,7 @@ export namespace Prisma {
     orderAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutOrderInput
     employeeAssignments?: AssignmentUncheckedCreateNestedManyWithoutOrderInput
     ratings?: RatingUncheckedCreateNestedManyWithoutOrderInput
+    files?: FileUncheckedCreateNestedManyWithoutOrderInput
   }
 
   export type OrderCreateOrConnectWithoutCustomerInput = {
@@ -44062,6 +46442,7 @@ export namespace Prisma {
     startDate?: Date | string | null
     endDate?: Date | string | null
     status?: $Enums.AssignmentStatus
+    tier?: $Enums.AssignmentTier
     estimatedHours?: Decimal | DecimalJsLike | number | string | null
     actualHours?: Decimal | DecimalJsLike | number | string | null
     notes?: string | null
@@ -44070,6 +46451,7 @@ export namespace Prisma {
     createdBy?: string | null
     updatedBy?: string | null
     employee: EmployeeCreateNestedOneWithoutAssignmentsInput
+    files?: FileCreateNestedManyWithoutAssignmentInput
   }
 
   export type AssignmentUncheckedCreateWithoutOrderInput = {
@@ -44079,6 +46461,7 @@ export namespace Prisma {
     startDate?: Date | string | null
     endDate?: Date | string | null
     status?: $Enums.AssignmentStatus
+    tier?: $Enums.AssignmentTier
     estimatedHours?: Decimal | DecimalJsLike | number | string | null
     actualHours?: Decimal | DecimalJsLike | number | string | null
     notes?: string | null
@@ -44086,6 +46469,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     createdBy?: string | null
     updatedBy?: string | null
+    files?: FileUncheckedCreateNestedManyWithoutAssignmentInput
   }
 
   export type AssignmentCreateOrConnectWithoutOrderInput = {
@@ -44133,6 +46517,54 @@ export namespace Prisma {
 
   export type RatingCreateManyOrderInputEnvelope = {
     data: RatingCreateManyOrderInput | RatingCreateManyOrderInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type FileCreateWithoutOrderInput = {
+    id?: string
+    filename: string
+    originalName: string
+    mimeType: string
+    size: number
+    path: string
+    documentType?: $Enums.DocumentType
+    description?: string | null
+    expiryDate?: Date | string | null
+    uploadedBy?: string | null
+    isVerified?: boolean
+    isPublic?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    employee?: EmployeeCreateNestedOneWithoutFilesInput
+    assignment?: AssignmentCreateNestedOneWithoutFilesInput
+  }
+
+  export type FileUncheckedCreateWithoutOrderInput = {
+    id?: string
+    filename: string
+    originalName: string
+    mimeType: string
+    size: number
+    path: string
+    documentType?: $Enums.DocumentType
+    description?: string | null
+    expiryDate?: Date | string | null
+    employeeId?: string | null
+    assignmentId?: string | null
+    uploadedBy?: string | null
+    isVerified?: boolean
+    isPublic?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type FileCreateOrConnectWithoutOrderInput = {
+    where: FileWhereUniqueInput
+    create: XOR<FileCreateWithoutOrderInput, FileUncheckedCreateWithoutOrderInput>
+  }
+
+  export type FileCreateManyOrderInputEnvelope = {
+    data: FileCreateManyOrderInput | FileCreateManyOrderInput[]
     skipDuplicates?: boolean
   }
 
@@ -44250,6 +46682,22 @@ export namespace Prisma {
   export type RatingUpdateManyWithWhereWithoutOrderInput = {
     where: RatingScalarWhereInput
     data: XOR<RatingUpdateManyMutationInput, RatingUncheckedUpdateManyWithoutOrderInput>
+  }
+
+  export type FileUpsertWithWhereUniqueWithoutOrderInput = {
+    where: FileWhereUniqueInput
+    update: XOR<FileUpdateWithoutOrderInput, FileUncheckedUpdateWithoutOrderInput>
+    create: XOR<FileCreateWithoutOrderInput, FileUncheckedCreateWithoutOrderInput>
+  }
+
+  export type FileUpdateWithWhereUniqueWithoutOrderInput = {
+    where: FileWhereUniqueInput
+    data: XOR<FileUpdateWithoutOrderInput, FileUncheckedUpdateWithoutOrderInput>
+  }
+
+  export type FileUpdateManyWithWhereWithoutOrderInput = {
+    where: FileScalarWhereInput
+    data: XOR<FileUpdateManyMutationInput, FileUncheckedUpdateManyWithoutOrderInput>
   }
 
   export type EmployeeQualificationCreateWithoutQualificationInput = {
@@ -44376,6 +46824,7 @@ export namespace Prisma {
     ratings?: RatingCreateNestedManyWithoutEmployeeInput
     workStatistics?: WorkStatisticCreateNestedManyWithoutEmployeeInput
     orderAssignments?: OrderAssignmentCreateNestedManyWithoutEmployeeInput
+    files?: FileCreateNestedManyWithoutEmployeeInput
   }
 
   export type EmployeeUncheckedCreateWithoutQualificationsInput = {
@@ -44412,6 +46861,7 @@ export namespace Prisma {
     ratings?: RatingUncheckedCreateNestedManyWithoutEmployeeInput
     workStatistics?: WorkStatisticUncheckedCreateNestedManyWithoutEmployeeInput
     orderAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutEmployeeInput
+    files?: FileUncheckedCreateNestedManyWithoutEmployeeInput
   }
 
   export type EmployeeCreateOrConnectWithoutQualificationsInput = {
@@ -44495,6 +46945,7 @@ export namespace Prisma {
     ratings?: RatingUpdateManyWithoutEmployeeNestedInput
     workStatistics?: WorkStatisticUpdateManyWithoutEmployeeNestedInput
     orderAssignments?: OrderAssignmentUpdateManyWithoutEmployeeNestedInput
+    files?: FileUpdateManyWithoutEmployeeNestedInput
   }
 
   export type EmployeeUncheckedUpdateWithoutQualificationsInput = {
@@ -44531,6 +46982,7 @@ export namespace Prisma {
     ratings?: RatingUncheckedUpdateManyWithoutEmployeeNestedInput
     workStatistics?: WorkStatisticUncheckedUpdateManyWithoutEmployeeNestedInput
     orderAssignments?: OrderAssignmentUncheckedUpdateManyWithoutEmployeeNestedInput
+    files?: FileUncheckedUpdateManyWithoutEmployeeNestedInput
   }
 
   export type QualificationUpsertWithoutEmployeeQualificationsInput = {
@@ -44592,6 +47044,7 @@ export namespace Prisma {
     orderAssignments?: OrderAssignmentCreateNestedManyWithoutOrderInput
     employeeAssignments?: AssignmentCreateNestedManyWithoutOrderInput
     ratings?: RatingCreateNestedManyWithoutOrderInput
+    files?: FileCreateNestedManyWithoutOrderInput
   }
 
   export type OrderUncheckedCreateWithoutQualificationsInput = {
@@ -44616,6 +47069,7 @@ export namespace Prisma {
     orderAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutOrderInput
     employeeAssignments?: AssignmentUncheckedCreateNestedManyWithoutOrderInput
     ratings?: RatingUncheckedCreateNestedManyWithoutOrderInput
+    files?: FileUncheckedCreateNestedManyWithoutOrderInput
   }
 
   export type OrderCreateOrConnectWithoutQualificationsInput = {
@@ -44687,6 +47141,7 @@ export namespace Prisma {
     orderAssignments?: OrderAssignmentUpdateManyWithoutOrderNestedInput
     employeeAssignments?: AssignmentUpdateManyWithoutOrderNestedInput
     ratings?: RatingUpdateManyWithoutOrderNestedInput
+    files?: FileUpdateManyWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateWithoutQualificationsInput = {
@@ -44711,6 +47166,7 @@ export namespace Prisma {
     orderAssignments?: OrderAssignmentUncheckedUpdateManyWithoutOrderNestedInput
     employeeAssignments?: AssignmentUncheckedUpdateManyWithoutOrderNestedInput
     ratings?: RatingUncheckedUpdateManyWithoutOrderNestedInput
+    files?: FileUncheckedUpdateManyWithoutOrderNestedInput
   }
 
   export type QualificationUpsertWithoutOrderQualificationsInput = {
@@ -44772,6 +47228,7 @@ export namespace Prisma {
     qualifications?: OrderQualificationCreateNestedManyWithoutOrderInput
     orderAssignments?: OrderAssignmentCreateNestedManyWithoutOrderInput
     ratings?: RatingCreateNestedManyWithoutOrderInput
+    files?: FileCreateNestedManyWithoutOrderInput
   }
 
   export type OrderUncheckedCreateWithoutEmployeeAssignmentsInput = {
@@ -44796,6 +47253,7 @@ export namespace Prisma {
     qualifications?: OrderQualificationUncheckedCreateNestedManyWithoutOrderInput
     orderAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutOrderInput
     ratings?: RatingUncheckedCreateNestedManyWithoutOrderInput
+    files?: FileUncheckedCreateNestedManyWithoutOrderInput
   }
 
   export type OrderCreateOrConnectWithoutEmployeeAssignmentsInput = {
@@ -44837,6 +47295,7 @@ export namespace Prisma {
     ratings?: RatingCreateNestedManyWithoutEmployeeInput
     workStatistics?: WorkStatisticCreateNestedManyWithoutEmployeeInput
     orderAssignments?: OrderAssignmentCreateNestedManyWithoutEmployeeInput
+    files?: FileCreateNestedManyWithoutEmployeeInput
   }
 
   export type EmployeeUncheckedCreateWithoutAssignmentsInput = {
@@ -44873,11 +47332,60 @@ export namespace Prisma {
     ratings?: RatingUncheckedCreateNestedManyWithoutEmployeeInput
     workStatistics?: WorkStatisticUncheckedCreateNestedManyWithoutEmployeeInput
     orderAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutEmployeeInput
+    files?: FileUncheckedCreateNestedManyWithoutEmployeeInput
   }
 
   export type EmployeeCreateOrConnectWithoutAssignmentsInput = {
     where: EmployeeWhereUniqueInput
     create: XOR<EmployeeCreateWithoutAssignmentsInput, EmployeeUncheckedCreateWithoutAssignmentsInput>
+  }
+
+  export type FileCreateWithoutAssignmentInput = {
+    id?: string
+    filename: string
+    originalName: string
+    mimeType: string
+    size: number
+    path: string
+    documentType?: $Enums.DocumentType
+    description?: string | null
+    expiryDate?: Date | string | null
+    uploadedBy?: string | null
+    isVerified?: boolean
+    isPublic?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    employee?: EmployeeCreateNestedOneWithoutFilesInput
+    order?: OrderCreateNestedOneWithoutFilesInput
+  }
+
+  export type FileUncheckedCreateWithoutAssignmentInput = {
+    id?: string
+    filename: string
+    originalName: string
+    mimeType: string
+    size: number
+    path: string
+    documentType?: $Enums.DocumentType
+    description?: string | null
+    expiryDate?: Date | string | null
+    employeeId?: string | null
+    orderId?: string | null
+    uploadedBy?: string | null
+    isVerified?: boolean
+    isPublic?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type FileCreateOrConnectWithoutAssignmentInput = {
+    where: FileWhereUniqueInput
+    create: XOR<FileCreateWithoutAssignmentInput, FileUncheckedCreateWithoutAssignmentInput>
+  }
+
+  export type FileCreateManyAssignmentInputEnvelope = {
+    data: FileCreateManyAssignmentInput | FileCreateManyAssignmentInput[]
+    skipDuplicates?: boolean
   }
 
   export type OrderUpsertWithoutEmployeeAssignmentsInput = {
@@ -44913,6 +47421,7 @@ export namespace Prisma {
     qualifications?: OrderQualificationUpdateManyWithoutOrderNestedInput
     orderAssignments?: OrderAssignmentUpdateManyWithoutOrderNestedInput
     ratings?: RatingUpdateManyWithoutOrderNestedInput
+    files?: FileUpdateManyWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateWithoutEmployeeAssignmentsInput = {
@@ -44937,6 +47446,7 @@ export namespace Prisma {
     qualifications?: OrderQualificationUncheckedUpdateManyWithoutOrderNestedInput
     orderAssignments?: OrderAssignmentUncheckedUpdateManyWithoutOrderNestedInput
     ratings?: RatingUncheckedUpdateManyWithoutOrderNestedInput
+    files?: FileUncheckedUpdateManyWithoutOrderNestedInput
   }
 
   export type EmployeeUpsertWithoutAssignmentsInput = {
@@ -44984,6 +47494,7 @@ export namespace Prisma {
     ratings?: RatingUpdateManyWithoutEmployeeNestedInput
     workStatistics?: WorkStatisticUpdateManyWithoutEmployeeNestedInput
     orderAssignments?: OrderAssignmentUpdateManyWithoutEmployeeNestedInput
+    files?: FileUpdateManyWithoutEmployeeNestedInput
   }
 
   export type EmployeeUncheckedUpdateWithoutAssignmentsInput = {
@@ -45020,6 +47531,23 @@ export namespace Prisma {
     ratings?: RatingUncheckedUpdateManyWithoutEmployeeNestedInput
     workStatistics?: WorkStatisticUncheckedUpdateManyWithoutEmployeeNestedInput
     orderAssignments?: OrderAssignmentUncheckedUpdateManyWithoutEmployeeNestedInput
+    files?: FileUncheckedUpdateManyWithoutEmployeeNestedInput
+  }
+
+  export type FileUpsertWithWhereUniqueWithoutAssignmentInput = {
+    where: FileWhereUniqueInput
+    update: XOR<FileUpdateWithoutAssignmentInput, FileUncheckedUpdateWithoutAssignmentInput>
+    create: XOR<FileCreateWithoutAssignmentInput, FileUncheckedCreateWithoutAssignmentInput>
+  }
+
+  export type FileUpdateWithWhereUniqueWithoutAssignmentInput = {
+    where: FileWhereUniqueInput
+    data: XOR<FileUpdateWithoutAssignmentInput, FileUncheckedUpdateWithoutAssignmentInput>
+  }
+
+  export type FileUpdateManyWithWhereWithoutAssignmentInput = {
+    where: FileScalarWhereInput
+    data: XOR<FileUpdateManyMutationInput, FileUncheckedUpdateManyWithoutAssignmentInput>
   }
 
   export type OrderCreateWithoutOrderAssignmentsInput = {
@@ -45044,6 +47572,7 @@ export namespace Prisma {
     qualifications?: OrderQualificationCreateNestedManyWithoutOrderInput
     employeeAssignments?: AssignmentCreateNestedManyWithoutOrderInput
     ratings?: RatingCreateNestedManyWithoutOrderInput
+    files?: FileCreateNestedManyWithoutOrderInput
   }
 
   export type OrderUncheckedCreateWithoutOrderAssignmentsInput = {
@@ -45068,6 +47597,7 @@ export namespace Prisma {
     qualifications?: OrderQualificationUncheckedCreateNestedManyWithoutOrderInput
     employeeAssignments?: AssignmentUncheckedCreateNestedManyWithoutOrderInput
     ratings?: RatingUncheckedCreateNestedManyWithoutOrderInput
+    files?: FileUncheckedCreateNestedManyWithoutOrderInput
   }
 
   export type OrderCreateOrConnectWithoutOrderAssignmentsInput = {
@@ -45109,6 +47639,7 @@ export namespace Prisma {
     absences?: AbsenceCreateNestedManyWithoutEmployeeInput
     ratings?: RatingCreateNestedManyWithoutEmployeeInput
     workStatistics?: WorkStatisticCreateNestedManyWithoutEmployeeInput
+    files?: FileCreateNestedManyWithoutEmployeeInput
   }
 
   export type EmployeeUncheckedCreateWithoutOrderAssignmentsInput = {
@@ -45145,6 +47676,7 @@ export namespace Prisma {
     absences?: AbsenceUncheckedCreateNestedManyWithoutEmployeeInput
     ratings?: RatingUncheckedCreateNestedManyWithoutEmployeeInput
     workStatistics?: WorkStatisticUncheckedCreateNestedManyWithoutEmployeeInput
+    files?: FileUncheckedCreateNestedManyWithoutEmployeeInput
   }
 
   export type EmployeeCreateOrConnectWithoutOrderAssignmentsInput = {
@@ -45185,6 +47717,7 @@ export namespace Prisma {
     qualifications?: OrderQualificationUpdateManyWithoutOrderNestedInput
     employeeAssignments?: AssignmentUpdateManyWithoutOrderNestedInput
     ratings?: RatingUpdateManyWithoutOrderNestedInput
+    files?: FileUpdateManyWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateWithoutOrderAssignmentsInput = {
@@ -45209,6 +47742,7 @@ export namespace Prisma {
     qualifications?: OrderQualificationUncheckedUpdateManyWithoutOrderNestedInput
     employeeAssignments?: AssignmentUncheckedUpdateManyWithoutOrderNestedInput
     ratings?: RatingUncheckedUpdateManyWithoutOrderNestedInput
+    files?: FileUncheckedUpdateManyWithoutOrderNestedInput
   }
 
   export type EmployeeUpsertWithoutOrderAssignmentsInput = {
@@ -45256,6 +47790,7 @@ export namespace Prisma {
     absences?: AbsenceUpdateManyWithoutEmployeeNestedInput
     ratings?: RatingUpdateManyWithoutEmployeeNestedInput
     workStatistics?: WorkStatisticUpdateManyWithoutEmployeeNestedInput
+    files?: FileUpdateManyWithoutEmployeeNestedInput
   }
 
   export type EmployeeUncheckedUpdateWithoutOrderAssignmentsInput = {
@@ -45292,6 +47827,7 @@ export namespace Prisma {
     absences?: AbsenceUncheckedUpdateManyWithoutEmployeeNestedInput
     ratings?: RatingUncheckedUpdateManyWithoutEmployeeNestedInput
     workStatistics?: WorkStatisticUncheckedUpdateManyWithoutEmployeeNestedInput
+    files?: FileUncheckedUpdateManyWithoutEmployeeNestedInput
   }
 
   export type EmployeeCreateWithoutAbsencesInput = {
@@ -45328,6 +47864,7 @@ export namespace Prisma {
     ratings?: RatingCreateNestedManyWithoutEmployeeInput
     workStatistics?: WorkStatisticCreateNestedManyWithoutEmployeeInput
     orderAssignments?: OrderAssignmentCreateNestedManyWithoutEmployeeInput
+    files?: FileCreateNestedManyWithoutEmployeeInput
   }
 
   export type EmployeeUncheckedCreateWithoutAbsencesInput = {
@@ -45364,6 +47901,7 @@ export namespace Prisma {
     ratings?: RatingUncheckedCreateNestedManyWithoutEmployeeInput
     workStatistics?: WorkStatisticUncheckedCreateNestedManyWithoutEmployeeInput
     orderAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutEmployeeInput
+    files?: FileUncheckedCreateNestedManyWithoutEmployeeInput
   }
 
   export type EmployeeCreateOrConnectWithoutAbsencesInput = {
@@ -45416,6 +47954,7 @@ export namespace Prisma {
     ratings?: RatingUpdateManyWithoutEmployeeNestedInput
     workStatistics?: WorkStatisticUpdateManyWithoutEmployeeNestedInput
     orderAssignments?: OrderAssignmentUpdateManyWithoutEmployeeNestedInput
+    files?: FileUpdateManyWithoutEmployeeNestedInput
   }
 
   export type EmployeeUncheckedUpdateWithoutAbsencesInput = {
@@ -45452,6 +47991,7 @@ export namespace Prisma {
     ratings?: RatingUncheckedUpdateManyWithoutEmployeeNestedInput
     workStatistics?: WorkStatisticUncheckedUpdateManyWithoutEmployeeNestedInput
     orderAssignments?: OrderAssignmentUncheckedUpdateManyWithoutEmployeeNestedInput
+    files?: FileUncheckedUpdateManyWithoutEmployeeNestedInput
   }
 
   export type OrderCreateWithoutRatingsInput = {
@@ -45476,6 +48016,7 @@ export namespace Prisma {
     qualifications?: OrderQualificationCreateNestedManyWithoutOrderInput
     orderAssignments?: OrderAssignmentCreateNestedManyWithoutOrderInput
     employeeAssignments?: AssignmentCreateNestedManyWithoutOrderInput
+    files?: FileCreateNestedManyWithoutOrderInput
   }
 
   export type OrderUncheckedCreateWithoutRatingsInput = {
@@ -45500,6 +48041,7 @@ export namespace Prisma {
     qualifications?: OrderQualificationUncheckedCreateNestedManyWithoutOrderInput
     orderAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutOrderInput
     employeeAssignments?: AssignmentUncheckedCreateNestedManyWithoutOrderInput
+    files?: FileUncheckedCreateNestedManyWithoutOrderInput
   }
 
   export type OrderCreateOrConnectWithoutRatingsInput = {
@@ -45541,6 +48083,7 @@ export namespace Prisma {
     absences?: AbsenceCreateNestedManyWithoutEmployeeInput
     workStatistics?: WorkStatisticCreateNestedManyWithoutEmployeeInput
     orderAssignments?: OrderAssignmentCreateNestedManyWithoutEmployeeInput
+    files?: FileCreateNestedManyWithoutEmployeeInput
   }
 
   export type EmployeeUncheckedCreateWithoutRatingsInput = {
@@ -45577,6 +48120,7 @@ export namespace Prisma {
     absences?: AbsenceUncheckedCreateNestedManyWithoutEmployeeInput
     workStatistics?: WorkStatisticUncheckedCreateNestedManyWithoutEmployeeInput
     orderAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutEmployeeInput
+    files?: FileUncheckedCreateNestedManyWithoutEmployeeInput
   }
 
   export type EmployeeCreateOrConnectWithoutRatingsInput = {
@@ -45652,6 +48196,7 @@ export namespace Prisma {
     qualifications?: OrderQualificationUpdateManyWithoutOrderNestedInput
     orderAssignments?: OrderAssignmentUpdateManyWithoutOrderNestedInput
     employeeAssignments?: AssignmentUpdateManyWithoutOrderNestedInput
+    files?: FileUpdateManyWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateWithoutRatingsInput = {
@@ -45676,6 +48221,7 @@ export namespace Prisma {
     qualifications?: OrderQualificationUncheckedUpdateManyWithoutOrderNestedInput
     orderAssignments?: OrderAssignmentUncheckedUpdateManyWithoutOrderNestedInput
     employeeAssignments?: AssignmentUncheckedUpdateManyWithoutOrderNestedInput
+    files?: FileUncheckedUpdateManyWithoutOrderNestedInput
   }
 
   export type EmployeeUpsertWithoutRatingsInput = {
@@ -45723,6 +48269,7 @@ export namespace Prisma {
     absences?: AbsenceUpdateManyWithoutEmployeeNestedInput
     workStatistics?: WorkStatisticUpdateManyWithoutEmployeeNestedInput
     orderAssignments?: OrderAssignmentUpdateManyWithoutEmployeeNestedInput
+    files?: FileUpdateManyWithoutEmployeeNestedInput
   }
 
   export type EmployeeUncheckedUpdateWithoutRatingsInput = {
@@ -45759,6 +48306,7 @@ export namespace Prisma {
     absences?: AbsenceUncheckedUpdateManyWithoutEmployeeNestedInput
     workStatistics?: WorkStatisticUncheckedUpdateManyWithoutEmployeeNestedInput
     orderAssignments?: OrderAssignmentUncheckedUpdateManyWithoutEmployeeNestedInput
+    files?: FileUncheckedUpdateManyWithoutEmployeeNestedInput
   }
 
   export type CustomerUpsertWithoutRatingsInput = {
@@ -45836,6 +48384,7 @@ export namespace Prisma {
     absences?: AbsenceCreateNestedManyWithoutEmployeeInput
     ratings?: RatingCreateNestedManyWithoutEmployeeInput
     orderAssignments?: OrderAssignmentCreateNestedManyWithoutEmployeeInput
+    files?: FileCreateNestedManyWithoutEmployeeInput
   }
 
   export type EmployeeUncheckedCreateWithoutWorkStatisticsInput = {
@@ -45872,6 +48421,7 @@ export namespace Prisma {
     absences?: AbsenceUncheckedCreateNestedManyWithoutEmployeeInput
     ratings?: RatingUncheckedCreateNestedManyWithoutEmployeeInput
     orderAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutEmployeeInput
+    files?: FileUncheckedCreateNestedManyWithoutEmployeeInput
   }
 
   export type EmployeeCreateOrConnectWithoutWorkStatisticsInput = {
@@ -45924,6 +48474,7 @@ export namespace Prisma {
     absences?: AbsenceUpdateManyWithoutEmployeeNestedInput
     ratings?: RatingUpdateManyWithoutEmployeeNestedInput
     orderAssignments?: OrderAssignmentUpdateManyWithoutEmployeeNestedInput
+    files?: FileUpdateManyWithoutEmployeeNestedInput
   }
 
   export type EmployeeUncheckedUpdateWithoutWorkStatisticsInput = {
@@ -45960,6 +48511,7 @@ export namespace Prisma {
     absences?: AbsenceUncheckedUpdateManyWithoutEmployeeNestedInput
     ratings?: RatingUncheckedUpdateManyWithoutEmployeeNestedInput
     orderAssignments?: OrderAssignmentUncheckedUpdateManyWithoutEmployeeNestedInput
+    files?: FileUncheckedUpdateManyWithoutEmployeeNestedInput
   }
 
   export type NotificationRecipientCreateWithoutNotificationInput = {
@@ -46459,6 +49011,374 @@ export namespace Prisma {
     notificationRecipients?: NotificationRecipientUncheckedUpdateManyWithoutUserNestedInput
   }
 
+  export type EmployeeCreateWithoutFilesInput = {
+    id?: string
+    employeeCode: string
+    firstName: string
+    lastName: string
+    phoneNumber?: string | null
+    dateOfBirth?: Date | string | null
+    address?: string | null
+    emergencyContact?: NullableJsonNullValueInput | InputJsonValue
+    hireDate: Date | string
+    terminationDate?: Date | string | null
+    scheduleType?: $Enums.WorkScheduleType
+    hourlyRate?: Decimal | DecimalJsLike | number | string | null
+    salary?: Decimal | DecimalJsLike | number | string | null
+    isAvailable?: boolean
+    priority?: number
+    blockedAt?: Date | string | null
+    blockedReason?: string | null
+    performanceScore?: Decimal | DecimalJsLike | number | string | null
+    trafficLight?: $Enums.TrafficLight | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    createdBy?: string | null
+    updatedBy?: string | null
+    department: DepartmentCreateNestedOneWithoutEmployeesInput
+    position: PositionCreateNestedOneWithoutEmployeesInput
+    manager?: UserCreateNestedOneWithoutSubordinatesInput
+    performanceRecords?: EmployeePerformanceCreateNestedManyWithoutEmployeeInput
+    user: UserCreateNestedOneWithoutEmployeeInput
+    qualifications?: EmployeeQualificationCreateNestedManyWithoutEmployeeInput
+    assignments?: AssignmentCreateNestedManyWithoutEmployeeInput
+    absences?: AbsenceCreateNestedManyWithoutEmployeeInput
+    ratings?: RatingCreateNestedManyWithoutEmployeeInput
+    workStatistics?: WorkStatisticCreateNestedManyWithoutEmployeeInput
+    orderAssignments?: OrderAssignmentCreateNestedManyWithoutEmployeeInput
+  }
+
+  export type EmployeeUncheckedCreateWithoutFilesInput = {
+    id?: string
+    employeeCode: string
+    firstName: string
+    lastName: string
+    phoneNumber?: string | null
+    dateOfBirth?: Date | string | null
+    address?: string | null
+    emergencyContact?: NullableJsonNullValueInput | InputJsonValue
+    hireDate: Date | string
+    terminationDate?: Date | string | null
+    departmentId: string
+    positionId: string
+    managerId?: string | null
+    scheduleType?: $Enums.WorkScheduleType
+    hourlyRate?: Decimal | DecimalJsLike | number | string | null
+    salary?: Decimal | DecimalJsLike | number | string | null
+    isAvailable?: boolean
+    priority?: number
+    blockedAt?: Date | string | null
+    blockedReason?: string | null
+    performanceScore?: Decimal | DecimalJsLike | number | string | null
+    trafficLight?: $Enums.TrafficLight | null
+    userId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    createdBy?: string | null
+    updatedBy?: string | null
+    performanceRecords?: EmployeePerformanceUncheckedCreateNestedManyWithoutEmployeeInput
+    qualifications?: EmployeeQualificationUncheckedCreateNestedManyWithoutEmployeeInput
+    assignments?: AssignmentUncheckedCreateNestedManyWithoutEmployeeInput
+    absences?: AbsenceUncheckedCreateNestedManyWithoutEmployeeInput
+    ratings?: RatingUncheckedCreateNestedManyWithoutEmployeeInput
+    workStatistics?: WorkStatisticUncheckedCreateNestedManyWithoutEmployeeInput
+    orderAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutEmployeeInput
+  }
+
+  export type EmployeeCreateOrConnectWithoutFilesInput = {
+    where: EmployeeWhereUniqueInput
+    create: XOR<EmployeeCreateWithoutFilesInput, EmployeeUncheckedCreateWithoutFilesInput>
+  }
+
+  export type OrderCreateWithoutFilesInput = {
+    id?: string
+    orderNumber: string
+    title: string
+    description?: string | null
+    scheduledDate: Date | string
+    startTime?: Date | string | null
+    endTime?: Date | string | null
+    duration?: number | null
+    location?: string | null
+    requiredEmployees?: number
+    priority?: number
+    specialInstructions?: string | null
+    status?: $Enums.OrderStatus
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    createdBy?: string | null
+    updatedBy?: string | null
+    customer?: CustomerCreateNestedOneWithoutOrdersInput
+    qualifications?: OrderQualificationCreateNestedManyWithoutOrderInput
+    orderAssignments?: OrderAssignmentCreateNestedManyWithoutOrderInput
+    employeeAssignments?: AssignmentCreateNestedManyWithoutOrderInput
+    ratings?: RatingCreateNestedManyWithoutOrderInput
+  }
+
+  export type OrderUncheckedCreateWithoutFilesInput = {
+    id?: string
+    orderNumber: string
+    title: string
+    description?: string | null
+    scheduledDate: Date | string
+    startTime?: Date | string | null
+    endTime?: Date | string | null
+    duration?: number | null
+    location?: string | null
+    requiredEmployees?: number
+    priority?: number
+    specialInstructions?: string | null
+    status?: $Enums.OrderStatus
+    customerId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    createdBy?: string | null
+    updatedBy?: string | null
+    qualifications?: OrderQualificationUncheckedCreateNestedManyWithoutOrderInput
+    orderAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutOrderInput
+    employeeAssignments?: AssignmentUncheckedCreateNestedManyWithoutOrderInput
+    ratings?: RatingUncheckedCreateNestedManyWithoutOrderInput
+  }
+
+  export type OrderCreateOrConnectWithoutFilesInput = {
+    where: OrderWhereUniqueInput
+    create: XOR<OrderCreateWithoutFilesInput, OrderUncheckedCreateWithoutFilesInput>
+  }
+
+  export type AssignmentCreateWithoutFilesInput = {
+    id?: string
+    assignedDate?: Date | string
+    startDate?: Date | string | null
+    endDate?: Date | string | null
+    status?: $Enums.AssignmentStatus
+    tier?: $Enums.AssignmentTier
+    estimatedHours?: Decimal | DecimalJsLike | number | string | null
+    actualHours?: Decimal | DecimalJsLike | number | string | null
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    createdBy?: string | null
+    updatedBy?: string | null
+    order?: OrderCreateNestedOneWithoutEmployeeAssignmentsInput
+    employee: EmployeeCreateNestedOneWithoutAssignmentsInput
+  }
+
+  export type AssignmentUncheckedCreateWithoutFilesInput = {
+    id?: string
+    orderId?: string | null
+    employeeId: string
+    assignedDate?: Date | string
+    startDate?: Date | string | null
+    endDate?: Date | string | null
+    status?: $Enums.AssignmentStatus
+    tier?: $Enums.AssignmentTier
+    estimatedHours?: Decimal | DecimalJsLike | number | string | null
+    actualHours?: Decimal | DecimalJsLike | number | string | null
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    createdBy?: string | null
+    updatedBy?: string | null
+  }
+
+  export type AssignmentCreateOrConnectWithoutFilesInput = {
+    where: AssignmentWhereUniqueInput
+    create: XOR<AssignmentCreateWithoutFilesInput, AssignmentUncheckedCreateWithoutFilesInput>
+  }
+
+  export type EmployeeUpsertWithoutFilesInput = {
+    update: XOR<EmployeeUpdateWithoutFilesInput, EmployeeUncheckedUpdateWithoutFilesInput>
+    create: XOR<EmployeeCreateWithoutFilesInput, EmployeeUncheckedCreateWithoutFilesInput>
+    where?: EmployeeWhereInput
+  }
+
+  export type EmployeeUpdateToOneWithWhereWithoutFilesInput = {
+    where?: EmployeeWhereInput
+    data: XOR<EmployeeUpdateWithoutFilesInput, EmployeeUncheckedUpdateWithoutFilesInput>
+  }
+
+  export type EmployeeUpdateWithoutFilesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    employeeCode?: StringFieldUpdateOperationsInput | string
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    dateOfBirth?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    emergencyContact?: NullableJsonNullValueInput | InputJsonValue
+    hireDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    terminationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    scheduleType?: EnumWorkScheduleTypeFieldUpdateOperationsInput | $Enums.WorkScheduleType
+    hourlyRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    salary?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    isAvailable?: BoolFieldUpdateOperationsInput | boolean
+    priority?: IntFieldUpdateOperationsInput | number
+    blockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    blockedReason?: NullableStringFieldUpdateOperationsInput | string | null
+    performanceScore?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    trafficLight?: NullableEnumTrafficLightFieldUpdateOperationsInput | $Enums.TrafficLight | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: DepartmentUpdateOneRequiredWithoutEmployeesNestedInput
+    position?: PositionUpdateOneRequiredWithoutEmployeesNestedInput
+    manager?: UserUpdateOneWithoutSubordinatesNestedInput
+    performanceRecords?: EmployeePerformanceUpdateManyWithoutEmployeeNestedInput
+    user?: UserUpdateOneRequiredWithoutEmployeeNestedInput
+    qualifications?: EmployeeQualificationUpdateManyWithoutEmployeeNestedInput
+    assignments?: AssignmentUpdateManyWithoutEmployeeNestedInput
+    absences?: AbsenceUpdateManyWithoutEmployeeNestedInput
+    ratings?: RatingUpdateManyWithoutEmployeeNestedInput
+    workStatistics?: WorkStatisticUpdateManyWithoutEmployeeNestedInput
+    orderAssignments?: OrderAssignmentUpdateManyWithoutEmployeeNestedInput
+  }
+
+  export type EmployeeUncheckedUpdateWithoutFilesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    employeeCode?: StringFieldUpdateOperationsInput | string
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    dateOfBirth?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    emergencyContact?: NullableJsonNullValueInput | InputJsonValue
+    hireDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    terminationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    departmentId?: StringFieldUpdateOperationsInput | string
+    positionId?: StringFieldUpdateOperationsInput | string
+    managerId?: NullableStringFieldUpdateOperationsInput | string | null
+    scheduleType?: EnumWorkScheduleTypeFieldUpdateOperationsInput | $Enums.WorkScheduleType
+    hourlyRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    salary?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    isAvailable?: BoolFieldUpdateOperationsInput | boolean
+    priority?: IntFieldUpdateOperationsInput | number
+    blockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    blockedReason?: NullableStringFieldUpdateOperationsInput | string | null
+    performanceScore?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    trafficLight?: NullableEnumTrafficLightFieldUpdateOperationsInput | $Enums.TrafficLight | null
+    userId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    performanceRecords?: EmployeePerformanceUncheckedUpdateManyWithoutEmployeeNestedInput
+    qualifications?: EmployeeQualificationUncheckedUpdateManyWithoutEmployeeNestedInput
+    assignments?: AssignmentUncheckedUpdateManyWithoutEmployeeNestedInput
+    absences?: AbsenceUncheckedUpdateManyWithoutEmployeeNestedInput
+    ratings?: RatingUncheckedUpdateManyWithoutEmployeeNestedInput
+    workStatistics?: WorkStatisticUncheckedUpdateManyWithoutEmployeeNestedInput
+    orderAssignments?: OrderAssignmentUncheckedUpdateManyWithoutEmployeeNestedInput
+  }
+
+  export type OrderUpsertWithoutFilesInput = {
+    update: XOR<OrderUpdateWithoutFilesInput, OrderUncheckedUpdateWithoutFilesInput>
+    create: XOR<OrderCreateWithoutFilesInput, OrderUncheckedCreateWithoutFilesInput>
+    where?: OrderWhereInput
+  }
+
+  export type OrderUpdateToOneWithWhereWithoutFilesInput = {
+    where?: OrderWhereInput
+    data: XOR<OrderUpdateWithoutFilesInput, OrderUncheckedUpdateWithoutFilesInput>
+  }
+
+  export type OrderUpdateWithoutFilesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orderNumber?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    scheduledDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    startTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    endTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    duration?: NullableIntFieldUpdateOperationsInput | number | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    requiredEmployees?: IntFieldUpdateOperationsInput | number
+    priority?: IntFieldUpdateOperationsInput | number
+    specialInstructions?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    customer?: CustomerUpdateOneWithoutOrdersNestedInput
+    qualifications?: OrderQualificationUpdateManyWithoutOrderNestedInput
+    orderAssignments?: OrderAssignmentUpdateManyWithoutOrderNestedInput
+    employeeAssignments?: AssignmentUpdateManyWithoutOrderNestedInput
+    ratings?: RatingUpdateManyWithoutOrderNestedInput
+  }
+
+  export type OrderUncheckedUpdateWithoutFilesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orderNumber?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    scheduledDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    startTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    endTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    duration?: NullableIntFieldUpdateOperationsInput | number | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    requiredEmployees?: IntFieldUpdateOperationsInput | number
+    priority?: IntFieldUpdateOperationsInput | number
+    specialInstructions?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    customerId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    qualifications?: OrderQualificationUncheckedUpdateManyWithoutOrderNestedInput
+    orderAssignments?: OrderAssignmentUncheckedUpdateManyWithoutOrderNestedInput
+    employeeAssignments?: AssignmentUncheckedUpdateManyWithoutOrderNestedInput
+    ratings?: RatingUncheckedUpdateManyWithoutOrderNestedInput
+  }
+
+  export type AssignmentUpsertWithoutFilesInput = {
+    update: XOR<AssignmentUpdateWithoutFilesInput, AssignmentUncheckedUpdateWithoutFilesInput>
+    create: XOR<AssignmentCreateWithoutFilesInput, AssignmentUncheckedCreateWithoutFilesInput>
+    where?: AssignmentWhereInput
+  }
+
+  export type AssignmentUpdateToOneWithWhereWithoutFilesInput = {
+    where?: AssignmentWhereInput
+    data: XOR<AssignmentUpdateWithoutFilesInput, AssignmentUncheckedUpdateWithoutFilesInput>
+  }
+
+  export type AssignmentUpdateWithoutFilesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    assignedDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    status?: EnumAssignmentStatusFieldUpdateOperationsInput | $Enums.AssignmentStatus
+    tier?: EnumAssignmentTierFieldUpdateOperationsInput | $Enums.AssignmentTier
+    estimatedHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    actualHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    order?: OrderUpdateOneWithoutEmployeeAssignmentsNestedInput
+    employee?: EmployeeUpdateOneRequiredWithoutAssignmentsNestedInput
+  }
+
+  export type AssignmentUncheckedUpdateWithoutFilesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orderId?: NullableStringFieldUpdateOperationsInput | string | null
+    employeeId?: StringFieldUpdateOperationsInput | string
+    assignedDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    status?: EnumAssignmentStatusFieldUpdateOperationsInput | $Enums.AssignmentStatus
+    tier?: EnumAssignmentTierFieldUpdateOperationsInput | $Enums.AssignmentTier
+    estimatedHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    actualHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
   export type EmployeePerformanceCreateManyManualOverrideByInput = {
     id?: string
     employeeId: string
@@ -46590,6 +49510,7 @@ export namespace Prisma {
     ratings?: RatingUpdateManyWithoutEmployeeNestedInput
     workStatistics?: WorkStatisticUpdateManyWithoutEmployeeNestedInput
     orderAssignments?: OrderAssignmentUpdateManyWithoutEmployeeNestedInput
+    files?: FileUpdateManyWithoutEmployeeNestedInput
   }
 
   export type EmployeeUncheckedUpdateWithoutManagerInput = {
@@ -46626,6 +49547,7 @@ export namespace Prisma {
     ratings?: RatingUncheckedUpdateManyWithoutEmployeeNestedInput
     workStatistics?: WorkStatisticUncheckedUpdateManyWithoutEmployeeNestedInput
     orderAssignments?: OrderAssignmentUncheckedUpdateManyWithoutEmployeeNestedInput
+    files?: FileUncheckedUpdateManyWithoutEmployeeNestedInput
   }
 
   export type EmployeeUncheckedUpdateManyWithoutManagerInput = {
@@ -46726,6 +49648,7 @@ export namespace Prisma {
     startDate?: Date | string | null
     endDate?: Date | string | null
     status?: $Enums.AssignmentStatus
+    tier?: $Enums.AssignmentTier
     estimatedHours?: Decimal | DecimalJsLike | number | string | null
     actualHours?: Decimal | DecimalJsLike | number | string | null
     notes?: string | null
@@ -46784,6 +49707,25 @@ export namespace Prisma {
     orderId: string
     role?: string | null
     hourlyRate?: Decimal | DecimalJsLike | number | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type FileCreateManyEmployeeInput = {
+    id?: string
+    filename: string
+    originalName: string
+    mimeType: string
+    size: number
+    path: string
+    documentType?: $Enums.DocumentType
+    description?: string | null
+    expiryDate?: Date | string | null
+    orderId?: string | null
+    assignmentId?: string | null
+    uploadedBy?: string | null
+    isVerified?: boolean
+    isPublic?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -46872,6 +49814,7 @@ export namespace Prisma {
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: EnumAssignmentStatusFieldUpdateOperationsInput | $Enums.AssignmentStatus
+    tier?: EnumAssignmentTierFieldUpdateOperationsInput | $Enums.AssignmentTier
     estimatedHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     actualHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
@@ -46880,6 +49823,7 @@ export namespace Prisma {
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
     order?: OrderUpdateOneWithoutEmployeeAssignmentsNestedInput
+    files?: FileUpdateManyWithoutAssignmentNestedInput
   }
 
   export type AssignmentUncheckedUpdateWithoutEmployeeInput = {
@@ -46889,6 +49833,7 @@ export namespace Prisma {
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: EnumAssignmentStatusFieldUpdateOperationsInput | $Enums.AssignmentStatus
+    tier?: EnumAssignmentTierFieldUpdateOperationsInput | $Enums.AssignmentTier
     estimatedHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     actualHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
@@ -46896,6 +49841,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    files?: FileUncheckedUpdateManyWithoutAssignmentNestedInput
   }
 
   export type AssignmentUncheckedUpdateManyWithoutEmployeeInput = {
@@ -46905,6 +49851,7 @@ export namespace Prisma {
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: EnumAssignmentStatusFieldUpdateOperationsInput | $Enums.AssignmentStatus
+    tier?: EnumAssignmentTierFieldUpdateOperationsInput | $Enums.AssignmentTier
     estimatedHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     actualHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
@@ -47073,6 +50020,63 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type FileUpdateWithoutEmployeeInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    filename?: StringFieldUpdateOperationsInput | string
+    originalName?: StringFieldUpdateOperationsInput | string
+    mimeType?: StringFieldUpdateOperationsInput | string
+    size?: IntFieldUpdateOperationsInput | number
+    path?: StringFieldUpdateOperationsInput | string
+    documentType?: EnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    expiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    uploadedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    isVerified?: BoolFieldUpdateOperationsInput | boolean
+    isPublic?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    order?: OrderUpdateOneWithoutFilesNestedInput
+    assignment?: AssignmentUpdateOneWithoutFilesNestedInput
+  }
+
+  export type FileUncheckedUpdateWithoutEmployeeInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    filename?: StringFieldUpdateOperationsInput | string
+    originalName?: StringFieldUpdateOperationsInput | string
+    mimeType?: StringFieldUpdateOperationsInput | string
+    size?: IntFieldUpdateOperationsInput | number
+    path?: StringFieldUpdateOperationsInput | string
+    documentType?: EnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    expiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    orderId?: NullableStringFieldUpdateOperationsInput | string | null
+    assignmentId?: NullableStringFieldUpdateOperationsInput | string | null
+    uploadedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    isVerified?: BoolFieldUpdateOperationsInput | boolean
+    isPublic?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type FileUncheckedUpdateManyWithoutEmployeeInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    filename?: StringFieldUpdateOperationsInput | string
+    originalName?: StringFieldUpdateOperationsInput | string
+    mimeType?: StringFieldUpdateOperationsInput | string
+    size?: IntFieldUpdateOperationsInput | number
+    path?: StringFieldUpdateOperationsInput | string
+    documentType?: EnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    expiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    orderId?: NullableStringFieldUpdateOperationsInput | string | null
+    assignmentId?: NullableStringFieldUpdateOperationsInput | string | null
+    uploadedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    isVerified?: BoolFieldUpdateOperationsInput | boolean
+    isPublic?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type DepartmentCreateManyParentDepartmentInput = {
     id?: string
     name: string
@@ -47196,6 +50200,7 @@ export namespace Prisma {
     ratings?: RatingUpdateManyWithoutEmployeeNestedInput
     workStatistics?: WorkStatisticUpdateManyWithoutEmployeeNestedInput
     orderAssignments?: OrderAssignmentUpdateManyWithoutEmployeeNestedInput
+    files?: FileUpdateManyWithoutEmployeeNestedInput
   }
 
   export type EmployeeUncheckedUpdateWithoutDepartmentInput = {
@@ -47232,6 +50237,7 @@ export namespace Prisma {
     ratings?: RatingUncheckedUpdateManyWithoutEmployeeNestedInput
     workStatistics?: WorkStatisticUncheckedUpdateManyWithoutEmployeeNestedInput
     orderAssignments?: OrderAssignmentUncheckedUpdateManyWithoutEmployeeNestedInput
+    files?: FileUncheckedUpdateManyWithoutEmployeeNestedInput
   }
 
   export type EmployeeUncheckedUpdateManyWithoutDepartmentInput = {
@@ -47364,6 +50370,7 @@ export namespace Prisma {
     ratings?: RatingUpdateManyWithoutEmployeeNestedInput
     workStatistics?: WorkStatisticUpdateManyWithoutEmployeeNestedInput
     orderAssignments?: OrderAssignmentUpdateManyWithoutEmployeeNestedInput
+    files?: FileUpdateManyWithoutEmployeeNestedInput
   }
 
   export type EmployeeUncheckedUpdateWithoutPositionInput = {
@@ -47400,6 +50407,7 @@ export namespace Prisma {
     ratings?: RatingUncheckedUpdateManyWithoutEmployeeNestedInput
     workStatistics?: WorkStatisticUncheckedUpdateManyWithoutEmployeeNestedInput
     orderAssignments?: OrderAssignmentUncheckedUpdateManyWithoutEmployeeNestedInput
+    files?: FileUncheckedUpdateManyWithoutEmployeeNestedInput
   }
 
   export type EmployeeUncheckedUpdateManyWithoutPositionInput = {
@@ -47523,6 +50531,7 @@ export namespace Prisma {
     orderAssignments?: OrderAssignmentUpdateManyWithoutOrderNestedInput
     employeeAssignments?: AssignmentUpdateManyWithoutOrderNestedInput
     ratings?: RatingUpdateManyWithoutOrderNestedInput
+    files?: FileUpdateManyWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateWithoutCustomerInput = {
@@ -47547,6 +50556,7 @@ export namespace Prisma {
     orderAssignments?: OrderAssignmentUncheckedUpdateManyWithoutOrderNestedInput
     employeeAssignments?: AssignmentUncheckedUpdateManyWithoutOrderNestedInput
     ratings?: RatingUncheckedUpdateManyWithoutOrderNestedInput
+    files?: FileUncheckedUpdateManyWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateManyWithoutCustomerInput = {
@@ -47634,6 +50644,7 @@ export namespace Prisma {
     startDate?: Date | string | null
     endDate?: Date | string | null
     status?: $Enums.AssignmentStatus
+    tier?: $Enums.AssignmentTier
     estimatedHours?: Decimal | DecimalJsLike | number | string | null
     actualHours?: Decimal | DecimalJsLike | number | string | null
     notes?: string | null
@@ -47653,6 +50664,25 @@ export namespace Prisma {
     status: $Enums.RatingStatus
     ratedBy?: string | null
     ratingDate?: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type FileCreateManyOrderInput = {
+    id?: string
+    filename: string
+    originalName: string
+    mimeType: string
+    size: number
+    path: string
+    documentType?: $Enums.DocumentType
+    description?: string | null
+    expiryDate?: Date | string | null
+    employeeId?: string | null
+    assignmentId?: string | null
+    uploadedBy?: string | null
+    isVerified?: boolean
+    isPublic?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -47711,6 +50741,7 @@ export namespace Prisma {
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: EnumAssignmentStatusFieldUpdateOperationsInput | $Enums.AssignmentStatus
+    tier?: EnumAssignmentTierFieldUpdateOperationsInput | $Enums.AssignmentTier
     estimatedHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     actualHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
@@ -47719,6 +50750,7 @@ export namespace Prisma {
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
     employee?: EmployeeUpdateOneRequiredWithoutAssignmentsNestedInput
+    files?: FileUpdateManyWithoutAssignmentNestedInput
   }
 
   export type AssignmentUncheckedUpdateWithoutOrderInput = {
@@ -47728,6 +50760,7 @@ export namespace Prisma {
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: EnumAssignmentStatusFieldUpdateOperationsInput | $Enums.AssignmentStatus
+    tier?: EnumAssignmentTierFieldUpdateOperationsInput | $Enums.AssignmentTier
     estimatedHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     actualHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
@@ -47735,6 +50768,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    files?: FileUncheckedUpdateManyWithoutAssignmentNestedInput
   }
 
   export type AssignmentUncheckedUpdateManyWithoutOrderInput = {
@@ -47744,6 +50778,7 @@ export namespace Prisma {
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: EnumAssignmentStatusFieldUpdateOperationsInput | $Enums.AssignmentStatus
+    tier?: EnumAssignmentTierFieldUpdateOperationsInput | $Enums.AssignmentTier
     estimatedHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     actualHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
@@ -47791,6 +50826,63 @@ export namespace Prisma {
     status?: EnumRatingStatusFieldUpdateOperationsInput | $Enums.RatingStatus
     ratedBy?: NullableStringFieldUpdateOperationsInput | string | null
     ratingDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type FileUpdateWithoutOrderInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    filename?: StringFieldUpdateOperationsInput | string
+    originalName?: StringFieldUpdateOperationsInput | string
+    mimeType?: StringFieldUpdateOperationsInput | string
+    size?: IntFieldUpdateOperationsInput | number
+    path?: StringFieldUpdateOperationsInput | string
+    documentType?: EnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    expiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    uploadedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    isVerified?: BoolFieldUpdateOperationsInput | boolean
+    isPublic?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    employee?: EmployeeUpdateOneWithoutFilesNestedInput
+    assignment?: AssignmentUpdateOneWithoutFilesNestedInput
+  }
+
+  export type FileUncheckedUpdateWithoutOrderInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    filename?: StringFieldUpdateOperationsInput | string
+    originalName?: StringFieldUpdateOperationsInput | string
+    mimeType?: StringFieldUpdateOperationsInput | string
+    size?: IntFieldUpdateOperationsInput | number
+    path?: StringFieldUpdateOperationsInput | string
+    documentType?: EnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    expiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    employeeId?: NullableStringFieldUpdateOperationsInput | string | null
+    assignmentId?: NullableStringFieldUpdateOperationsInput | string | null
+    uploadedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    isVerified?: BoolFieldUpdateOperationsInput | boolean
+    isPublic?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type FileUncheckedUpdateManyWithoutOrderInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    filename?: StringFieldUpdateOperationsInput | string
+    originalName?: StringFieldUpdateOperationsInput | string
+    mimeType?: StringFieldUpdateOperationsInput | string
+    size?: IntFieldUpdateOperationsInput | number
+    path?: StringFieldUpdateOperationsInput | string
+    documentType?: EnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    expiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    employeeId?: NullableStringFieldUpdateOperationsInput | string | null
+    assignmentId?: NullableStringFieldUpdateOperationsInput | string | null
+    uploadedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    isVerified?: BoolFieldUpdateOperationsInput | boolean
+    isPublic?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -47869,6 +50961,82 @@ export namespace Prisma {
     orderId?: StringFieldUpdateOperationsInput | string
     required?: BoolFieldUpdateOperationsInput | boolean
     minProficiency?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type FileCreateManyAssignmentInput = {
+    id?: string
+    filename: string
+    originalName: string
+    mimeType: string
+    size: number
+    path: string
+    documentType?: $Enums.DocumentType
+    description?: string | null
+    expiryDate?: Date | string | null
+    employeeId?: string | null
+    orderId?: string | null
+    uploadedBy?: string | null
+    isVerified?: boolean
+    isPublic?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type FileUpdateWithoutAssignmentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    filename?: StringFieldUpdateOperationsInput | string
+    originalName?: StringFieldUpdateOperationsInput | string
+    mimeType?: StringFieldUpdateOperationsInput | string
+    size?: IntFieldUpdateOperationsInput | number
+    path?: StringFieldUpdateOperationsInput | string
+    documentType?: EnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    expiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    uploadedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    isVerified?: BoolFieldUpdateOperationsInput | boolean
+    isPublic?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    employee?: EmployeeUpdateOneWithoutFilesNestedInput
+    order?: OrderUpdateOneWithoutFilesNestedInput
+  }
+
+  export type FileUncheckedUpdateWithoutAssignmentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    filename?: StringFieldUpdateOperationsInput | string
+    originalName?: StringFieldUpdateOperationsInput | string
+    mimeType?: StringFieldUpdateOperationsInput | string
+    size?: IntFieldUpdateOperationsInput | number
+    path?: StringFieldUpdateOperationsInput | string
+    documentType?: EnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    expiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    employeeId?: NullableStringFieldUpdateOperationsInput | string | null
+    orderId?: NullableStringFieldUpdateOperationsInput | string | null
+    uploadedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    isVerified?: BoolFieldUpdateOperationsInput | boolean
+    isPublic?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type FileUncheckedUpdateManyWithoutAssignmentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    filename?: StringFieldUpdateOperationsInput | string
+    originalName?: StringFieldUpdateOperationsInput | string
+    mimeType?: StringFieldUpdateOperationsInput | string
+    size?: IntFieldUpdateOperationsInput | number
+    path?: StringFieldUpdateOperationsInput | string
+    documentType?: EnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    expiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    employeeId?: NullableStringFieldUpdateOperationsInput | string | null
+    orderId?: NullableStringFieldUpdateOperationsInput | string | null
+    uploadedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    isVerified?: BoolFieldUpdateOperationsInput | boolean
+    isPublic?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type NotificationRecipientCreateManyNotificationInput = {
