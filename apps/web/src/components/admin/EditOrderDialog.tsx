@@ -4,7 +4,13 @@ import { Button } from "@/components/ui";
 import { Input } from "@/components/ui";
 import { Label } from "@/components/ui";
 import { Textarea } from "@/components/ui";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui";
 import { Checkbox } from "@/components/ui";
 import {
   Dialog,
@@ -36,14 +42,14 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
   useEffect(() => {
     if (order && open) {
       fetchEmployees();
-      getOrderAssignments(order.id).then(assignedEmployeeIds => {
+      getOrderAssignments(order.id).then((assignedEmployeeIds) => {
         setFormData({
           orderNumber: order.orderNumber,
           title: order.title,
           description: order.description || "",
-          scheduledDate: order.scheduledDate.split('T')[0],
-          startTime: order.startTime ? order.startTime.split('T')[1]?.substring(0, 5) : "",
-          endTime: order.endTime ? order.endTime.split('T')[1]?.substring(0, 5) : "",
+          scheduledDate: order.scheduledDate.split("T")[0],
+          startTime: order.startTime ? order.startTime.substring(0, 16) : "",
+          endTime: order.endTime ? order.endTime.substring(0, 16) : "",
           duration: order.duration,
           location: order.location || "",
           requiredEmployees: order.requiredEmployees,
@@ -62,15 +68,15 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
 
     try {
       const submitData = { ...formData };
-      
-      // Convert time inputs to ISO datetime format
-      if (submitData.startTime && submitData.scheduledDate) {
-        submitData.startTime = `${submitData.scheduledDate}T${submitData.startTime}:00Z`;
+
+      // Convert datetime-local to ISO format
+      if (submitData.startTime) {
+        submitData.startTime = new Date(submitData.startTime).toISOString();
       }
-      if (submitData.endTime && submitData.scheduledDate) {
-        submitData.endTime = `${submitData.scheduledDate}T${submitData.endTime}:00Z`;
+      if (submitData.endTime) {
+        submitData.endTime = new Date(submitData.endTime).toISOString();
       }
-      
+
       await updateOrder(order.id, submitData);
       onOpenChange(false);
     } catch (error) {
@@ -81,15 +87,15 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
   };
 
   const handleInputChange = (field: keyof UpdateOrderData, value: any) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleEmployeeToggle = (employeeId: string, checked: boolean) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       assignedEmployeeIds: checked
         ? [...(prev.assignedEmployeeIds || []), employeeId]
-        : (prev.assignedEmployeeIds || []).filter(id => id !== employeeId)
+        : (prev.assignedEmployeeIds || []).filter((id) => id !== employeeId),
     }));
   };
 
@@ -106,7 +112,9 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
               <Input
                 id="orderNumber"
                 value={formData.orderNumber || ""}
-                onChange={(e) => handleInputChange("orderNumber", e.target.value)}
+                onChange={(e) =>
+                  handleInputChange("orderNumber", e.target.value)
+                }
                 required
               />
             </div>
@@ -114,7 +122,9 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
               <Label htmlFor="status">Status</Label>
               <Select
                 value={formData.status}
-                onValueChange={(value) => handleInputChange("status", value as OrderStatus)}
+                onValueChange={(value) =>
+                  handleInputChange("status", value as OrderStatus)
+                }
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -157,7 +167,9 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
                 id="scheduledDate"
                 type="date"
                 value={formData.scheduledDate || ""}
-                onChange={(e) => handleInputChange("scheduledDate", e.target.value)}
+                onChange={(e) =>
+                  handleInputChange("scheduledDate", e.target.value)
+                }
                 required
               />
             </div>
@@ -171,39 +183,28 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
             </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="startTime">Start Time</Label>
+              <Label htmlFor="startTime">Start Date & Time</Label>
               <Input
                 id="startTime"
-                type="time"
+                type="datetime-local"
                 value={formData.startTime || ""}
                 onChange={(e) => handleInputChange("startTime", e.target.value)}
               />
             </div>
             <div>
-              <Label htmlFor="endTime">End Time</Label>
+              <Label htmlFor="endTime">End Date & Time</Label>
               <Input
                 id="endTime"
-                type="time"
+                type="datetime-local"
                 value={formData.endTime || ""}
                 onChange={(e) => handleInputChange("endTime", e.target.value)}
               />
             </div>
-            <div>
-              <Label htmlFor="duration">Duration (hours)</Label>
-              <Input
-                id="duration"
-                type="number"
-                min="0"
-                step="0.5"
-                value={formData.duration || ""}
-                onChange={(e) => handleInputChange("duration", e.target.value ? Number(e.target.value) : undefined)}
-              />
-            </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-3 gap-4">
             <div>
               <Label htmlFor="requiredEmployees">Required Employees *</Label>
               <Input
@@ -211,7 +212,9 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
                 type="number"
                 min="1"
                 value={formData.requiredEmployees || 1}
-                onChange={(e) => handleInputChange("requiredEmployees", Number(e.target.value))}
+                onChange={(e) =>
+                  handleInputChange("requiredEmployees", Number(e.target.value))
+                }
                 required
               />
             </div>
@@ -222,8 +225,26 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
                 type="number"
                 min="1"
                 value={formData.priority || 1}
-                onChange={(e) => handleInputChange("priority", Number(e.target.value))}
+                onChange={(e) =>
+                  handleInputChange("priority", Number(e.target.value))
+                }
                 required
+              />
+            </div>
+            <div>
+              <Label htmlFor="duration">Duration (hours)</Label>
+              <Input
+                id="duration"
+                type="number"
+                min="0"
+                step="0.5"
+                value={formData.duration || ""}
+                onChange={(e) =>
+                  handleInputChange(
+                    "duration",
+                    e.target.value ? Number(e.target.value) : undefined
+                  )
+                }
               />
             </div>
           </div>
@@ -233,7 +254,9 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
             <Textarea
               id="specialInstructions"
               value={formData.specialInstructions || ""}
-              onChange={(e) => handleInputChange("specialInstructions", e.target.value)}
+              onChange={(e) =>
+                handleInputChange("specialInstructions", e.target.value)
+              }
               rows={3}
             />
           </div>
@@ -245,11 +268,19 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
                 <div key={employee.id} className="flex items-center space-x-2">
                   <Checkbox
                     id={`employee-${employee.id}`}
-                    checked={(formData.assignedEmployeeIds || []).includes(employee.id)}
-                    onCheckedChange={(checked) => handleEmployeeToggle(employee.id, checked as boolean)}
+                    checked={(formData.assignedEmployeeIds || []).includes(
+                      employee.id
+                    )}
+                    onCheckedChange={(checked) =>
+                      handleEmployeeToggle(employee.id, checked as boolean)
+                    }
                   />
-                  <Label htmlFor={`employee-${employee.id}`} className="text-sm">
-                    {employee.firstName} {employee.lastName} ({employee.employeeCode})
+                  <Label
+                    htmlFor={`employee-${employee.id}`}
+                    className="text-sm"
+                  >
+                    {employee.firstName} {employee.lastName} (
+                    {employee.employeeCode})
                   </Label>
                 </div>
               ))}

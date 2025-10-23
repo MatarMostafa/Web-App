@@ -1,24 +1,12 @@
 import React from "react";
-import { signOut } from "next-auth/react";
-
-import {
-  LayoutGrid,
-  Users,
-  Presentation,
-  User,
-  Bell,
-  Search,
-  Menu,
-  Calendar,
-} from "lucide-react";
+import { User, Menu } from "lucide-react";
+import { useAuthStore } from "@/store/authStore";
 
 interface HeaderProps {
   onMenuClick?: () => void;
 }
 import { Button } from "@/components/ui";
-import { cn } from "@/lib/utils/helpers";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import Image from "next/image";
 import {
   DropdownMenu,
@@ -28,19 +16,7 @@ import {
 } from "@/components/ui";
 
 const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
-  const pathname = usePathname();
-  type NavItem = {
-    name: string;
-    path: string;
-    icon: React.ElementType;
-  };
-
-  // const navItems: NavItem[] = [
-  //   { name: "Dashboard", path: "/dashboard", icon: LayoutGrid },
-  //   { name: "Employees", path: "/dashboard/contacts", icon: Users },
-  //   { name: "Customers", path: "/dashboard/reminders", icon: Calendar },
-  //   // { name: "Present", path: "/present", icon: Presentation },
-  // ];
+  const { logout } = useAuthStore();
 
   return (
     <header className="border-b border-border bg-background sticky top-0 z-10 shadow-sm">
@@ -58,7 +34,7 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
 
           <Link href="/" className="flex items-center gap-2 mr-8">
             <Image
-              src="/img/fe441c05-5318-4144-ba3b-7e5227ec2afa.png"
+              src="/img/logo.png"
               alt="ERP Logo"
               className="h-8 w-8"
               width={32}
@@ -119,12 +95,12 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem asChild>
+              {/* <DropdownMenuItem asChild>
                 <Link href="/settings">Profile</Link>
-              </DropdownMenuItem>
+              </DropdownMenuItem> */}
               <DropdownMenuItem
-                className="px-2 py-3 cursor-pointer"
-                onClick={() => signOut()}
+                className="px-2 py-3 cursor-pointer text-black"
+                onClick={logout}
               >
                 Log Out
               </DropdownMenuItem>

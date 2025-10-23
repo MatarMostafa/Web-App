@@ -1,18 +1,13 @@
 import { create } from "zustand";
-import { Employee, CreateEmployeeData, UpdateEmployeeData } from "@/types/employee";
 import { apiClient } from "@/lib/api-client";
+import { Employee, CreateEmployeeData, UpdateEmployeeData } from "@/types/employee";
 import toast from "react-hot-toast";
 
-interface EmployeeAssignment {
+interface Assignment {
   id: string;
+  employeeId: string;
   orderId: string;
   assignedDate: string;
-  startDate?: string;
-  endDate?: string;
-  status: string;
-  estimatedHours?: number;
-  actualHours?: number;
-  notes?: string;
   order: {
     id: string;
     orderNumber: string;
@@ -26,26 +21,26 @@ interface EmployeeAssignment {
 interface EmployeeState {
   employees: Employee[];
   currentEmployee: Employee | null;
-  employeeAssignments: EmployeeAssignment[];
+  assignments: Assignment[];
+  employeeAssignments: Assignment[];
   loading: boolean;
   isLoadingEmployee: boolean;
   isLoadingAssignments: boolean;
   error: string | null;
   
-  // Actions
   fetchEmployees: () => Promise<void>;
   fetchEmployee: (id: string) => Promise<void>;
-  getEmployeeById: (id: string) => Promise<Employee | null>;
-  fetchEmployeeAssignments: (employeeId: string) => Promise<void>;
   createEmployee: (data: CreateEmployeeData) => Promise<void>;
   updateEmployee: (id: string, data: UpdateEmployeeData) => Promise<void>;
   deleteEmployee: (id: string) => Promise<void>;
+  fetchEmployeeAssignments: (userId: string) => Promise<void>;
   clearError: () => void;
 }
 
 export const useEmployeeStore = create<EmployeeState>((set, get) => ({
   employees: [],
   currentEmployee: null,
+  assignments: [],
   employeeAssignments: [],
   loading: false,
   isLoadingEmployee: false,
@@ -55,12 +50,9 @@ export const useEmployeeStore = create<EmployeeState>((set, get) => ({
   fetchEmployees: async () => {
     set({ loading: true, error: null });
     try {
-      console.log('Fetching employees...');
       const employees = await apiClient.get<Employee[]>("/api/employees");
-      console.log('Employees fetched successfully:', employees);
       set({ employees, loading: false });
     } catch (error) {
-      console.error('Error fetching employees:', error);
       const errorMessage = error instanceof Error ? error.message : "Failed to fetch employees";
       set({ error: errorMessage, loading: false });
       toast.error(errorMessage);
@@ -73,19 +65,9 @@ export const useEmployeeStore = create<EmployeeState>((set, get) => ({
       const employee = await apiClient.get<Employee>(`/api/employees/${id}`);
       set({ currentEmployee: employee, isLoadingEmployee: false });
     } catch (error) {
-      set({ error: error instanceof Error ? error.message : "Failed to fetch employee", isLoadingEmployee: false });
-    }
-  },
-
-  getEmployeeById: async (id: string) => {
-    set({ loading: true, error: null });
-    try {
-      const employee = await apiClient.get<Employee>(`/api/employees/${id}`);
-      set({ loading: false });
-      return employee;
-    } catch (error) {
-      set({ error: error instanceof Error ? error.message : "Failed to fetch employee", loading: false });
-      return null;
+      const errorMessage = error instanceof Error ? error.message : "Failed to fetch employee";
+      set({ error: errorMessage, isLoadingEmployee: false });
+      toast.error(errorMessage);
     }
   },
 
@@ -134,15 +116,15 @@ export const useEmployeeStore = create<EmployeeState>((set, get) => ({
     }
   },
 
-  fetchEmployeeAssignments: async (employeeId: string) => {
+  fetchEmployeeAssignments: async (userId: string) => {
     set({ isLoadingAssignments: true, error: null });
     try {
-      const assignments = await apiClient.get<EmployeeAssignment[]>(`/api/employees/${employeeId}/assignments`);
+      const assignments = await apiClient.get<Assignment[]>(`/api/employees/${userId}/assignments`);
       set({ employeeAssignments: assignments, isLoadingAssignments: false });
     } catch (error) {
-      console.error('Error fetching employee assignments:', error);
       const errorMessage = error instanceof Error ? error.message : "Failed to fetch assignments";
-      set({ error: errorMessage, isLoadingAssignments: false, employeeAssignments: [] });
+      set({ error: errorMessage, isLoadingAssignments: false });
+      toast.error(errorMessage);
     }
   },
 
