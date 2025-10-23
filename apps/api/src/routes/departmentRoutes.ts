@@ -1,7 +1,14 @@
 import express from "express";
 import { authMiddleware } from "../middleware/authMiddleware";
 import { roleMiddleware } from "../middleware/roleMiddleware";
-import { prisma } from "@repo/db";
+import {
+  getAllDepartments,
+  getDepartmentById,
+  createDepartment,
+  updateDepartment,
+  deleteDepartment,
+  updateDepartmentStatus,
+} from "../controllers/departmentController";
 
 const router = express.Router();
 
@@ -9,18 +16,42 @@ router.get(
   "/",
   authMiddleware,
   roleMiddleware(["ADMIN", "TEAM_LEADER", "HR_MANAGER"]),
-  async (req, res) => {
-    try {
-      const departments = await prisma.department.findMany({
-        where: { isActive: true },
-        select: { id: true, name: true, code: true },
-        orderBy: { name: "asc" },
-      });
-      res.json(departments);
-    } catch (error) {
-      res.status(500).json({ message: "Error fetching departments", error });
-    }
-  }
+  getAllDepartments
+);
+
+router.get(
+  "/:id",
+  authMiddleware,
+  roleMiddleware(["ADMIN", "TEAM_LEADER", "HR_MANAGER"]),
+  getDepartmentById
+);
+
+router.post(
+  "/",
+  authMiddleware,
+  roleMiddleware(["ADMIN", "HR_MANAGER"]),
+  createDepartment
+);
+
+router.put(
+  "/:id",
+  authMiddleware,
+  roleMiddleware(["ADMIN", "HR_MANAGER"]),
+  updateDepartment
+);
+
+router.delete(
+  "/:id",
+  authMiddleware,
+  roleMiddleware(["ADMIN"]),
+  deleteDepartment
+);
+
+router.patch(
+  "/:id/status",
+  authMiddleware,
+  roleMiddleware(["ADMIN", "HR_MANAGER"]),
+  updateDepartmentStatus
 );
 
 export default router;

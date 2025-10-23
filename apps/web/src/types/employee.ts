@@ -10,7 +10,9 @@ export interface Employee {
   hireDate: string;
   terminationDate?: string;
   departmentId: string;
+  departmentName?: string;
   positionId: string;
+  positionTitle?: string;
   managerId?: string;
   scheduleType: WorkScheduleType;
   hourlyRate?: number;

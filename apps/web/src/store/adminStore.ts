@@ -1,134 +1,99 @@
-import { create } from 'zustand';
+import { create } from "zustand";
+import { apiClient } from "@/lib/api-client";
+import toast from "react-hot-toast";
 
-interface User {
-  id: string;
-  email: string;
-  created_at: string;
-  last_sign_in_at?: string;
-  email_confirmed_at?: string;
-  user_metadata: {
-    display_name?: string;
-    email: string;
-    email_verified: boolean;
-  };
-  app_metadata: {
-    provider: string;
-    providers: string[];
-  };
+interface DashboardStats {
+  ordersLast30Days: number;
+  newCustomersLast30Days: number;
+  newEmployeesLast30Days: number;
+  employeesOnLeave: number;
+  unassignedOrders: number;
+  completedOrders: number;
 }
 
-interface AdminStore {
-  users: User[];
+interface CustomerStats {
+  totalCustomers: number;
+  activeCustomers: number;
+  avgOrdersPerCustomer: number;
+}
+
+interface AverageValues {
+  avgOrderDuration: number;
+  avgEmployeeHourlyRate: number;
+  avgEstimatedHours: number;
+  avgActualHours: number;
+}
+
+interface EmployeeHours {
+  employeeId: string;
+  employeeName: string;
+  employeeCode: string;
+  totalActualHours: number;
+  totalEstimatedHours: number;
+  assignmentCount: number;
+}
+
+interface AdminState {
+  dashboardStats: DashboardStats | null;
+  customerStats: CustomerStats | null;
+  averageValues: AverageValues | null;
+  employeeHours: EmployeeHours[];
   loading: boolean;
   error: string | null;
-  fetchUsers: () => Promise<void>;
-  addUser: (userData: { email: string; password: string; display_name: string }) => Promise<void>;
-  editUser: (id: string, userData: { email: string; display_name: string }) => Promise<void>;
-  deleteUser: (id: string) => Promise<void>;
+  
+  fetchDashboardStats: () => Promise<void>;
+  fetchCustomerStats: () => Promise<void>;
+  fetchAverageValues: () => Promise<void>;
+  fetchEmployeeHours: () => Promise<void>;
+  clearError: () => void;
 }
 
-export const useAdminStore = create<AdminStore>((set, get) => ({
-  users: [],
+export const useAdminStore = create<AdminState>((set) => ({
+  dashboardStats: null,
+  customerStats: null,
+  averageValues: null,
+  employeeHours: [],
   loading: false,
   error: null,
-  fetchUsers: async () => {
+
+  fetchDashboardStats: async () => {
     set({ loading: true, error: null });
     try {
-      const response = await fetch('/api/admin/users');
-      const data = await response.json();
-      
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to fetch users');
-      }
-      
-      set({ users: data.users, loading: false });
+      const stats = await apiClient.get<DashboardStats>("/api/admin/dashboard");
+      set({ dashboardStats: stats, loading: false });
     } catch (error) {
-      set({ 
-        error: error instanceof Error ? error.message : 'Unknown error',
-        loading: false 
-      });
+      const errorMessage = error instanceof Error ? error.message : "Failed to fetch dashboard stats";
+      set({ error: errorMessage, loading: false });
+      toast.error(errorMessage);
     }
   },
-  addUser: async (userData) => {
-    set({ loading: true, error: null });
+
+  fetchCustomerStats: async () => {
     try {
-      const response = await fetch('/api/admin/users', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(userData),
-      });
-      const data = await response.json();
-      
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to create user');
-      }
-      
-      // Optimistic update: add new user to existing list
-      set((state) => ({
-        users: [data.user, ...state.users],
-        loading: false
-      }));
+      const stats = await apiClient.get<CustomerStats>("/api/admin/customerStatistics");
+      set({ customerStats: stats });
     } catch (error) {
-      set({ 
-        error: error instanceof Error ? error.message : 'Unknown error',
-        loading: false 
-      });
-      throw error;
+      console.error("Failed to fetch customer stats:", error);
     }
   },
-  editUser: async (id, userData) => {
-    set({ loading: true, error: null });
+
+  fetchAverageValues: async () => {
     try {
-      const response = await fetch(`/api/admin/users/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(userData),
-      });
-      const data = await response.json();
-      
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to update user');
-      }
-      
-      // Optimistic update: update user in existing list
-      set((state) => ({
-        users: state.users.map(user => 
-          user.id === id ? data.user : user
-        ),
-        loading: false
-      }));
+      const values = await apiClient.get<AverageValues>("/api/admin/averageValues");
+      set({ averageValues: values });
     } catch (error) {
-      set({ 
-        error: error instanceof Error ? error.message : 'Unknown error',
-        loading: false 
-      });
-      throw error;
+      console.error("Failed to fetch average values:", error);
     }
   },
-  deleteUser: async (id) => {
-    set({ loading: true, error: null });
+
+  fetchEmployeeHours: async () => {
     try {
-      const response = await fetch(`/api/admin/users/${id}`, {
-        method: 'DELETE',
-      });
-      
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || `Failed to delete user (${response.status})`);
-      }
-      
-      // Optimistic update: remove user from existing list
-      set((state) => ({
-        users: state.users.filter(user => user.id !== id),
-        loading: false
-      }));
+      const hours = await apiClient.get<EmployeeHours[]>("/api/admin/hours");
+      set({ employeeHours: hours });
     } catch (error) {
-      console.error('Delete user error:', error);
-      set({ 
-        error: error instanceof Error ? error.message : 'Unknown error',
-        loading: false 
-      });
-      throw error;
+      console.error("Failed to fetch employee hours:", error);
     }
   },
+
+  clearError: () => set({ error: null }),
 }));

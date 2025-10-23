@@ -57,8 +57,17 @@ router.get(
   roleMiddleware(["ADMIN", "TEAM_LEADER", "HR_MANAGER", "EMPLOYEE"]),
   async (req, res) => {
     try {
+      // First find the employee by userId
+      const employee = await prisma.employee.findUnique({
+        where: { userId: req.params.id },
+      });
+
+      if (!employee) {
+        return res.status(404).json({ message: "Employee not found" });
+      }
+
       const assignments = await prisma.assignment.findMany({
-        where: { employeeId: req.params.id },
+        where: { employeeId: employee.id },
         include: {
           order: {
             select: {
