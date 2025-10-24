@@ -13,11 +13,22 @@ import {
   Building,
   CheckCircle,
   XCircle,
+  RotateCcw,
 } from "lucide-react";
 import { useEmployeeStore } from "@/store/employeeStore";
+import LeaveActionModal from "@/components/modals/LeaveActionModal";
 
 const LeaveRequestsPage = () => {
   const [activeTab, setActiveTab] = useState("pending");
+  const [modalState, setModalState] = useState<{
+    isOpen: boolean;
+    action: "approve" | "reject";
+    absenceId: string;
+    employeeName: string;
+    leaveType: string;
+  } | null>(null);
+  const [actionLoading, setActionLoading] = useState(false);
+  
   const {
     allAbsences,
     loading,
@@ -27,7 +38,10 @@ const LeaveRequestsPage = () => {
   } = useEmployeeStore();
 
   useEffect(() => {
-    const filters = activeTab === "all" ? {} : { status: activeTab.toUpperCase() };
+    let filters = {};
+    if (activeTab !== "all") {
+      filters = { status: activeTab.toUpperCase() };
+    }
     fetchAllAbsences(filters);
   }, [activeTab, fetchAllAbsences]);
 
@@ -54,6 +68,47 @@ const LeaveRequestsPage = () => {
     const diffTime = Math.abs(end.getTime() - start.getTime());
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
     return diffDays;
+  };
+
+  const handleActionClick = (action: "approve" | "reject", absence: any) => {
+    setModalState({
+      isOpen: true,
+      action,
+      absenceId: absence.id,
+      employeeName: `${absence.employee?.firstName} ${absence.employee?.lastName}`,
+      leaveType: absence.type,
+    });
+  };
+
+  const handleQuickApprove = async (absenceId: string) => {
+    setActionLoading(true);
+    try {
+      await approveAbsence(absenceId);
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleModalConfirm = async (reason?: string) => {
+    if (!modalState) return;
+    
+    setActionLoading(true);
+    try {
+      if (modalState.action === "approve") {
+        await approveAbsence(modalState.absenceId, reason);
+      } else {
+        await rejectAbsence(modalState.absenceId, reason);
+      }
+      setModalState(null);
+    } catch (error) {
+      // Error handling is done in the store
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleModalClose = () => {
+    setModalState(null);
   };
 
   return (
@@ -129,28 +184,31 @@ const LeaveRequestsPage = () => {
                           <Badge className={getStatusBadgeClass(absence.status)}>
                             {absence.status}
                           </Badge>
-                          {absence.status === "PENDING" && (
-                            <div className="flex gap-1">
+                          <div className="flex gap-1">
+                            {absence.status !== "APPROVED" && (
                               <Button
                                 size="sm"
                                 variant="outline"
-                                onClick={() => approveAbsence(absence.id)}
+                                onClick={() => handleQuickApprove(absence.id)}
+                                disabled={actionLoading}
                                 className="bg-green-50 text-green-700 hover:bg-green-100"
                               >
                                 <CheckCircle className="h-4 w-4 mr-1" />
-                                Approve
+                                {absence.status === "REJECTED" ? "Re-approve" : "Approve"}
                               </Button>
+                            )}
+                            {absence.status !== "REJECTED" && (
                               <Button
                                 size="sm"
                                 variant="outline"
-                                onClick={() => rejectAbsence(absence.id)}
+                                onClick={() => handleActionClick("reject", absence)}
                                 className="bg-red-50 text-red-700 hover:bg-red-100"
                               >
                                 <XCircle className="h-4 w-4 mr-1" />
-                                Reject
+                                {absence.status === "APPROVED" ? "Revoke" : "Reject"}
                               </Button>
-                            </div>
-                          )}
+                            )}
+                          </div>
                         </div>
                       </div>
 
@@ -205,6 +263,18 @@ const LeaveRequestsPage = () => {
           </Card>
         </TabsContent>
       </Tabs>
+      
+      {modalState && (
+        <LeaveActionModal
+          isOpen={modalState.isOpen}
+          onClose={handleModalClose}
+          onConfirm={handleModalConfirm}
+          action={modalState.action}
+          employeeName={modalState.employeeName}
+          leaveType={modalState.leaveType}
+          loading={actionLoading}
+        />
+      )}
     </div>
   );
 };
