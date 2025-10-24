@@ -13,9 +13,12 @@ import {
   MapPin,
   Download,
   Eye,
+  CheckCircle,
+  XCircle,
 } from "lucide-react";
 import { Employee } from "@/types/employee";
 import { useEmployeeStore } from "@/store/employeeStore";
+import LeaveActionModal from "@/components/modals/LeaveActionModal";
 
 interface EmployeeProfileProps {
   employee: Employee & { name: string };
@@ -23,6 +26,14 @@ interface EmployeeProfileProps {
 
 const EmployeeProfile: React.FC<EmployeeProfileProps> = ({ employee }) => {
   const [activeTab, setActiveTab] = useState("assignments");
+  const [modalState, setModalState] = useState<{
+    isOpen: boolean;
+    action: "approve" | "reject";
+    absenceId: string;
+    employeeName: string;
+    leaveType: string;
+  } | null>(null);
+  const [actionLoading, setActionLoading] = useState(false);
   const {
     employeeAssignments,
     employeePerformance,
@@ -66,6 +77,36 @@ const EmployeeProfile: React.FC<EmployeeProfileProps> = ({ employee }) => {
       }
     }
   }, [employee.id, activeTab, fetchEmployeeAssignments, fetchEmployeePerformance, fetchEmployeeQualifications, fetchEmployeeAbsences, fetchEmployeeFiles]);
+
+  const handleActionClick = (action: "approve" | "reject", absence: any) => {
+    setModalState({
+      isOpen: true,
+      action,
+      absenceId: absence.id,
+      employeeName: employee.name,
+      leaveType: absence.type,
+    });
+  };
+
+  const handleModalConfirm = async (reason?: string) => {
+    if (!modalState) return;
+    
+    setActionLoading(true);
+    try {
+      if (modalState.action === "approve") {
+        await approveAbsence(modalState.absenceId, reason);
+      } else {
+        await rejectAbsence(modalState.absenceId, reason);
+      }
+    } finally {
+      setActionLoading(false);
+      setModalState(null);
+    }
+  };
+
+  const handleModalClose = () => {
+    setModalState(null);
+  };
 
   return (
     <div className="space-y-6">
@@ -366,26 +407,30 @@ const EmployeeProfile: React.FC<EmployeeProfileProps> = ({ employee }) => {
                           >
                             {absence.status}
                           </Badge>
-                          {absence.status === "PENDING" && (
-                            <div className="flex gap-1">
+                          <div className="flex gap-1">
+                            {absence.status !== "APPROVED" && (
                               <Button
                                 size="sm"
                                 variant="outline"
-                                onClick={() => approveAbsence(absence.id)}
+                                onClick={() => handleActionClick("approve", absence)}
                                 className="bg-green-50 text-green-700 hover:bg-green-100"
                               >
-                                Approve
+                                <CheckCircle className="h-3 w-3 mr-1" />
+                                {absence.status === "REJECTED" ? "Re-approve" : "Approve"}
                               </Button>
+                            )}
+                            {absence.status !== "REJECTED" && (
                               <Button
                                 size="sm"
                                 variant="outline"
-                                onClick={() => rejectAbsence(absence.id)}
+                                onClick={() => handleActionClick("reject", absence)}
                                 className="bg-red-50 text-red-700 hover:bg-red-100"
                               >
-                                Reject
+                                <XCircle className="h-3 w-3 mr-1" />
+                                {absence.status === "APPROVED" ? "Revoke" : "Reject"}
                               </Button>
-                            </div>
-                          )}
+                            )}
+                          </div>
                         </div>
                       </div>
                       {absence.reason && (
@@ -489,6 +534,18 @@ const EmployeeProfile: React.FC<EmployeeProfileProps> = ({ employee }) => {
           </Card>
         </TabsContent>
       </Tabs>
+      
+      {modalState && (
+        <LeaveActionModal
+          isOpen={modalState.isOpen}
+          onClose={handleModalClose}
+          onConfirm={handleModalConfirm}
+          action={modalState.action}
+          employeeName={modalState.employeeName}
+          leaveType={modalState.leaveType}
+          loading={actionLoading}
+        />
+      )}
     </div>
   );
 };

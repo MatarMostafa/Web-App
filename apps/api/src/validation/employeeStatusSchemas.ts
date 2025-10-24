@@ -4,7 +4,7 @@ import { z } from "zod";
 export const blockSchema = z.object({
   body: z.object({
     userId: z.string().min(1), // user.id (not employee id)
-    reason: z.string().max(1000).optional(),
+    reason: z.string().min(1, "Block reason is required").max(1000),
   }),
 });
 
