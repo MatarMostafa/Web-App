@@ -54,6 +54,23 @@ enum AssignmentStatus {
   OVERDUE
 }
 
+enum AssignmentTier {
+  PRIMARY
+  BACKUP
+  FALLBACK
+}
+
+enum DocumentType {
+  RESUME
+  ID_CARD
+  PASSPORT
+  CONTRACT
+  CERTIFICATE
+  WORK_EVIDENCE
+  PROFILE_PICTURE
+  OTHER
+}
+
 enum AbsenceType {
   SICK_LEAVE
   VACATION
@@ -133,10 +150,10 @@ model Employee {
 
   hireDate        DateTime
   terminationDate DateTime?
-  department      Department @relation(fields: [departmentId], references: [id], onDelete: Cascade)
-  departmentId    String
-  position        Position   @relation(fields: [positionId], references: [id], onDelete: Cascade)
-  positionId      String
+  department      Department? @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  departmentId    String?
+  position        Position?   @relation(fields: [positionId], references: [id], onDelete: Cascade)
+  positionId      String?
   manager         User?      @relation("ManagerSubordinate", fields: [managerId], references: [id], onDelete: Cascade)
   managerId       String?
 
@@ -162,6 +179,7 @@ model Employee {
   ratings          Rating[]
   workStatistics   WorkStatistic[]
   orderAssignments OrderAssignment[]
+  files            File[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -322,6 +340,7 @@ model Order {
   orderAssignments    OrderAssignment[]
   employeeAssignments Assignment[]
   ratings             Rating[]
+  files               File[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -406,10 +425,12 @@ model Assignment {
   startDate    DateTime?
   endDate      DateTime?
   status       AssignmentStatus @default(ASSIGNED)
+  tier         AssignmentTier   @default(PRIMARY)
 
   estimatedHours Decimal? @db.Decimal(5, 2)
   actualHours    Decimal? @db.Decimal(5, 2)
   notes          String?
+  files          File[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -608,6 +629,41 @@ model NotificationPreference {
   updatedAt DateTime @updatedAt
 
   @@map("notification_preferences")
+}
+
+// ===============================
+// FILE MANAGEMENT
+// ===============================
+
+model File {
+  id           String       @id @default(cuid())
+  filename     String       // stored filename
+  originalName String       // original uploaded filename
+  mimeType     String
+  size         Int          // file size in bytes
+  path         String       // file storage path
+  
+  documentType DocumentType @default(OTHER)
+  description  String?
+  expiryDate   DateTime?
+  
+  // Relations
+  employee     Employee?    @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  employeeId   String?
+  order        Order?       @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId      String?
+  assignment   Assignment?  @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  assignmentId String?
+  
+  // Metadata
+  uploadedBy   String?      // userId who uploaded
+  isVerified   Boolean      @default(false)
+  isPublic     Boolean      @default(false)
+  
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  
+  @@map("files")
 }
 
 // ===============================

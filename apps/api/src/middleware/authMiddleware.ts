@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
-import { prisma } from "../lib/prisma";
+import { prisma } from "@repo/db";
 
 export interface AuthRequest extends Request {
   user?: {
@@ -25,8 +25,10 @@ export const authMiddleware = async (
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || "your-secret-key") as any;
-    
+    const decoded = jwt.verify(
+      token,
+      process.env.JWT_SECRET || "your-secret-key"
+    ) as any;
     const user = await prisma.user.findUnique({
       where: { id: decoded.id },
       select: {
@@ -34,14 +36,14 @@ export const authMiddleware = async (
         email: true,
         username: true,
         role: true,
-        isActive: true
-      }
+        isActive: true,
+      },
     });
-    
+
     if (!user || !user.isActive) {
       return res.status(401).json({ message: "User not found or inactive" });
     }
-    
+
     authReq.user = user;
     next();
   } catch (error) {
