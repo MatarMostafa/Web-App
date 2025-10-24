@@ -8,6 +8,7 @@ import {
   updateEmployee,
   deleteEmployee,
 } from "../controllers/employeeController";
+import { prisma } from "@repo/db";
 
 const router = express.Router();
 
@@ -47,6 +48,140 @@ router.delete(
   authMiddleware,
   roleMiddleware(["ADMIN"]),
   deleteEmployee
+);
+
+// Get employee assignments
+router.get(
+  "/:id/assignments",
+  authMiddleware,
+  roleMiddleware(["ADMIN", "TEAM_LEADER", "HR_MANAGER", "EMPLOYEE"]),
+  async (req, res) => {
+    try {
+      // Try to find employee by ID first, then by userId
+      let employee = await prisma.employee.findUnique({
+        where: { id: req.params.id },
+      });
+
+      if (!employee) {
+        // If not found by employee ID, try by userId
+        employee = await prisma.employee.findUnique({
+          where: { userId: req.params.id },
+        });
+      }
+
+      if (!employee) {
+        return res.status(404).json({ message: "Employee not found" });
+      }
+
+      const assignments = await prisma.assignment.findMany({
+        where: { employeeId: employee.id },
+        include: {
+          order: {
+            select: {
+              id: true,
+              orderNumber: true,
+              title: true,
+              scheduledDate: true,
+              status: true,
+              priority: true,
+            },
+          },
+        },
+        orderBy: { assignedDate: 'desc' },
+      });
+      res.json(assignments);
+    } catch (error) {
+      console.error("Get employee assignments error:", error);
+      res.status(400).json({ 
+        message: "Failed to fetch employee assignments", 
+        error: error instanceof Error ? error.message : String(error)
+      });
+    }
+  }
+);
+
+// Get employee absences
+router.get(
+  "/:id/absences",
+  authMiddleware,
+  roleMiddleware(["ADMIN", "TEAM_LEADER", "HR_MANAGER", "EMPLOYEE"]),
+  async (req, res) => {
+    try {
+      // Try to find employee by ID first, then by userId
+      let employee = await prisma.employee.findUnique({
+        where: { id: req.params.id },
+      });
+
+      if (!employee) {
+        employee = await prisma.employee.findUnique({
+          where: { userId: req.params.id },
+        });
+      }
+
+      if (!employee) {
+        return res.status(404).json({ message: "Employee not found" });
+      }
+
+      const absences = await prisma.absence.findMany({
+        where: { employeeId: employee.id },
+        orderBy: { startDate: 'desc' },
+      });
+      res.json(absences);
+    } catch (error) {
+      console.error("Get employee absences error:", error);
+      res.status(400).json({ 
+        message: "Failed to fetch employee absences", 
+        error: error instanceof Error ? error.message : String(error)
+      });
+    }
+  }
+);
+
+// Get employee work statistics
+router.get(
+  "/:id/work-statistics",
+  authMiddleware,
+  roleMiddleware(["ADMIN", "TEAM_LEADER", "HR_MANAGER", "EMPLOYEE"]),
+  async (req, res) => {
+    try {
+      // Try to find employee by ID first, then by userId
+      let employee = await prisma.employee.findUnique({
+        where: { id: req.params.id },
+      });
+
+      if (!employee) {
+        employee = await prisma.employee.findUnique({
+          where: { userId: req.params.id },
+        });
+      }
+
+      if (!employee) {
+        return res.status(404).json({ message: "Employee not found" });
+      }
+
+      const { startDate, endDate } = req.query;
+      const where: any = { employeeId: employee.id };
+      
+      if (startDate && endDate) {
+        where.date = {
+          gte: new Date(startDate as string),
+          lte: new Date(endDate as string),
+        };
+      }
+      
+      const workStats = await prisma.workStatistic.findMany({
+        where,
+        orderBy: { date: 'desc' },
+      });
+      res.json(workStats);
+    } catch (error) {
+      console.error("Get employee work statistics error:", error);
+      res.status(400).json({ 
+        message: "Failed to fetch employee work statistics", 
+        error: error instanceof Error ? error.message : String(error)
+      });
+    }
+  }
 );
 
 export default router;

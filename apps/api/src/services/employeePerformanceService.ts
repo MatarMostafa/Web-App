@@ -68,7 +68,7 @@ export const create = async (data: any) => {
 
   // 2️⃣ Get department thresholds with fallback
   const dbThresholds = await prisma.performanceThreshold.findUnique({
-    where: { departmentId: employee.departmentId },
+    where: { departmentId: employee.departmentId || undefined },
   });
   
   let thresholds;
@@ -148,7 +148,7 @@ export const update = async (id: string, data: any) => {
 
   // 1️⃣ Get thresholds with fallback
   const dbThresholds = await prisma.performanceThreshold.findUnique({
-    where: { departmentId: existing.employee.departmentId },
+    where: { departmentId: existing.employee.departmentId || undefined },
   });
   
   let thresholds;

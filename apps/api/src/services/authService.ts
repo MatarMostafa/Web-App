@@ -17,14 +17,24 @@ export const generateTokens = (userId: string, email: string, role: any) => {
 };
 
 export const register = async (userData: any) => {
-  const { email, username, password, role = "EMPLOYEE" } = userData;
+  const { name, email, username, password, role = "EMPLOYEE" } = userData;
 
-  const existingUser = await prisma.user.findFirst({
-    where: { OR: [{ email }, { username }] },
+  // Check for existing email
+  const existingEmail = await prisma.user.findUnique({
+    where: { email },
   });
 
-  if (existingUser) {
-    throw new Error("User already exists");
+  if (existingEmail) {
+    throw new Error("Email already exists");
+  }
+
+  // Check for existing username
+  const existingUsername = await prisma.user.findUnique({
+    where: { username },
+  });
+
+  if (existingUsername) {
+    throw new Error("Username is not available");
   }
 
   const hashedPassword = await bcrypt.hash(password, 12);
@@ -39,15 +49,35 @@ export const register = async (userData: any) => {
     },
   });
 
-  await sendEmail({
-    to: email,
-    subject: "Welcome! Please verify your email",
-    html: `
-      <h1>Welcome to Employee Manager!</h1>
-      <p>Please click the link below to verify your email:</p>
-      <a href="${process.env.BACKEND_URL}/verify-email/${user.id}">Verify Email</a>
-    `,
-  });
+  // Create employee record if role is EMPLOYEE
+  if (role === "EMPLOYEE") {
+    await prisma.employee.create({
+      data: {
+        userId: user.id,
+        firstName: name.split(' ')[0] || name,
+        lastName: name.split(' ').slice(1).join(' ') || '',
+        employeeCode: `EMP${Date.now().toString().slice(-6)}`,
+        hireDate: new Date(),
+        isAvailable: true,
+        priority: 1,
+      },
+    });
+  }
+
+  try {
+    await sendEmail({
+      to: email,
+      subject: "Welcome! Please verify your email",
+      html: `
+        <h1>Welcome to Employee Manager!</h1>
+        <p>Please click the link below to verify your email:</p>
+        <a href="${process.env.FRONTEND_URL}/confirm-email?token=${user.id}">Verify Email</a>
+      `,
+    });
+  } catch (emailError: any) {
+    console.error('Registration email failed:', emailError);
+    // Continue with registration even if email fails
+  }
 
   return {
     message:
@@ -132,7 +162,7 @@ export const forgotPassword = async (email: string) => {
     html: `
       <h1>Password Reset</h1>
       <p>Click the link below to reset your password:</p>
-      <a href="${process.env.BACKEND_URL}/reset-password/${resetToken}">Reset Password</a>
+      <a href="${process.env.FRONTEND_URL}/reset-password?token=${resetToken}">Reset Password</a>
       <p>This link expires in 1 hour.</p>
     `,
   });
@@ -179,7 +209,7 @@ export const verifyEmail = async (token: string) => {
 
     await prisma.user.update({
       where: { id: user.id },
-      data: { isActive: true },
+      data: { isActive: true, emailVerified:true },
     });
 
     return { message: "Email verified successfully" };
@@ -219,4 +249,40 @@ export const logout = async (userId: string) => {
   // Refresh token clearing temporarily disabled until schema is updated
 
   return { message: "Logged out successfully" };
+};
+export const resendVerificationEmail = async (email: string) => {
+  const user = await prisma.user.findUnique({ where: { email } });
+  
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  if (user.isActive) {
+    throw new Error("Email already verified");
+  }
+
+  // Check if user has requested resend recently (5 minutes cooldown)
+  const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
+  if (user.updatedAt > fiveMinutesAgo) {
+    throw new Error("Please wait 5 minutes before requesting another verification email");
+  }
+
+  // Update user's updatedAt to track last resend time
+  await prisma.user.update({
+    where: { id: user.id },
+    data: { updatedAt: new Date() },
+  });
+
+  await sendEmail({
+    to: email,
+    subject: "Verify your email - Resent",
+    html: `
+      <h1>Email Verification</h1>
+      <p>Please click the link below to verify your email:</p>
+      <a href="${process.env.FRONTEND_URL}/confirm-email?token=${user.id}">Verify Email</a>
+      <p>This is a resent verification email.</p>
+    `,
+  });
+
+  return { message: "Verification email resent successfully" };
 };

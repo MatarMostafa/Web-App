@@ -1,16 +1,52 @@
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import jwt from "jsonwebtoken";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
+
+async function refreshAccessToken(token: any) {
+  try {
+    const response = await fetch(`${API_URL}/api/auth/refresh-token`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        refreshToken: token.refreshToken,
+      }),
+    });
+
+    const refreshedTokens = await response.json();
+
+    if (!response.ok) {
+      throw refreshedTokens;
+    }
+
+    return {
+      ...token,
+      accessToken: refreshedTokens.accessToken,
+      accessTokenExpires: Date.now() + 60 * 60 * 1000, // 1 hour
+      refreshToken: refreshedTokens.refreshToken ?? token.refreshToken,
+    };
+  } catch (error) {
+    return {
+      ...token,
+      error: "RefreshAccessTokenError",
+    };
+  }
+}
 
 export const authOptions: NextAuthOptions = {
-  secret: process.env.NEXTAUTH_SECRET || "a0a2e548d9494526a468e7766d7aebc7ee83d1fafc5a8b119f86067f962a060e",
+  secret:
+    process.env.NEXTAUTH_SECRET ||
+    "a0a2e548d9494526a468e7766d7aebc7ee83d1fafc5a8b119f86067f962a060e",
   providers: [
     CredentialsProvider({
       name: "credentials",
       credentials: {
         email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" }
+        password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
@@ -30,11 +66,20 @@ export const authOptions: NextAuthOptions = {
           });
 
           if (!response.ok) {
-            return null;
+            const errorData = await response.json().catch(() => ({}));
+            
+            // Throw specific errors that can be caught by NextAuth
+            if (response.status === 429) {
+              throw new Error('RATE_LIMIT');
+            } else if (response.status === 401) {
+              throw new Error('INVALID_CREDENTIALS');
+            } else {
+              throw new Error('LOGIN_FAILED');
+            }
           }
 
           const data = await response.json();
-          
+          console.log("data = ", data);
           return {
             id: data.user.id,
             email: data.user.email,
@@ -43,33 +88,37 @@ export const authOptions: NextAuthOptions = {
             accessToken: data.accessToken,
             refreshToken: data.refreshToken,
           };
-        } catch (error) {
-          return null;
+        } catch (error: any) {
+          // Pass the error message to NextAuth
+          throw new Error(error.message || 'LOGIN_FAILED');
         }
       },
     }),
   ],
   callbacks: {
     async jwt({ token, user }) {
+      // Initial sign in
       if (user) {
         token.accessToken = user.accessToken;
         token.refreshToken = user.refreshToken;
         token.role = user.role;
+        token.accessTokenExpires = Date.now() + 60 * 60 * 1000; // 1 hour
       }
-      return token;
+
+      // Return previous token if the access token has not expired yet
+      if (Date.now() < (token.accessTokenExpires as number)) {
+        return token;
+      }
+
+      // Access token has expired, try to update it
+      return refreshAccessToken(token);
     },
     async session({ session, token }) {
       session.user.id = token.sub!;
       session.user.role = token.role as string;
       session.accessToken = token.accessToken as string;
+      session.error = token.error as string;
       return session;
-    },
-    async redirect({ url, baseUrl }) {
-      // After successful login, redirect based on role
-      if (url === baseUrl) {
-        return baseUrl;
-      }
-      return url;
     },
   },
   pages: {

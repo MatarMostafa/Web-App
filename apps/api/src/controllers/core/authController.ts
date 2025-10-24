@@ -14,9 +14,12 @@ export const register = async (req: Request, res: Response) => {
 export const login = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
+    console.log('Login attempt for:', email);
     const result = await authService.login(email, password);
+    console.log('Login successful for:', email);
     res.json(result);
   } catch (error: any) {
+    console.log('Login failed for:', req.body.email, 'Error:', error.message);
     res.status(401).json({ message: error.message });
   }
 };
@@ -45,9 +48,13 @@ export const resetPassword = async (req: Request, res: Response) => {
   try {
     const { token } = req.params;
     const { password } = req.body;
+    console.log('Reset password attempt for token:', token.substring(0, 20) + '...');
+    console.log('New password provided:', !!password);
     const result = await authService.resetPassword(token, password);
+    console.log('Password reset successful');
     res.json(result);
   } catch (error: any) {
+    console.log('Password reset failed:', error.message);
     res.status(400).json({ message: error.message });
   }
 };
@@ -56,6 +63,16 @@ export const verifyEmail = async (req: Request, res: Response) => {
   try {
     const { token } = req.params;
     const result = await authService.verifyEmail(token);
+    res.json(result);
+  } catch (error: any) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+export const resendVerificationEmail = async (req: Request, res: Response) => {
+  try {
+    const { email } = req.body;
+    const result = await authService.resendVerificationEmail(email);
     res.json(result);
   } catch (error: any) {
     res.status(400).json({ message: error.message });

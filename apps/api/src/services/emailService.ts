@@ -13,22 +13,22 @@ interface EmailOptions {
 
 export const sendEmail = async (options: EmailOptions) => {
   try {
-    (async function () {
-      const { data, error } = await resend.emails.send({
-        from: options.from || process.env.FROM_EMAIL || "onboarding@resend.dev",
-        to: options.to,
-        subject: options.subject,
-        html: options.html,
-      });
+    const { data, error } = await resend.emails.send({
+      from: options.from || process.env.FROM_EMAIL || "onboarding@resend.dev",
+      to: options.to,
+      subject: options.subject,
+      html: options.html,
+    });
 
-      if (error) {
-        return console.error({ error });
-      }
+    if (error) {
+      console.error({ error });
+      throw new Error(`Email sending failed: ${error.message}`);
+    }
 
-      console.log({ data });
-    })();
-  } catch (error) {
+    console.log({ data });
+    return data;
+  } catch (error: any) {
     console.error("Email sending failed:", error);
-    throw new Error("Failed to send email");
+    throw new Error(error.message || "Failed to send email");
   }
 };

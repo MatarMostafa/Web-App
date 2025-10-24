@@ -19,7 +19,9 @@ const transformUserToEmployee = (user: any): Employee => {
     hireDate: employee?.hireDate?.toISOString() || user.createdAt.toISOString(),
     terminationDate: employee?.terminationDate?.toISOString(),
     departmentId: employee?.departmentId || "",
+    departmentName: employee?.department?.name || undefined,
     positionId: employee?.positionId || "",
+    positionTitle: employee?.position?.title || undefined,
     managerId: employee?.managerId || undefined,
     scheduleType:
       (employee?.scheduleType as WorkScheduleType) ||
@@ -39,7 +41,11 @@ const transformUserToEmployee = (user: any): Employee => {
 export const getAllEmployees = async (): Promise<Employee[]> => {
   try {
     const users = await prisma.user.findMany({
-      where: { role: "EMPLOYEE" },
+      where: {
+        NOT: {
+          role: "ADMIN",
+        },
+      },
       include: {
         employee: {
           include: {
@@ -59,20 +65,58 @@ export const getAllEmployees = async (): Promise<Employee[]> => {
 
 export const getEmployeeById = async (id: string): Promise<Employee | null> => {
   try {
-    const user = await prisma.user.findUnique({
+    // First try to find by employee ID
+    const employee = await prisma.employee.findUnique({
       where: { id },
       include: {
-        employee: {
+        user: true,
+        department: true,
+        position: true,
+        manager: {
           include: {
-            department: true,
-            position: true,
+            employee: {
+              select: { firstName: true, lastName: true },
+            },
           },
+        },
+        qualifications: {
+          include: {
+            qualification: true,
+          },
+        },
+        assignments: {
+          include: {
+            order: true,
+          },
+        },
+        absences: {
+          orderBy: { startDate: "desc" },
+          take: 10,
+        },
+        ratings: {
+          orderBy: { ratingDate: "desc" },
+          take: 10,
+        },
+        workStatistics: {
+          orderBy: { date: "desc" },
+          take: 30,
+        },
+        performanceRecords: {
+          orderBy: { periodStart: "desc" },
+          take: 10,
         },
       },
     });
 
-    if (!user || user.role !== "EMPLOYEE") return null;
-    return transformUserToEmployee(user);
+    if (!employee || employee.user.role !== "EMPLOYEE") return null;
+
+    // Transform to match the expected format
+    const userWithEmployee = {
+      ...employee.user,
+      employee: employee,
+    };
+
+    return transformUserToEmployee(userWithEmployee);
   } catch (error) {
     console.error("Error:", error);
     throw new Error("Failed to fetch employee");
@@ -128,6 +172,7 @@ export const createEmployee = async (data: any): Promise<Employee> => {
         employee: {
           create: {
             ...employeeData,
+            employeeCode: `EMP${Date.now().toString().slice(-6)}`,
             hireDate: employeeData.hireDate
               ? new Date(employeeData.hireDate)
               : new Date(),
@@ -164,8 +209,18 @@ export const updateEmployee = async (
   const { email, username, ...employeeData } = data;
 
   try {
-    const user = await prisma.user.update({
+    // First find the employee to get the userId
+    const employee = await prisma.employee.findUnique({
       where: { id },
+      select: { userId: true },
+    });
+
+    if (!employee) {
+      throw new Error(`Employee with ID ${id} not found`);
+    }
+
+    const user = await prisma.user.update({
+      where: { id: employee.userId },
       data: {
         ...(email && { email }),
         ...(username && { username }),
@@ -197,14 +252,25 @@ export const updateEmployee = async (
     return transformUserToEmployee(user);
   } catch (error) {
     console.error("Error:", error);
-    return null;
+    throw error;
   }
 };
 
 export const deleteEmployee = async (id: string): Promise<boolean> => {
   try {
-    await prisma.user.delete({
+    // First find the user by employee ID
+    const employee = await prisma.employee.findUnique({
       where: { id },
+      select: { userId: true },
+    });
+
+    if (!employee) {
+      return false;
+    }
+
+    // Delete the user (which will cascade delete the employee)
+    await prisma.user.delete({
+      where: { id: employee.userId },
     });
     return true;
   } catch (error) {

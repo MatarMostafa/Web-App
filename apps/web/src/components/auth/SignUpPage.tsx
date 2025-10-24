@@ -1,35 +1,110 @@
 "use client";
 import React, { useState } from "react";
-import { Eye, EyeOff, Users, Sparkles } from "lucide-react";
-import { Button, Input, Label, Card, CardContent, CardHeader } from "@repo/ui";
+import { Eye, EyeOff, Users, Sparkles, Loader2 } from "lucide-react";
+import {
+  Button,
+  Input,
+  Label,
+  Card,
+  CardContent,
+  CardHeader,
+} from "@/components/ui";
 import { useRouter } from "next/navigation";
 import { api } from "@/lib/api";
+import toast from "react-hot-toast";
 
 export default function SignUpPage() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
-    fullName: "",
+    name: "",
+    userName: "",
+    email: "",
+    password: "",
+  });
+  const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState({
+    name: "",
+    userName: "",
     email: "",
     password: "",
   });
 
+  // Validation functions
+  const validateName = (name: string) => {
+    if (!name || name.length < 2) return "Name must be at least 2 characters";
+    if (!/^[a-zA-Z\s]+$/.test(name)) return "Name can only contain letters and spaces";
+    return "";
+  };
+
+  const validateUsername = (username: string) => {
+    if (!username || username.length < 3) return "Username must be at least 3 characters";
+    if (!/^[a-zA-Z0-9._-]+$/.test(username)) return "Username can only contain letters, numbers, dots, hyphens, and underscores";
+    if (/\s/.test(username)) return "Username cannot contain spaces";
+    return "";
+  };
+
+  const validateEmail = (email: string) => {
+    if (!email) return "Email is required";
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) return "Please enter a valid email";
+    return "";
+  };
+
+  const validatePassword = (password: string) => {
+    if (!password || password.length < 8)
+      return "Password must be at least 8 characters";
+    return "";
+  };
+
+  // Check if form is valid
+  const isFormValid =
+    validateName(formData.name || "") === "" &&
+    validateUsername(formData.userName || "") === "" &&
+    validateEmail(formData.email || "") === "" &&
+    (formData.password || "").length >= 8;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
+
     try {
       await api.register({
+        name: formData.name,
         email: formData.email,
-        username: formData.fullName,
+        username: formData.userName,
         password: formData.password,
       });
-      router.push("/email-verification");
-    } catch (error) {
-      console.error("Registration failed:", error);
+      router.push(
+        `/email-verification?email=${encodeURIComponent(formData.email)}`
+      );
+    } catch (error: any) {
+      const errorMessage =
+        error.message || "Registration failed. Please try again.";
+      toast.error(errorMessage);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
+
+    // Real-time validation - only show errors if user has started typing
+    let error = "";
+    if (value.length > 0) {
+      if (field === "name") {
+        error = validateName(value);
+      } else if (field === "userName") {
+        error = validateUsername(value);
+      } else if (field === "email") {
+        error = validateEmail(value);
+      } else if (field === "password") {
+        error = validatePassword(value);
+      }
+    }
+
+    setErrors((prev) => ({ ...prev, [field]: error }));
   };
 
   return (
@@ -37,7 +112,7 @@ export default function SignUpPage() {
       <div className="w-full max-w-md space-y-8">
         {/* Logo */}
         <div className="text-center">
-          {/* <MetMeLogo size="lg" className="mx-auto mb-4" /> */}
+          {/* <ERPLogo size="lg" className="mx-auto mb-4" /> */}
         </div>
 
         {/* Main Card */}
@@ -46,7 +121,7 @@ export default function SignUpPage() {
             <h1 className="text-2xl font-bold text-foreground">
               Welcome to ERP!
             </h1>
-            <p className="text-muted-foreground">
+            <p className="text-mforeground">
               Create your account to start using System
             </p>
           </CardHeader>
@@ -65,18 +140,45 @@ export default function SignUpPage() {
             {/* Sign Up Form */}
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="fullName">Full Name</Label>
+                <Label htmlFor="name">Full Name</Label>
                 <Input
-                  id="fullName"
+                  id="name"
                   type="text"
                   placeholder="Enter your full name"
-                  value={formData.fullName}
-                  onChange={(e) =>
-                    handleInputChange("fullName", e.target.value)
-                  }
-                  className="rounded-xl border-border/50 focus:border-primary"
+                  value={formData.name}
+                  onChange={(e) => {
+                    const value = e.target.value.replace(/[^a-zA-Z\s]/g, '');
+                    handleInputChange("name", value);
+                  }}
+                  className={`rounded-xl border-border/50 focus:border-primary ${
+                    errors.name ? "border-red-500" : ""
+                  }`}
                   required
                 />
+                {errors.name && (
+                  <p className="text-sm text-red-500">{errors.name}</p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="userName">Username</Label>
+                <Input
+                  id="userName"
+                  type="text"
+                  placeholder="Enter your username"
+                  value={formData.userName}
+                  onChange={(e) => {
+                    const value = e.target.value.replace(/[^a-zA-Z0-9._-]/g, '');
+                    handleInputChange("userName", value);
+                  }}
+                  className={`rounded-xl border-border/50 focus:border-primary ${
+                    errors.userName ? "border-red-500" : ""
+                  }`}
+                  required
+                />
+                {errors.userName && (
+                  <p className="text-sm text-red-500">{errors.userName}</p>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -87,9 +189,14 @@ export default function SignUpPage() {
                   placeholder="Enter your email"
                   value={formData.email}
                   onChange={(e) => handleInputChange("email", e.target.value)}
-                  className="rounded-xl border-border/50 focus:border-primary"
+                  className={`rounded-xl border-border/50 focus:border-primary ${
+                    errors.email ? "border-red-500" : ""
+                  }`}
                   required
                 />
+                {errors.email && (
+                  <p className="text-sm text-red-500">{errors.email}</p>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -103,13 +210,15 @@ export default function SignUpPage() {
                     onChange={(e) =>
                       handleInputChange("password", e.target.value)
                     }
-                    className="rounded-xl border-border/50 focus:border-primary pr-12"
+                    className={`rounded-xl border-border/50 focus:border-primary pr-12 ${
+                      errors.password ? "border-red-500" : ""
+                    }`}
                     required
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-mforeground hover:text-foreground transition-colors"
                   >
                     {showPassword ? (
                       <EyeOff className="h-4 w-4" />
@@ -118,18 +227,29 @@ export default function SignUpPage() {
                     )}
                   </button>
                 </div>
+                {errors.password && (
+                  <p className="text-sm text-red-500">{errors.password}</p>
+                )}
               </div>
 
               <Button
                 type="submit"
-                className="w-full rounded-xl h-12 text-base font-medium bg-primary hover:bg-primary/90"
+                disabled={isLoading || !isFormValid}
+                className="w-full rounded-xl h-12 text-base font-medium bg-primary hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Create Account
+                {isLoading ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Creating Account...
+                  </>
+                ) : (
+                  "Create Account"
+                )}
               </Button>
             </form>
 
             {/* Terms Link */}
-            <p className="text-center text-sm text-muted-foreground">
+            <p className="text-center text-sm text-mforeground">
               By signing up, you agree to our{" "}
               <button className="text-primary hover:underline font-medium">
                 Terms & Conditions
@@ -138,7 +258,7 @@ export default function SignUpPage() {
 
             {/* Sign In Link */}
             <div className="text-center pt-4 border-t border-border/50">
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-mforeground">
                 Already have an account?{" "}
                 <button
                   onClick={() => router.push("/login")}

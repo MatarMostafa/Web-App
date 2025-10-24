@@ -20,12 +20,12 @@ exports.Prisma = Prisma
 exports.$Enums = {}
 
 /**
- * Prisma Client JS version: 6.17.1
- * Query Engine version: 272a37d34178c2894197e17273bf937f25acdeac
+ * Prisma Client JS version: 6.18.0
+ * Query Engine version: 34b5a692b7bd79939a9a2c3ef97d816e749cda2f
  */
 Prisma.prismaVersion = {
-  client: "6.17.1",
-  engine: "272a37d34178c2894197e17273bf937f25acdeac"
+  client: "6.18.0",
+  engine: "34b5a692b7bd79939a9a2c3ef97d816e749cda2f"
 }
 
 Prisma.PrismaClientKnownRequestError = () => {
@@ -309,6 +309,7 @@ exports.Prisma.AssignmentScalarFieldEnum = {
   startDate: 'startDate',
   endDate: 'endDate',
   status: 'status',
+  tier: 'tier',
   estimatedHours: 'estimatedHours',
   actualHours: 'actualHours',
   notes: 'notes',
@@ -435,6 +436,26 @@ exports.Prisma.NotificationPreferenceScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.FileScalarFieldEnum = {
+  id: 'id',
+  filename: 'filename',
+  originalName: 'originalName',
+  mimeType: 'mimeType',
+  size: 'size',
+  path: 'path',
+  documentType: 'documentType',
+  description: 'description',
+  expiryDate: 'expiryDate',
+  employeeId: 'employeeId',
+  orderId: 'orderId',
+  assignmentId: 'assignmentId',
+  uploadedBy: 'uploadedBy',
+  isVerified: 'isVerified',
+  isPublic: 'isPublic',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SystemConfigScalarFieldEnum = {
   id: 'id',
   key: 'key',
@@ -528,6 +549,12 @@ exports.AssignmentStatus = exports.$Enums.AssignmentStatus = {
   OVERDUE: 'OVERDUE'
 };
 
+exports.AssignmentTier = exports.$Enums.AssignmentTier = {
+  PRIMARY: 'PRIMARY',
+  BACKUP: 'BACKUP',
+  FALLBACK: 'FALLBACK'
+};
+
 exports.AbsenceType = exports.$Enums.AbsenceType = {
   SICK_LEAVE: 'SICK_LEAVE',
   VACATION: 'VACATION',
@@ -550,6 +577,17 @@ exports.RatingStatus = exports.$Enums.RatingStatus = {
   EXCELLENT: 'EXCELLENT',
   GOOD: 'GOOD',
   NEEDS_IMPROVEMENT: 'NEEDS_IMPROVEMENT'
+};
+
+exports.DocumentType = exports.$Enums.DocumentType = {
+  RESUME: 'RESUME',
+  ID_CARD: 'ID_CARD',
+  PASSPORT: 'PASSPORT',
+  CONTRACT: 'CONTRACT',
+  CERTIFICATE: 'CERTIFICATE',
+  WORK_EVIDENCE: 'WORK_EVIDENCE',
+  PROFILE_PICTURE: 'PROFILE_PICTURE',
+  OTHER: 'OTHER'
 };
 
 exports.Prisma.ModelName = {
@@ -575,6 +613,7 @@ exports.Prisma.ModelName = {
   NotificationRecipient: 'NotificationRecipient',
   NotificationOutbox: 'NotificationOutbox',
   NotificationPreference: 'NotificationPreference',
+  File: 'File',
   SystemConfig: 'SystemConfig',
   AuditLog: 'AuditLog'
 };
