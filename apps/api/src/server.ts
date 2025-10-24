@@ -53,3 +53,6 @@ export const createServer = (): Express => {
 
   return app;
 };
+
+// Default export for Vercel
+export default createServer();
