@@ -210,13 +210,10 @@ export default function AddEmployeeDialog({
     }
   };
 
-  console.log("Dialog state:", { isOpen, trigger });
-
   return (
     <Dialog
       open={isOpen}
       onOpenChange={(open) => {
-        console.log("Dialog onOpenChange:", open);
         setIsOpen(open);
       }}
     >
@@ -224,7 +221,6 @@ export default function AddEmployeeDialog({
         {trigger || (
           <Button
             onClick={() => {
-              console.log("Default button clicked");
               setIsOpen(true);
             }}
           >
