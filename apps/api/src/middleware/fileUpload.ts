@@ -2,16 +2,17 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 import { Request, Response, NextFunction } from "express";
+import { put } from "@vercel/blob";
 
-// Ensure uploads directory exists
-const uploadsDir = path.join(process.cwd(), "uploads");
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
-}
+const isProduction = process.env.NODE_ENV === "production";
 
-// Configure multer storage
-const storage = multer.diskStorage({
+// Configure storage based on environment
+const storage = isProduction ? multer.memoryStorage() : multer.diskStorage({
   destination: (req, file, cb) => {
+    const uploadsDir = path.join(process.cwd(), "uploads");
+    if (!fs.existsSync(uploadsDir)) {
+      fs.mkdirSync(uploadsDir, { recursive: true });
+    }
     cb(null, uploadsDir);
   },
   filename: (req, file, cb) => {
@@ -45,6 +46,19 @@ const upload = multer({
 
 export const uploadSingle = upload.single("file");
 export const uploadMultiple = upload.array("files", 10);
+
+// Helper function to handle file upload based on environment
+export const uploadFile = async (file: Express.Multer.File, folder: string = "uploads") => {
+  if (isProduction) {
+    // Use Vercel Blob in production
+    const filename = `${folder}/${Date.now()}-${file.originalname}`;
+    const { url } = await put(filename, file.buffer, { access: "public" });
+    return url;
+  } else {
+    // Use local storage in development
+    return `/uploads/${file.filename}`;
+  }
+};
 
 export const handleUploadError = (err: any, req: Request, res: Response, next: NextFunction) => {
   if (err instanceof multer.MulterError) {
