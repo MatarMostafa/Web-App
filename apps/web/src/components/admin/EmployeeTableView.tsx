@@ -10,7 +10,7 @@ import {
 import { Badge } from "@/components/ui";
 import { Button } from "@/components/ui";
 import { Avatar, AvatarFallback } from "@/components/ui";
-import { Edit3, Trash2 } from "lucide-react";
+import { Edit3, Trash2, Shield, ShieldOff } from "lucide-react";
 import { format } from "date-fns";
 import { Employee } from "@/types/employee";
 import { useRouter } from "next/navigation";
@@ -20,6 +20,8 @@ interface EmployeeTableViewProps {
   loading?: boolean;
   onEdit?: (employee: Employee) => void;
   onDelete?: (id: string) => void;
+  onBlock?: (employee: Employee) => void;
+  onUnblock?: (employee: Employee) => void;
 }
 
 const EmployeeTableView: React.FC<EmployeeTableViewProps> = ({
@@ -27,6 +29,8 @@ const EmployeeTableView: React.FC<EmployeeTableViewProps> = ({
   loading = false,
   onEdit,
   onDelete,
+  onBlock,
+  onUnblock,
 }) => {
   const getInitials = (firstName: string, lastName: string) => {
     return `${firstName[0] || ""}${lastName[0] || ""}`.toUpperCase();
@@ -45,7 +49,7 @@ const EmployeeTableView: React.FC<EmployeeTableViewProps> = ({
               <TableHead className="w-[150px]">Hire Date</TableHead>
               <TableHead className="w-[150px]">Schedule</TableHead>
               <TableHead className="w-[100px]">Status</TableHead>
-              <TableHead className="w-[120px] text-center">Actions</TableHead>
+              <TableHead className="w-[150px] text-center">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -126,27 +130,54 @@ const EmployeeTableView: React.FC<EmployeeTableViewProps> = ({
                       variant={employee.isAvailable ? "default" : "destructive"}
                       className="text-xs"
                     >
-                      {employee.isAvailable ? "Available" : "Unavailable"}
+                      {employee.isAvailable ? "Available" : "Blocked"}
                     </Badge>
                   </TableCell>
 
                   {/* Actions */}
                   <TableCell>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1">
                       {onEdit && (
                         <Button
                           variant="ghost"
                           size="sm"
                           onClick={() => onEdit(employee)}
+                          title="Edit Employee"
                         >
                           <Edit3 className="h-4 w-4" />
                         </Button>
+                      )}
+                      {employee.isAvailable ? (
+                        onBlock && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => onBlock(employee)}
+                            title="Block Employee"
+                            className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                          >
+                            <Shield className="h-4 w-4" />
+                          </Button>
+                        )
+                      ) : (
+                        onUnblock && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => onUnblock(employee)}
+                            title="Unblock Employee"
+                            className="text-green-600 hover:text-green-700 hover:bg-green-50"
+                          >
+                            <ShieldOff className="h-4 w-4" />
+                          </Button>
+                        )
                       )}
                       {onDelete && (
                         <Button
                           variant="ghost"
                           size="sm"
                           onClick={() => onDelete(employee.id)}
+                          title="Delete Employee"
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>

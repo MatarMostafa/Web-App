@@ -86,7 +86,12 @@ export const register = async (userData: any) => {
 };
 
 export const login = async (email: string, password: string) => {
-  const user = await prisma.user.findUnique({ where: { email } });
+  const user = await prisma.user.findUnique({ 
+    where: { email },
+    include: {
+      employee: true
+    }
+  });
 
   if (!user || !user.isActive) {
     throw new Error("Invalid credentials or account not verified");
@@ -95,6 +100,11 @@ export const login = async (email: string, password: string) => {
   const isValidPassword = await bcrypt.compare(password, user.password);
   if (!isValidPassword) {
     throw new Error("Invalid credentials");
+  }
+
+  // Check if employee is blocked after password validation
+  if (user.employee && !user.employee.isAvailable) {
+    throw new Error("Your access to the system has been blocked. Please contact admin.");
   }
 
   const { accessToken, refreshToken } = generateTokens(
