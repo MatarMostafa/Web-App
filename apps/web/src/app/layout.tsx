@@ -1,5 +1,5 @@
 import "./global.css";
-import "@repo/ui";
+import "@/components/ui";
 import { Providers } from "./providers";
 
 export default function RootLayout({
