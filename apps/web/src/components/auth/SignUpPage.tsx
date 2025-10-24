@@ -108,7 +108,7 @@ export default function SignUpPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent/10 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-linear-to-br from-primary/5 via-background to-accent/10 flex items-center justify-center p-4">
       <div className="w-full max-w-md space-y-8">
         {/* Logo */}
         <div className="text-center">
@@ -139,46 +139,48 @@ export default function SignUpPage() {
 
             {/* Sign Up Form */}
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="name">Full Name</Label>
-                <Input
-                  id="name"
-                  type="text"
-                  placeholder="Enter your full name"
-                  value={formData.name}
-                  onChange={(e) => {
-                    const value = e.target.value.replace(/[^a-zA-Z\s]/g, '');
-                    handleInputChange("name", value);
-                  }}
-                  className={`rounded-xl border-border/50 focus:border-primary ${
-                    errors.name ? "border-red-500" : ""
-                  }`}
-                  required
-                />
-                {errors.name && (
-                  <p className="text-sm text-red-500">{errors.name}</p>
-                )}
-              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="name">Full Name</Label>
+                  <Input
+                    id="name"
+                    type="text"
+                    placeholder="Enter your full name"
+                    value={formData.name}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/[^a-zA-Z\s]/g, "");
+                      handleInputChange("name", value);
+                    }}
+                    className={`rounded-xl border-border/50 focus:border-primary ${
+                      errors.name ? "border-red-500" : ""
+                    }`}
+                    required
+                  />
+                  {errors.name && (
+                    <p className="text-sm text-red-500">{errors.name}</p>
+                  )}
+                </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="userName">Username</Label>
-                <Input
-                  id="userName"
-                  type="text"
-                  placeholder="Enter your username"
-                  value={formData.userName}
-                  onChange={(e) => {
-                    const value = e.target.value.replace(/[^a-zA-Z0-9._-]/g, '');
-                    handleInputChange("userName", value);
-                  }}
-                  className={`rounded-xl border-border/50 focus:border-primary ${
-                    errors.userName ? "border-red-500" : ""
-                  }`}
-                  required
-                />
-                {errors.userName && (
-                  <p className="text-sm text-red-500">{errors.userName}</p>
-                )}
+                <div className="space-y-2">
+                  <Label htmlFor="userName">Username</Label>
+                  <Input
+                    id="userName"
+                    type="text"
+                    placeholder="Enter your username"
+                    value={formData.userName}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/[^a-zA-Z0-9._-]/g, "");
+                      handleInputChange("userName", value);
+                    }}
+                    className={`rounded-xl border-border/50 focus:border-primary ${
+                      errors.userName ? "border-red-500" : ""
+                    }`}
+                    required
+                  />
+                  {errors.userName && (
+                    <p className="text-sm text-red-500">{errors.userName}</p>
+                  )}
+                </div>
               </div>
 
               <div className="space-y-2">

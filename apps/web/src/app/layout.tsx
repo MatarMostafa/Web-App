@@ -2,6 +2,14 @@ import "./global.css";
 import "@/components/ui";
 import { Providers } from "./providers";
 
+export const metadata = {
+  title: "ERP Beta - Enterprise Resource Planning Solution",
+  description:
+    "Modern enterprise resource planning system for streamlined business operations, employee management, and performance tracking.",
+  keywords:
+    "ERP, enterprise resource planning, business management, employee tracking, performance management",
+};
+
 export default function RootLayout({
   children,
 }: {
@@ -9,8 +17,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>
-        <Providers>{children}</Providers>
+      <body className="min-h-screen bg-white antialiased">
+        <Providers>
+          <main className="flex-1">{children}</main>
+        </Providers>
       </body>
     </html>
   );
