@@ -22,6 +22,7 @@ import {
   Contact,
   Briefcase,
   UserCheck,
+  CalendarDays,
 } from "lucide-react";
 
 interface SidebarProps {
@@ -55,6 +56,7 @@ const EmployeeSidebar: React.FC<SidebarProps> = ({
   const dashboardNavItems = [
     { name: "Dashboard", path: "/dashboard-employee", icon: LayoutGrid },
     { name: "Orders", path: "/dashboard-employee/orders", icon: FileBox },
+    { name: "Leaves", path: "/dashboard-employee/leaves", icon: CalendarDays },
   ];
 
   const settingsNavItems = [
@@ -135,12 +137,10 @@ const EmployeeSidebar: React.FC<SidebarProps> = ({
               {navItems.map((item) => {
                 const isActive =
                   pathname === item.path ||
-                  (item.path === "/dashboard-admin/employees" &&
-                    pathname.startsWith("/dashboard-admin/employees")) ||
-                  (item.path === "/dashboard-admin/customers" &&
-                    pathname.startsWith("/dashboard-admin/customers/")) ||
-                  (item.path === "/dashboard-admin/orders" &&
-                    pathname.startsWith("/dashboard-admin/orders/"));
+                  (item.path === "/dashboard-employee/leaves" &&
+                    pathname.startsWith("/dashboard-employee/leaves")) ||
+                  (item.path === "/dashboard-employee/orders" &&
+                    pathname.startsWith("/dashboard-employee/orders/"));
                 const Icon = item.icon;
 
                 return (
