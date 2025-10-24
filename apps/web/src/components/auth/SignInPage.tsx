@@ -60,6 +60,8 @@ export default function SignInPage() {
           toast.error("Invalid email or password");
         } else if (result?.error === "CredentialsSignin") {
           toast.error("Invalid email or password");
+        } else if (result?.error && result.error.includes('blocked')) {
+          toast.error(result.error);
         } else if (result?.error) {
           toast.error("Login failed. Please try again.");
         } else {

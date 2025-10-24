@@ -72,6 +72,10 @@ export const authOptions: NextAuthOptions = {
             if (response.status === 429) {
               throw new Error('RATE_LIMIT');
             } else if (response.status === 401) {
+              // Check if it's a blocked user error
+              if (errorData.message && errorData.message.includes('blocked')) {
+                throw new Error(errorData.message);
+              }
               throw new Error('INVALID_CREDENTIALS');
             } else {
               throw new Error('LOGIN_FAILED');
