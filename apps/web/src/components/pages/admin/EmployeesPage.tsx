@@ -7,14 +7,22 @@ import EmployeeTableView from "@/components/admin/EmployeeTableView";
 import AddEmployeeDialog from "@/components/admin/AddEmployeeDialog";
 import EditEmployeeDialog from "@/components/admin/EditEmployeeDialog";
 import { useEmployeeStore } from "@/store/employeeStore";
+import { useEmployeeBlockStore } from "@/store/employeeBlockStore";
 import { Employee } from "@/types/employee";
+import BlockEmployeeModal from "@/components/modals/BlockEmployeeModal";
 
 const EmployeesPage = () => {
   const { employees, loading, fetchEmployees, deleteEmployee } =
     useEmployeeStore();
+  const { blockEmployee, unblockEmployee, loading: blockLoading } = useEmployeeBlockStore();
   const [searchQuery, setSearchQuery] = useState("");
   const [editingEmployee, setEditingEmployee] = useState<Employee | null>(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [blockModalState, setBlockModalState] = useState<{
+    isOpen: boolean;
+    action: "block" | "unblock";
+    employee: Employee | null;
+  }>({ isOpen: false, action: "block", employee: null });
 
   useEffect(() => {
     fetchEmployees();
@@ -38,6 +46,42 @@ const EmployeesPage = () => {
     if (confirm("Are you sure you want to delete this employee?")) {
       await deleteEmployee(id);
     }
+  };
+
+  const handleBlock = (employee: Employee) => {
+    setBlockModalState({
+      isOpen: true,
+      action: "block",
+      employee,
+    });
+  };
+
+  const handleUnblock = (employee: Employee) => {
+    setBlockModalState({
+      isOpen: true,
+      action: "unblock",
+      employee,
+    });
+  };
+
+  const handleBlockConfirm = async (reason?: string) => {
+    if (!blockModalState.employee) return;
+    
+    try {
+      if (blockModalState.action === "block") {
+        await blockEmployee(blockModalState.employee.userId!, reason!);
+      } else {
+        await unblockEmployee(blockModalState.employee.userId!);
+      }
+      await fetchEmployees(); // Refresh the list
+      setBlockModalState({ isOpen: false, action: "block", employee: null });
+    } catch (error) {
+      // Error is handled in the store
+    }
+  };
+
+  const handleBlockModalClose = () => {
+    setBlockModalState({ isOpen: false, action: "block", employee: null });
   };
 
   return (
@@ -77,6 +121,8 @@ const EmployeesPage = () => {
         loading={loading}
         onEdit={handleEdit}
         onDelete={handleDelete}
+        onBlock={handleBlock}
+        onUnblock={handleUnblock}
       />
 
       {editingEmployee && (
@@ -89,6 +135,15 @@ const EmployeesPage = () => {
           }}
         />
       )}
+
+      <BlockEmployeeModal
+        isOpen={blockModalState.isOpen}
+        onClose={handleBlockModalClose}
+        onConfirm={handleBlockConfirm}
+        action={blockModalState.action}
+        employeeName={blockModalState.employee ? `${blockModalState.employee.firstName} ${blockModalState.employee.lastName}` : ""}
+        loading={blockLoading}
+      />
 
       {!loading && employees.length === 0 && (
         <div className="flex flex-col items-center justify-center text-center p-12 border rounded-lg">
