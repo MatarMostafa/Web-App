@@ -116,7 +116,7 @@ interface EmployeeState {
   downloadFile: (fileId: string, filename: string) => Promise<void>;
   previewFile: (fileId: string) => Promise<void>;
   fetchAllAbsences: (filters?: { status?: string; type?: string }) => Promise<void>;
-  approveAbsence: (absenceId: string) => Promise<void>;
+  approveAbsence: (absenceId: string, reason?: string) => Promise<void>;
   rejectAbsence: (absenceId: string, reason?: string) => Promise<void>;
   createEmployee: (data: CreateEmployeeData) => Promise<void>;
   updateEmployee: (id: string, data: UpdateEmployeeData) => Promise<void>;
@@ -362,9 +362,11 @@ export const useEmployeeStore = create<EmployeeState>((set, get) => ({
     }
   },
 
-  approveAbsence: async (absenceId: string) => {
+  approveAbsence: async (absenceId: string, reason?: string) => {
     try {
-      await apiClient.put(`/api/absences/${absenceId}/approve`, {});
+      await apiClient.put(`/api/absences/${absenceId}/approve`, { 
+        approvalReason: reason 
+      });
       toast.success('Absence request approved successfully');
       
       // Refresh data
@@ -379,9 +381,11 @@ export const useEmployeeStore = create<EmployeeState>((set, get) => ({
     }
   },
 
-  rejectAbsence: async (absenceId: string, reason = 'No reason provided') => {
+  rejectAbsence: async (absenceId: string, reason?: string) => {
     try {
-      await apiClient.put(`/api/absences/${absenceId}/reject`, { rejectionReason: reason });
+      await apiClient.put(`/api/absences/${absenceId}/reject`, { 
+        rejectionReason: reason || 'No reason provided' 
+      });
       toast.success('Absence request rejected successfully');
       
       // Refresh data
