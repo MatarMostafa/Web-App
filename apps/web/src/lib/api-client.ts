@@ -51,9 +51,6 @@ class ApiClient {
       const response = await fetch(`${API_URL}${endpoint}`, {
         method: "GET",
         headers,
-        mode: "cors",
-        // include cookies for cross-site requests when server allows credentials
-        credentials: "include",
       });
 
       console.log("Response status:", response.status);
@@ -73,8 +70,6 @@ class ApiClient {
         method: "POST",
         headers: await this.getAuthHeaders(),
         body: JSON.stringify(data),
-        mode: "cors",
-        credentials: "include",
       });
       return this.handleResponse<T>(response);
     } catch (error) {
@@ -89,8 +84,6 @@ class ApiClient {
         method: "PUT",
         headers: await this.getAuthHeaders(),
         body: JSON.stringify(data),
-        mode: "cors",
-        credentials: "include",
       });
       return this.handleResponse<T>(response);
     } catch (error) {
@@ -104,8 +97,6 @@ class ApiClient {
       const response = await fetch(`${API_URL}${endpoint}`, {
         method: "DELETE",
         headers: await this.getAuthHeaders(),
-        mode: "cors",
-        credentials: "include",
       });
       return this.handleResponse<T>(response);
     } catch (error) {
