@@ -12,9 +12,6 @@ export const api = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
-      mode: "cors",
-      // include cookies for cross-site requests when server allows credentials
-      credentials: "include",
     });
 
     const result = await response.json();
@@ -31,9 +28,6 @@ export const api = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email }),
-      mode: "cors",
-      // include cookies for cross-site requests when server allows credentials
-      credentials: "include",
     });
 
     const result = await response.json();
@@ -52,9 +46,6 @@ export const api = {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ password: newPassword }),
-        mode: "cors",
-        // include cookies for cross-site requests when server allows credentials
-        credentials: "include",
       }
     );
 
@@ -68,11 +59,7 @@ export const api = {
   },
 
   verifyEmail: async (token: string) => {
-    const response = await fetch(`${API_URL}/api/auth/verify-email/${token}`, {
-      mode: "cors",
-      // include cookies for cross-site requests when server allows credentials
-      credentials: "include",
-    });
+    const response = await fetch(`${API_URL}/api/auth/verify-email/${token}`);
     return response.json();
   },
 
@@ -81,9 +68,6 @@ export const api = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email }),
-      mode: "cors",
-      // include cookies for cross-site requests when server allows credentials
-      credentials: "include",
     });
     return response.json();
   },
