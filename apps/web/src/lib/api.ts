@@ -1,19 +1,28 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
 export const api = {
-  register: async (data: { name: string; email: string; username: string; password: string; role?: string }) => {
+  register: async (data: {
+    name: string;
+    email: string;
+    username: string;
+    password: string;
+    role?: string;
+  }) => {
     const response = await fetch(`${API_URL}/api/auth/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
+      mode: "cors",
+      // include cookies for cross-site requests when server allows credentials
+      credentials: "include",
     });
-    
+
     const result = await response.json();
-    
+
     if (!response.ok) {
-      throw new Error(result.message || 'Registration failed');
+      throw new Error(result.message || "Registration failed");
     }
-    
+
     return result;
   },
 
@@ -22,35 +31,48 @@ export const api = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email }),
+      mode: "cors",
+      // include cookies for cross-site requests when server allows credentials
+      credentials: "include",
     });
-    
+
     const result = await response.json();
-    
+
     if (!response.ok) {
-      throw new Error(result.message || 'Failed to send reset email');
+      throw new Error(result.message || "Failed to send reset email");
     }
-    
+
     return result;
   },
 
   resetPassword: async (token: string, newPassword: string) => {
-    const response = await fetch(`${API_URL}/api/auth/reset-password/${token}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ password: newPassword }),
-    });
-    
+    const response = await fetch(
+      `${API_URL}/api/auth/reset-password/${token}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password: newPassword }),
+        mode: "cors",
+        // include cookies for cross-site requests when server allows credentials
+        credentials: "include",
+      }
+    );
+
     const result = await response.json();
-    
+
     if (!response.ok) {
-      throw new Error(result.message || 'Failed to reset password');
+      throw new Error(result.message || "Failed to reset password");
     }
-    
+
     return result;
   },
 
   verifyEmail: async (token: string) => {
-    const response = await fetch(`${API_URL}/api/auth/verify-email/${token}`);
+    const response = await fetch(`${API_URL}/api/auth/verify-email/${token}`, {
+      mode: "cors",
+      // include cookies for cross-site requests when server allows credentials
+      credentials: "include",
+    });
     return response.json();
   },
 
@@ -59,6 +81,9 @@ export const api = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email }),
+      mode: "cors",
+      // include cookies for cross-site requests when server allows credentials
+      credentials: "include",
     });
     return response.json();
   },
