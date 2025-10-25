@@ -1,0 +1,112 @@
+name: Commit Message Validation
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches:
+      - dev  # Only apply commit validation for PRs to dev branch
+
+jobs:
+  validate-commits:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install commitlint
+        run: |
+          npm install -g @commitlint/cli @commitlint/config-conventional
+
+      - name: Create commitlint config
+        run: |
+          cat > commitlint.config.js << 'EOF'
+          module.exports = {
+            extends: ['@commitlint/config-conventional'],
+            rules: {
+              'type-enum': [
+                2,
+                'always',
+                [
+                  'feat',
+                  'fix',
+                  'docs',
+                  'style',
+                  'refactor',
+                  'perf',
+                  'test',
+                  'chore',
+                  'ci',
+                  'build',
+                  'revert'
+                ]
+              ],
+              'type-case': [2, 'always', 'lower-case'],
+              'subject-case': [2, 'always', 'lower-case'],
+              'subject-empty': [2, 'never'],
+              'subject-full-stop': [2, 'never', '.'],
+              'header-max-length': [2, 'always', 72],
+              'scope-case': [2, 'always', 'lower-case']
+            }
+          };
+          EOF
+
+      - name: Validate commit messages
+        run: |
+          target_branch="${{ github.base_ref }}"
+          
+          echo "Target branch: $target_branch"
+          
+          # Skip validation if targeting main branch (for dev -> main merges)
+          if [[ "$target_branch" == "main" ]]; then
+            echo "✅ Skipping commit validation for merges to main branch"
+            echo "This appears to be a dev -> main merge which is allowed"
+            exit 0
+          fi
+          
+          # Get the base branch (dev for feature branches)
+          base_sha=$(git merge-base HEAD origin/dev)
+          
+          # Get all commit messages from the PR
+          git log --pretty=format:"%s" $base_sha..HEAD > commit_messages.txt
+          
+          echo "📝 Validating commit messages for feature branch..."
+          echo ""
+          
+          # Validate each commit message
+          has_errors=false
+          while IFS= read -r commit_msg; do
+            if [ -n "$commit_msg" ]; then
+              echo "Checking: $commit_msg"
+              if echo "$commit_msg" | npx commitlint; then
+                echo "✅ Valid commit message"
+              else
+                echo "❌ Invalid commit message"
+                has_errors=true
+              fi
+              echo ""
+            fi
+          done < commit_messages.txt
+          
+          if [ "$has_errors" = true ]; then
+            echo "❌ Some commit messages don't follow the convention"
+            echo ""
+            echo "Commit messages must follow the format: <type>(<scope>): <description>"
+            echo ""
+            echo "Examples:"
+            echo "  - feat(auth): add user login functionality"
+            echo "  - fix(video): resolve connection timeout issue"
+            echo "  - docs(readme): update installation instructions"
+            echo ""
+            echo "Note: This validation only applies to feature branches merging to dev"
+            echo "See COMMIT_CONVENTION.md for detailed guidelines"
+            exit 1
+          else
+            echo "✅ All commit messages follow the convention"
+          fi 
