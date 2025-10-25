@@ -28,7 +28,7 @@ const LeaveRequestsPage = () => {
     leaveType: string;
   } | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
-  
+
   const {
     allAbsences,
     loading,
@@ -48,13 +48,13 @@ const LeaveRequestsPage = () => {
   const getStatusBadgeClass = (status: string) => {
     switch (status) {
       case "APPROVED":
-        return "bg-green-100 text-green-800";
+        return "bg-green-100 text-green-800 hover:bg-green-200";
       case "PENDING":
-        return "bg-yellow-100 text-yellow-800";
+        return "bg-yellow-100 text-yellow-800 hover:bg-yellow-200";
       case "REJECTED":
-        return "bg-red-100 text-red-800";
+        return "bg-red-100 text-red-800 hover:bg-red-200";
       default:
-        return "bg-gray-100 text-gray-800";
+        return "bg-gray-100 text-gray-800 hover:bg-gray-200";
     }
   };
 
@@ -91,7 +91,7 @@ const LeaveRequestsPage = () => {
 
   const handleModalConfirm = async (reason?: string) => {
     if (!modalState) return;
-    
+
     setActionLoading(true);
     try {
       if (modalState.action === "approve") {
@@ -133,7 +133,10 @@ const LeaveRequestsPage = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Clock className="h-5 w-5" />
-                {activeTab === "all" ? "All Leave Requests" : `${activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} Requests`} ({allAbsences.length})
+                {activeTab === "all"
+                  ? "All Leave Requests"
+                  : `${activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} Requests`}{" "}
+                ({allAbsences.length})
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -144,9 +147,11 @@ const LeaveRequestsPage = () => {
               ) : allAbsences.length === 0 ? (
                 <div className="text-center py-8 text-muted-foreground">
                   <Clock className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                  <p>No {activeTab === "all" ? "" : activeTab} requests found</p>
+                  <p>
+                    No {activeTab === "all" ? "" : activeTab} requests found
+                  </p>
                   <p className="text-sm">
-                    {activeTab === "pending" 
+                    {activeTab === "pending"
                       ? "All leave requests have been processed"
                       : "No requests match the current filter"}
                   </p>
@@ -164,7 +169,8 @@ const LeaveRequestsPage = () => {
                             <div className="flex items-center gap-2 mb-1">
                               <User className="h-4 w-4 text-muted-foreground" />
                               <h4 className="font-medium text-lg">
-                                {absence.employee?.firstName} {absence.employee?.lastName}
+                                {absence.employee?.firstName}{" "}
+                                {absence.employee?.lastName}
                               </h4>
                               <span className="text-sm text-muted-foreground">
                                 ({absence.employee?.employeeCode})
@@ -173,7 +179,9 @@ const LeaveRequestsPage = () => {
                             <div className="flex items-center gap-4 text-sm text-muted-foreground mb-2">
                               <div className="flex items-center gap-1">
                                 <Building className="h-4 w-4" />
-                                <span>{absence.employee?.department?.name}</span>
+                                <span>
+                                  {absence.employee?.department?.name}
+                                </span>
                               </div>
                               <span>•</span>
                               <span>{absence.employee?.position?.title}</span>
@@ -181,7 +189,9 @@ const LeaveRequestsPage = () => {
                           </div>
                         </div>
                         <div className="flex items-center gap-2">
-                          <Badge className={getStatusBadgeClass(absence.status)}>
+                          <Badge
+                            className={getStatusBadgeClass(absence.status)}
+                          >
                             {absence.status}
                           </Badge>
                           <div className="flex gap-1">
@@ -191,21 +201,27 @@ const LeaveRequestsPage = () => {
                                 variant="outline"
                                 onClick={() => handleQuickApprove(absence.id)}
                                 disabled={actionLoading}
-                                className="bg-green-50 text-green-700 hover:bg-green-100"
+                                className="bg-green-50 text-green-700 hover:text-green-700 hover:bg-green-100"
                               >
                                 <CheckCircle className="h-4 w-4 mr-1" />
-                                {absence.status === "REJECTED" ? "Re-approve" : "Approve"}
+                                {absence.status === "REJECTED"
+                                  ? "Re-approve"
+                                  : "Approve"}
                               </Button>
                             )}
                             {absence.status !== "REJECTED" && (
                               <Button
                                 size="sm"
                                 variant="outline"
-                                onClick={() => handleActionClick("reject", absence)}
-                                className="bg-red-50 text-red-700 hover:bg-red-100"
+                                onClick={() =>
+                                  handleActionClick("reject", absence)
+                                }
+                                className="bg-red-50 text-red-700 hover:text-red-700 hover:bg-red-100"
                               >
                                 <XCircle className="h-4 w-4 mr-1" />
-                                {absence.status === "APPROVED" ? "Revoke" : "Reject"}
+                                {absence.status === "APPROVED"
+                                  ? "Revoke"
+                                  : "Reject"}
                               </Button>
                             )}
                           </div>
@@ -214,45 +230,72 @@ const LeaveRequestsPage = () => {
 
                       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-3">
                         <div>
-                          <span className="text-sm font-medium text-muted-foreground">Type:</span>
-                          <p className="text-sm">{absence.type.replace('_', ' ')}</p>
-                        </div>
-                        <div>
-                          <span className="text-sm font-medium text-muted-foreground">Duration:</span>
+                          <span className="text-sm font-medium text-muted-foreground">
+                            Type:
+                          </span>
                           <p className="text-sm">
-                            {calculateDays(absence.startDate, absence.endDate)} day(s)
+                            {absence.type.replace("_", " ")}
                           </p>
                         </div>
                         <div>
-                          <span className="text-sm font-medium text-muted-foreground">Start Date:</span>
-                          <p className="text-sm">{formatDate(absence.startDate)}</p>
+                          <span className="text-sm font-medium text-muted-foreground">
+                            Duration:
+                          </span>
+                          <p className="text-sm">
+                            {calculateDays(absence.startDate, absence.endDate)}{" "}
+                            day(s)
+                          </p>
                         </div>
                         <div>
-                          <span className="text-sm font-medium text-muted-foreground">End Date:</span>
-                          <p className="text-sm">{formatDate(absence.endDate)}</p>
+                          <span className="text-sm font-medium text-muted-foreground">
+                            Start Date:
+                          </span>
+                          <p className="text-sm">
+                            {formatDate(absence.startDate)}
+                          </p>
+                        </div>
+                        <div>
+                          <span className="text-sm font-medium text-muted-foreground">
+                            End Date:
+                          </span>
+                          <p className="text-sm">
+                            {formatDate(absence.endDate)}
+                          </p>
                         </div>
                       </div>
 
                       {absence.reason && (
                         <div className="mb-3">
-                          <span className="text-sm font-medium text-muted-foreground">Reason:</span>
-                          <p className="text-sm mt-1 p-2 bg-gray-100 rounded">{absence.reason}</p>
+                          <span className="text-sm font-medium text-muted-foreground">
+                            Reason:
+                          </span>
+                          <p className="text-sm mt-1 p-2 bg-gray-100 rounded">
+                            {absence.reason}
+                          </p>
                         </div>
                       )}
 
                       {absence.status !== "PENDING" && (
                         <div className="text-xs text-muted-foreground border-t pt-2">
-                          {absence.status === "APPROVED" && absence.approvedAt && (
-                            <span>Approved on {formatDate(absence.approvedAt)}</span>
-                          )}
-                          {absence.status === "REJECTED" && absence.rejectedAt && (
-                            <div>
-                              <span>Rejected on {formatDate(absence.rejectedAt)}</span>
-                              {absence.rejectionReason && (
-                                <span className="block mt-1">Reason: {absence.rejectionReason}</span>
-                              )}
-                            </div>
-                          )}
+                          {absence.status === "APPROVED" &&
+                            absence.approvedAt && (
+                              <span>
+                                Approved on {formatDate(absence.approvedAt)}
+                              </span>
+                            )}
+                          {absence.status === "REJECTED" &&
+                            absence.rejectedAt && (
+                              <div>
+                                <span>
+                                  Rejected on {formatDate(absence.rejectedAt)}
+                                </span>
+                                {absence.rejectionReason && (
+                                  <span className="block mt-1">
+                                    Reason: {absence.rejectionReason}
+                                  </span>
+                                )}
+                              </div>
+                            )}
                         </div>
                       )}
                     </div>
@@ -263,7 +306,7 @@ const LeaveRequestsPage = () => {
           </Card>
         </TabsContent>
       </Tabs>
-      
+
       {modalState && (
         <LeaveActionModal
           isOpen={modalState.isOpen}
