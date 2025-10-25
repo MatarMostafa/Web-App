@@ -438,7 +438,7 @@ const EmployeeProfile: React.FC<EmployeeProfileProps> = ({ employee }) => {
                                 onClick={() =>
                                   handleActionClick("approve", absence)
                                 }
-                                className="bg-green-50 text-green-700 hover:bg-green-100"
+                                className="bg-green-50 text-green-700 hover:text-green-700 hover:bg-green-100"
                               >
                                 <CheckCircle className="h-3 w-3 mr-1" />
                                 {absence.status === "REJECTED"
@@ -453,7 +453,7 @@ const EmployeeProfile: React.FC<EmployeeProfileProps> = ({ employee }) => {
                                 onClick={() =>
                                   handleActionClick("reject", absence)
                                 }
-                                className="bg-red-50 text-red-700 hover:bg-red-100"
+                                className="bg-red-50 text-red-700 hover:text-red-700 hover:bg-red-100"
                               >
                                 <XCircle className="h-3 w-3 mr-1" />
                                 {absence.status === "APPROVED"
