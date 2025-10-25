@@ -1,0 +1,78 @@
+name: Branch Naming Convention
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches: 
+      - dev  # Only apply branch naming rules for PRs to dev branch
+
+jobs:
+  check-branch-naming:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check branch name
+        run: |
+          branch_name="${{ github.head_ref }}"
+          target_branch="${{ github.base_ref }}"
+          
+          echo "Checking branch name: $branch_name"
+          echo "Target branch: $target_branch"
+          
+          # Skip validation if targeting main branch (for dev -> main merges)
+          if [[ "$target_branch" == "main" ]]; then
+            echo "Skipping branch naming validation for merges to main branch"
+            echo "This appears to be a dev -> main merge which is allowed"
+            exit 0
+          fi
+          
+          # Define allowed branch patterns for feature branches
+          allowed_patterns=(
+            "^feature/.+"
+            "^hotfix/.+"
+            "^fix/.+"
+            "^bugfix/.+"
+            "^release/.+"
+            "^chore/.+"
+            "^docs/.+"
+            "^perf/.+"
+            "^ci/.+"
+            "^build/.+"
+            "^revert/.+"
+            "^refactor/.+"
+          )
+          
+          # Check if branch name matches any allowed pattern
+          for pattern in "${allowed_patterns[@]}"; do
+            if [[ $branch_name =~ $pattern ]]; then
+              echo "✅ Branch name '$branch_name' follows naming convention"
+              exit 0
+            fi
+          done
+          
+          echo "❌ Branch name '$branch_name' does not follow naming convention"
+          echo ""
+          echo "Branch names must follow the pattern: <type>/<description>"
+          echo ""
+          echo "Allowed types for feature branches merging to dev:"
+          echo "  - feature/    (new features)"
+          echo "  - hotfix/     (critical fixes)"
+          echo "  - fix/        (bug fixes)"
+          echo "  - bugfix/     (bug fixes)"
+          echo "  - refactor/   (code refactoring)"
+          echo "  - release/    (release preparation)"
+          echo "  - chore/      (maintenance)"
+          echo "  - docs/       (documentation)"
+          echo "  - perf/       (performance)"
+          echo "  - ci/         (continuous integration)"
+          echo "  - build/      (build system)"
+          echo "  - revert/     (reverting changes)"
+          echo ""
+          echo "Examples:"
+          echo "  - feature/user-authentication"
+          echo "  - fix/login-error"
+          echo "  - docs/readme-update"
+          echo "  - refactor/auth-service"
+          echo ""
+          echo "Note: Only 'dev' branch can merge directly to 'main'"
+          echo "See BRANCH_NAMING.md for detailed guidelines"
+          exit 1 
