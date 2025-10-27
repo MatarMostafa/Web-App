@@ -16,7 +16,7 @@ const Banner = () => {
           </div>
 
           <Image
-            src={"/assets/banner/dashboard.jpg"}
+            src={"/img/dashboard.jpg"}
             alt="banner-image"
             width={1200}
             height={598}
