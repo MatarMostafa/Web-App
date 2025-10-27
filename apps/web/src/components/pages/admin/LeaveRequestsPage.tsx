@@ -112,101 +112,108 @@ const LeaveRequestsPage = () => {
   };
 
   return (
-    <div className="p-6">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold mb-2">Leave Requests Management</h1>
-        <p className="text-muted-foreground">
+    <div className="p-3 sm:p-4 lg:p-6">
+      <div className="mb-4 sm:mb-6">
+        <h1 className="text-xl sm:text-2xl font-bold mb-2">Leave Requests Management</h1>
+        <p className="text-sm sm:text-base text-muted-foreground">
           Manage employee leave requests and time-off approvals
         </p>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="pending">Pending</TabsTrigger>
-          <TabsTrigger value="approved">Approved</TabsTrigger>
-          <TabsTrigger value="rejected">Rejected</TabsTrigger>
-          <TabsTrigger value="all">All Requests</TabsTrigger>
-        </TabsList>
+        <div className="overflow-x-auto">
+          <TabsList className="inline-flex w-full min-w-max sm:grid sm:grid-cols-4 h-auto p-1">
+            <TabsTrigger value="pending" className="flex-1 sm:flex-none text-xs sm:text-sm px-2 sm:px-4 py-2 whitespace-nowrap">Pending</TabsTrigger>
+            <TabsTrigger value="approved" className="flex-1 sm:flex-none text-xs sm:text-sm px-2 sm:px-4 py-2 whitespace-nowrap">Approved</TabsTrigger>
+            <TabsTrigger value="rejected" className="flex-1 sm:flex-none text-xs sm:text-sm px-2 sm:px-4 py-2 whitespace-nowrap">Rejected</TabsTrigger>
+            <TabsTrigger value="all" className="flex-1 sm:flex-none text-xs sm:text-sm px-2 sm:px-4 py-2 whitespace-nowrap">All</TabsTrigger>
+          </TabsList>
+        </div>
 
         <TabsContent value={activeTab} className="space-y-6 mt-6">
           <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Clock className="h-5 w-5" />
-                {activeTab === "all"
-                  ? "All Leave Requests"
-                  : `${activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} Requests`}{" "}
-                ({allAbsences.length})
+            <CardHeader className="p-4 sm:p-6">
+              <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
+                <Clock className="h-4 w-4 sm:h-5 sm:w-5" />
+                <span className="truncate">
+                  {activeTab === "all"
+                    ? "All Leave Requests"
+                    : `${activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} Requests`}{" "}
+                  ({allAbsences.length})
+                </span>
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-4 sm:p-6">
               {loading ? (
-                <div className="flex justify-center py-8">
+                <div className="flex justify-center py-6 sm:py-8">
                   <LoadingSpinnerWithText text="Loading requests..." />
                 </div>
               ) : allAbsences.length === 0 ? (
-                <div className="text-center py-8 text-muted-foreground">
-                  <Clock className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                  <p>
+                <div className="text-center py-6 sm:py-8 text-muted-foreground">
+                  <Clock className="h-8 w-8 sm:h-12 sm:w-12 mx-auto mb-4 opacity-50" />
+                  <p className="text-sm sm:text-base">
                     No {activeTab === "all" ? "" : activeTab} requests found
                   </p>
-                  <p className="text-sm">
+                  <p className="text-xs sm:text-sm">
                     {activeTab === "pending"
                       ? "All leave requests have been processed"
                       : "No requests match the current filter"}
                   </p>
                 </div>
               ) : (
-                <div className="space-y-4">
+                <div className="space-y-3 sm:space-y-4">
                   {allAbsences.map((absence) => (
                     <div
                       key={absence.id}
-                      className="border rounded-lg p-4 hover:bg-gray-50 transition-colors"
+                      className="border rounded-lg p-3 sm:p-4 hover:bg-gray-50 transition-colors"
                     >
-                      <div className="flex justify-between items-start mb-3">
-                        <div className="flex items-start gap-4">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-1">
+                      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 mb-3">
+                        <div className="flex-1">
+                          <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mb-1">
+                            <div className="flex items-center gap-2">
                               <User className="h-4 w-4 text-muted-foreground" />
-                              <h4 className="font-medium text-lg">
+                              <h4 className="font-medium text-base sm:text-lg">
                                 {absence.employee?.firstName}{" "}
                                 {absence.employee?.lastName}
                               </h4>
-                              <span className="text-sm text-muted-foreground">
-                                ({absence.employee?.employeeCode})
+                            </div>
+                            <span className="text-xs sm:text-sm text-muted-foreground">
+                              ({absence.employee?.employeeCode})
+                            </span>
+                          </div>
+                          <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 text-xs sm:text-sm text-muted-foreground mb-2">
+                            <div className="flex items-center gap-1">
+                              <Building className="h-3 w-3 sm:h-4 sm:w-4" />
+                              <span className="truncate">
+                                {absence.employee?.department?.name}
                               </span>
                             </div>
-                            <div className="flex items-center gap-4 text-sm text-muted-foreground mb-2">
-                              <div className="flex items-center gap-1">
-                                <Building className="h-4 w-4" />
-                                <span>
-                                  {absence.employee?.department?.name}
-                                </span>
-                              </div>
-                              <span>•</span>
-                              <span>{absence.employee?.position?.title}</span>
-                            </div>
+                            <span className="hidden sm:inline">•</span>
+                            <span className="truncate">{absence.employee?.position?.title}</span>
                           </div>
                         </div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
                           <Badge
-                            className={getStatusBadgeClass(absence.status)}
+                            className={`${getStatusBadgeClass(absence.status)} text-xs`}
                           >
                             {absence.status}
                           </Badge>
-                          <div className="flex gap-1">
+                          <div className="flex flex-col sm:flex-row gap-1 w-full sm:w-auto">
                             {absence.status !== "APPROVED" && (
                               <Button
                                 size="sm"
                                 variant="outline"
                                 onClick={() => handleQuickApprove(absence.id)}
                                 disabled={actionLoading}
-                                className="bg-green-50 text-green-700 hover:text-green-700 hover:bg-green-100"
+                                className="bg-green-50 text-green-700 hover:text-green-700 hover:bg-green-100 text-xs sm:text-sm w-full sm:w-auto"
                               >
-                                <CheckCircle className="h-4 w-4 mr-1" />
-                                {absence.status === "REJECTED"
-                                  ? "Re-approve"
-                                  : "Approve"}
+                                <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
+                                <span className="hidden sm:inline">
+                                  {absence.status === "REJECTED"
+                                    ? "Re-approve"
+                                    : "Approve"}
+                                </span>
+                                <span className="sm:hidden">✓</span>
                               </Button>
                             )}
                             {absence.status !== "REJECTED" && (
@@ -216,49 +223,52 @@ const LeaveRequestsPage = () => {
                                 onClick={() =>
                                   handleActionClick("reject", absence)
                                 }
-                                className="bg-red-50 text-red-700 hover:text-red-700 hover:bg-red-100"
+                                className="bg-red-50 text-red-700 hover:text-red-700 hover:bg-red-100 text-xs sm:text-sm w-full sm:w-auto"
                               >
-                                <XCircle className="h-4 w-4 mr-1" />
-                                {absence.status === "APPROVED"
-                                  ? "Revoke"
-                                  : "Reject"}
+                                <XCircle className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
+                                <span className="hidden sm:inline">
+                                  {absence.status === "APPROVED"
+                                    ? "Revoke"
+                                    : "Reject"}
+                                </span>
+                                <span className="sm:hidden">✗</span>
                               </Button>
                             )}
                           </div>
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-3">
+                      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4 mb-3">
                         <div>
-                          <span className="text-sm font-medium text-muted-foreground">
+                          <span className="text-xs sm:text-sm font-medium text-muted-foreground">
                             Type:
                           </span>
-                          <p className="text-sm">
+                          <p className="text-xs sm:text-sm truncate">
                             {absence.type.replace("_", " ")}
                           </p>
                         </div>
                         <div>
-                          <span className="text-sm font-medium text-muted-foreground">
+                          <span className="text-xs sm:text-sm font-medium text-muted-foreground">
                             Duration:
                           </span>
-                          <p className="text-sm">
+                          <p className="text-xs sm:text-sm">
                             {calculateDays(absence.startDate, absence.endDate)}{" "}
                             day(s)
                           </p>
                         </div>
                         <div>
-                          <span className="text-sm font-medium text-muted-foreground">
+                          <span className="text-xs sm:text-sm font-medium text-muted-foreground">
                             Start Date:
                           </span>
-                          <p className="text-sm">
+                          <p className="text-xs sm:text-sm">
                             {formatDate(absence.startDate)}
                           </p>
                         </div>
                         <div>
-                          <span className="text-sm font-medium text-muted-foreground">
+                          <span className="text-xs sm:text-sm font-medium text-muted-foreground">
                             End Date:
                           </span>
-                          <p className="text-sm">
+                          <p className="text-xs sm:text-sm">
                             {formatDate(absence.endDate)}
                           </p>
                         </div>
@@ -266,10 +276,10 @@ const LeaveRequestsPage = () => {
 
                       {absence.reason && (
                         <div className="mb-3">
-                          <span className="text-sm font-medium text-muted-foreground">
+                          <span className="text-xs sm:text-sm font-medium text-muted-foreground">
                             Reason:
                           </span>
-                          <p className="text-sm mt-1 p-2 bg-gray-100 rounded">
+                          <p className="text-xs sm:text-sm mt-1 p-2 bg-gray-100 rounded break-words">
                             {absence.reason}
                           </p>
                         </div>
@@ -279,18 +289,18 @@ const LeaveRequestsPage = () => {
                         <div className="text-xs text-muted-foreground border-t pt-2">
                           {absence.status === "APPROVED" &&
                             absence.approvedAt && (
-                              <span>
+                              <span className="block sm:inline">
                                 Approved on {formatDate(absence.approvedAt)}
                               </span>
                             )}
                           {absence.status === "REJECTED" &&
                             absence.rejectedAt && (
                               <div>
-                                <span>
+                                <span className="block sm:inline">
                                   Rejected on {formatDate(absence.rejectedAt)}
                                 </span>
                                 {absence.rejectionReason && (
-                                  <span className="block mt-1">
+                                  <span className="block mt-1 break-words">
                                     Reason: {absence.rejectionReason}
                                   </span>
                                 )}
