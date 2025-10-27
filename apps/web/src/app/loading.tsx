@@ -9,7 +9,7 @@ export default function Loading({ text = "ERP" }) {
       <div className="text-center">
         {/* Spinner */}
         <div className="inline-flex items-center px-4 py-2 font-semibold leading-6 text-sm text-primary">
-          <div className="flex space-x-2 justify-center items-center bg-white h-screen dark:invert">
+          <div className="flex space-x-2 justify-center items-center bg-gray-50 h-screen dark:invert">
             <span className="sr-only"> Loading {text}...</span>
             <div className="h-8 w-8 bg-primary rounded-full animate-bounce [animation-delay:-0.3s]"></div>
             <div className="h-8 w-8 bg-primary rounded-full animate-bounce [animation-delay:-0.15s]"></div>
