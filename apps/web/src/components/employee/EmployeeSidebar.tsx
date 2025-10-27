@@ -93,7 +93,7 @@ const EmployeeSidebar: React.FC<SidebarProps> = ({
 
       <div
         className={cn(
-          "overflow-y-auto border-r border-[#1e3a8a] bg-[#0f172a] transition-all duration-300 fixed z-50",
+          "overflow-y-auto border-r border-[#949494] bg-[#222222] transition-all duration-300 fixed z-50",
           isMobile
             ? cn(
                 "h-screen w-64 left-0 top-0",
@@ -113,7 +113,7 @@ const EmployeeSidebar: React.FC<SidebarProps> = ({
                   variant="ghost"
                   size="icon"
                   onClick={onClose}
-                  className="text-[#BFDBFE] hover:text-white"
+                  className="text-[#ffffff] hover:text-white"
                 >
                   <X className="h-5 w-5" />
                 </Button>
@@ -122,7 +122,7 @@ const EmployeeSidebar: React.FC<SidebarProps> = ({
                   variant="ghost"
                   size="icon"
                   onClick={() => setCollapsed(!collapsed)}
-                  className="text-[#BFDBFE] hover:text-white"
+                  className="text-[#ffffff] hover:text-white"
                 >
                   {collapsed ? (
                     <ChevronRight className="h-5 w-5" />
@@ -155,8 +155,8 @@ const EmployeeSidebar: React.FC<SidebarProps> = ({
                           className={cn(
                             "w-full justify-start",
                             isActive
-                              ? "bg-[#1E3A8A] hover:bg-[#1E40AF]/90 text-white font-medium"
-                              : "text-[#BFDBFE] hover:text-white hover:bg-[#1D4ED8]/60",
+                              ? "bg-[#222222] hover:bg-[#444444] text-white font-medium"
+                              : "text-[#ffffff] hover:text-white hover:bg-[#444444]",
                             collapsed && !isMobile ? "px-2" : "px-3"
                           )}
                           asChild
@@ -186,7 +186,7 @@ const EmployeeSidebar: React.FC<SidebarProps> = ({
             </nav>
           </div>
 
-          <div className="mt-auto pt-4 border-t border-[#1E40AF]">
+          <div className="mt-auto pt-4 border-t border-[#b4b4b4]">
             <TooltipProvider delayDuration={collapsed ? 100 : 1000}>
               <div className="space-y-1">
                 {isSettingsPath ? (
@@ -196,7 +196,7 @@ const EmployeeSidebar: React.FC<SidebarProps> = ({
                         <Button
                           variant="ghost"
                           className={cn(
-                            "w-full justify-start text-[#BFDBFE] hover:text-white hover:bg-[#1D4ED8]/60",
+                            "w-full justify-start text-[#ffffff] hover:text-white hover:bg-[#444444]",
                             collapsed ? "px-2" : "px-3"
                           )}
                           asChild
@@ -230,7 +230,7 @@ const EmployeeSidebar: React.FC<SidebarProps> = ({
                           variant="ghost"
                           onClick={handleLogout}
                           className={cn(
-                            "w-full justify-start text-[#BFDBFE] hover:text-white hover:bg-[#1D4ED8]/60",
+                            "w-full justify-start text-[#ffffff] hover:text-white hover:bg-[#444444]",
                             collapsed ? "px-2" : "px-3"
                           )}
                         >
@@ -256,7 +256,7 @@ const EmployeeSidebar: React.FC<SidebarProps> = ({
                           variant="ghost"
                           onClick={handleLogout}
                           className={cn(
-                            "w-full justify-start text-[#BFDBFE] hover:text-white hover:bg-[#1D4ED8]/60",
+                            "w-full justify-start text-[#ffffff] hover:text-white hover:bg-[#444444]",
                             collapsed ? "px-2" : "px-3"
                           )}
                         >
