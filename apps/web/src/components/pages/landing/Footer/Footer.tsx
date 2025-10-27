@@ -1,7 +1,15 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import { LayoutGrid, Users, BarChart3, HelpCircle } from "lucide-react";
+import {
+  LayoutGrid,
+  Users,
+  BarChart3,
+  HelpCircle,
+  Mail,
+  Phone,
+  MapPin,
+} from "lucide-react";
 
 interface FooterSection {
   title: string;
@@ -51,7 +59,7 @@ const footerSections: FooterSection[] = [
 
 const Footer = () => {
   return (
-    <footer className="bg-gray-900 text-gray-300">
+    <footer className="bg-black text-gray-300">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
         <div className="flex justify-center items-center">
           {/* Contact Info */}
@@ -59,33 +67,15 @@ const Footer = () => {
             <h3 className="text-lg font-semibold text-white">Contact</h3>
             <div className="space-y-3">
               <p className="flex items-center">
-                <Image
-                  src="/assets/footer/email.svg"
-                  alt="Email"
-                  width={20}
-                  height={20}
-                  className="mr-2"
-                />
+                <Mail className="mr-2" />
                 support@erp-beta.com
               </p>
               <p className="flex items-center">
-                <Image
-                  src="/assets/footer/telephone.svg"
-                  alt="Phone"
-                  width={20}
-                  height={20}
-                  className="mr-2"
-                />
+                <Phone className="mr-2" />
                 +1 (555) 123-4567
               </p>
               <p className="flex items-center">
-                <Image
-                  src="/assets/footer/mask.svg"
-                  alt="Location"
-                  width={20}
-                  height={20}
-                  className="mr-2"
-                />
+                <MapPin className="mr-2" />
                 123 Business Ave, Suite 100
                 <br />
                 San Francisco, CA 94107
@@ -101,13 +91,13 @@ const Footer = () => {
               © {new Date().getFullYear()} ERP Beta. All rights reserved.
             </p>
             <div className="flex space-x-6 text-sm">
-              <Link href="/privacy" className="hover:text-blue-400">
+              <Link href="/privacy" className="hover:text-gray-400">
                 Privacy Policy
               </Link>
-              <Link href="/terms" className="hover:text-blue-400">
+              <Link href="/terms" className="hover:text-gray-400">
                 Terms of Service
               </Link>
-              <Link href="/security" className="hover:text-blue-400">
+              <Link href="/security" className="hover:text-gray-400">
                 Security
               </Link>
             </div>
