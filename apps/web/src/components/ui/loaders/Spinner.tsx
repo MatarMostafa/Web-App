@@ -20,7 +20,7 @@ const spinnerSizes = {
 };
 
 const spinnerColors = {
-  primary: "text-blue-600",
+  primary: "text-gray-300",
   white: "text-white",
   gray: "text-gray-600",
 };
