@@ -10,14 +10,14 @@ class ApiClient {
       const headers: Record<string, string> = {
         "Content-Type": "application/json",
       };
-      
+
       if (session?.accessToken) {
         headers.Authorization = `Bearer ${session.accessToken}`;
       }
-      
+
       return headers;
     } catch (error) {
-      console.error('Error getting session:', error);
+      console.error("Error getting session:", error);
       return {
         "Content-Type": "application/json",
       };
@@ -29,9 +29,13 @@ class ApiClient {
       let errorMessage;
       try {
         const errorData = await response.json();
-        errorMessage = errorData.message || errorData.error || `HTTP error! status: ${response.status}`;
+        errorMessage =
+          errorData.message ||
+          errorData.error ||
+          `HTTP error! status: ${response.status}`;
       } catch {
-        errorMessage = await response.text() || `HTTP error! status: ${response.status}`;
+        errorMessage =
+          (await response.text()) || `HTTP error! status: ${response.status}`;
       }
       throw new Error(errorMessage);
     }
@@ -41,19 +45,20 @@ class ApiClient {
   async get<T>(endpoint: string): Promise<T> {
     try {
       const headers = await this.getAuthHeaders();
-      console.log('Making GET request to:', `${API_URL}${endpoint}`);
-      console.log('Headers:', headers);
-      
+      console.log("Making GET request to:", `${API_URL}${endpoint}`);
+      console.log("Headers:", headers);
+
       const response = await fetch(`${API_URL}${endpoint}`, {
         method: "GET",
         headers,
       });
-      
-      console.log('Response status:', response.status);
+
+      console.log("Response status:", response.status);
       return this.handleResponse<T>(response);
     } catch (error) {
-      console.error('API GET error:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      console.error("API GET error:", error);
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error";
       toast.error(`Failed to fetch data: ${errorMessage}`);
       throw error;
     }
