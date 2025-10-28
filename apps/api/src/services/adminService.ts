@@ -176,7 +176,6 @@ export const exportOrdersCSV = async () => {
 
     const csvData = orders.map((order) => ({
       orderNumber: order.orderNumber,
-      title: order.title,
       status: order.status,
       customerName: order.customer?.companyName || "N/A",
       contactEmail: order.customer?.contactEmail || "N/A",

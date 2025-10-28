@@ -54,9 +54,59 @@ export const getOrderByIdService = async (id: string) => {
 export const createOrderService = async (data: OrderCreateInput & { assignedEmployeeIds?: string[] }) => {
   const { assignedEmployeeIds, ...orderData } = data;
   
+  // Clean empty strings to undefined for optional DateTime fields
+  if (orderData.startTime === '') orderData.startTime = undefined;
+  if (orderData.endTime === '') orderData.endTime = undefined;
+  if (orderData.location === '') orderData.location = undefined;
+  if (orderData.specialInstructions === '') orderData.specialInstructions = undefined;
+  if (orderData.description === '') orderData.description = undefined;
+  
+  // Auto-generate order number if not provided
+  if (!orderData.orderNumber) {
+    // Use a more robust approach to get the next order number
+    const orderCount = await prisma.order.count();
+    let nextNumber = orderCount + 1;
+    let attempts = 0;
+    const maxAttempts = 10;
+    
+    while (attempts < maxAttempts) {
+      const candidateOrderNumber = `ORD-${nextNumber.toString().padStart(6, '0')}`;
+      
+      // Check if this order number already exists
+      const existingOrder = await prisma.order.findUnique({
+        where: { orderNumber: candidateOrderNumber }
+      });
+      
+      if (!existingOrder) {
+        orderData.orderNumber = candidateOrderNumber;
+        break;
+      }
+      
+      nextNumber++;
+      attempts++;
+    }
+    
+    if (!orderData.orderNumber) {
+      throw new Error('Unable to generate unique order number');
+    }
+  }
+  
+  // Auto-set status to DRAFT if not provided
+  if (!orderData.status) {
+    orderData.status = 'DRAFT';
+  }
+  
   const order = await prisma.order.create({
     data: orderData,
   });
+  
+  // Auto-update status based on assignments
+  let newStatus = order.status;
+  if (assignedEmployeeIds && assignedEmployeeIds.length > 0) {
+    newStatus = 'ACTIVE';
+  } else if (order.status === 'DRAFT') {
+    newStatus = 'OPEN';
+  }
 
   // Create assignments if employees are specified
   if (assignedEmployeeIds && assignedEmployeeIds.length > 0) {
@@ -76,6 +126,15 @@ export const createOrderService = async (data: OrderCreateInput & { assignedEmpl
       )
     );
   }
+  
+  // Update order status if it changed
+  if (newStatus !== order.status) {
+    await prisma.order.update({
+      where: { id: order.id },
+      data: { status: newStatus }
+    });
+    order.status = newStatus;
+  }
 
   return order;
 };
@@ -85,6 +144,13 @@ export const updateOrderService = async (
   data: OrderUpdateInput & { assignedEmployeeIds?: string[] }
 ) => {
   const { assignedEmployeeIds, ...orderData } = data;
+  
+  // Clean empty strings to undefined for optional DateTime fields
+  if (orderData.startTime === '') orderData.startTime = undefined;
+  if (orderData.endTime === '') orderData.endTime = undefined;
+  if (orderData.location === '') orderData.location = undefined;
+  if (orderData.specialInstructions === '') orderData.specialInstructions = undefined;
+  if (orderData.description === '') orderData.description = undefined;
   
   const order = await prisma.order.update({
     where: { id },
@@ -116,6 +182,9 @@ export const updateOrderService = async (
         )
       );
     }
+    
+    // Auto-update order status based on new assignments
+    await updateOrderStatusBasedOnAssignments(id);
   }
 
   return order;
@@ -193,10 +262,52 @@ export const updateAssignmentStatusService = async (
   id: string,
   status: AssignmentStatus
 ) => {
-  return prisma.assignment.update({
+  const assignment = await prisma.assignment.update({
     where: { id },
     data: { status },
   });
+  
+  // Auto-update order status based on assignment changes
+  if (assignment.orderId) {
+    await updateOrderStatusBasedOnAssignments(assignment.orderId);
+  }
+  
+  return assignment;
+};
+
+// Helper function to auto-update order status based on assignments
+const updateOrderStatusBasedOnAssignments = async (orderId: string) => {
+  const order = await prisma.order.findUnique({
+    where: { id: orderId },
+    include: { employeeAssignments: true }
+  });
+  
+  if (!order) return;
+  
+  const assignments = order.employeeAssignments;
+  let newStatus = order.status;
+  
+  if (assignments.length === 0) {
+    newStatus = 'OPEN';
+  } else {
+    const activeAssignments = assignments.filter(a => a.status === 'ACTIVE');
+    const completedAssignments = assignments.filter(a => a.status === 'COMPLETED');
+    
+    if (completedAssignments.length === assignments.length && assignments.length > 0) {
+      newStatus = 'COMPLETED';
+    } else if (activeAssignments.length > 0) {
+      newStatus = 'IN_PROGRESS';
+    } else if (assignments.length > 0) {
+      newStatus = 'ACTIVE';
+    }
+  }
+  
+  if (newStatus !== order.status) {
+    await prisma.order.update({
+      where: { id: orderId },
+      data: { status: newStatus }
+    });
+  }
 };
 
 // Intelligent auto-assignment with qualification matching and performance scoring
