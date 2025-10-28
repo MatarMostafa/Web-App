@@ -76,7 +76,15 @@ const EmployeeProfile: React.FC<EmployeeProfileProps> = ({ employee }) => {
           break;
       }
     }
-  }, [employee.id, activeTab, fetchEmployeeAssignments, fetchEmployeePerformance, fetchEmployeeQualifications, fetchEmployeeAbsences, fetchEmployeeFiles]);
+  }, [
+    employee.id,
+    activeTab,
+    fetchEmployeeAssignments,
+    fetchEmployeePerformance,
+    fetchEmployeeQualifications,
+    fetchEmployeeAbsences,
+    fetchEmployeeFiles,
+  ]);
 
   const handleActionClick = (action: "approve" | "reject", absence: any) => {
     setModalState({
@@ -90,7 +98,7 @@ const EmployeeProfile: React.FC<EmployeeProfileProps> = ({ employee }) => {
 
   const handleModalConfirm = async (reason?: string) => {
     if (!modalState) return;
-    
+
     setActionLoading(true);
     try {
       if (modalState.action === "approve") {
@@ -251,7 +259,14 @@ const EmployeeProfile: React.FC<EmployeeProfileProps> = ({ employee }) => {
                       <div className="flex justify-between items-start mb-2">
                         <div>
                           <h4 className="font-medium text-lg">
-                            Period: {new Date(performance.periodStart).toLocaleDateString()} - {new Date(performance.periodEnd).toLocaleDateString()}
+                            Period:{" "}
+                            {new Date(
+                              performance.periodStart
+                            ).toLocaleDateString()}{" "}
+                            -{" "}
+                            {new Date(
+                              performance.periodEnd
+                            ).toLocaleDateString()}
                           </h4>
                           <p className="text-sm text-muted-foreground">
                             Score: {performance.score}
@@ -263,8 +278,8 @@ const EmployeeProfile: React.FC<EmployeeProfileProps> = ({ employee }) => {
                               performance.trafficLight === "GREEN"
                                 ? "bg-green-100 text-green-800 hover:bg-green-200"
                                 : performance.trafficLight === "YELLOW"
-                                ? "bg-yellow-100 text-yellow-800 hover:bg-yellow-200"
-                                : "bg-red-100 text-red-800 hover:bg-red-200"
+                                  ? "bg-yellow-100 text-yellow-800 hover:bg-yellow-200"
+                                  : "bg-red-100 text-red-800 hover:bg-red-200"
                             }
                           >
                             {performance.trafficLight}
@@ -276,7 +291,8 @@ const EmployeeProfile: React.FC<EmployeeProfileProps> = ({ employee }) => {
                       </div>
                       {performance.trafficLightReason && (
                         <div className="mt-2 p-2 bg-gray-100 rounded text-sm">
-                          <strong>Reason:</strong> {performance.trafficLightReason}
+                          <strong>Reason:</strong>{" "}
+                          {performance.trafficLightReason}
                         </div>
                       )}
                     </div>
@@ -337,9 +353,15 @@ const EmployeeProfile: React.FC<EmployeeProfileProps> = ({ employee }) => {
                         </div>
                       </div>
                       <div className="text-sm text-muted-foreground">
-                        <p>Acquired: {new Date(qual.acquiredDate).toLocaleDateString()}</p>
+                        <p>
+                          Acquired:{" "}
+                          {new Date(qual.acquiredDate).toLocaleDateString()}
+                        </p>
                         {qual.expiryDate && (
-                          <p>Expires: {new Date(qual.expiryDate).toLocaleDateString()}</p>
+                          <p>
+                            Expires:{" "}
+                            {new Date(qual.expiryDate).toLocaleDateString()}
+                          </p>
                         )}
                       </div>
                       {qual.qualification.description && (
@@ -389,10 +411,11 @@ const EmployeeProfile: React.FC<EmployeeProfileProps> = ({ employee }) => {
                       <div className="flex justify-between items-start mb-2">
                         <div>
                           <h4 className="font-medium text-lg">
-                            {absence.type.replace('_', ' ')}
+                            {absence.type.replace("_", " ")}
                           </h4>
                           <p className="text-sm text-muted-foreground">
-                            {new Date(absence.startDate).toLocaleDateString()} - {new Date(absence.endDate).toLocaleDateString()}
+                            {new Date(absence.startDate).toLocaleDateString()} -{" "}
+                            {new Date(absence.endDate).toLocaleDateString()}
                           </p>
                         </div>
                         <div className="flex items-center gap-2">
@@ -401,8 +424,8 @@ const EmployeeProfile: React.FC<EmployeeProfileProps> = ({ employee }) => {
                               absence.status === "APPROVED"
                                 ? "bg-green-100 text-green-800"
                                 : absence.status === "PENDING"
-                                ? "bg-yellow-100 text-yellow-800"
-                                : "bg-red-100 text-red-800"
+                                  ? "bg-yellow-100 text-yellow-800"
+                                  : "bg-red-100 text-red-800"
                             }
                           >
                             {absence.status}
@@ -412,22 +435,30 @@ const EmployeeProfile: React.FC<EmployeeProfileProps> = ({ employee }) => {
                               <Button
                                 size="sm"
                                 variant="outline"
-                                onClick={() => handleActionClick("approve", absence)}
-                                className="bg-green-50 text-green-700 hover:bg-green-100"
+                                onClick={() =>
+                                  handleActionClick("approve", absence)
+                                }
+                                className="bg-green-50 text-green-700 hover:text-green-700 hover:bg-green-100"
                               >
                                 <CheckCircle className="h-3 w-3 mr-1" />
-                                {absence.status === "REJECTED" ? "Re-approve" : "Approve"}
+                                {absence.status === "REJECTED"
+                                  ? "Re-approve"
+                                  : "Approve"}
                               </Button>
                             )}
                             {absence.status !== "REJECTED" && (
                               <Button
                                 size="sm"
                                 variant="outline"
-                                onClick={() => handleActionClick("reject", absence)}
-                                className="bg-red-50 text-red-700 hover:bg-red-100"
+                                onClick={() =>
+                                  handleActionClick("reject", absence)
+                                }
+                                className="bg-red-50 text-red-700 hover:text-red-700 hover:bg-red-100"
                               >
                                 <XCircle className="h-3 w-3 mr-1" />
-                                {absence.status === "APPROVED" ? "Revoke" : "Reject"}
+                                {absence.status === "APPROVED"
+                                  ? "Revoke"
+                                  : "Reject"}
                               </Button>
                             )}
                           </div>
@@ -485,7 +516,8 @@ const EmployeeProfile: React.FC<EmployeeProfileProps> = ({ employee }) => {
                               {file.originalName}
                             </h4>
                             <p className="text-sm text-muted-foreground">
-                              {file.documentType.replace('_', ' ')} • {(file.size / 1024).toFixed(1)} KB
+                              {file.documentType.replace("_", " ")} •{" "}
+                              {(file.size / 1024).toFixed(1)} KB
                             </p>
                           </div>
                         </div>
@@ -503,7 +535,9 @@ const EmployeeProfile: React.FC<EmployeeProfileProps> = ({ employee }) => {
                           <Button
                             variant="secondary"
                             size="sm"
-                            onClick={() => downloadFile(file.id, file.originalName)}
+                            onClick={() =>
+                              downloadFile(file.id, file.originalName)
+                            }
                             title="Download file"
                             className="bg-green-100 text-green-700 hover:bg-green-200 hover:text-green-800"
                           >
@@ -514,7 +548,7 @@ const EmployeeProfile: React.FC<EmployeeProfileProps> = ({ employee }) => {
                             <Badge variant="default">Verified</Badge>
                           )}
                           <Badge variant="outline">
-                            {file.mimeType.split('/')[1].toUpperCase()}
+                            {file.mimeType.split("/")[1].toUpperCase()}
                           </Badge>
                         </div>
                       </div>
@@ -524,7 +558,8 @@ const EmployeeProfile: React.FC<EmployeeProfileProps> = ({ employee }) => {
                         </div>
                       )}
                       <div className="mt-2 text-xs text-muted-foreground">
-                        Uploaded: {new Date(file.createdAt).toLocaleDateString()}
+                        Uploaded:{" "}
+                        {new Date(file.createdAt).toLocaleDateString()}
                       </div>
                     </div>
                   ))}
@@ -534,7 +569,7 @@ const EmployeeProfile: React.FC<EmployeeProfileProps> = ({ employee }) => {
           </Card>
         </TabsContent>
       </Tabs>
-      
+
       {modalState && (
         <LeaveActionModal
           isOpen={modalState.isOpen}
