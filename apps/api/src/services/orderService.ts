@@ -63,13 +63,25 @@ export const createOrderService = async (data: OrderCreateInput & { assignedEmpl
   
   // Auto-generate order number if not provided
   if (!orderData.orderNumber) {
-    // Use a more robust approach to get the next order number
-    const orderCount = await prisma.order.count();
-    let nextNumber = orderCount + 1;
     let attempts = 0;
     const maxAttempts = 10;
     
     while (attempts < maxAttempts) {
+      // Find the highest existing order number
+      const lastOrder = await prisma.order.findFirst({
+        orderBy: { orderNumber: 'desc' },
+        select: { orderNumber: true }
+      });
+      
+      let nextNumber = 1;
+      if (lastOrder?.orderNumber) {
+        // Extract number from format ORD-000001
+        const match = lastOrder.orderNumber.match(/ORD-(\d+)/);
+        if (match) {
+          nextNumber = parseInt(match[1]) + 1;
+        }
+      }
+      
       const candidateOrderNumber = `ORD-${nextNumber.toString().padStart(6, '0')}`;
       
       // Check if this order number already exists
@@ -82,12 +94,11 @@ export const createOrderService = async (data: OrderCreateInput & { assignedEmpl
         break;
       }
       
-      nextNumber++;
       attempts++;
     }
     
     if (!orderData.orderNumber) {
-      throw new Error('Unable to generate unique order number');
+      throw new Error('Unable to generate unique order number after multiple attempts');
     }
   }
   
