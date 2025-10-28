@@ -74,9 +74,9 @@ const OrderTableView: React.FC<OrderTableViewProps> = ({
               <tr key={order.id} className="border-t hover:bg-muted/25">
                 <td className="p-4">
                   <div>
-                    <div className="font-medium">{order.title}</div>
+                    <div className="font-medium">#{order.orderNumber}</div>
                     <div className="text-sm text-muted-foreground">
-                      #{order.orderNumber}
+                      {order.description || "No description"}
                     </div>
                   </div>
                 </td>
