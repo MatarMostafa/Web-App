@@ -12,7 +12,7 @@ import path from "path";
 import { log } from "@repo/logger";
 
 const app = express();
-
+const port = process.env.PORT || 3001;
 // --- Core middlewares ---
 app
   .disable("x-powered-by")
@@ -53,6 +53,10 @@ const options = {
 
 const specs = swaggerJsdoc(options);
 // app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
+
+app.listen(port, () => {
+  log(`api running on ${port}`);
+});
 
 // Default export for Vercel
 export default app;
