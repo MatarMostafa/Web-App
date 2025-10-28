@@ -54,7 +54,11 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => {
   const dashboardNavItems = [
     { name: "Dashboard", path: "/dashboard-admin", icon: LayoutGrid },
     { name: "Employees", path: "/dashboard-admin/employees", icon: Users },
-    { name: "Leave Management", path: "/dashboard-admin/leave-management", icon: CalendarCheck },
+    {
+      name: "Leave Management",
+      path: "/dashboard-admin/leave-management",
+      icon: CalendarCheck,
+    },
     { name: "Customers", path: "/dashboard-admin/customers", icon: Contact },
     { name: "Orders", path: "/dashboard-admin/orders", icon: FileBox },
     {
@@ -99,7 +103,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => {
 
       <div
         className={cn(
-          "overflow-y-auto border-r border-white/20 bg-linear-to-b from-[#0a2358] via-[#0a2358]/80 to-[#24386e] backdrop-blur-xl shadow-2xl transition-all duration-300 fixed z-50",
+          "overflow-y-auto border-r border-white/20 bg-linear-to-b from-[#222222] via-[#444444] to-[#222222] backdrop-blur-xl shadow-2xl transition-all duration-300 fixed z-50",
           isMobile
             ? cn(
                 "h-screen w-64 left-0 top-0",
@@ -163,8 +167,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => {
                           className={cn(
                             "w-full justify-start",
                             isActive
-                              ? "bg-primary hover:bg-[#1E40AF]/90 text-white font-medium"
-                              : "text-[#BFDBFE] hover:text-white hover:bg-[#ffffff]/10",
+                              ? "bg-primary hover:bg-[#111111] text-white font-medium"
+                              : "text-[#ffffff] hover:text-white hover:bg-[#ffffff]/10",
                             collapsed && !isMobile ? "px-2" : "px-3"
                           )}
                           asChild
@@ -194,7 +198,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => {
             </nav>
           </div>
 
-          <div className="mt-auto pt-4 border-t border-[#416cfa]">
+          <div className="mt-auto pt-4 border-t border-[#eeeeee]">
             <TooltipProvider delayDuration={collapsed ? 100 : 1000}>
               <div className="space-y-1">
                 {isSettingsPath ? (
@@ -204,7 +208,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => {
                         <Button
                           variant="ghost"
                           className={cn(
-                            "w-full justify-start text-[#BFDBFE] hover:text-white hover:bg-[#1D4ED8]/60",
+                            "w-full justify-start text-[#ffffff] hover:text-white hover:bg-[#dadada]",
                             collapsed ? "px-2" : "px-3"
                           )}
                           asChild
@@ -235,7 +239,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => {
                           variant="ghost"
                           onClick={handleLogout}
                           className={cn(
-                            "w-full justify-start text-[#BFDBFE] hover:text-white hover:bg-[#ffffff]/10",
+                            "w-full justify-start text-[#ffffff] hover:text-white hover:bg-[#ffffff]/10",
                             collapsed ? "px-2" : "px-3"
                           )}
                         >
@@ -260,7 +264,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => {
                         <Button
                           variant="ghost"
                           className={cn(
-                            "w-full justify-start text-[#BFDBFE] hover:text-white hover:bg-[#1D4ED8]/60",
+                            "w-full justify-start text-[#ffffff] hover:text-white hover:bg-[#1D4ED8]/60",
                             collapsed ? "px-2" : "px-3"
                           )}
                           asChild
@@ -287,7 +291,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => {
                           variant="ghost"
                           onClick={handleLogout}
                           className={cn(
-                            "w-full justify-start text-[#BFDBFE] hover:text-white hover:bg-[#ffffff]/10",
+                            "w-full justify-start text-[#ffffff] hover:text-white hover:bg-[#ffffff]/10",
                             collapsed ? "px-2" : "px-3"
                           )}
                         >
