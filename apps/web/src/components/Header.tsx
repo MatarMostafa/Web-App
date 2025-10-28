@@ -34,13 +34,12 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
 
           <Link href="/" className="flex items-center gap-2 mr-8">
             <Image
-              src="/img/logo.png"
-              alt="ERP Logo"
-              className="h-8 w-8"
-              width={32}
-              height={32}
+              src="/img/matar_Logo.png"
+              alt="ERP Beta"
+              width={120}
+              height={40}
+              className="h-8 w-auto"
             />
-            <span className="font-display text-2xl font-semibold">ERP</span>
           </Link>
 
           {/* <nav className="hidden md:flex space-x-2">

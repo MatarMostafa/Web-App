@@ -5,7 +5,7 @@
 
 export default function Loading({ text = "ERP" }) {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+   <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="text-center">
         {/* Spinner */}
         <div className="inline-flex items-center px-4 py-2 font-semibold leading-6 text-sm text-primary">
