@@ -50,8 +50,8 @@ interface EmployeeFormData {
   dateOfBirth?: Date;
   address?: string;
   hireDate?: Date;
-  departmentId: string;
-  positionId: string;
+  departmentId?: string;
+  positionId?: string;
   managerId?: string;
   scheduleType: WorkScheduleType;
   hourlyRate?: number;
@@ -168,10 +168,7 @@ export default function AddEmployeeDialog({
       return;
     }
 
-    if (!formData.departmentId || !formData.positionId) {
-      toast.error("Please select department and position");
-      return;
-    }
+
 
     try {
       setLoading(true);
@@ -186,8 +183,8 @@ export default function AddEmployeeDialog({
         dateOfBirth: formData.dateOfBirth?.toISOString(),
         address: formData.address || undefined,
         hireDate: formData.hireDate?.toISOString(),
-        departmentId: formData.departmentId,
-        positionId: formData.positionId,
+        departmentId: formData.departmentId || undefined,
+        positionId: formData.positionId || undefined,
         managerId: formData.managerId || undefined,
         scheduleType: formData.scheduleType,
         hourlyRate: formData.hourlyRate,
@@ -364,7 +361,7 @@ export default function AddEmployeeDialog({
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="departmentId">Department *</Label>
+                <Label htmlFor="departmentId">Department</Label>
                 <Select
                   value={formData.departmentId}
                   onValueChange={(value) =>
@@ -384,7 +381,7 @@ export default function AddEmployeeDialog({
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="positionId">Position *</Label>
+                <Label htmlFor="positionId">Position</Label>
                 <Select
                   value={formData.positionId}
                   onValueChange={(value) =>
