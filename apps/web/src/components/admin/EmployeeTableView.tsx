@@ -85,7 +85,7 @@ const EmployeeTableView: React.FC<EmployeeTableViewProps> = ({
                       </Avatar>
                       <div>
                         <p className="font-medium text-primary hover:underline">
-                          {employee.firstName} {employee.lastName}
+                          {employee.firstName || ""} {employee.lastName || ""}
                         </p>
                       </div>
                     </div>

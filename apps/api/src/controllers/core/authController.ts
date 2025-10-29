@@ -13,13 +13,20 @@ export const register = async (req: Request, res: Response) => {
 
 export const login = async (req: Request, res: Response) => {
   try {
-    const { email, password } = req.body;
-    console.log('Login attempt for:', email);
-    const result = await authService.login(email, password);
-    console.log('Login successful for:', email);
+    const { identifier, password } = req.body;
+    console.log('Login request body:', req.body);
+    console.log('Login attempt for identifier:', identifier);
+    
+    if (!identifier || !password) {
+      console.log('Missing credentials - identifier:', !!identifier, 'password:', !!password);
+      return res.status(400).json({ message: 'Username/email and password are required' });
+    }
+    
+    const result = await authService.login(identifier, password);
+    console.log('Login successful for:', identifier);
     res.json(result);
   } catch (error: any) {
-    console.log('Login failed for:', req.body.email, 'Error:', error.message);
+    console.log('Login failed for:', req.body.identifier, 'Error:', error.message);
     res.status(401).json({ message: error.message });
   }
 };

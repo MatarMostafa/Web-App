@@ -1,17 +1,17 @@
 export interface Employee {
   id: string;
   employeeCode: string;
-  firstName: string;
-  lastName: string;
+  firstName?: string;
+  lastName?: string;
   phoneNumber?: string;
   dateOfBirth?: string;
   address?: string;
   emergencyContact?: Record<string, any>;
   hireDate: string;
   terminationDate?: string;
-  departmentId: string;
+  departmentId?: string;
   departmentName?: string;
-  positionId: string;
+  positionId?: string;
   positionTitle?: string;
   managerId?: string;
   scheduleType: WorkScheduleType;
@@ -35,11 +35,11 @@ export enum WorkScheduleType {
 }
 
 export interface CreateEmployeeData {
-  email: string;
+  email?: string;
   username: string;
   password: string;
-  firstName: string;
-  lastName: string;
+  firstName?: string;
+  lastName?: string;
   phoneNumber?: string;
   dateOfBirth?: string;
   address?: string;
