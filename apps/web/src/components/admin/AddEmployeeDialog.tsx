@@ -204,11 +204,19 @@ export default function AddEmployeeDialog({
       setShowCredentialsModal(true);
       setIsOpen(false);
       resetForm();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Employee creation failed:", error);
-      toast.error(
-        error instanceof Error ? error.message : "Failed to create employee"
-      );
+      
+      // Show specific error message from API
+      let errorMessage = "Failed to create employee";
+      
+      if (error?.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error?.message) {
+        errorMessage = error.message;
+      }
+      
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -513,7 +521,7 @@ export default function AddEmployeeDialog({
               type="button"
               variant="outline"
               className="flex-1 rounded-lg"
-              onClick={() => setIsOpen(false)}
+              onClick={() => {setIsOpen(false); resetForm()}}
               disabled={loading}
             >
               Cancel
