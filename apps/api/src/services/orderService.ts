@@ -63,43 +63,29 @@ export const createOrderService = async (data: OrderCreateInput & { assignedEmpl
   
   // Auto-generate order number if not provided
   if (!orderData.orderNumber) {
-    let attempts = 0;
-    const maxAttempts = 10;
+    const now = new Date();
+    const yearMonth = `${now.getFullYear()}${(now.getMonth() + 1).toString().padStart(2, '0')}`;
     
-    while (attempts < maxAttempts) {
-      // Find the highest existing order number
-      const lastOrder = await prisma.order.findFirst({
-        orderBy: { orderNumber: 'desc' },
-        select: { orderNumber: true }
-      });
-      
-      let nextNumber = 1;
-      if (lastOrder?.orderNumber) {
-        // Extract number from format ORD-000001
-        const match = lastOrder.orderNumber.match(/ORD-(\d+)/);
-        if (match) {
-          nextNumber = parseInt(match[1]) + 1;
+    // Find the highest order number for this month
+    const lastOrder = await prisma.order.findFirst({
+      where: {
+        orderNumber: {
+          startsWith: yearMonth
         }
+      },
+      orderBy: { orderNumber: 'desc' },
+      select: { orderNumber: true }
+    });
+    
+    let nextSequence = 1;
+    if (lastOrder?.orderNumber) {
+      const match = lastOrder.orderNumber.match(new RegExp(`${yearMonth}-(\\d+)`));
+      if (match) {
+        nextSequence = parseInt(match[1]) + 1;
       }
-      
-      const candidateOrderNumber = `ORD-${nextNumber.toString().padStart(6, '0')}`;
-      
-      // Check if this order number already exists
-      const existingOrder = await prisma.order.findUnique({
-        where: { orderNumber: candidateOrderNumber }
-      });
-      
-      if (!existingOrder) {
-        orderData.orderNumber = candidateOrderNumber;
-        break;
-      }
-      
-      attempts++;
     }
     
-    if (!orderData.orderNumber) {
-      throw new Error('Unable to generate unique order number after multiple attempts');
-    }
+    orderData.orderNumber = `${yearMonth}-${nextSequence.toString().padStart(3, '0')}`;
   }
   
   // Auto-set status to DRAFT if not provided
