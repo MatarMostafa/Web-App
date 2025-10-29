@@ -42,7 +42,7 @@ interface EmployeeFormData {
   firstName?: string;
   lastName?: string;
   phoneNumber?: string;
-  dateOfBirth?: Date;
+
   address?: string;
   hireDate?: Date;
   departmentId?: string;
@@ -79,7 +79,7 @@ export default function EditEmployeeDialog({
     firstName: "",
     lastName: "",
     phoneNumber: "",
-    dateOfBirth: undefined,
+
     address: "",
     hireDate: new Date(),
     departmentId: "",
@@ -125,9 +125,7 @@ export default function EditEmployeeDialog({
             firstName: employee.firstName || "",
             lastName: employee.lastName || "",
             phoneNumber: employee.phoneNumber || "",
-            dateOfBirth: employee.dateOfBirth
-              ? new Date(employee.dateOfBirth)
-              : undefined,
+
             address: employee.address || "",
             hireDate: new Date(employee.hireDate),
             departmentId: employee.departmentId || "",
@@ -137,6 +135,12 @@ export default function EditEmployeeDialog({
             hourlyRate: employee.hourlyRate,
             salary: employee.salary,
           };
+          console.log('Setting form data:', { 
+            departmentId: employee.departmentId, 
+            positionId: employee.positionId, 
+            departments: deptData.length, 
+            positions: posData.length 
+          });
           setFormData(initialData);
           setOriginalData(initialData);
         } catch (error) {
@@ -191,7 +195,7 @@ export default function EditEmployeeDialog({
         firstName: formData.firstName?.trim() || null,
         lastName: formData.lastName?.trim() || null,
         phoneNumber: formData.phoneNumber?.trim() || null,
-        dateOfBirth: formData.dateOfBirth?.toISOString(),
+
         address: formData.address?.trim() || null,
         hireDate: formData.hireDate?.toISOString(),
         departmentId: formData.departmentId?.trim() || null,
@@ -327,19 +331,19 @@ export default function EditEmployeeDialog({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="dateOfBirth">Date of Birth</Label>
+              <Label htmlFor="hireDate">Hire Date</Label>
               <Input
-                id="dateOfBirth"
+                id="hireDate"
                 type="date"
                 value={
-                  formData.dateOfBirth
-                    ? format(formData.dateOfBirth, "yyyy-MM-dd")
+                  formData.hireDate
+                    ? format(formData.hireDate, "yyyy-MM-dd")
                     : ""
                 }
                 onChange={(e) =>
                   handleInputChange(
-                    "dateOfBirth",
-                    e.target.value ? new Date(e.target.value) : undefined
+                    "hireDate",
+                    e.target.value ? new Date(e.target.value) : new Date()
                   )
                 }
                 className="rounded-lg"
@@ -360,7 +364,7 @@ export default function EditEmployeeDialog({
               <div className="space-y-2">
                 <Label htmlFor="departmentId">Department</Label>
                 <Select
-                  value={formData.departmentId || ""}
+                  value={formData.departmentId || undefined}
                   onValueChange={(value) =>
                     handleInputChange("departmentId", value)
                   }
@@ -380,7 +384,7 @@ export default function EditEmployeeDialog({
               <div className="space-y-2">
                 <Label htmlFor="positionId">Position</Label>
                 <Select
-                  value={formData.positionId || ""}
+                  value={formData.positionId || undefined}
                   onValueChange={(value) =>
                     handleInputChange("positionId", value)
                   }
@@ -423,7 +427,7 @@ export default function EditEmployeeDialog({
               <div className="space-y-2">
                 <Label htmlFor="managerId">Manager</Label>
                 <Select
-                  value={formData.managerId}
+                  value={formData.managerId || undefined}
                   onValueChange={(value) =>
                     handleInputChange("managerId", value)
                   }
