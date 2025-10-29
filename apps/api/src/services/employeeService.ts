@@ -8,6 +8,8 @@ const transformUserToEmployee = (user: any): Employee => {
   return {
     id: employee?.id || user.id,
     employeeCode: employee?.employeeCode || `EMP${user.id.slice(-4)}`,
+    email: user.email || undefined,
+    username: user.username || undefined,
     firstName: employee?.firstName || undefined,
     lastName: employee?.lastName || undefined,
     phoneNumber: employee?.phoneNumber || undefined,
@@ -265,11 +267,13 @@ export const updateEmployee = async (
       }
     }
 
+
+
     const user = await prisma.user.update({
       where: { id: employee.userId },
       data: {
         ...(email !== undefined && { email }),
-        ...(username !== undefined && { username }),
+
         employee: {
           update: {
             ...employeeData,
@@ -296,8 +300,20 @@ export const updateEmployee = async (
     });
 
     return transformUserToEmployee(user);
-  } catch (error) {
-    console.error("Error:", error);
+  } catch (error: any) {
+    console.error("Error updating employee:", error);
+    
+    // Handle Prisma unique constraint errors
+    if (error.code === 'P2002') {
+      const field = error.meta?.target?.[0];
+      if (field === 'username') {
+        throw new Error(`Username '${username}' is already taken`);
+      } else if (field === 'email') {
+        throw new Error(`Email '${email}' is already registered`);
+      }
+      throw new Error('A user with this information already exists');
+    }
+    
     throw error;
   }
 };

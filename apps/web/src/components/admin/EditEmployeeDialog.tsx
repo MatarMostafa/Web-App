@@ -1,11 +1,7 @@
 import React, { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { useEmployeeStore } from "@/store/employeeStore";
-import {
-  Employee,
-  UpdateEmployeeData,
-  WorkScheduleType,
-} from "@/types/employee";
+import { UpdateEmployeeData, WorkScheduleType, Employee } from "@/types/employee";
 import { apiClient } from "@/lib/api-client";
 
 import {
@@ -13,7 +9,6 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui";
 import { Button } from "@/components/ui";
 import { Input } from "@/components/ui";
@@ -26,23 +21,29 @@ import {
   SelectValue,
 } from "@/components/ui";
 
-import { User, Mail, Phone, Building, MapPin, Loader2 } from "lucide-react";
+import {
+  User,
+  Mail,
+  Phone,
+  Building,
+  MapPin,
+  Loader2,
+} from "lucide-react";
 import { format } from "date-fns";
 
 interface EditEmployeeDialogProps {
   employee: Employee;
-  trigger?: React.ReactNode;
-  open?: boolean;
-  onOpenChange?: (open: boolean) => void;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }
 
 interface EmployeeFormData {
-  email?: string;
+  email: string;
   username: string;
-  firstName?: string;
-  lastName?: string;
+  firstName: string;
+  lastName: string;
   phoneNumber?: string;
-
+  dateOfBirth?: Date;
   address?: string;
   hireDate?: Date;
   departmentId?: string;
@@ -63,15 +64,10 @@ const scheduleTypeOptions = [
 
 export default function EditEmployeeDialog({
   employee,
-  trigger,
   open,
   onOpenChange,
 }: EditEmployeeDialogProps) {
   const { updateEmployee } = useEmployeeStore();
-
-  const [internalOpen, setInternalOpen] = useState(false);
-  const isOpen = open !== undefined ? open : internalOpen;
-  const setIsOpen = onOpenChange || setInternalOpen;
 
   const [formData, setFormData] = useState<EmployeeFormData>({
     email: "",
@@ -79,7 +75,7 @@ export default function EditEmployeeDialog({
     firstName: "",
     lastName: "",
     phoneNumber: "",
-
+    dateOfBirth: undefined,
     address: "",
     hireDate: new Date(),
     departmentId: "",
@@ -89,8 +85,6 @@ export default function EditEmployeeDialog({
     hourlyRate: undefined,
     salary: undefined,
   });
-  const [userInfo, setUserInfo] = useState<{email?: string; username: string}>({username: ""});
-  const [originalData, setOriginalData] = useState<EmployeeFormData | null>(null);
   const [loading, setLoading] = useState(false);
   const [departments, setDepartments] = useState<
     { id: string; name: string }[]
@@ -102,56 +96,47 @@ export default function EditEmployeeDialog({
     { id: string; employee: { firstName: string; lastName: string } }[]
   >([]);
 
+  // Initialize form data when employee changes
   useEffect(() => {
-    const fetchAllData = async () => {
-      if (employee && isOpen) {
-        try {
-          // Fetch all data in parallel
-          const [userResponse, deptData, posData, mgrData] = await Promise.all([
-            apiClient.get<{email?: string; username: string}>(`/api/employees/user/${employee.userId}`),
-            apiClient.get<{ id: string; name: string }[]>("/api/departments"),
-            apiClient.get<{ id: string; title: string }[]>("/api/positions"),
-            apiClient.get<{ id: string; employee: { firstName: string; lastName: string } }[]>("/api/managers"),
-          ]);
-          
-          console.log('API responses:', { 
-            userResponse, 
-            deptData: deptData?.length, 
-            posData: posData?.length, 
-            mgrData: mgrData?.length 
-          });
-          setUserInfo(userResponse);
-          setDepartments(deptData || []);
-          setPositions(posData || []);
-          setManagers(mgrData || []);
-          
-          const initialData = {
-            email: userResponse.email || "",
-            username: userResponse.username,
-            firstName: employee.firstName || "",
-            lastName: employee.lastName || "",
-            phoneNumber: employee.phoneNumber || "",
+    if (employee) {
+      setFormData({
+        email: employee.email || "",
+        username: employee.username || "",
+        firstName: employee.firstName || "",
+        lastName: employee.lastName || "",
+        phoneNumber: employee.phoneNumber || "",
+        dateOfBirth: employee.dateOfBirth ? new Date(employee.dateOfBirth) : undefined,
+        address: employee.address || "",
+        hireDate: employee.hireDate ? new Date(employee.hireDate) : new Date(),
+        departmentId: employee.departmentId || "",
+        positionId: employee.positionId || "",
+        managerId: employee.managerId || "",
+        scheduleType: employee.scheduleType,
+        hourlyRate: employee.hourlyRate,
+        salary: employee.salary,
+      });
+    }
+  }, [employee]);
 
-            address: employee.address || "",
-            hireDate: new Date(employee.hireDate),
-            departmentId: employee.departmentId || "",
-            positionId: employee.positionId || "",
-            managerId: employee.managerId || "",
-            scheduleType: employee.scheduleType,
-            hourlyRate: employee.hourlyRate,
-            salary: employee.salary,
-          };
-          console.log('form data:', {initialData});
-          setFormData(initialData);
-          setOriginalData(initialData);
-        } catch (error) {
-          console.error("Failed to fetch data:", error);
-        }
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [deptData, posData, mgrData] = await Promise.all([
+          apiClient.get<{ id: string; name: string }[]>("/api/departments"),
+          apiClient.get<{ id: string; title: string }[]>("/api/positions"),
+          apiClient.get<
+            { id: string; employee: { firstName: string; lastName: string } }[]
+          >("/api/managers"),
+        ]);
+        setDepartments(deptData);
+        setPositions(posData);
+        setManagers(mgrData);
+      } catch (error) {
+        console.error("Failed to fetch form data:", error);
       }
     };
-    
-    fetchAllData();
-  }, [employee, isOpen]);
+    if (open) fetchData();
+  }, [open]);
 
   const handleInputChange = (field: keyof EmployeeFormData, value: any) => {
     setFormData((prev) => ({
@@ -160,75 +145,54 @@ export default function EditEmployeeDialog({
     }));
   };
 
-  // Check if form data has changed
-  const hasChanges = () => {
-    if (!originalData) return false;
-    
-    return Object.keys(formData).some(key => {
-      const field = key as keyof EmployeeFormData;
-      const current = formData[field];
-      const original = originalData[field];
-      
-      // Handle date comparison
-      if (current instanceof Date && original instanceof Date) {
-        return current.getTime() !== original.getTime();
-      }
-      
-      // Handle undefined/empty string equivalence
-      const normalizedCurrent = current === "" ? undefined : current;
-      const normalizedOriginal = original === "" ? undefined : original;
-      
-      return normalizedCurrent !== normalizedOriginal;
-    });
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // No mandatory fields except username (which is readonly)
-    // All other fields are optional
+    if (!formData.username.trim()) {
+      toast.error("Username is required");
+      return;
+    }
 
     try {
       setLoading(true);
 
       const employeeData: UpdateEmployeeData = {
-        email: formData.email?.trim() || null,
-        firstName: formData.firstName?.trim() || null,
-        lastName: formData.lastName?.trim() || null,
-        phoneNumber: formData.phoneNumber?.trim() || null,
-
-        address: formData.address?.trim() || null,
+        email: formData.email || null,
+        firstName: formData.firstName || null,
+        lastName: formData.lastName || null,
+        phoneNumber: formData.phoneNumber || null,
+        dateOfBirth: formData.dateOfBirth?.toISOString(),
+        address: formData.address || null,
         hireDate: formData.hireDate?.toISOString(),
-        departmentId: formData.departmentId?.trim() || null,
-        positionId: formData.positionId?.trim() || null,
-        managerId: formData.managerId?.trim() || null,
+        departmentId: formData.departmentId || null,
+        positionId: formData.positionId || null,
+        managerId: formData.managerId || null,
         scheduleType: formData.scheduleType,
         hourlyRate: formData.hourlyRate,
         salary: formData.salary,
       };
 
       await updateEmployee(employee.id, employeeData);
-      toast.success(
-        `Employee ${formData.username} updated successfully!`
-      );
-      setIsOpen(false);
-    } catch (error) {
+      onOpenChange(false);
+    } catch (error: any) {
       console.error("Employee update failed:", error);
-      toast.error(
-        error instanceof Error ? error.message : "Failed to update employee"
-      );
+      
+      let errorMessage = "Failed to update employee";
+      
+      if (error?.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error?.message) {
+        errorMessage = error.message;
+      }
+      
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        {trigger || (
-          <Button onClick={() => setIsOpen(true)}>Edit Employee</Button>
-        )}
-      </DialogTrigger>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold text-foreground">
@@ -251,7 +215,7 @@ export default function EditEmployeeDialog({
                 <Label htmlFor="firstName">First Name</Label>
                 <Input
                   id="firstName"
-                  value={formData.firstName || ""}
+                  value={formData.firstName}
                   onChange={(e) =>
                     handleInputChange("firstName", e.target.value)
                   }
@@ -263,7 +227,7 @@ export default function EditEmployeeDialog({
                 <Label htmlFor="lastName">Last Name</Label>
                 <Input
                   id="lastName"
-                  value={formData.lastName || ""}
+                  value={formData.lastName}
                   onChange={(e) =>
                     handleInputChange("lastName", e.target.value)
                   }
@@ -281,7 +245,7 @@ export default function EditEmployeeDialog({
                   <Input
                     id="email"
                     type="email"
-                    value={formData.email || ""}
+                    value={formData.email}
                     onChange={(e) => handleInputChange("email", e.target.value)}
                     placeholder="employee@company.com"
                     className="pl-10 rounded-lg"
@@ -289,30 +253,52 @@ export default function EditEmployeeDialog({
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="username">Username</Label>
+                <Label htmlFor="username">Username *</Label>
                 <Input
                   id="username"
                   value={formData.username}
-                  readOnly
-                  className="rounded-lg bg-muted text-muted-foreground cursor-not-allowed"
-                  placeholder="Loading..."
+                  placeholder="Enter username"
+                  required
+                  disabled
+                  className="rounded-lg bg-muted"
                 />
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="phoneNumber">Phone Number</Label>
-              <div className="relative">
-                <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="phoneNumber">Phone Number</Label>
+                <div className="relative">
+                  <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="phoneNumber"
+                    type="tel"
+                    value={formData.phoneNumber}
+                    onChange={(e) =>
+                      handleInputChange("phoneNumber", e.target.value)
+                    }
+                    placeholder="+1 (555) 000-0000"
+                    className="pl-10 rounded-lg"
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="dateOfBirth">Date of Birth</Label>
                 <Input
-                  id="phoneNumber"
-                  type="tel"
-                  value={formData.phoneNumber}
-                  onChange={(e) =>
-                    handleInputChange("phoneNumber", e.target.value)
+                  id="dateOfBirth"
+                  type="date"
+                  value={
+                    formData.dateOfBirth
+                      ? format(formData.dateOfBirth, "yyyy-MM-dd")
+                      : ""
                   }
-                  placeholder="+1 (555) 000-0000"
-                  className="pl-10 rounded-lg"
+                  onChange={(e) =>
+                    handleInputChange(
+                      "dateOfBirth",
+                      e.target.value ? new Date(e.target.value) : undefined
+                    )
+                  }
+                  className="rounded-lg"
                 />
               </div>
             </div>
@@ -345,7 +331,7 @@ export default function EditEmployeeDialog({
               <div className="space-y-2">
                 <Label htmlFor="departmentId">Department</Label>
                 <Select
-                  value={formData.departmentId || undefined}
+                  value={formData.departmentId}
                   onValueChange={(value) =>
                     handleInputChange("departmentId", value)
                   }
@@ -354,22 +340,18 @@ export default function EditEmployeeDialog({
                     <SelectValue placeholder="Select department" />
                   </SelectTrigger>
                   <SelectContent>
-                    {departments.length === 0 ? (
-                      <SelectItem value="loading" disabled>Loading departments...</SelectItem>
-                    ) : (
-                      departments.map((dept) => (
-                        <SelectItem key={dept.id} value={dept.id}>
-                          {dept.name}
-                        </SelectItem>
-                      ))
-                    )}
+                    {departments.map((dept) => (
+                      <SelectItem key={dept.id} value={dept.id}>
+                        {dept.name}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="positionId">Position</Label>
                 <Select
-                  value={formData.positionId || undefined}
+                  value={formData.positionId}
                   onValueChange={(value) =>
                     handleInputChange("positionId", value)
                   }
@@ -378,15 +360,11 @@ export default function EditEmployeeDialog({
                     <SelectValue placeholder="Select position" />
                   </SelectTrigger>
                   <SelectContent>
-                    {positions.length === 0 ? (
-                      <SelectItem value="loading" disabled>Loading positions...</SelectItem>
-                    ) : (
-                      positions.map((pos) => (
-                        <SelectItem key={pos.id} value={pos.id}>
-                          {pos.title}
-                        </SelectItem>
-                      ))
-                    )}
+                    {positions.map((pos) => (
+                      <SelectItem key={pos.id} value={pos.id}>
+                        {pos.title}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -416,7 +394,7 @@ export default function EditEmployeeDialog({
               <div className="space-y-2">
                 <Label htmlFor="managerId">Manager</Label>
                 <Select
-                  value={formData.managerId || undefined}
+                  value={formData.managerId}
                   onValueChange={(value) =>
                     handleInputChange("managerId", value)
                   }
@@ -498,7 +476,7 @@ export default function EditEmployeeDialog({
               type="button"
               variant="outline"
               className="flex-1 rounded-lg"
-              onClick={() => setIsOpen(false)}
+              onClick={() => onOpenChange(false)}
               disabled={loading}
             >
               Cancel
@@ -506,7 +484,7 @@ export default function EditEmployeeDialog({
             <Button
               type="submit"
               className="flex-1 bg-primary hover:bg-primary/90 text-pforeground rounded-lg"
-              disabled={loading || !hasChanges()}
+              disabled={loading}
             >
               {loading ? (
                 <>
