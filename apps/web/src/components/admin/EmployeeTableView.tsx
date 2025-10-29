@@ -35,7 +35,7 @@ const EmployeeTableView: React.FC<EmployeeTableViewProps> = ({
 }) => {
   const { currentPage, setCurrentPage, paginatedItems, totalItems } = usePagination(employees);
   const getInitials = (firstName: string, lastName: string) => {
-    return `${firstName[0] || ""}${lastName[0] || ""}`.toUpperCase();
+    return `${firstName?.[0] || ""}${lastName?.[0] || ""}`.toUpperCase();
   };
   const router = useRouter();
   return (
