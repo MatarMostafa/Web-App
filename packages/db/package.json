@@ -13,7 +13,8 @@
     "db:reset": "prisma migrate reset --force && npm run db:seed",
     "studio": "prisma studio",
     "dev": "tsc -w",
-    "build": "tsc -p ."
+    "build": "npm run db:generate && npm run db:migrate && tsc -p .",
+    "postinstall": "prisma generate"
   },
   "devDependencies": {
     "prisma": "^6.6.0"
