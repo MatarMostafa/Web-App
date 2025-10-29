@@ -14,7 +14,7 @@ interface Assignment {
   order: {
     id: string;
     orderNumber: string;
-    title: string;
+    description?: string;
     scheduledDate: string;
     status: string;
     priority: number;
@@ -38,7 +38,7 @@ const EmployeeOrdersPage = () => {
 
   const filteredAssignments = employeeAssignments.filter(
     (assignment: Assignment) =>
-      assignment.order.title
+      (assignment.order.description || "")
         .toLowerCase()
         .includes(searchQuery.toLowerCase()) ||
       assignment.order.orderNumber
@@ -59,7 +59,7 @@ const EmployeeOrdersPage = () => {
         <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
           <Input
-            placeholder="Search orders by title or number..."
+            placeholder="Search orders by description or number..."
             className="pl-10 bg-background"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}

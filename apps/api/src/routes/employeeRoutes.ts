@@ -80,7 +80,6 @@ router.get(
             select: {
               id: true,
               orderNumber: true,
-              title: true,
               scheduledDate: true,
               status: true,
               priority: true,

@@ -15,7 +15,7 @@ interface OrderState {
   fetchOrder: (id: string) => Promise<void>;
   getOrderById: (id: string) => Promise<Order | null>;
   getOrderAssignments: (orderId: string) => Promise<string[]>;
-  createOrder: (data: CreateOrderData) => Promise<void>;
+  createOrder: (data: CreateOrderData) => Promise<Order>;
   updateOrder: (id: string, data: UpdateOrderData) => Promise<void>;
   deleteOrder: (id: string) => Promise<void>;
   clearError: () => void;
@@ -80,7 +80,8 @@ export const useOrderStore = create<OrderState>((set, get) => ({
         orders: [...state.orders, newOrder], 
         loading: false 
       }));
-      toast.success("Order created successfully");
+      toast.success(`Order ${newOrder.orderNumber} created successfully!`);
+      return newOrder;
     } catch (error) {
       set({ error: error instanceof Error ? error.message : "Failed to create order", loading: false });
       throw error;
