@@ -114,10 +114,16 @@ export default function EditEmployeeDialog({
             apiClient.get<{ id: string; employee: { firstName: string; lastName: string } }[]>("/api/managers"),
           ]);
           
+          console.log('API responses:', { 
+            userResponse, 
+            deptData: deptData?.length, 
+            posData: posData?.length, 
+            mgrData: mgrData?.length 
+          });
           setUserInfo(userResponse);
-          setDepartments(deptData);
-          setPositions(posData);
-          setManagers(mgrData);
+          setDepartments(deptData || []);
+          setPositions(posData || []);
+          setManagers(mgrData || []);
           
           const initialData = {
             email: userResponse.email || "",
@@ -348,11 +354,15 @@ export default function EditEmployeeDialog({
                     <SelectValue placeholder="Select department" />
                   </SelectTrigger>
                   <SelectContent>
-                    {departments.map((dept) => (
-                      <SelectItem key={dept.id} value={dept.id}>
-                        {dept.name}
-                      </SelectItem>
-                    ))}
+                    {departments.length === 0 ? (
+                      <SelectItem value="loading" disabled>Loading departments...</SelectItem>
+                    ) : (
+                      departments.map((dept) => (
+                        <SelectItem key={dept.id} value={dept.id}>
+                          {dept.name}
+                        </SelectItem>
+                      ))
+                    )}
                   </SelectContent>
                 </Select>
               </div>
@@ -368,11 +378,15 @@ export default function EditEmployeeDialog({
                     <SelectValue placeholder="Select position" />
                   </SelectTrigger>
                   <SelectContent>
-                    {positions.map((pos) => (
-                      <SelectItem key={pos.id} value={pos.id}>
-                        {pos.title}
-                      </SelectItem>
-                    ))}
+                    {positions.length === 0 ? (
+                      <SelectItem value="loading" disabled>Loading positions...</SelectItem>
+                    ) : (
+                      positions.map((pos) => (
+                        <SelectItem key={pos.id} value={pos.id}>
+                          {pos.title}
+                        </SelectItem>
+                      ))
+                    )}
                   </SelectContent>
                 </Select>
               </div>
