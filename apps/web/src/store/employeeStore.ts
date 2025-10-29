@@ -175,9 +175,15 @@ export const useEmployeeStore = create<EmployeeState>((set, get) => ({
         loading: false 
       }));
       toast.success("Employee created successfully");
-    } catch (error) {
-      set({ error: error instanceof Error ? error.message : "Failed to create employee", loading: false });
-      throw error;
+    } catch (error: any) {
+      // Extract proper error message from API response
+      let errorMessage = "Failed to create employee";
+      if (error?.message) {
+        errorMessage = error.message;
+      }
+      
+      set({ error: errorMessage, loading: false });
+      throw new Error(errorMessage);
     }
   },
 
@@ -189,10 +195,15 @@ export const useEmployeeStore = create<EmployeeState>((set, get) => ({
         employees: state.employees.map(emp => emp.id === id ? updatedEmployee : emp),
         loading: false
       }));
-      toast.success("Employee updated successfully");
-    } catch (error) {
-      set({ error: error instanceof Error ? error.message : "Failed to update employee", loading: false });
-      throw error;
+    } catch (error: any) {
+      // Extract proper error message from API response
+      let errorMessage = "Failed to update employee";
+      if (error?.message) {
+        errorMessage = error.message;
+      }
+      
+      set({ error: errorMessage, loading: false });
+      throw new Error(errorMessage);
     }
   },
 

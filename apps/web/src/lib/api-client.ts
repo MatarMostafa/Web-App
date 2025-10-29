@@ -26,20 +26,29 @@ class ApiClient {
 
   private async handleResponse<T>(response: Response): Promise<T> {
     if (!response.ok) {
-      let errorMessage;
-      let errorData;
+      let errorMessage = `HTTP error! status: ${response.status}`;
       try {
-        errorData = await response.json();
+        const errorData = await response.json();
         console.log("API Error Response:", errorData);
-        errorMessage =
-          errorData.message ||
-          errorData.error ||
-          `HTTP error! status: ${response.status}`;
-      } catch {
-        const errorText = await response.text();
-        console.log("API Error Text:", errorText);
-        errorMessage = errorText || `HTTP error! status: ${response.status}`;
+        // Extract the specific error message from the API response
+        if (errorData.message) {
+          errorMessage = errorData.message;
+        } else if (errorData.error) {
+          errorMessage = errorData.error;
+        }
+      } catch (parseError) {
+        console.log('JSON parse failed, trying text');
+        // If JSON parsing fails, try to get text
+        try {
+          const errorText = await response.text();
+          if (errorText) {
+            errorMessage = errorText;
+          }
+        } catch {
+          // Keep the default HTTP error message
+        }
       }
+      console.log('Throwing error with message:', errorMessage);
       throw new Error(errorMessage);
     }
     
@@ -88,8 +97,7 @@ class ApiClient {
       return this.handleResponse<T>(response);
     } catch (error) {
       console.error("POST error:", error);
-      toast.error(`Failed to create: ${error}`);
-      throw error;
+      throw error; // Let the calling code handle the error message
     }
   }
 
@@ -102,8 +110,8 @@ class ApiClient {
       });
       return this.handleResponse<T>(response);
     } catch (error) {
-      toast.error(`Failed to update: ${error}`);
-      throw error;
+      console.error("PUT error:", error);
+      throw error; // Let the calling code handle the error message
     }
   }
 

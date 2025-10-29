@@ -131,6 +131,24 @@ export const createEmployee = async (data: any): Promise<Employee> => {
     if (!username || !password) {
       throw new Error('Username and password are required');
     }
+    
+    // Check for existing username
+    const existingUsername = await prisma.user.findUnique({
+      where: { username },
+    });
+    if (existingUsername) {
+      throw new Error(`Username '${username}' is already taken`);
+    }
+    
+    // Check for existing email if provided
+    if (email) {
+      const existingEmail = await prisma.user.findUnique({
+        where: { email },
+      });
+      if (existingEmail) {
+        throw new Error(`Email '${email}' is already registered`);
+      }
+    }
 
     // Validate department exists if provided
     if (employeeData.departmentId) {
@@ -202,8 +220,20 @@ export const createEmployee = async (data: any): Promise<Employee> => {
     });
 
     return transformUserToEmployee(user);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error creating employee:", error);
+    
+    // Handle Prisma unique constraint errors
+    if (error.code === 'P2002') {
+      const field = error.meta?.target?.[0];
+      if (field === 'username') {
+        throw new Error(`Username '${username}' is already taken`);
+      } else if (field === 'email') {
+        throw new Error(`Email '${email}' is already registered`);
+      }
+      throw new Error('A user with this information already exists');
+    }
+    
     throw error;
   }
 };
@@ -223,6 +253,16 @@ export const updateEmployee = async (
 
     if (!employee) {
       throw new Error(`Employee with ID ${id} not found`);
+    }
+    
+    // Check for existing email if provided and different from current
+    if (email) {
+      const existingEmail = await prisma.user.findUnique({
+        where: { email },
+      });
+      if (existingEmail && existingEmail.id !== employee.userId) {
+        throw new Error(`Email '${email}' is already registered`);
+      }
     }
 
     const user = await prisma.user.update({
