@@ -320,7 +320,6 @@ model SubAccount {
 model Order {
   id          String  @id @default(cuid())
   orderNumber String  @unique
-  title       String
   description String?
 
   scheduledDate DateTime
@@ -335,8 +334,8 @@ model Order {
 
   status OrderStatus @default(DRAFT)
 
-  customer            Customer?            @relation(fields: [customerId], references: [id], onDelete: Cascade)
-  customerId          String?
+  customer            Customer             @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  customerId          String
   qualifications      OrderQualification[]
   orderAssignments    OrderAssignment[]
   employeeAssignments Assignment[]

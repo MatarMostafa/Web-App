@@ -250,7 +250,6 @@ exports.Prisma.SubAccountScalarFieldEnum = {
 exports.Prisma.OrderScalarFieldEnum = {
   id: 'id',
   orderNumber: 'orderNumber',
-  title: 'title',
   description: 'description',
   scheduledDate: 'scheduledDate',
   startTime: 'startTime',
