@@ -8,8 +8,8 @@ const transformUserToEmployee = (user: any): Employee => {
   return {
     id: employee?.id || user.id,
     employeeCode: employee?.employeeCode || `EMP${user.id.slice(-4)}`,
-    firstName: employee?.firstName || "",
-    lastName: employee?.lastName || "",
+    firstName: employee?.firstName || undefined,
+    lastName: employee?.lastName || undefined,
     phoneNumber: employee?.phoneNumber || undefined,
     dateOfBirth: employee?.dateOfBirth?.toISOString(),
     address: employee?.address || undefined,
@@ -126,6 +126,11 @@ export const getEmployeeById = async (id: string): Promise<Employee | null> => {
 export const createEmployee = async (data: any): Promise<Employee> => {
   try {
     const { email, username, password, ...employeeData } = data;
+    
+    // Username is required, email is optional
+    if (!username || !password) {
+      throw new Error('Username and password are required');
+    }
 
     // Validate department exists if provided
     if (employeeData.departmentId) {
@@ -165,10 +170,11 @@ export const createEmployee = async (data: any): Promise<Employee> => {
 
     const user = await prisma.user.create({
       data: {
-        email,
+        email: email || null,
         username,
         password: hashedPassword,
         role: "EMPLOYEE",
+        isActive: true, // Admin-created employees are active by default
         employee: {
           create: {
             ...employeeData,

@@ -17,7 +17,7 @@ export default function SignInPage() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
-    email: "",
+    identifier: "",
     password: "",
   });
   const [isLoading, setIsLoading] = useState(false);
@@ -28,7 +28,7 @@ export default function SignInPage() {
 
     try {
       const result = await signIn("credentials", {
-        email: formData.email,
+        identifier: formData.identifier,
         password: formData.password,
         redirect: false,
       });
@@ -106,13 +106,12 @@ export default function SignInPage() {
             {/* Sign In Form */}
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="identifier">Username or Email</Label>
                 <Input
-                  id="email"
-                  type="email"
-                  placeholder="Enter your email"
-                  value={formData.email}
-                  onChange={(e) => handleInputChange("email", e.target.value)}
+                  id="identifier"
+                  placeholder="Enter your username or email"
+                  value={formData.identifier}
+                  onChange={(e) => handleInputChange("identifier", e.target.value)}
                   className="rounded-xl border-border/50 focus:border-primary"
                   required
                 />
