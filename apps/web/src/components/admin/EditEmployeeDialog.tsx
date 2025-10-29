@@ -135,12 +135,7 @@ export default function EditEmployeeDialog({
             hourlyRate: employee.hourlyRate,
             salary: employee.salary,
           };
-          console.log('Setting form data:', { 
-            departmentId: employee.departmentId, 
-            positionId: employee.positionId, 
-            departments: deptData.length, 
-            positions: posData.length 
-          });
+          console.log('form data:', {initialData});
           setFormData(initialData);
           setOriginalData(initialData);
         } catch (error) {
@@ -328,26 +323,6 @@ export default function EditEmployeeDialog({
                   className="pl-10 rounded-lg"
                 />
               </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="hireDate">Hire Date</Label>
-              <Input
-                id="hireDate"
-                type="date"
-                value={
-                  formData.hireDate
-                    ? format(formData.hireDate, "yyyy-MM-dd")
-                    : ""
-                }
-                onChange={(e) =>
-                  handleInputChange(
-                    "hireDate",
-                    e.target.value ? new Date(e.target.value) : new Date()
-                  )
-                }
-                className="rounded-lg"
-              />
             </div>
           </div>
 
