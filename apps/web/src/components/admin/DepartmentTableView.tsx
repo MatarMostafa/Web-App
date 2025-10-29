@@ -2,6 +2,7 @@
 import React from "react";
 import { Button } from "@/components/ui";
 import { Badge } from "@/components/ui";
+import { Pagination, usePagination } from "@/components/ui/pagination";
 import { Edit, Trash2, Building } from "lucide-react";
 import { Department } from "@/types/department";
 import { format } from "date-fns";
@@ -19,6 +20,7 @@ const DepartmentTableView: React.FC<DepartmentTableViewProps> = ({
   onEdit,
   onDelete,
 }) => {
+  const { currentPage, setCurrentPage, paginatedItems, totalItems } = usePagination(departments);
   if (loading) {
     return (
       <div className="border rounded-lg">
@@ -45,7 +47,7 @@ const DepartmentTableView: React.FC<DepartmentTableViewProps> = ({
             </tr>
           </thead>
           <tbody>
-            {departments.map((department) => (
+            {paginatedItems.map((department) => (
               <tr key={department.id} className="border-t hover:bg-muted/25">
                 <td className="p-4">
                   <div className="flex items-center gap-3">
@@ -99,6 +101,11 @@ const DepartmentTableView: React.FC<DepartmentTableViewProps> = ({
           </tbody>
         </table>
       </div>
+      <Pagination
+        currentPage={currentPage}
+        totalItems={totalItems}
+        onPageChange={setCurrentPage}
+      />
     </div>
   );
 };
