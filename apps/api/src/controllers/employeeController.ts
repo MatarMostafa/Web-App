@@ -41,8 +41,10 @@ export const createEmployee = async (req: Request, res: Response) => {
   try {
     const employee = await employeeService.createEmployee(req.body);
     res.status(201).json(employee);
-  } catch (error) {
-    res.status(400).json({ message: "Error creating employee", error });
+  } catch (error: any) {
+    console.error("Error creating employee:", error);
+    const message = error.message || "Error creating employee";
+    res.status(400).json({ message });
   }
 };
 

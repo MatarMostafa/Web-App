@@ -97,7 +97,7 @@ enum WorkScheduleType {
 
 model User {
   id        String    @id @default(cuid())
-  email     String    @unique
+  email     String?   @unique
   username  String    @unique
   password  String
   role      UserRole  @default(EMPLOYEE)
@@ -142,8 +142,8 @@ model Employee {
   id           String @id @default(cuid())
   employeeCode String @unique
 
-  firstName        String
-  lastName         String
+  firstName        String?
+  lastName         String?
   phoneNumber      String?
   dateOfBirth      DateTime?
   address          String?
