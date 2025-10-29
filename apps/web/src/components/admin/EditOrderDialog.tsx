@@ -20,6 +20,7 @@ import {
 } from "@/components/ui";
 import { useOrderStore } from "@/store/orderStore";
 import { useEmployeeStore } from "@/store/employeeStore";
+import { useCustomerStore } from "@/store/customerStore";
 import { Order, UpdateOrderData, OrderStatus } from "@/types/order";
 import toast from "react-hot-toast";
 
@@ -36,16 +37,18 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
 }) => {
   const { updateOrder, getOrderAssignments } = useOrderStore();
   const { employees, fetchEmployees } = useEmployeeStore();
+  const { customers, fetchCustomers } = useCustomerStore();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState<UpdateOrderData>({});
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (order && open) {
       fetchEmployees();
+      fetchCustomers();
       getOrderAssignments(order.id).then((assignedEmployeeIds) => {
         setFormData({
           orderNumber: order.orderNumber,
-          title: order.title,
           description: order.description || "",
           scheduledDate: order.scheduledDate.split("T")[0],
           startTime: order.startTime ? order.startTime.substring(0, 16) : "",
@@ -56,20 +59,52 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
           priority: order.priority,
           specialInstructions: order.specialInstructions || "",
           status: order.status,
+          customerId: order.customerId,
           assignedEmployeeIds,
         });
       });
     }
-  }, [order, open, fetchEmployees, getOrderAssignments]);
+  }, [order, open, fetchEmployees, fetchCustomers, getOrderAssignments]);
+
+  // Auto-fill location when customer is selected
+  useEffect(() => {
+    if (formData.customerId) {
+      const selectedCustomer = customers.find(c => c.id === formData.customerId);
+      if (selectedCustomer?.address) {
+        const addressStr = typeof selectedCustomer.address === 'string' 
+          ? selectedCustomer.address 
+          : Object.values(selectedCustomer.address).filter(Boolean).join(', ');
+        setFormData(prev => ({ ...prev, location: addressStr }));
+      }
+    }
+  }, [formData.customerId, customers]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate required fields
+    const newErrors: Record<string, string> = {};
+    if (!formData.customerId) newErrors.customerId = "Customer is required";
+    if (!formData.scheduledDate) newErrors.scheduledDate = "Scheduled date is required";
+    if (!formData.requiredEmployees || formData.requiredEmployees < 1) newErrors.requiredEmployees = "Required employees must be at least 1";
+    if (!formData.priority || formData.priority < 1) newErrors.priority = "Priority must be at least 1";
+    
+    setErrors(newErrors);
+    
+    if (Object.keys(newErrors).length > 0) {
+      toast.error("Please fix the validation errors");
+      return;
+    }
+    
     setLoading(true);
 
     try {
       const submitData = { ...formData };
 
-      // Convert datetime-local to ISO format
+      // Convert date and datetime-local to ISO format
+      if (submitData.scheduledDate) {
+        submitData.scheduledDate = new Date(submitData.scheduledDate + 'T00:00:00Z').toISOString();
+      }
       if (submitData.startTime) {
         submitData.startTime = new Date(submitData.startTime).toISOString();
       }
@@ -91,12 +126,27 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
   };
 
   const handleEmployeeToggle = (employeeId: string, checked: boolean) => {
-    setFormData((prev) => ({
-      ...prev,
-      assignedEmployeeIds: checked
-        ? [...(prev.assignedEmployeeIds || []), employeeId]
-        : (prev.assignedEmployeeIds || []).filter((id) => id !== employeeId),
-    }));
+    setFormData((prev) => {
+      const currentAssigned = prev.assignedEmployeeIds || [];
+      const requiredCount = prev.requiredEmployees || 1;
+      
+      if (checked) {
+        // Check if we can add more employees
+        if (currentAssigned.length >= requiredCount) {
+          toast.error(`Maximum ${requiredCount} employee(s) can be assigned`);
+          return prev;
+        }
+        return {
+          ...prev,
+          assignedEmployeeIds: [...currentAssigned, employeeId]
+        };
+      } else {
+        return {
+          ...prev,
+          assignedEmployeeIds: currentAssigned.filter((id) => id !== employeeId)
+        };
+      }
+    });
   };
 
   return (
@@ -108,46 +158,40 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="orderNumber">Order Number *</Label>
-              <Input
-                id="orderNumber"
-                value={formData.orderNumber || ""}
-                onChange={(e) =>
-                  handleInputChange("orderNumber", e.target.value)
-                }
-                required
-              />
+              <Label>Order Number</Label>
+              <div className="px-3 py-2 bg-muted rounded-md text-sm">
+                {order.orderNumber}
+              </div>
             </div>
             <div>
-              <Label htmlFor="status">Status</Label>
-              <Select
-                value={formData.status}
-                onValueChange={(value) =>
-                  handleInputChange("status", value as OrderStatus)
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {Object.values(OrderStatus).map((status) => (
-                    <SelectItem key={status} value={status}>
-                      {status.replace("_", " ")}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Label>Status</Label>
+              <div className="px-3 py-2 bg-muted rounded-md text-sm">
+                {(formData.status || order.status).replace("_", " ")}
+              </div>
             </div>
           </div>
 
           <div>
-            <Label htmlFor="title">Title *</Label>
-            <Input
-              id="title"
-              value={formData.title || ""}
-              onChange={(e) => handleInputChange("title", e.target.value)}
-              required
-            />
+            <Label htmlFor="customerId">Customer *</Label>
+            <Select
+              value={formData.customerId}
+              onValueChange={(value) => {
+                handleInputChange("customerId", value);
+                if (errors.customerId) setErrors(prev => ({ ...prev, customerId: "" }));
+              }}
+            >
+              <SelectTrigger className={errors.customerId ? "border-red-500" : ""}>
+                <SelectValue placeholder="Select customer" />
+              </SelectTrigger>
+              <SelectContent>
+                {customers.map((customer) => (
+                  <SelectItem key={customer.id} value={customer.id}>
+                    {customer.companyName}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {errors.customerId && <p className="text-sm text-red-500 mt-1">{errors.customerId}</p>}
           </div>
 
           <div>
@@ -167,11 +211,13 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
                 id="scheduledDate"
                 type="date"
                 value={formData.scheduledDate || ""}
-                onChange={(e) =>
-                  handleInputChange("scheduledDate", e.target.value)
-                }
-                required
+                onChange={(e) => {
+                  handleInputChange("scheduledDate", e.target.value);
+                  if (errors.scheduledDate) setErrors(prev => ({ ...prev, scheduledDate: "" }));
+                }}
+                className={errors.scheduledDate ? "border-red-500" : ""}
               />
+              {errors.scheduledDate && <p className="text-sm text-red-500 mt-1">{errors.scheduledDate}</p>}
             </div>
             <div>
               <Label htmlFor="location">Location</Label>
@@ -179,6 +225,7 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
                 id="location"
                 value={formData.location || ""}
                 onChange={(e) => handleInputChange("location", e.target.value)}
+                placeholder="Auto-filled from customer address"
               />
             </div>
           </div>
@@ -212,11 +259,13 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
                 type="number"
                 min="1"
                 value={formData.requiredEmployees || 1}
-                onChange={(e) =>
-                  handleInputChange("requiredEmployees", Number(e.target.value))
-                }
-                required
+                onChange={(e) => {
+                  handleInputChange("requiredEmployees", Number(e.target.value));
+                  if (errors.requiredEmployees) setErrors(prev => ({ ...prev, requiredEmployees: "" }));
+                }}
+                className={errors.requiredEmployees ? "border-red-500" : ""}
               />
+              {errors.requiredEmployees && <p className="text-sm text-red-500 mt-1">{errors.requiredEmployees}</p>}
             </div>
             <div>
               <Label htmlFor="priority">Priority *</Label>
@@ -225,11 +274,13 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
                 type="number"
                 min="1"
                 value={formData.priority || 1}
-                onChange={(e) =>
-                  handleInputChange("priority", Number(e.target.value))
-                }
-                required
+                onChange={(e) => {
+                  handleInputChange("priority", Number(e.target.value));
+                  if (errors.priority) setErrors(prev => ({ ...prev, priority: "" }));
+                }}
+                className={errors.priority ? "border-red-500" : ""}
               />
+              {errors.priority && <p className="text-sm text-red-500 mt-1">{errors.priority}</p>}
             </div>
             <div>
               <Label htmlFor="duration">Duration (hours)</Label>
@@ -242,7 +293,7 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
                 onChange={(e) =>
                   handleInputChange(
                     "duration",
-                    e.target.value ? Number(e.target.value) : undefined
+                    e.target.value ? Number(e.target.value) : null
                   )
                 }
               />
@@ -263,6 +314,9 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
 
           <div>
             <Label>Assign Employees</Label>
+            <div className="text-sm text-muted-foreground mb-2">
+              {(formData.assignedEmployeeIds || []).length} of {formData.requiredEmployees || 1} employees selected
+            </div>
             <div className="max-h-40 overflow-y-auto border rounded-md p-3 space-y-2">
               {employees.map((employee) => (
                 <div key={employee.id} className="flex items-center space-x-2">
@@ -271,6 +325,10 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
                     checked={(formData.assignedEmployeeIds || []).includes(
                       employee.id
                     )}
+                    disabled={
+                      !(formData.assignedEmployeeIds || []).includes(employee.id) &&
+                      (formData.assignedEmployeeIds || []).length >= (formData.requiredEmployees || 1)
+                    }
                     onCheckedChange={(checked) =>
                       handleEmployeeToggle(employee.id, checked as boolean)
                     }
