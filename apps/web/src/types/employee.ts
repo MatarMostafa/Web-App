@@ -45,8 +45,8 @@ export interface CreateEmployeeData {
   address?: string;
   emergencyContact?: Record<string, any>;
   hireDate?: string;
-  departmentId: string;
-  positionId: string;
+  departmentId?: string;
+  positionId?: string;
   managerId?: string;
   scheduleType?: WorkScheduleType;
   hourlyRate?: number;

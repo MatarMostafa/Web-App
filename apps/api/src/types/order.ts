@@ -71,7 +71,6 @@ export interface OrderQualification {
 export interface Order {
   id: string;
   orderNumber: string;
-  title: string;
   description?: string;
 
   scheduledDate: Date;
@@ -88,7 +87,7 @@ export interface Order {
   startedAt?: Date;
   completedAt?: Date;
 
-  customerId?: string;
+  customerId: string;
   customer?: Customer;
   // subAccountId?: string; // optional: for future linking to sub-accounts
 

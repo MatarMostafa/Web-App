@@ -11,18 +11,17 @@ export enum OrderStatus {
 export interface Order {
   id: string;
   orderNumber: string;
-  title: string;
   description?: string;
   scheduledDate: string;
   startTime?: string;
   endTime?: string;
-  duration?: number;
+  duration?: number | null;
   location?: string;
   requiredEmployees: number;
   priority: number;
   specialInstructions?: string;
   status: OrderStatus;
-  customerId?: string;
+  customerId: string;
   createdAt: string;
   updatedAt: string;
   createdBy?: string;
@@ -30,30 +29,28 @@ export interface Order {
 }
 
 export interface CreateOrderData {
-  orderNumber: string;
-  title: string;
+  orderNumber?: string;
   description?: string;
   scheduledDate: string;
   startTime?: string;
   endTime?: string;
-  duration?: number;
+  duration?: number | null;
   location?: string;
   requiredEmployees?: number;
   priority?: number;
   specialInstructions?: string;
   status?: OrderStatus;
-  customerId?: string;
+  customerId: string;
   assignedEmployeeIds?: string[];
 }
 
 export interface UpdateOrderData {
   orderNumber?: string;
-  title?: string;
   description?: string;
   scheduledDate?: string;
   startTime?: string;
   endTime?: string;
-  duration?: number;
+  duration?: number | null;
   location?: string;
   requiredEmployees?: number;
   priority?: number;
