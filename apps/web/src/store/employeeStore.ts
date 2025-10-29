@@ -193,8 +193,10 @@ export const useEmployeeStore = create<EmployeeState>((set, get) => ({
       const updatedEmployee = await apiClient.put<Employee>(`/api/employees/${id}`, data);
       set(state => ({
         employees: state.employees.map(emp => emp.id === id ? updatedEmployee : emp),
+        currentEmployee: state.currentEmployee?.id === id ? updatedEmployee : state.currentEmployee,
         loading: false
       }));
+      toast.success("Employee updated successfully");
     } catch (error: any) {
       // Extract proper error message from API response
       let errorMessage = "Failed to update employee";

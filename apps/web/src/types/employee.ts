@@ -1,6 +1,8 @@
 export interface Employee {
   id: string;
   employeeCode: string;
+  email?: string;
+  username?: string;
   firstName?: string;
   lastName?: string;
   phoneNumber?: string;
@@ -55,7 +57,6 @@ export interface CreateEmployeeData {
 
 export interface UpdateEmployeeData {
   email?: string | null;
-  username?: string;
   firstName?: string | null;
   lastName?: string | null;
   phoneNumber?: string | null;
