@@ -27,18 +27,27 @@ class ApiClient {
   private async handleResponse<T>(response: Response): Promise<T> {
     if (!response.ok) {
       let errorMessage;
+      let errorData;
       try {
-        const errorData = await response.json();
+        errorData = await response.json();
+        console.log("API Error Response:", errorData);
         errorMessage =
           errorData.message ||
           errorData.error ||
           `HTTP error! status: ${response.status}`;
       } catch {
-        errorMessage =
-          (await response.text()) || `HTTP error! status: ${response.status}`;
+        const errorText = await response.text();
+        console.log("API Error Text:", errorText);
+        errorMessage = errorText || `HTTP error! status: ${response.status}`;
       }
       throw new Error(errorMessage);
     }
+    
+    // Handle 204 No Content responses
+    if (response.status === 204) {
+      return null as T;
+    }
+    
     return response.json();
   }
 
@@ -66,13 +75,19 @@ class ApiClient {
 
   async post<T>(endpoint: string, data: any): Promise<T> {
     try {
+      console.log("Making POST request to:", `${API_URL}${endpoint}`);
+      console.log("POST data:", data);
+      
       const response = await fetch(`${API_URL}${endpoint}`, {
         method: "POST",
         headers: await this.getAuthHeaders(),
         body: JSON.stringify(data),
       });
+      
+      console.log("POST response status:", response.status);
       return this.handleResponse<T>(response);
     } catch (error) {
+      console.error("POST error:", error);
       toast.error(`Failed to create: ${error}`);
       throw error;
     }

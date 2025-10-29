@@ -15,10 +15,12 @@ export const getOrderById = async (req: Request, res: Response) => {
 
 export const createOrder = async (req: Request, res: Response) => {
   try {
+    console.log("Creating order with data:", req.body);
     const order = await orderService.createOrderService(req.body);
     res.status(201).json(order);
   } catch (error) {
     console.error("Create order error:", error);
+    console.error("Request body:", req.body);
     res.status(400).json({ 
       message: "Failed to create order", 
       error: error instanceof Error ? error.message : String(error)

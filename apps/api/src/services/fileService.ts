@@ -24,7 +24,6 @@ export const getFileByIdService = async (id: string) => {
         select: {
           id: true,
           orderNumber: true,
-          title: true,
         },
       },
       assignment: {
@@ -33,7 +32,6 @@ export const getFileByIdService = async (id: string) => {
           order: {
             select: {
               orderNumber: true,
-              title: true,
             },
           },
         },
