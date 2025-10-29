@@ -32,8 +32,8 @@ const EmployeeTableView: React.FC<EmployeeTableViewProps> = ({
   onBlock,
   onUnblock,
 }) => {
-  const getInitials = (firstName: string, lastName: string) => {
-    return `${firstName[0] || ""}${lastName[0] || ""}`.toUpperCase();
+  const getInitials = (firstName?: string, lastName?: string) => {
+    return `${firstName?.[0] || ""}${lastName?.[0] || ""}`.toUpperCase();
   };
   const router = useRouter();
   return (
@@ -83,7 +83,7 @@ const EmployeeTableView: React.FC<EmployeeTableViewProps> = ({
                       </Avatar>
                       <div>
                         <p className="font-medium text-primary hover:underline">
-                          {employee.firstName} {employee.lastName}
+                          {employee.firstName || ""} {employee.lastName || ""}
                         </p>
                       </div>
                     </div>
