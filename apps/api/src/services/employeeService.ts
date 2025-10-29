@@ -268,8 +268,8 @@ export const updateEmployee = async (
     const user = await prisma.user.update({
       where: { id: employee.userId },
       data: {
-        ...(email && { email }),
-        ...(username && { username }),
+        ...(email !== undefined && { email }),
+        ...(username !== undefined && { username }),
         employee: {
           update: {
             ...employeeData,
