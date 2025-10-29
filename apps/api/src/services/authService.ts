@@ -7,9 +7,9 @@ const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
 const JWT_REFRESH_SECRET =
   process.env.JWT_REFRESH_SECRET || "your-refresh-secret";
 
-export const generateTokens = (userId: string, email: string, role: any) => {
+export const generateTokens = (userId: string, email: string | null, role: any) => {
   const accessToken = jwt.sign(
-    { id: userId, email, role: String(role) },
+    { id: userId, email: email || null, role: String(role) },
     JWT_SECRET
   );
   const refreshToken = jwt.sign({ id: userId }, JWT_REFRESH_SECRET);
@@ -54,8 +54,8 @@ export const register = async (userData: any) => {
     await prisma.employee.create({
       data: {
         userId: user.id,
-        firstName: name.split(' ')[0] || name,
-        lastName: name.split(' ').slice(1).join(' ') || '',
+        firstName: name ? name.split(' ')[0] : undefined,
+        lastName: name ? name.split(' ').slice(1).join(' ') || undefined : undefined,
         employeeCode: `EMP${Date.now().toString().slice(-6)}`,
         hireDate: new Date(),
         isAvailable: true,
@@ -85,19 +85,44 @@ export const register = async (userData: any) => {
   };
 };
 
-export const login = async (email: string, password: string) => {
-  const user = await prisma.user.findUnique({ 
-    where: { email },
+export const login = async (identifier: string, password: string) => {
+  console.log('Auth service - trying to find user with identifier:', identifier);
+  
+  // Try to find user by email first, then by username
+  let user = await prisma.user.findUnique({ 
+    where: { email: identifier },
     include: {
       employee: true
     }
   });
+  
+  console.log('User found by email:', !!user);
+  
+  if (!user) {
+    user = await prisma.user.findUnique({ 
+      where: { username: identifier },
+      include: {
+        employee: true
+      }
+    });
+    console.log('User found by username:', !!user);
+  }
 
-  if (!user || !user.isActive) {
-    throw new Error("Invalid credentials or account not verified");
+  if (!user) {
+    console.log('No user found with identifier:', identifier);
+    throw new Error("Invalid credentials");
+  }
+  
+  console.log('User found - isActive:', user.isActive, 'role:', user.role);
+  
+  if (!user.isActive) {
+    console.log('User account not active');
+    throw new Error("Account not verified");
   }
 
   const isValidPassword = await bcrypt.compare(password, user.password);
+  console.log('Password valid:', isValidPassword);
+  
   if (!isValidPassword) {
     throw new Error("Invalid credentials");
   }
