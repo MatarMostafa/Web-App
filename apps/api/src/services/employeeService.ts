@@ -227,9 +227,9 @@ export const createEmployee = async (data: any): Promise<Employee> => {
     if (error.code === 'P2002') {
       const field = error.meta?.target?.[0];
       if (field === 'username') {
-        throw new Error(`Username '${username}' is already taken`);
+        throw new Error(`Username '${data.username}' is already taken`);
       } else if (field === 'email') {
-        throw new Error(`Email '${email}' is already registered`);
+        throw new Error(`Email '${data.email}' is already registered`);
       }
       throw new Error('A user with this information already exists');
     }
