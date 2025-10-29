@@ -37,16 +37,16 @@ interface EditEmployeeDialogProps {
 }
 
 interface EmployeeFormData {
-  email: string;
+  email?: string;
   username: string;
-  firstName: string;
-  lastName: string;
+  firstName?: string;
+  lastName?: string;
   phoneNumber?: string;
   dateOfBirth?: Date;
   address?: string;
   hireDate?: Date;
-  departmentId: string;
-  positionId: string;
+  departmentId?: string;
+  positionId?: string;
   managerId?: string;
   scheduleType: WorkScheduleType;
   hourlyRate?: number;
@@ -89,6 +89,8 @@ export default function EditEmployeeDialog({
     hourlyRate: undefined,
     salary: undefined,
   });
+  const [userInfo, setUserInfo] = useState<{email?: string; username: string}>({username: ""});
+  const [originalData, setOriginalData] = useState<EmployeeFormData | null>(null);
   const [loading, setLoading] = useState(false);
   const [departments, setDepartments] = useState<
     { id: string; name: string }[]
@@ -101,26 +103,61 @@ export default function EditEmployeeDialog({
   >([]);
 
   useEffect(() => {
-    if (employee && isOpen) {
-      setFormData({
-        email: employee.userId ? "" : "", // We'll fetch this from user data
-        username: "", // We'll fetch this from user data
-        firstName: employee.firstName,
-        lastName: employee.lastName,
-        phoneNumber: employee.phoneNumber || "",
-        dateOfBirth: employee.dateOfBirth
-          ? new Date(employee.dateOfBirth)
-          : undefined,
-        address: employee.address || "",
-        hireDate: new Date(employee.hireDate),
-        departmentId: employee.departmentId,
-        positionId: employee.positionId,
-        managerId: employee.managerId || "",
-        scheduleType: employee.scheduleType,
-        hourlyRate: employee.hourlyRate,
-        salary: employee.salary,
-      });
-    }
+    const fetchUserInfo = async () => {
+      if (employee && isOpen) {
+        try {
+          // Fetch user info to get email and username
+          const userResponse = await apiClient.get<{email?: string; username: string}>(`/api/employees/user/${employee.userId}`);
+          setUserInfo(userResponse);
+          
+          const initialData = {
+            email: userResponse.email || "",
+            username: userResponse.username,
+            firstName: employee.firstName || "",
+            lastName: employee.lastName || "",
+            phoneNumber: employee.phoneNumber || "",
+            dateOfBirth: employee.dateOfBirth
+              ? new Date(employee.dateOfBirth)
+              : undefined,
+            address: employee.address || "",
+            hireDate: new Date(employee.hireDate),
+            departmentId: employee.departmentId || "",
+            positionId: employee.positionId || "",
+            managerId: employee.managerId || "",
+            scheduleType: employee.scheduleType,
+            hourlyRate: employee.hourlyRate,
+            salary: employee.salary,
+          };
+          setFormData(initialData);
+          setOriginalData(initialData);
+        } catch (error) {
+          console.error("Failed to fetch user info:", error);
+          // Fallback to employee data only
+          const fallbackData = {
+            email: "",
+            username: "Loading...",
+            firstName: employee.firstName || "",
+            lastName: employee.lastName || "",
+            phoneNumber: employee.phoneNumber || "",
+            dateOfBirth: employee.dateOfBirth
+              ? new Date(employee.dateOfBirth)
+              : undefined,
+            address: employee.address || "",
+            hireDate: new Date(employee.hireDate),
+            departmentId: employee.departmentId || "",
+            positionId: employee.positionId || "",
+            managerId: employee.managerId || "",
+            scheduleType: employee.scheduleType,
+            hourlyRate: employee.hourlyRate,
+            salary: employee.salary,
+          };
+          setFormData(fallbackData);
+          setOriginalData(fallbackData);
+        }
+      }
+    };
+    
+    fetchUserInfo();
   }, [employee, isOpen]);
 
   useEffect(() => {
@@ -150,31 +187,47 @@ export default function EditEmployeeDialog({
     }));
   };
 
+  // Check if form data has changed
+  const hasChanges = () => {
+    if (!originalData) return false;
+    
+    return Object.keys(formData).some(key => {
+      const field = key as keyof EmployeeFormData;
+      const current = formData[field];
+      const original = originalData[field];
+      
+      // Handle date comparison
+      if (current instanceof Date && original instanceof Date) {
+        return current.getTime() !== original.getTime();
+      }
+      
+      // Handle undefined/empty string equivalence
+      const normalizedCurrent = current === "" ? undefined : current;
+      const normalizedOriginal = original === "" ? undefined : original;
+      
+      return normalizedCurrent !== normalizedOriginal;
+    });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.firstName.trim() || !formData.lastName.trim()) {
-      toast.error("Please fill in all required fields");
-      return;
-    }
-
-    if (!formData.departmentId || !formData.positionId) {
-      toast.error("Please select department and position");
-      return;
-    }
+    // No mandatory fields except username (which is readonly)
+    // All other fields are optional
 
     try {
       setLoading(true);
 
       const employeeData: UpdateEmployeeData = {
-        firstName: formData.firstName,
-        lastName: formData.lastName,
+        email: formData.email || undefined,
+        firstName: formData.firstName || undefined,
+        lastName: formData.lastName || undefined,
         phoneNumber: formData.phoneNumber || undefined,
         dateOfBirth: formData.dateOfBirth?.toISOString(),
         address: formData.address || undefined,
         hireDate: formData.hireDate?.toISOString(),
-        departmentId: formData.departmentId,
-        positionId: formData.positionId,
+        departmentId: formData.departmentId || undefined,
+        positionId: formData.positionId || undefined,
         managerId: formData.managerId || undefined,
         scheduleType: formData.scheduleType,
         hourlyRate: formData.hourlyRate,
@@ -183,7 +236,7 @@ export default function EditEmployeeDialog({
 
       await updateEmployee(employee.id, employeeData);
       toast.success(
-        `Employee ${formData.firstName} ${formData.lastName} updated successfully!`
+        `Employee ${formData.username} updated successfully!`
       );
       setIsOpen(false);
     } catch (error) {
@@ -222,29 +275,54 @@ export default function EditEmployeeDialog({
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="firstName">First Name *</Label>
+                <Label htmlFor="firstName">First Name</Label>
                 <Input
                   id="firstName"
-                  value={formData.firstName}
+                  value={formData.firstName || ""}
                   onChange={(e) =>
                     handleInputChange("firstName", e.target.value)
                   }
                   placeholder="Enter first name"
-                  required
                   className="rounded-lg"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="lastName">Last Name *</Label>
+                <Label htmlFor="lastName">Last Name</Label>
                 <Input
                   id="lastName"
-                  value={formData.lastName}
+                  value={formData.lastName || ""}
                   onChange={(e) =>
                     handleInputChange("lastName", e.target.value)
                   }
                   placeholder="Enter last name"
-                  required
                   className="rounded-lg"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="email"
+                    type="email"
+                    value={formData.email || ""}
+                    onChange={(e) => handleInputChange("email", e.target.value)}
+                    placeholder="employee@company.com"
+                    className="pl-10 rounded-lg"
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="username">Username</Label>
+                <Input
+                  id="username"
+                  value={formData.username}
+                  readOnly
+                  className="rounded-lg bg-muted text-muted-foreground cursor-not-allowed"
+                  placeholder="Loading..."
                 />
               </div>
             </div>
@@ -312,9 +390,9 @@ export default function EditEmployeeDialog({
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="departmentId">Department *</Label>
+                <Label htmlFor="departmentId">Department</Label>
                 <Select
-                  value={formData.departmentId}
+                  value={formData.departmentId || ""}
                   onValueChange={(value) =>
                     handleInputChange("departmentId", value)
                   }
@@ -332,9 +410,9 @@ export default function EditEmployeeDialog({
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="positionId">Position *</Label>
+                <Label htmlFor="positionId">Position</Label>
                 <Select
-                  value={formData.positionId}
+                  value={formData.positionId || ""}
                   onValueChange={(value) =>
                     handleInputChange("positionId", value)
                   }
@@ -467,7 +545,7 @@ export default function EditEmployeeDialog({
             <Button
               type="submit"
               className="flex-1 bg-primary hover:bg-primary/90 text-pforeground rounded-lg"
-              disabled={loading}
+              disabled={loading || !hasChanges()}
             >
               {loading ? (
                 <>

@@ -3,6 +3,7 @@ import toast from "react-hot-toast";
 import { useEmployeeStore } from "@/store/employeeStore";
 import { CreateEmployeeData, WorkScheduleType } from "@/types/employee";
 import { apiClient } from "@/lib/api-client";
+import EmployeeCredentialsModal from "./EmployeeCredentialsModal";
 
 import {
   Dialog,
@@ -97,6 +98,11 @@ export default function AddEmployeeDialog({
     salary: undefined,
   });
   const [loading, setLoading] = useState(false);
+  const [showCredentialsModal, setShowCredentialsModal] = useState(false);
+  const [createdCredentials, setCreatedCredentials] = useState<{
+    username: string;
+    password: string;
+  } | null>(null);
   const [departments, setDepartments] = useState<
     { id: string; name: string }[]
   >([]);
@@ -158,13 +164,10 @@ export default function AddEmployeeDialog({
     e.preventDefault();
 
     if (
-      !formData.firstName.trim() ||
-      !formData.lastName.trim() ||
-      !formData.email.trim() ||
       !formData.username.trim() ||
       !formData.password.trim()
     ) {
-      toast.error("Please fill in all required fields");
+      toast.error("Username and password are required");
       return;
     }
 
@@ -174,11 +177,11 @@ export default function AddEmployeeDialog({
       setLoading(true);
 
       const employeeData: CreateEmployeeData = {
-        email: formData.email,
+        email: formData.email || undefined,
         username: formData.username,
         password: formData.password,
-        firstName: formData.firstName,
-        lastName: formData.lastName,
+        firstName: formData.firstName || undefined,
+        lastName: formData.lastName || undefined,
         phoneNumber: formData.phoneNumber || undefined,
         dateOfBirth: formData.dateOfBirth?.toISOString(),
         address: formData.address || undefined,
@@ -192,22 +195,35 @@ export default function AddEmployeeDialog({
       };
 
       await createEmployee(employeeData);
-      toast.success(
-        `Employee ${formData.firstName} ${formData.lastName} created successfully!`
-      );
+      
+      // Show credentials modal instead of toast
+      setCreatedCredentials({
+        username: formData.username,
+        password: formData.password,
+      });
+      setShowCredentialsModal(true);
       setIsOpen(false);
       resetForm();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Employee creation failed:", error);
-      toast.error(
-        error instanceof Error ? error.message : "Failed to create employee"
-      );
+      
+      // Show specific error message from API
+      let errorMessage = "Failed to create employee";
+      
+      if (error?.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error?.message) {
+        errorMessage = error.message;
+      }
+      
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
   };
 
   return (
+    <>
     <Dialog
       open={isOpen}
       onOpenChange={(open) => {
@@ -244,7 +260,7 @@ export default function AddEmployeeDialog({
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="firstName">First Name *</Label>
+                <Label htmlFor="firstName">First Name</Label>
                 <Input
                   id="firstName"
                   value={formData.firstName}
@@ -252,12 +268,11 @@ export default function AddEmployeeDialog({
                     handleInputChange("firstName", e.target.value)
                   }
                   placeholder="Enter first name"
-                  required
                   className="rounded-lg"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="lastName">Last Name *</Label>
+                <Label htmlFor="lastName">Last Name</Label>
                 <Input
                   id="lastName"
                   value={formData.lastName}
@@ -265,7 +280,6 @@ export default function AddEmployeeDialog({
                     handleInputChange("lastName", e.target.value)
                   }
                   placeholder="Enter last name"
-                  required
                   className="rounded-lg"
                 />
               </div>
@@ -273,7 +287,7 @@ export default function AddEmployeeDialog({
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="email">Email *</Label>
+                <Label htmlFor="email">Email</Label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
@@ -283,7 +297,6 @@ export default function AddEmployeeDialog({
                     onChange={(e) => handleInputChange("email", e.target.value)}
                     placeholder="employee@company.com"
                     className="pl-10 rounded-lg"
-                    required
                   />
                 </div>
               </div>
@@ -508,7 +521,7 @@ export default function AddEmployeeDialog({
               type="button"
               variant="outline"
               className="flex-1 rounded-lg"
-              onClick={() => setIsOpen(false)}
+              onClick={() => {setIsOpen(false); resetForm()}}
               disabled={loading}
             >
               Cancel
@@ -531,5 +544,16 @@ export default function AddEmployeeDialog({
         </form>
       </DialogContent>
     </Dialog>
+    
+    {/* Credentials Modal */}
+    {createdCredentials && (
+      <EmployeeCredentialsModal
+        open={showCredentialsModal}
+        onOpenChange={setShowCredentialsModal}
+        username={createdCredentials.username}
+        password={createdCredentials.password}
+      />
+    )}
+    </>
   );
 }

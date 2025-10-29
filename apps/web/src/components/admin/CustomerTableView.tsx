@@ -10,6 +10,7 @@ import {
 import { Badge } from "@/components/ui";
 import { Button } from "@/components/ui";
 import { Avatar, AvatarFallback } from "@/components/ui";
+import { Pagination, usePagination } from "@/components/ui/pagination";
 import { Edit3, Trash2 } from "lucide-react";
 import { format } from "date-fns";
 import { Customer } from "@/types/customer";
@@ -28,6 +29,7 @@ const CustomerTableView: React.FC<CustomerTableViewProps> = ({
   onEdit,
   onDelete,
 }) => {
+  const { currentPage, setCurrentPage, paginatedItems, totalItems } = usePagination(customers);
   const getInitials = (companyName: string) => {
     return companyName
       .split(" ")
@@ -69,7 +71,7 @@ const CustomerTableView: React.FC<CustomerTableViewProps> = ({
                 </TableCell>
               </TableRow>
             ) : (
-              customers.map((customer) => (
+              paginatedItems.map((customer) => (
                 <TableRow key={customer.id} className="hover:bg-muted/50">
                   {/* Company Name */}
                   <TableCell>
@@ -166,6 +168,11 @@ const CustomerTableView: React.FC<CustomerTableViewProps> = ({
           </TableBody>
         </Table>
       </div>
+      <Pagination
+        currentPage={currentPage}
+        totalItems={totalItems}
+        onPageChange={setCurrentPage}
+      />
     </div>
   );
 };
