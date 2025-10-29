@@ -2,6 +2,7 @@
 import React from "react";
 import { Button } from "@/components/ui";
 import { Badge } from "@/components/ui";
+import { Pagination, usePagination } from "@/components/ui/pagination";
 import { Edit, Trash2, Calendar, MapPin, Users } from "lucide-react";
 import { Order, OrderStatus } from "@/types/order";
 import { format } from "date-fns";
@@ -40,6 +41,7 @@ const OrderTableView: React.FC<OrderTableViewProps> = ({
   onEdit,
   onDelete,
 }) => {
+  const { currentPage, setCurrentPage, paginatedItems, totalItems } = usePagination(orders);
   if (loading) {
     return (
       <div className="border rounded-lg">
@@ -70,7 +72,7 @@ const OrderTableView: React.FC<OrderTableViewProps> = ({
             </tr>
           </thead>
           <tbody>
-            {orders.map((order) => (
+            {paginatedItems.map((order) => (
               <tr key={order.id} className="border-t hover:bg-muted/25">
                 <td className="p-4">
                   <div>
@@ -136,6 +138,11 @@ const OrderTableView: React.FC<OrderTableViewProps> = ({
           </tbody>
         </table>
       </div>
+      <Pagination
+        currentPage={currentPage}
+        totalItems={totalItems}
+        onPageChange={setCurrentPage}
+      />
     </div>
   );
 };
