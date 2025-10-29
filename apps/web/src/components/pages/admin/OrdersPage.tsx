@@ -25,10 +25,11 @@ const OrdersPage = () => {
 
   const filteredOrders = orders.filter(
     (order) =>
-      order.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       order.orderNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
       (order.location &&
-        order.location.toLowerCase().includes(searchQuery.toLowerCase()))
+        order.location.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (order.description &&
+        order.description.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
   const handleEdit = (order: Order) => {
@@ -38,7 +39,12 @@ const OrdersPage = () => {
 
   const handleDelete = async (id: string) => {
     if (confirm("Are you sure you want to delete this order?")) {
-      await deleteOrder(id);
+      try {
+        await deleteOrder(id);
+      } catch (error) {
+        console.error("Delete error:", error);
+        toast.error("Failed to delete order");
+      }
     }
   };
 
@@ -66,7 +72,7 @@ const OrdersPage = () => {
         <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
           <Input
-            placeholder="Search orders by title, number, or location..."
+            placeholder="Search orders by number, location, or description..."
             className="pl-10 bg-background"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}

@@ -36,28 +36,31 @@ export const RatingStatusEnum = z.nativeEnum(RatingStatus);
 // =========================
 const isoDateField = z.preprocess((val) => {
   if (typeof val === "string") {
-    // If only YYYY-MM-DD, convert to ISO datetime
-    if (/^\d{4}-\d{2}-\d{2}$/.test(val)) {
-      return val + "T00:00:00Z";
+    try {
+      // Try to parse as date and convert to ISO
+      const date = new Date(val);
+      if (!isNaN(date.getTime())) {
+        return date.toISOString();
+      }
+    } catch (e) {
+      // If parsing fails, return original value for validation error
     }
-    return val;
   }
   return val;
-}, z.string().datetime());
+}, z.string());
 
 // =========================
 // ORDER SCHEMAS
 // =========================
 export const createOrderSchema = z.object({
   body: z.object({
-    orderNumber: z.string().min(1),
-    title: z.string().min(1),
+    orderNumber: z.string().min(1).optional(),
     description: z.string().optional(),
 
     scheduledDate: isoDateField,
     startTime: isoDateField.optional(),
     endTime: isoDateField.optional(),
-    duration: z.number().int().positive().optional(),
+    duration: z.number().int().positive().nullable().optional(),
     location: z.string().optional(),
 
     requiredEmployees: z.number().int().positive().default(1),
@@ -65,7 +68,7 @@ export const createOrderSchema = z.object({
     specialInstructions: z.string().optional(),
 
     status: OrderStatusEnum.default("DRAFT"),
-    customerId: z.string().cuid().optional(),
+    customerId: z.string().cuid(),
     assignedEmployeeIds: z.array(z.string().cuid()).optional()
   })
 });

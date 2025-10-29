@@ -19,8 +19,13 @@ export const validateRequest =
       if (parsed.query) req.query = parsed.query;
       next();
     } catch (err: any) {
+      console.error("Validation error:", err);
       return res
         .status(400)
-        .json({ message: "Validation failed", issues: err || err });
+        .json({ 
+          message: "Validation failed", 
+          issues: err.issues || err.errors || err,
+          details: err.message || "Invalid request data"
+        });
     }
   };
