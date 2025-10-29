@@ -54,18 +54,18 @@ export interface CreateEmployeeData {
 }
 
 export interface UpdateEmployeeData {
-  email?: string;
+  email?: string | null;
   username?: string;
-  firstName?: string;
-  lastName?: string;
-  phoneNumber?: string;
+  firstName?: string | null;
+  lastName?: string | null;
+  phoneNumber?: string | null;
   dateOfBirth?: string;
-  address?: string;
+  address?: string | null;
   emergencyContact?: Record<string, any>;
   hireDate?: string;
-  departmentId?: string;
-  positionId?: string;
-  managerId?: string;
+  departmentId?: string | null;
+  positionId?: string | null;
+  managerId?: string | null;
   scheduleType?: WorkScheduleType;
   hourlyRate?: number;
   salary?: number;
