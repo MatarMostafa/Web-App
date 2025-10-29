@@ -3869,7 +3869,7 @@ export namespace Prisma {
 
   export type UserGroupByOutputType = {
     id: string
-    email: string
+    email: string | null
     username: string
     password: string
     role: $Enums.UserRole
@@ -4023,7 +4023,7 @@ export namespace Prisma {
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
-      email: string
+      email: string | null
       username: string
       password: string
       role: $Enums.UserRole
@@ -5312,8 +5312,8 @@ export namespace Prisma {
   export type EmployeeGroupByOutputType = {
     id: string
     employeeCode: string
-    firstName: string
-    lastName: string
+    firstName: string | null
+    lastName: string | null
     phoneNumber: string | null
     dateOfBirth: Date | null
     address: string | null
@@ -5547,8 +5547,8 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: string
       employeeCode: string
-      firstName: string
-      lastName: string
+      firstName: string | null
+      lastName: string | null
       phoneNumber: string | null
       dateOfBirth: Date | null
       address: string | null
@@ -34417,7 +34417,7 @@ export namespace Prisma {
     OR?: UserWhereInput[]
     NOT?: UserWhereInput | UserWhereInput[]
     id?: StringFilter<"User"> | string
-    email?: StringFilter<"User"> | string
+    email?: StringNullableFilter<"User"> | string | null
     username?: StringFilter<"User"> | string
     password?: StringFilter<"User"> | string
     role?: EnumUserRoleFilter<"User"> | $Enums.UserRole
@@ -34444,7 +34444,7 @@ export namespace Prisma {
 
   export type UserOrderByWithRelationInput = {
     id?: SortOrder
-    email?: SortOrder
+    email?: SortOrderInput | SortOrder
     username?: SortOrder
     password?: SortOrder
     role?: SortOrder
@@ -34501,7 +34501,7 @@ export namespace Prisma {
 
   export type UserOrderByWithAggregationInput = {
     id?: SortOrder
-    email?: SortOrder
+    email?: SortOrderInput | SortOrder
     username?: SortOrder
     password?: SortOrder
     role?: SortOrder
@@ -34529,7 +34529,7 @@ export namespace Prisma {
     OR?: UserScalarWhereWithAggregatesInput[]
     NOT?: UserScalarWhereWithAggregatesInput | UserScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"User"> | string
-    email?: StringWithAggregatesFilter<"User"> | string
+    email?: StringNullableWithAggregatesFilter<"User"> | string | null
     username?: StringWithAggregatesFilter<"User"> | string
     password?: StringWithAggregatesFilter<"User"> | string
     role?: EnumUserRoleWithAggregatesFilter<"User"> | $Enums.UserRole
@@ -34555,8 +34555,8 @@ export namespace Prisma {
     NOT?: EmployeeWhereInput | EmployeeWhereInput[]
     id?: StringFilter<"Employee"> | string
     employeeCode?: StringFilter<"Employee"> | string
-    firstName?: StringFilter<"Employee"> | string
-    lastName?: StringFilter<"Employee"> | string
+    firstName?: StringNullableFilter<"Employee"> | string | null
+    lastName?: StringNullableFilter<"Employee"> | string | null
     phoneNumber?: StringNullableFilter<"Employee"> | string | null
     dateOfBirth?: DateTimeNullableFilter<"Employee"> | Date | string | null
     address?: StringNullableFilter<"Employee"> | string | null
@@ -34597,8 +34597,8 @@ export namespace Prisma {
   export type EmployeeOrderByWithRelationInput = {
     id?: SortOrder
     employeeCode?: SortOrder
-    firstName?: SortOrder
-    lastName?: SortOrder
+    firstName?: SortOrderInput | SortOrder
+    lastName?: SortOrderInput | SortOrder
     phoneNumber?: SortOrderInput | SortOrder
     dateOfBirth?: SortOrderInput | SortOrder
     address?: SortOrderInput | SortOrder
@@ -34643,8 +34643,8 @@ export namespace Prisma {
     AND?: EmployeeWhereInput | EmployeeWhereInput[]
     OR?: EmployeeWhereInput[]
     NOT?: EmployeeWhereInput | EmployeeWhereInput[]
-    firstName?: StringFilter<"Employee"> | string
-    lastName?: StringFilter<"Employee"> | string
+    firstName?: StringNullableFilter<"Employee"> | string | null
+    lastName?: StringNullableFilter<"Employee"> | string | null
     phoneNumber?: StringNullableFilter<"Employee"> | string | null
     dateOfBirth?: DateTimeNullableFilter<"Employee"> | Date | string | null
     address?: StringNullableFilter<"Employee"> | string | null
@@ -34684,8 +34684,8 @@ export namespace Prisma {
   export type EmployeeOrderByWithAggregationInput = {
     id?: SortOrder
     employeeCode?: SortOrder
-    firstName?: SortOrder
-    lastName?: SortOrder
+    firstName?: SortOrderInput | SortOrder
+    lastName?: SortOrderInput | SortOrder
     phoneNumber?: SortOrderInput | SortOrder
     dateOfBirth?: SortOrderInput | SortOrder
     address?: SortOrderInput | SortOrder
@@ -34722,8 +34722,8 @@ export namespace Prisma {
     NOT?: EmployeeScalarWhereWithAggregatesInput | EmployeeScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Employee"> | string
     employeeCode?: StringWithAggregatesFilter<"Employee"> | string
-    firstName?: StringWithAggregatesFilter<"Employee"> | string
-    lastName?: StringWithAggregatesFilter<"Employee"> | string
+    firstName?: StringNullableWithAggregatesFilter<"Employee"> | string | null
+    lastName?: StringNullableWithAggregatesFilter<"Employee"> | string | null
     phoneNumber?: StringNullableWithAggregatesFilter<"Employee"> | string | null
     dateOfBirth?: DateTimeNullableWithAggregatesFilter<"Employee"> | Date | string | null
     address?: StringNullableWithAggregatesFilter<"Employee"> | string | null
@@ -36731,7 +36731,7 @@ export namespace Prisma {
 
   export type UserCreateInput = {
     id?: string
-    email: string
+    email?: string | null
     username: string
     password: string
     role?: $Enums.UserRole
@@ -36758,7 +36758,7 @@ export namespace Prisma {
 
   export type UserUncheckedCreateInput = {
     id?: string
-    email: string
+    email?: string | null
     username: string
     password: string
     role?: $Enums.UserRole
@@ -36785,7 +36785,7 @@ export namespace Prisma {
 
   export type UserUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
     username?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -36812,7 +36812,7 @@ export namespace Prisma {
 
   export type UserUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
     username?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -36839,7 +36839,7 @@ export namespace Prisma {
 
   export type UserCreateManyInput = {
     id?: string
-    email: string
+    email?: string | null
     username: string
     password: string
     role?: $Enums.UserRole
@@ -36861,7 +36861,7 @@ export namespace Prisma {
 
   export type UserUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
     username?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -36883,7 +36883,7 @@ export namespace Prisma {
 
   export type UserUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
     username?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -36906,8 +36906,8 @@ export namespace Prisma {
   export type EmployeeCreateInput = {
     id?: string
     employeeCode: string
-    firstName: string
-    lastName: string
+    firstName?: string | null
+    lastName?: string | null
     phoneNumber?: string | null
     dateOfBirth?: Date | string | null
     address?: string | null
@@ -36944,8 +36944,8 @@ export namespace Prisma {
   export type EmployeeUncheckedCreateInput = {
     id?: string
     employeeCode: string
-    firstName: string
-    lastName: string
+    firstName?: string | null
+    lastName?: string | null
     phoneNumber?: string | null
     dateOfBirth?: Date | string | null
     address?: string | null
@@ -36982,8 +36982,8 @@ export namespace Prisma {
   export type EmployeeUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     employeeCode?: StringFieldUpdateOperationsInput | string
-    firstName?: StringFieldUpdateOperationsInput | string
-    lastName?: StringFieldUpdateOperationsInput | string
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
     phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
     dateOfBirth?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
@@ -37020,8 +37020,8 @@ export namespace Prisma {
   export type EmployeeUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     employeeCode?: StringFieldUpdateOperationsInput | string
-    firstName?: StringFieldUpdateOperationsInput | string
-    lastName?: StringFieldUpdateOperationsInput | string
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
     phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
     dateOfBirth?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
@@ -37058,8 +37058,8 @@ export namespace Prisma {
   export type EmployeeCreateManyInput = {
     id?: string
     employeeCode: string
-    firstName: string
-    lastName: string
+    firstName?: string | null
+    lastName?: string | null
     phoneNumber?: string | null
     dateOfBirth?: Date | string | null
     address?: string | null
@@ -37088,8 +37088,8 @@ export namespace Prisma {
   export type EmployeeUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     employeeCode?: StringFieldUpdateOperationsInput | string
-    firstName?: StringFieldUpdateOperationsInput | string
-    lastName?: StringFieldUpdateOperationsInput | string
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
     phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
     dateOfBirth?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
@@ -37114,8 +37114,8 @@ export namespace Prisma {
   export type EmployeeUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     employeeCode?: StringFieldUpdateOperationsInput | string
-    firstName?: StringFieldUpdateOperationsInput | string
-    lastName?: StringFieldUpdateOperationsInput | string
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
     phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
     dateOfBirth?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
@@ -39350,6 +39350,21 @@ export namespace Prisma {
     not?: NestedStringFilter<$PrismaModel> | string
   }
 
+  export type StringNullableFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedStringNullableFilter<$PrismaModel> | string | null
+  }
+
   export type EnumUserRoleFilter<$PrismaModel = never> = {
     equals?: $Enums.UserRole | EnumUserRoleFieldRefInput<$PrismaModel>
     in?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel>
@@ -39371,21 +39386,6 @@ export namespace Prisma {
     gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
-  }
-
-  export type StringNullableFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    mode?: QueryMode
-    not?: NestedStringNullableFilter<$PrismaModel> | string | null
   }
 
   export type DateTimeFilter<$PrismaModel = never> = {
@@ -39528,6 +39528,24 @@ export namespace Prisma {
     _max?: NestedStringFilter<$PrismaModel>
   }
 
+  export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedStringNullableFilter<$PrismaModel>
+    _max?: NestedStringNullableFilter<$PrismaModel>
+  }
+
   export type EnumUserRoleWithAggregatesFilter<$PrismaModel = never> = {
     equals?: $Enums.UserRole | EnumUserRoleFieldRefInput<$PrismaModel>
     in?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel>
@@ -39558,24 +39576,6 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedDateTimeNullableFilter<$PrismaModel>
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
-  }
-
-  export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    mode?: QueryMode
-    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedStringNullableFilter<$PrismaModel>
-    _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
   export type DateTimeWithAggregatesFilter<$PrismaModel = never> = {
@@ -41422,6 +41422,10 @@ export namespace Prisma {
     set?: string
   }
 
+  export type NullableStringFieldUpdateOperationsInput = {
+    set?: string | null
+  }
+
   export type EnumUserRoleFieldUpdateOperationsInput = {
     set?: $Enums.UserRole
   }
@@ -41432,10 +41436,6 @@ export namespace Prisma {
 
   export type NullableDateTimeFieldUpdateOperationsInput = {
     set?: Date | string | null
-  }
-
-  export type NullableStringFieldUpdateOperationsInput = {
-    set?: string | null
   }
 
   export type DateTimeFieldUpdateOperationsInput = {
@@ -43241,6 +43241,20 @@ export namespace Prisma {
     not?: NestedStringFilter<$PrismaModel> | string
   }
 
+  export type NestedStringNullableFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedStringNullableFilter<$PrismaModel> | string | null
+  }
+
   export type NestedEnumUserRoleFilter<$PrismaModel = never> = {
     equals?: $Enums.UserRole | EnumUserRoleFieldRefInput<$PrismaModel>
     in?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel>
@@ -43262,20 +43276,6 @@ export namespace Prisma {
     gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
-  }
-
-  export type NestedStringNullableFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    not?: NestedStringNullableFilter<$PrismaModel> | string | null
   }
 
   export type NestedDateTimeFilter<$PrismaModel = never> = {
@@ -43317,6 +43317,34 @@ export namespace Prisma {
     not?: NestedIntFilter<$PrismaModel> | number
   }
 
+  export type NestedStringNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedStringNullableFilter<$PrismaModel>
+    _max?: NestedStringNullableFilter<$PrismaModel>
+  }
+
+  export type NestedIntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
   export type NestedEnumUserRoleWithAggregatesFilter<$PrismaModel = never> = {
     equals?: $Enums.UserRole | EnumUserRoleFieldRefInput<$PrismaModel>
     in?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel>
@@ -43347,34 +43375,6 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedDateTimeNullableFilter<$PrismaModel>
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
-  }
-
-  export type NestedIntNullableFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntNullableFilter<$PrismaModel> | number | null
-  }
-
-  export type NestedStringNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedStringNullableFilter<$PrismaModel>
-    _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
   export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {
@@ -43718,8 +43718,8 @@ export namespace Prisma {
   export type EmployeeCreateWithoutUserInput = {
     id?: string
     employeeCode: string
-    firstName: string
-    lastName: string
+    firstName?: string | null
+    lastName?: string | null
     phoneNumber?: string | null
     dateOfBirth?: Date | string | null
     address?: string | null
@@ -43755,8 +43755,8 @@ export namespace Prisma {
   export type EmployeeUncheckedCreateWithoutUserInput = {
     id?: string
     employeeCode: string
-    firstName: string
-    lastName: string
+    firstName?: string | null
+    lastName?: string | null
     phoneNumber?: string | null
     dateOfBirth?: Date | string | null
     address?: string | null
@@ -43835,8 +43835,8 @@ export namespace Prisma {
   export type EmployeeCreateWithoutManagerInput = {
     id?: string
     employeeCode: string
-    firstName: string
-    lastName: string
+    firstName?: string | null
+    lastName?: string | null
     phoneNumber?: string | null
     dateOfBirth?: Date | string | null
     address?: string | null
@@ -43872,8 +43872,8 @@ export namespace Prisma {
   export type EmployeeUncheckedCreateWithoutManagerInput = {
     id?: string
     employeeCode: string
-    firstName: string
-    lastName: string
+    firstName?: string | null
+    lastName?: string | null
     phoneNumber?: string | null
     dateOfBirth?: Date | string | null
     address?: string | null
@@ -43989,8 +43989,8 @@ export namespace Prisma {
   export type EmployeeUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     employeeCode?: StringFieldUpdateOperationsInput | string
-    firstName?: StringFieldUpdateOperationsInput | string
-    lastName?: StringFieldUpdateOperationsInput | string
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
     phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
     dateOfBirth?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
@@ -44026,8 +44026,8 @@ export namespace Prisma {
   export type EmployeeUncheckedUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     employeeCode?: StringFieldUpdateOperationsInput | string
-    firstName?: StringFieldUpdateOperationsInput | string
-    lastName?: StringFieldUpdateOperationsInput | string
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
     phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
     dateOfBirth?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
@@ -44116,8 +44116,8 @@ export namespace Prisma {
     NOT?: EmployeeScalarWhereInput | EmployeeScalarWhereInput[]
     id?: StringFilter<"Employee"> | string
     employeeCode?: StringFilter<"Employee"> | string
-    firstName?: StringFilter<"Employee"> | string
-    lastName?: StringFilter<"Employee"> | string
+    firstName?: StringNullableFilter<"Employee"> | string | null
+    lastName?: StringNullableFilter<"Employee"> | string | null
     phoneNumber?: StringNullableFilter<"Employee"> | string | null
     dateOfBirth?: DateTimeNullableFilter<"Employee"> | Date | string | null
     address?: StringNullableFilter<"Employee"> | string | null
@@ -44272,7 +44272,7 @@ export namespace Prisma {
 
   export type UserCreateWithoutSubordinatesInput = {
     id?: string
-    email: string
+    email?: string | null
     username: string
     password: string
     role?: $Enums.UserRole
@@ -44298,7 +44298,7 @@ export namespace Prisma {
 
   export type UserUncheckedCreateWithoutSubordinatesInput = {
     id?: string
-    email: string
+    email?: string | null
     username: string
     password: string
     role?: $Enums.UserRole
@@ -44367,7 +44367,7 @@ export namespace Prisma {
 
   export type UserCreateWithoutEmployeeInput = {
     id?: string
-    email: string
+    email?: string | null
     username: string
     password: string
     role?: $Enums.UserRole
@@ -44393,7 +44393,7 @@ export namespace Prisma {
 
   export type UserUncheckedCreateWithoutEmployeeInput = {
     id?: string
-    email: string
+    email?: string | null
     username: string
     password: string
     role?: $Enums.UserRole
@@ -44785,7 +44785,7 @@ export namespace Prisma {
 
   export type UserUpdateWithoutSubordinatesInput = {
     id?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
     username?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -44811,7 +44811,7 @@ export namespace Prisma {
 
   export type UserUncheckedUpdateWithoutSubordinatesInput = {
     id?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
     username?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -44864,7 +44864,7 @@ export namespace Prisma {
 
   export type UserUpdateWithoutEmployeeInput = {
     id?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
     username?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -44890,7 +44890,7 @@ export namespace Prisma {
 
   export type UserUncheckedUpdateWithoutEmployeeInput = {
     id?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
     username?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -45158,8 +45158,8 @@ export namespace Prisma {
   export type EmployeeCreateWithoutPerformanceRecordsInput = {
     id?: string
     employeeCode: string
-    firstName: string
-    lastName: string
+    firstName?: string | null
+    lastName?: string | null
     phoneNumber?: string | null
     dateOfBirth?: Date | string | null
     address?: string | null
@@ -45195,8 +45195,8 @@ export namespace Prisma {
   export type EmployeeUncheckedCreateWithoutPerformanceRecordsInput = {
     id?: string
     employeeCode: string
-    firstName: string
-    lastName: string
+    firstName?: string | null
+    lastName?: string | null
     phoneNumber?: string | null
     dateOfBirth?: Date | string | null
     address?: string | null
@@ -45236,7 +45236,7 @@ export namespace Prisma {
 
   export type UserCreateWithoutManualOverridesInput = {
     id?: string
-    email: string
+    email?: string | null
     username: string
     password: string
     role?: $Enums.UserRole
@@ -45262,7 +45262,7 @@ export namespace Prisma {
 
   export type UserUncheckedCreateWithoutManualOverridesInput = {
     id?: string
-    email: string
+    email?: string | null
     username: string
     password: string
     role?: $Enums.UserRole
@@ -45305,8 +45305,8 @@ export namespace Prisma {
   export type EmployeeUpdateWithoutPerformanceRecordsInput = {
     id?: StringFieldUpdateOperationsInput | string
     employeeCode?: StringFieldUpdateOperationsInput | string
-    firstName?: StringFieldUpdateOperationsInput | string
-    lastName?: StringFieldUpdateOperationsInput | string
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
     phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
     dateOfBirth?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
@@ -45342,8 +45342,8 @@ export namespace Prisma {
   export type EmployeeUncheckedUpdateWithoutPerformanceRecordsInput = {
     id?: StringFieldUpdateOperationsInput | string
     employeeCode?: StringFieldUpdateOperationsInput | string
-    firstName?: StringFieldUpdateOperationsInput | string
-    lastName?: StringFieldUpdateOperationsInput | string
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
     phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
     dateOfBirth?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
@@ -45389,7 +45389,7 @@ export namespace Prisma {
 
   export type UserUpdateWithoutManualOverridesInput = {
     id?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
     username?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -45415,7 +45415,7 @@ export namespace Prisma {
 
   export type UserUncheckedUpdateWithoutManualOverridesInput = {
     id?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
     username?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -45585,8 +45585,8 @@ export namespace Prisma {
   export type EmployeeCreateWithoutDepartmentInput = {
     id?: string
     employeeCode: string
-    firstName: string
-    lastName: string
+    firstName?: string | null
+    lastName?: string | null
     phoneNumber?: string | null
     dateOfBirth?: Date | string | null
     address?: string | null
@@ -45622,8 +45622,8 @@ export namespace Prisma {
   export type EmployeeUncheckedCreateWithoutDepartmentInput = {
     id?: string
     employeeCode: string
-    firstName: string
-    lastName: string
+    firstName?: string | null
+    lastName?: string | null
     phoneNumber?: string | null
     dateOfBirth?: Date | string | null
     address?: string | null
@@ -45919,8 +45919,8 @@ export namespace Prisma {
   export type EmployeeCreateWithoutPositionInput = {
     id?: string
     employeeCode: string
-    firstName: string
-    lastName: string
+    firstName?: string | null
+    lastName?: string | null
     phoneNumber?: string | null
     dateOfBirth?: Date | string | null
     address?: string | null
@@ -45956,8 +45956,8 @@ export namespace Prisma {
   export type EmployeeUncheckedCreateWithoutPositionInput = {
     id?: string
     employeeCode: string
-    firstName: string
-    lastName: string
+    firstName?: string | null
+    lastName?: string | null
     phoneNumber?: string | null
     dateOfBirth?: Date | string | null
     address?: string | null
@@ -46783,8 +46783,8 @@ export namespace Prisma {
   export type EmployeeCreateWithoutQualificationsInput = {
     id?: string
     employeeCode: string
-    firstName: string
-    lastName: string
+    firstName?: string | null
+    lastName?: string | null
     phoneNumber?: string | null
     dateOfBirth?: Date | string | null
     address?: string | null
@@ -46820,8 +46820,8 @@ export namespace Prisma {
   export type EmployeeUncheckedCreateWithoutQualificationsInput = {
     id?: string
     employeeCode: string
-    firstName: string
-    lastName: string
+    firstName?: string | null
+    lastName?: string | null
     phoneNumber?: string | null
     dateOfBirth?: Date | string | null
     address?: string | null
@@ -46904,8 +46904,8 @@ export namespace Prisma {
   export type EmployeeUpdateWithoutQualificationsInput = {
     id?: StringFieldUpdateOperationsInput | string
     employeeCode?: StringFieldUpdateOperationsInput | string
-    firstName?: StringFieldUpdateOperationsInput | string
-    lastName?: StringFieldUpdateOperationsInput | string
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
     phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
     dateOfBirth?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
@@ -46941,8 +46941,8 @@ export namespace Prisma {
   export type EmployeeUncheckedUpdateWithoutQualificationsInput = {
     id?: StringFieldUpdateOperationsInput | string
     employeeCode?: StringFieldUpdateOperationsInput | string
-    firstName?: StringFieldUpdateOperationsInput | string
-    lastName?: StringFieldUpdateOperationsInput | string
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
     phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
     dateOfBirth?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
@@ -47248,8 +47248,8 @@ export namespace Prisma {
   export type EmployeeCreateWithoutAssignmentsInput = {
     id?: string
     employeeCode: string
-    firstName: string
-    lastName: string
+    firstName?: string | null
+    lastName?: string | null
     phoneNumber?: string | null
     dateOfBirth?: Date | string | null
     address?: string | null
@@ -47285,8 +47285,8 @@ export namespace Prisma {
   export type EmployeeUncheckedCreateWithoutAssignmentsInput = {
     id?: string
     employeeCode: string
-    firstName: string
-    lastName: string
+    firstName?: string | null
+    lastName?: string | null
     phoneNumber?: string | null
     dateOfBirth?: Date | string | null
     address?: string | null
@@ -47445,8 +47445,8 @@ export namespace Prisma {
   export type EmployeeUpdateWithoutAssignmentsInput = {
     id?: StringFieldUpdateOperationsInput | string
     employeeCode?: StringFieldUpdateOperationsInput | string
-    firstName?: StringFieldUpdateOperationsInput | string
-    lastName?: StringFieldUpdateOperationsInput | string
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
     phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
     dateOfBirth?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
@@ -47482,8 +47482,8 @@ export namespace Prisma {
   export type EmployeeUncheckedUpdateWithoutAssignmentsInput = {
     id?: StringFieldUpdateOperationsInput | string
     employeeCode?: StringFieldUpdateOperationsInput | string
-    firstName?: StringFieldUpdateOperationsInput | string
-    lastName?: StringFieldUpdateOperationsInput | string
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
     phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
     dateOfBirth?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
@@ -47588,8 +47588,8 @@ export namespace Prisma {
   export type EmployeeCreateWithoutOrderAssignmentsInput = {
     id?: string
     employeeCode: string
-    firstName: string
-    lastName: string
+    firstName?: string | null
+    lastName?: string | null
     phoneNumber?: string | null
     dateOfBirth?: Date | string | null
     address?: string | null
@@ -47625,8 +47625,8 @@ export namespace Prisma {
   export type EmployeeUncheckedCreateWithoutOrderAssignmentsInput = {
     id?: string
     employeeCode: string
-    firstName: string
-    lastName: string
+    firstName?: string | null
+    lastName?: string | null
     phoneNumber?: string | null
     dateOfBirth?: Date | string | null
     address?: string | null
@@ -47737,8 +47737,8 @@ export namespace Prisma {
   export type EmployeeUpdateWithoutOrderAssignmentsInput = {
     id?: StringFieldUpdateOperationsInput | string
     employeeCode?: StringFieldUpdateOperationsInput | string
-    firstName?: StringFieldUpdateOperationsInput | string
-    lastName?: StringFieldUpdateOperationsInput | string
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
     phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
     dateOfBirth?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
@@ -47774,8 +47774,8 @@ export namespace Prisma {
   export type EmployeeUncheckedUpdateWithoutOrderAssignmentsInput = {
     id?: StringFieldUpdateOperationsInput | string
     employeeCode?: StringFieldUpdateOperationsInput | string
-    firstName?: StringFieldUpdateOperationsInput | string
-    lastName?: StringFieldUpdateOperationsInput | string
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
     phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
     dateOfBirth?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
@@ -47811,8 +47811,8 @@ export namespace Prisma {
   export type EmployeeCreateWithoutAbsencesInput = {
     id?: string
     employeeCode: string
-    firstName: string
-    lastName: string
+    firstName?: string | null
+    lastName?: string | null
     phoneNumber?: string | null
     dateOfBirth?: Date | string | null
     address?: string | null
@@ -47848,8 +47848,8 @@ export namespace Prisma {
   export type EmployeeUncheckedCreateWithoutAbsencesInput = {
     id?: string
     employeeCode: string
-    firstName: string
-    lastName: string
+    firstName?: string | null
+    lastName?: string | null
     phoneNumber?: string | null
     dateOfBirth?: Date | string | null
     address?: string | null
@@ -47901,8 +47901,8 @@ export namespace Prisma {
   export type EmployeeUpdateWithoutAbsencesInput = {
     id?: StringFieldUpdateOperationsInput | string
     employeeCode?: StringFieldUpdateOperationsInput | string
-    firstName?: StringFieldUpdateOperationsInput | string
-    lastName?: StringFieldUpdateOperationsInput | string
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
     phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
     dateOfBirth?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
@@ -47938,8 +47938,8 @@ export namespace Prisma {
   export type EmployeeUncheckedUpdateWithoutAbsencesInput = {
     id?: StringFieldUpdateOperationsInput | string
     employeeCode?: StringFieldUpdateOperationsInput | string
-    firstName?: StringFieldUpdateOperationsInput | string
-    lastName?: StringFieldUpdateOperationsInput | string
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
     phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
     dateOfBirth?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
@@ -48028,8 +48028,8 @@ export namespace Prisma {
   export type EmployeeCreateWithoutRatingsInput = {
     id?: string
     employeeCode: string
-    firstName: string
-    lastName: string
+    firstName?: string | null
+    lastName?: string | null
     phoneNumber?: string | null
     dateOfBirth?: Date | string | null
     address?: string | null
@@ -48065,8 +48065,8 @@ export namespace Prisma {
   export type EmployeeUncheckedCreateWithoutRatingsInput = {
     id?: string
     employeeCode: string
-    firstName: string
-    lastName: string
+    firstName?: string | null
+    lastName?: string | null
     phoneNumber?: string | null
     dateOfBirth?: Date | string | null
     address?: string | null
@@ -48212,8 +48212,8 @@ export namespace Prisma {
   export type EmployeeUpdateWithoutRatingsInput = {
     id?: StringFieldUpdateOperationsInput | string
     employeeCode?: StringFieldUpdateOperationsInput | string
-    firstName?: StringFieldUpdateOperationsInput | string
-    lastName?: StringFieldUpdateOperationsInput | string
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
     phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
     dateOfBirth?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
@@ -48249,8 +48249,8 @@ export namespace Prisma {
   export type EmployeeUncheckedUpdateWithoutRatingsInput = {
     id?: StringFieldUpdateOperationsInput | string
     employeeCode?: StringFieldUpdateOperationsInput | string
-    firstName?: StringFieldUpdateOperationsInput | string
-    lastName?: StringFieldUpdateOperationsInput | string
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
     phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
     dateOfBirth?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
@@ -48327,8 +48327,8 @@ export namespace Prisma {
   export type EmployeeCreateWithoutWorkStatisticsInput = {
     id?: string
     employeeCode: string
-    firstName: string
-    lastName: string
+    firstName?: string | null
+    lastName?: string | null
     phoneNumber?: string | null
     dateOfBirth?: Date | string | null
     address?: string | null
@@ -48364,8 +48364,8 @@ export namespace Prisma {
   export type EmployeeUncheckedCreateWithoutWorkStatisticsInput = {
     id?: string
     employeeCode: string
-    firstName: string
-    lastName: string
+    firstName?: string | null
+    lastName?: string | null
     phoneNumber?: string | null
     dateOfBirth?: Date | string | null
     address?: string | null
@@ -48417,8 +48417,8 @@ export namespace Prisma {
   export type EmployeeUpdateWithoutWorkStatisticsInput = {
     id?: StringFieldUpdateOperationsInput | string
     employeeCode?: StringFieldUpdateOperationsInput | string
-    firstName?: StringFieldUpdateOperationsInput | string
-    lastName?: StringFieldUpdateOperationsInput | string
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
     phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
     dateOfBirth?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
@@ -48454,8 +48454,8 @@ export namespace Prisma {
   export type EmployeeUncheckedUpdateWithoutWorkStatisticsInput = {
     id?: StringFieldUpdateOperationsInput | string
     employeeCode?: StringFieldUpdateOperationsInput | string
-    firstName?: StringFieldUpdateOperationsInput | string
-    lastName?: StringFieldUpdateOperationsInput | string
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
     phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
     dateOfBirth?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
@@ -48636,7 +48636,7 @@ export namespace Prisma {
 
   export type UserCreateWithoutNotificationRecipientsInput = {
     id?: string
-    email: string
+    email?: string | null
     username: string
     password: string
     role?: $Enums.UserRole
@@ -48662,7 +48662,7 @@ export namespace Prisma {
 
   export type UserUncheckedCreateWithoutNotificationRecipientsInput = {
     id?: string
-    email: string
+    email?: string | null
     username: string
     password: string
     role?: $Enums.UserRole
@@ -48743,7 +48743,7 @@ export namespace Prisma {
 
   export type UserUpdateWithoutNotificationRecipientsInput = {
     id?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
     username?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -48769,7 +48769,7 @@ export namespace Prisma {
 
   export type UserUncheckedUpdateWithoutNotificationRecipientsInput = {
     id?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
     username?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -48867,7 +48867,7 @@ export namespace Prisma {
 
   export type UserCreateWithoutNotificationPreferencesInput = {
     id?: string
-    email: string
+    email?: string | null
     username: string
     password: string
     role?: $Enums.UserRole
@@ -48893,7 +48893,7 @@ export namespace Prisma {
 
   export type UserUncheckedCreateWithoutNotificationPreferencesInput = {
     id?: string
-    email: string
+    email?: string | null
     username: string
     password: string
     role?: $Enums.UserRole
@@ -48935,7 +48935,7 @@ export namespace Prisma {
 
   export type UserUpdateWithoutNotificationPreferencesInput = {
     id?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
     username?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -48961,7 +48961,7 @@ export namespace Prisma {
 
   export type UserUncheckedUpdateWithoutNotificationPreferencesInput = {
     id?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
     username?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -48988,8 +48988,8 @@ export namespace Prisma {
   export type EmployeeCreateWithoutFilesInput = {
     id?: string
     employeeCode: string
-    firstName: string
-    lastName: string
+    firstName?: string | null
+    lastName?: string | null
     phoneNumber?: string | null
     dateOfBirth?: Date | string | null
     address?: string | null
@@ -49025,8 +49025,8 @@ export namespace Prisma {
   export type EmployeeUncheckedCreateWithoutFilesInput = {
     id?: string
     employeeCode: string
-    firstName: string
-    lastName: string
+    firstName?: string | null
+    lastName?: string | null
     phoneNumber?: string | null
     dateOfBirth?: Date | string | null
     address?: string | null
@@ -49172,8 +49172,8 @@ export namespace Prisma {
   export type EmployeeUpdateWithoutFilesInput = {
     id?: StringFieldUpdateOperationsInput | string
     employeeCode?: StringFieldUpdateOperationsInput | string
-    firstName?: StringFieldUpdateOperationsInput | string
-    lastName?: StringFieldUpdateOperationsInput | string
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
     phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
     dateOfBirth?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
@@ -49209,8 +49209,8 @@ export namespace Prisma {
   export type EmployeeUncheckedUpdateWithoutFilesInput = {
     id?: StringFieldUpdateOperationsInput | string
     employeeCode?: StringFieldUpdateOperationsInput | string
-    firstName?: StringFieldUpdateOperationsInput | string
-    lastName?: StringFieldUpdateOperationsInput | string
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
     phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
     dateOfBirth?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
@@ -49366,8 +49366,8 @@ export namespace Prisma {
   export type EmployeeCreateManyManagerInput = {
     id?: string
     employeeCode: string
-    firstName: string
-    lastName: string
+    firstName?: string | null
+    lastName?: string | null
     phoneNumber?: string | null
     dateOfBirth?: Date | string | null
     address?: string | null
@@ -49449,8 +49449,8 @@ export namespace Prisma {
   export type EmployeeUpdateWithoutManagerInput = {
     id?: StringFieldUpdateOperationsInput | string
     employeeCode?: StringFieldUpdateOperationsInput | string
-    firstName?: StringFieldUpdateOperationsInput | string
-    lastName?: StringFieldUpdateOperationsInput | string
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
     phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
     dateOfBirth?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
@@ -49486,8 +49486,8 @@ export namespace Prisma {
   export type EmployeeUncheckedUpdateWithoutManagerInput = {
     id?: StringFieldUpdateOperationsInput | string
     employeeCode?: StringFieldUpdateOperationsInput | string
-    firstName?: StringFieldUpdateOperationsInput | string
-    lastName?: StringFieldUpdateOperationsInput | string
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
     phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
     dateOfBirth?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
@@ -49523,8 +49523,8 @@ export namespace Prisma {
   export type EmployeeUncheckedUpdateManyWithoutManagerInput = {
     id?: StringFieldUpdateOperationsInput | string
     employeeCode?: StringFieldUpdateOperationsInput | string
-    firstName?: StringFieldUpdateOperationsInput | string
-    lastName?: StringFieldUpdateOperationsInput | string
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
     phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
     dateOfBirth?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
@@ -50060,8 +50060,8 @@ export namespace Prisma {
   export type EmployeeCreateManyDepartmentInput = {
     id?: string
     employeeCode: string
-    firstName: string
-    lastName: string
+    firstName?: string | null
+    lastName?: string | null
     phoneNumber?: string | null
     dateOfBirth?: Date | string | null
     address?: string | null
@@ -50139,8 +50139,8 @@ export namespace Prisma {
   export type EmployeeUpdateWithoutDepartmentInput = {
     id?: StringFieldUpdateOperationsInput | string
     employeeCode?: StringFieldUpdateOperationsInput | string
-    firstName?: StringFieldUpdateOperationsInput | string
-    lastName?: StringFieldUpdateOperationsInput | string
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
     phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
     dateOfBirth?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
@@ -50176,8 +50176,8 @@ export namespace Prisma {
   export type EmployeeUncheckedUpdateWithoutDepartmentInput = {
     id?: StringFieldUpdateOperationsInput | string
     employeeCode?: StringFieldUpdateOperationsInput | string
-    firstName?: StringFieldUpdateOperationsInput | string
-    lastName?: StringFieldUpdateOperationsInput | string
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
     phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
     dateOfBirth?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
@@ -50213,8 +50213,8 @@ export namespace Prisma {
   export type EmployeeUncheckedUpdateManyWithoutDepartmentInput = {
     id?: StringFieldUpdateOperationsInput | string
     employeeCode?: StringFieldUpdateOperationsInput | string
-    firstName?: StringFieldUpdateOperationsInput | string
-    lastName?: StringFieldUpdateOperationsInput | string
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
     phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
     dateOfBirth?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
@@ -50280,8 +50280,8 @@ export namespace Prisma {
   export type EmployeeCreateManyPositionInput = {
     id?: string
     employeeCode: string
-    firstName: string
-    lastName: string
+    firstName?: string | null
+    lastName?: string | null
     phoneNumber?: string | null
     dateOfBirth?: Date | string | null
     address?: string | null
@@ -50309,8 +50309,8 @@ export namespace Prisma {
   export type EmployeeUpdateWithoutPositionInput = {
     id?: StringFieldUpdateOperationsInput | string
     employeeCode?: StringFieldUpdateOperationsInput | string
-    firstName?: StringFieldUpdateOperationsInput | string
-    lastName?: StringFieldUpdateOperationsInput | string
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
     phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
     dateOfBirth?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
@@ -50346,8 +50346,8 @@ export namespace Prisma {
   export type EmployeeUncheckedUpdateWithoutPositionInput = {
     id?: StringFieldUpdateOperationsInput | string
     employeeCode?: StringFieldUpdateOperationsInput | string
-    firstName?: StringFieldUpdateOperationsInput | string
-    lastName?: StringFieldUpdateOperationsInput | string
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
     phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
     dateOfBirth?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
@@ -50383,8 +50383,8 @@ export namespace Prisma {
   export type EmployeeUncheckedUpdateManyWithoutPositionInput = {
     id?: StringFieldUpdateOperationsInput | string
     employeeCode?: StringFieldUpdateOperationsInput | string
-    firstName?: StringFieldUpdateOperationsInput | string
-    lastName?: StringFieldUpdateOperationsInput | string
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
     phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
     dateOfBirth?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null

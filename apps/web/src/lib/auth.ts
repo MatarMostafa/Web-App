@@ -45,28 +45,35 @@ export const authOptions: NextAuthOptions = {
     CredentialsProvider({
       name: "credentials",
       credentials: {
-        email: { label: "Email", type: "email" },
+        identifier: { label: "Username or Email", type: "text" },
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) {
+        console.log('NextAuth authorize called with:', credentials);
+        
+        if (!credentials?.identifier || !credentials?.password) {
+          console.log('Missing credentials in NextAuth');
           return null;
         }
 
         try {
+          console.log('Making request to:', `${API_URL}/api/auth/login`);
           const response = await fetch(`${API_URL}/api/auth/login`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              email: credentials.email,
+              identifier: credentials.identifier,
               password: credentials.password,
             }),
           });
 
+          console.log('API response status:', response.status);
+          
           if (!response.ok) {
             const errorData = await response.json().catch(() => ({}));
+            console.log('API error response:', errorData);
             
             // Throw specific errors that can be caught by NextAuth
             if (response.status === 429) {
@@ -77,13 +84,15 @@ export const authOptions: NextAuthOptions = {
                 throw new Error(errorData.message);
               }
               throw new Error('INVALID_CREDENTIALS');
+            } else if (response.status === 400) {
+              throw new Error(errorData.message || 'BAD_REQUEST');
             } else {
               throw new Error('LOGIN_FAILED');
             }
           }
 
           const data = await response.json();
-          console.log("data = ", data);
+          console.log("NextAuth login success data:", data);
           return {
             id: data.user.id,
             email: data.user.email,
@@ -93,6 +102,7 @@ export const authOptions: NextAuthOptions = {
             refreshToken: data.refreshToken,
           };
         } catch (error: any) {
+          console.log('NextAuth authorize error:', error.message);
           // Pass the error message to NextAuth
           throw new Error(error.message || 'LOGIN_FAILED');
         }
