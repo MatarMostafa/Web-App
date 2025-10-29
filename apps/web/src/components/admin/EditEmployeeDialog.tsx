@@ -103,12 +103,21 @@ export default function EditEmployeeDialog({
   >([]);
 
   useEffect(() => {
-    const fetchUserInfo = async () => {
+    const fetchAllData = async () => {
       if (employee && isOpen) {
         try {
-          // Fetch user info to get email and username
-          const userResponse = await apiClient.get<{email?: string; username: string}>(`/api/employees/user/${employee.userId}`);
+          // Fetch all data in parallel
+          const [userResponse, deptData, posData, mgrData] = await Promise.all([
+            apiClient.get<{email?: string; username: string}>(`/api/employees/user/${employee.userId}`),
+            apiClient.get<{ id: string; name: string }[]>("/api/departments"),
+            apiClient.get<{ id: string; title: string }[]>("/api/positions"),
+            apiClient.get<{ id: string; employee: { firstName: string; lastName: string } }[]>("/api/managers"),
+          ]);
+          
           setUserInfo(userResponse);
+          setDepartments(deptData);
+          setPositions(posData);
+          setManagers(mgrData);
           
           const initialData = {
             email: userResponse.email || "",
@@ -131,54 +140,13 @@ export default function EditEmployeeDialog({
           setFormData(initialData);
           setOriginalData(initialData);
         } catch (error) {
-          console.error("Failed to fetch user info:", error);
-          // Fallback to employee data only
-          const fallbackData = {
-            email: "",
-            username: "Loading...",
-            firstName: employee.firstName || "",
-            lastName: employee.lastName || "",
-            phoneNumber: employee.phoneNumber || "",
-            dateOfBirth: employee.dateOfBirth
-              ? new Date(employee.dateOfBirth)
-              : undefined,
-            address: employee.address || "",
-            hireDate: new Date(employee.hireDate),
-            departmentId: employee.departmentId || "",
-            positionId: employee.positionId || "",
-            managerId: employee.managerId || "",
-            scheduleType: employee.scheduleType,
-            hourlyRate: employee.hourlyRate,
-            salary: employee.salary,
-          };
-          setFormData(fallbackData);
-          setOriginalData(fallbackData);
+          console.error("Failed to fetch data:", error);
         }
       }
     };
     
-    fetchUserInfo();
+    fetchAllData();
   }, [employee, isOpen]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [deptData, posData, mgrData] = await Promise.all([
-          apiClient.get<{ id: string; name: string }[]>("/api/departments"),
-          apiClient.get<{ id: string; title: string }[]>("/api/positions"),
-          apiClient.get<
-            { id: string; employee: { firstName: string; lastName: string } }[]
-          >("/api/managers"),
-        ]);
-        setDepartments(deptData);
-        setPositions(posData);
-        setManagers(mgrData);
-      } catch (error) {
-        console.error("Failed to fetch form data:", error);
-      }
-    };
-    if (isOpen) fetchData();
-  }, [isOpen]);
 
   const handleInputChange = (field: keyof EmployeeFormData, value: any) => {
     setFormData((prev) => ({
