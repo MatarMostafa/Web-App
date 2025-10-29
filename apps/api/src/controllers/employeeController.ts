@@ -69,8 +69,10 @@ export const updateEmployee = async (req: Request, res: Response) => {
     }
 
     res.json(employee);
-  } catch (error) {
-    res.status(400).json({ message: "Error updating employee", error });
+  } catch (error: any) {
+    console.error("Error updating employee:", error);
+    const message = error.message || "Error updating employee";
+    res.status(400).json({ message });
   }
 };
 
