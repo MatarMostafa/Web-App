@@ -2,6 +2,7 @@
 import React from "react";
 import { Button } from "@/components/ui";
 import { Badge } from "@/components/ui";
+import { Pagination, usePagination } from "@/components/ui/pagination";
 import { Edit, Trash2, Briefcase } from "lucide-react";
 import { Position } from "@/types/position";
 import { format } from "date-fns";
@@ -19,6 +20,7 @@ const PositionTableView: React.FC<PositionTableViewProps> = ({
   onEdit,
   onDelete,
 }) => {
+  const { currentPage, setCurrentPage, paginatedItems, totalItems } = usePagination(positions);
   if (loading) {
     return (
       <div className="border rounded-lg">
@@ -45,7 +47,7 @@ const PositionTableView: React.FC<PositionTableViewProps> = ({
             </tr>
           </thead>
           <tbody>
-            {positions.map((position) => (
+            {paginatedItems.map((position) => (
               <tr key={position.id} className="border-t hover:bg-muted/25">
                 <td className="p-4">
                   <div className="flex items-center gap-3">
@@ -99,6 +101,11 @@ const PositionTableView: React.FC<PositionTableViewProps> = ({
           </tbody>
         </table>
       </div>
+      <Pagination
+        currentPage={currentPage}
+        totalItems={totalItems}
+        onPageChange={setCurrentPage}
+      />
     </div>
   );
 };

@@ -320,6 +320,7 @@ model SubAccount {
 model Order {
   id          String  @id @default(cuid())
   orderNumber String  @unique
+  title       String?
   description String?
 
   scheduledDate DateTime
@@ -333,6 +334,14 @@ model Order {
   specialInstructions String?
 
   status OrderStatus @default(DRAFT)
+  
+  // Archive fields for weekly archiving
+  isArchived Boolean   @default(false)
+  archivedAt DateTime?
+  
+  // Estimated and actual hours for tracking
+  estimatedHours Decimal? @db.Decimal(5, 2)
+  actualHours    Decimal? @db.Decimal(5, 2)
 
   customer            Customer             @relation(fields: [customerId], references: [id], onDelete: Cascade)
   customerId          String
@@ -347,6 +356,7 @@ model Order {
   createdBy String?
   updatedBy String?
 
+  @@index([isArchived, scheduledDate])
   @@map("orders")
 }
 
