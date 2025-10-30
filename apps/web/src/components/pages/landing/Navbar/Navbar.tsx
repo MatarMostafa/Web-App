@@ -9,9 +9,11 @@ import {
   BarChart3,
   Settings,
   LogIn,
+  LogOut,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import { useSession, signOut } from "next-auth/react";
 
 interface NavigationItem {
   name: string;
@@ -47,7 +49,17 @@ const mobileMenuItems: NavigationItem[] = [
 
 const Navbar = () => {
   const router = useRouter();
+  const { data: session, status } = useSession();
   const [isOpen, setIsOpen] = React.useState(false);
+
+  const handleLogout = async () => {
+    await signOut({ redirect: false });
+    router.push("/");
+  };
+
+  const getDashboardUrl = () => {
+    return session?.user?.role === "ADMIN" ? "/dashboard-admin" : "/dashboard-employee";
+  };
 
   return (
     <nav className="bg-white shadow-sm">
@@ -80,21 +92,45 @@ const Navbar = () => {
 
             {/* Call to action buttons */}
             <div className="flex items-center space-x-4">
-              <Link
-                href="/login"
-                className="text-gray-600 hover:text-primary px-3 py-2 text-sm font-medium flex items-center gap-2"
-              >
-                <LogIn className="w-4 h-4" />
-                Log In
-              </Link>
-              <Button
-                onClick={() => {
-                  router.push("/signup");
-                }}
-                className="bg-secondary hover:text-[#d4f3ff]"
-              >
-                Get Started
-              </Button>
+              {status === "loading" ? (
+                <div className="w-32 h-10 bg-gray-200 animate-pulse rounded"></div>
+              ) : session ? (
+                <>
+                  <Link
+                    href={getDashboardUrl()}
+                    className="text-gray-600 hover:text-primary px-3 py-2 text-sm font-medium flex items-center gap-2"
+                  >
+                    <LayoutDashboard className="w-4 h-4" />
+                    Dashboard
+                  </Link>
+                  <Button
+                    onClick={handleLogout}
+                    variant="outline"
+                    className="flex items-center gap-2"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    Log Out
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Link
+                    href="/login"
+                    className="text-gray-600 hover:text-primary px-3 py-2 text-sm font-medium flex items-center gap-2"
+                  >
+                    <LogIn className="w-4 h-4" />
+                    Log In
+                  </Link>
+                  <Button
+                    onClick={() => {
+                      router.push("/signup");
+                    }}
+                    className="bg-secondary hover:text-[#d4f3ff]"
+                  >
+                    Get Started
+                  </Button>
+                </>
+              )}
             </div>
           </div>
 
@@ -132,26 +168,57 @@ const Navbar = () => {
               </Link>
             ))}
             <div className="mt-4 flex flex-col gap-2">
-              <Button
-                variant="outline"
-                className="w-full justify-start gap-2"
-                onClick={() => {
-                  setIsOpen(false);
-                  router.push("/login");
-                }}
-              >
-                <LogIn className="w-4 h-4" />
-                Log In
-              </Button>
-              <Button
-                className="w-full bg-secondary hover:text-[#d4f3ff]"
-                onClick={() => {
-                  setIsOpen(false);
-                  router.push("/signup");
-                }}
-              >
-                Get Started
-              </Button>
+              {status === "loading" ? (
+                <div className="w-full h-10 bg-gray-200 animate-pulse rounded"></div>
+              ) : session ? (
+                <>
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start gap-2"
+                    onClick={() => {
+                      setIsOpen(false);
+                      router.push(getDashboardUrl());
+                    }}
+                  >
+                    <LayoutDashboard className="w-4 h-4" />
+                    Dashboard
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start gap-2"
+                    onClick={() => {
+                      setIsOpen(false);
+                      handleLogout();
+                    }}
+                  >
+                    <LogOut className="w-4 h-4" />
+                    Log Out
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start gap-2"
+                    onClick={() => {
+                      setIsOpen(false);
+                      router.push("/login");
+                    }}
+                  >
+                    <LogIn className="w-4 h-4" />
+                    Log In
+                  </Button>
+                  <Button
+                    className="w-full bg-secondary hover:text-[#d4f3ff]"
+                    onClick={() => {
+                      setIsOpen(false);
+                      router.push("/signup");
+                    }}
+                  >
+                    Get Started
+                  </Button>
+                </>
+              )}
             </div>
           </div>
         </div>

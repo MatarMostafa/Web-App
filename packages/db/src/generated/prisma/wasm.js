@@ -604,7 +604,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "/home/saad/Documents/full-stack/erp-beta/packages/db/src/generated/prisma",
+      "value": "/home/ghost/clients_projects/erp-beta/packages/db/src/generated/prisma",
       "fromEnvVar": null
     },
     "config": {
@@ -622,7 +622,7 @@ const config = {
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "/home/saad/Documents/full-stack/erp-beta/packages/db/prisma/schema.prisma",
+    "sourceFilePath": "/home/ghost/clients_projects/erp-beta/packages/db/prisma/schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
