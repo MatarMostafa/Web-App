@@ -1,6 +1,7 @@
 import express from "express";
 import employeeRoutes from "./employeeRoutes";
 import employeeStatusRoutes from "./employeeStatusRoutes";
+import employeeDashboardRoutes from "./employeeDashboardRoutes";
 import authRoutes from "./core/authRoutes";
 import customerRoutes from "./customerRoutes";
 import orderRoutes from "./orderRoutes";
@@ -23,6 +24,7 @@ router.use("/auth", authRoutes);
 // Employee routes
 router.use("/employees", employeeRoutes);
 router.use("/employees-status", employeeStatusRoutes);
+router.use("/employee", employeeDashboardRoutes);
 
 // Organization structure
 router.use("/departments", departmentRoutes);
