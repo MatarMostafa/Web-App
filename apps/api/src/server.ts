@@ -10,6 +10,7 @@ import swaggerJsdoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
 import path from "path";
 import { log } from "@repo/logger";
+import { startWeeklyArchiveWorker } from "./workers/weeklyArchiveWorker";
 
 const app = express();
 const port = process.env.PORT || 3001;
@@ -56,6 +57,9 @@ const specs = swaggerJsdoc(options);
 
 app.listen(port, () => {
   log(`api running on ${port}`);
+  
+  // Start the weekly archive worker
+  startWeeklyArchiveWorker();
 });
 
 // Default export for Vercel
