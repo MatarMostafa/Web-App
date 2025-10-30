@@ -5,7 +5,7 @@ import { prisma } from "@repo/db";
 export interface AuthRequest extends Request {
   user?: {
     id: string;
-    email: string;
+    email: string | null;
     username: string;
     role: string;
     isActive: boolean;

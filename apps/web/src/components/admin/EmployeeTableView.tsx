@@ -10,6 +10,7 @@ import {
 import { Badge } from "@/components/ui";
 import { Button } from "@/components/ui";
 import { Avatar, AvatarFallback } from "@/components/ui";
+import { Pagination, usePagination } from "@/components/ui/pagination";
 import { Edit3, Trash2, Shield, ShieldOff } from "lucide-react";
 import { format } from "date-fns";
 import { Employee } from "@/types/employee";
@@ -32,7 +33,8 @@ const EmployeeTableView: React.FC<EmployeeTableViewProps> = ({
   onBlock,
   onUnblock,
 }) => {
-  const getInitials = (firstName?: string, lastName?: string) => {
+  const { currentPage, setCurrentPage, paginatedItems, totalItems } = usePagination(employees);
+  const getInitials = (firstName: string, lastName: string) => {
     return `${firstName?.[0] || ""}${lastName?.[0] || ""}`.toUpperCase();
   };
   const router = useRouter();
@@ -66,7 +68,7 @@ const EmployeeTableView: React.FC<EmployeeTableViewProps> = ({
                 </TableCell>
               </TableRow>
             ) : (
-              employees.map((employee) => (
+              paginatedItems.map((employee) => (
                 <TableRow key={employee.id} className="hover:bg-muted/50">
                   {/* Employee Name */}
                   <TableCell>
@@ -190,6 +192,11 @@ const EmployeeTableView: React.FC<EmployeeTableViewProps> = ({
           </TableBody>
         </Table>
       </div>
+      <Pagination
+        currentPage={currentPage}
+        totalItems={totalItems}
+        onPageChange={setCurrentPage}
+      />
     </div>
   );
 };

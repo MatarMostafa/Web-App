@@ -302,8 +302,7 @@ async function main() {
     prisma.order.create({
       data: {
         orderNumber: "ORD-2024-001",
-        title: "Website Development Project",
-        description: "Develop a new company website",
+        description: "Website Development Project - Develop a new company website",
         scheduledDate: new Date("2024-02-01"),
         startTime: new Date("2024-02-01T09:00:00Z"),
         endTime: new Date("2024-02-01T17:00:00Z"),
@@ -319,8 +318,7 @@ async function main() {
     prisma.order.create({
       data: {
         orderNumber: "ORD-2024-002",
-        title: "Marketing Campaign Analysis",
-        description: "Analyze marketing campaign performance",
+        description: "Marketing Campaign Analysis - Analyze marketing campaign performance",
         scheduledDate: new Date("2024-02-15"),
         startTime: new Date("2024-02-15T10:00:00Z"),
         endTime: new Date("2024-02-15T16:00:00Z"),

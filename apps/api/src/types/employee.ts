@@ -12,6 +12,10 @@ export interface Employee {
   id: string;
   employeeCode: string;
 
+  // User Information
+  email?: string;
+  username?: string;
+
   // Personal Information
   firstName: string;
   lastName: string;

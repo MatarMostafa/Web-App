@@ -13787,17 +13787,22 @@ export namespace Prisma {
     duration: number | null
     requiredEmployees: number | null
     priority: number | null
+    estimatedHours: Decimal | null
+    actualHours: Decimal | null
   }
 
   export type OrderSumAggregateOutputType = {
     duration: number | null
     requiredEmployees: number | null
     priority: number | null
+    estimatedHours: Decimal | null
+    actualHours: Decimal | null
   }
 
   export type OrderMinAggregateOutputType = {
     id: string | null
     orderNumber: string | null
+    title: string | null
     description: string | null
     scheduledDate: Date | null
     startTime: Date | null
@@ -13808,6 +13813,10 @@ export namespace Prisma {
     priority: number | null
     specialInstructions: string | null
     status: $Enums.OrderStatus | null
+    isArchived: boolean | null
+    archivedAt: Date | null
+    estimatedHours: Decimal | null
+    actualHours: Decimal | null
     customerId: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -13818,6 +13827,7 @@ export namespace Prisma {
   export type OrderMaxAggregateOutputType = {
     id: string | null
     orderNumber: string | null
+    title: string | null
     description: string | null
     scheduledDate: Date | null
     startTime: Date | null
@@ -13828,6 +13838,10 @@ export namespace Prisma {
     priority: number | null
     specialInstructions: string | null
     status: $Enums.OrderStatus | null
+    isArchived: boolean | null
+    archivedAt: Date | null
+    estimatedHours: Decimal | null
+    actualHours: Decimal | null
     customerId: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -13838,6 +13852,7 @@ export namespace Prisma {
   export type OrderCountAggregateOutputType = {
     id: number
     orderNumber: number
+    title: number
     description: number
     scheduledDate: number
     startTime: number
@@ -13848,6 +13863,10 @@ export namespace Prisma {
     priority: number
     specialInstructions: number
     status: number
+    isArchived: number
+    archivedAt: number
+    estimatedHours: number
+    actualHours: number
     customerId: number
     createdAt: number
     updatedAt: number
@@ -13861,17 +13880,22 @@ export namespace Prisma {
     duration?: true
     requiredEmployees?: true
     priority?: true
+    estimatedHours?: true
+    actualHours?: true
   }
 
   export type OrderSumAggregateInputType = {
     duration?: true
     requiredEmployees?: true
     priority?: true
+    estimatedHours?: true
+    actualHours?: true
   }
 
   export type OrderMinAggregateInputType = {
     id?: true
     orderNumber?: true
+    title?: true
     description?: true
     scheduledDate?: true
     startTime?: true
@@ -13882,6 +13906,10 @@ export namespace Prisma {
     priority?: true
     specialInstructions?: true
     status?: true
+    isArchived?: true
+    archivedAt?: true
+    estimatedHours?: true
+    actualHours?: true
     customerId?: true
     createdAt?: true
     updatedAt?: true
@@ -13892,6 +13920,7 @@ export namespace Prisma {
   export type OrderMaxAggregateInputType = {
     id?: true
     orderNumber?: true
+    title?: true
     description?: true
     scheduledDate?: true
     startTime?: true
@@ -13902,6 +13931,10 @@ export namespace Prisma {
     priority?: true
     specialInstructions?: true
     status?: true
+    isArchived?: true
+    archivedAt?: true
+    estimatedHours?: true
+    actualHours?: true
     customerId?: true
     createdAt?: true
     updatedAt?: true
@@ -13912,6 +13945,7 @@ export namespace Prisma {
   export type OrderCountAggregateInputType = {
     id?: true
     orderNumber?: true
+    title?: true
     description?: true
     scheduledDate?: true
     startTime?: true
@@ -13922,6 +13956,10 @@ export namespace Prisma {
     priority?: true
     specialInstructions?: true
     status?: true
+    isArchived?: true
+    archivedAt?: true
+    estimatedHours?: true
+    actualHours?: true
     customerId?: true
     createdAt?: true
     updatedAt?: true
@@ -14019,6 +14057,7 @@ export namespace Prisma {
   export type OrderGroupByOutputType = {
     id: string
     orderNumber: string
+    title: string | null
     description: string | null
     scheduledDate: Date
     startTime: Date | null
@@ -14029,6 +14068,10 @@ export namespace Prisma {
     priority: number
     specialInstructions: string | null
     status: $Enums.OrderStatus
+    isArchived: boolean
+    archivedAt: Date | null
+    estimatedHours: Decimal | null
+    actualHours: Decimal | null
     customerId: string
     createdAt: Date
     updatedAt: Date
@@ -14058,6 +14101,7 @@ export namespace Prisma {
   export type OrderSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     orderNumber?: boolean
+    title?: boolean
     description?: boolean
     scheduledDate?: boolean
     startTime?: boolean
@@ -14068,6 +14112,10 @@ export namespace Prisma {
     priority?: boolean
     specialInstructions?: boolean
     status?: boolean
+    isArchived?: boolean
+    archivedAt?: boolean
+    estimatedHours?: boolean
+    actualHours?: boolean
     customerId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -14085,6 +14133,7 @@ export namespace Prisma {
   export type OrderSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     orderNumber?: boolean
+    title?: boolean
     description?: boolean
     scheduledDate?: boolean
     startTime?: boolean
@@ -14095,6 +14144,10 @@ export namespace Prisma {
     priority?: boolean
     specialInstructions?: boolean
     status?: boolean
+    isArchived?: boolean
+    archivedAt?: boolean
+    estimatedHours?: boolean
+    actualHours?: boolean
     customerId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -14106,6 +14159,7 @@ export namespace Prisma {
   export type OrderSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     orderNumber?: boolean
+    title?: boolean
     description?: boolean
     scheduledDate?: boolean
     startTime?: boolean
@@ -14116,6 +14170,10 @@ export namespace Prisma {
     priority?: boolean
     specialInstructions?: boolean
     status?: boolean
+    isArchived?: boolean
+    archivedAt?: boolean
+    estimatedHours?: boolean
+    actualHours?: boolean
     customerId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -14127,6 +14185,7 @@ export namespace Prisma {
   export type OrderSelectScalar = {
     id?: boolean
     orderNumber?: boolean
+    title?: boolean
     description?: boolean
     scheduledDate?: boolean
     startTime?: boolean
@@ -14137,6 +14196,10 @@ export namespace Prisma {
     priority?: boolean
     specialInstructions?: boolean
     status?: boolean
+    isArchived?: boolean
+    archivedAt?: boolean
+    estimatedHours?: boolean
+    actualHours?: boolean
     customerId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -14144,7 +14207,7 @@ export namespace Prisma {
     updatedBy?: boolean
   }
 
-  export type OrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "orderNumber" | "description" | "scheduledDate" | "startTime" | "endTime" | "duration" | "location" | "requiredEmployees" | "priority" | "specialInstructions" | "status" | "customerId" | "createdAt" | "updatedAt" | "createdBy" | "updatedBy", ExtArgs["result"]["order"]>
+  export type OrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "orderNumber" | "title" | "description" | "scheduledDate" | "startTime" | "endTime" | "duration" | "location" | "requiredEmployees" | "priority" | "specialInstructions" | "status" | "isArchived" | "archivedAt" | "estimatedHours" | "actualHours" | "customerId" | "createdAt" | "updatedAt" | "createdBy" | "updatedBy", ExtArgs["result"]["order"]>
   export type OrderInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     customer?: boolean | CustomerDefaultArgs<ExtArgs>
     qualifications?: boolean | Order$qualificationsArgs<ExtArgs>
@@ -14174,6 +14237,7 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: string
       orderNumber: string
+      title: string | null
       description: string | null
       scheduledDate: Date
       startTime: Date | null
@@ -14184,6 +14248,10 @@ export namespace Prisma {
       priority: number
       specialInstructions: string | null
       status: $Enums.OrderStatus
+      isArchived: boolean
+      archivedAt: Date | null
+      estimatedHours: Prisma.Decimal | null
+      actualHours: Prisma.Decimal | null
       customerId: string
       createdAt: Date
       updatedAt: Date
@@ -14620,6 +14688,7 @@ export namespace Prisma {
   interface OrderFieldRefs {
     readonly id: FieldRef<"Order", 'String'>
     readonly orderNumber: FieldRef<"Order", 'String'>
+    readonly title: FieldRef<"Order", 'String'>
     readonly description: FieldRef<"Order", 'String'>
     readonly scheduledDate: FieldRef<"Order", 'DateTime'>
     readonly startTime: FieldRef<"Order", 'DateTime'>
@@ -14630,6 +14699,10 @@ export namespace Prisma {
     readonly priority: FieldRef<"Order", 'Int'>
     readonly specialInstructions: FieldRef<"Order", 'String'>
     readonly status: FieldRef<"Order", 'OrderStatus'>
+    readonly isArchived: FieldRef<"Order", 'Boolean'>
+    readonly archivedAt: FieldRef<"Order", 'DateTime'>
+    readonly estimatedHours: FieldRef<"Order", 'Decimal'>
+    readonly actualHours: FieldRef<"Order", 'Decimal'>
     readonly customerId: FieldRef<"Order", 'String'>
     readonly createdAt: FieldRef<"Order", 'DateTime'>
     readonly updatedAt: FieldRef<"Order", 'DateTime'>
@@ -33845,6 +33918,7 @@ export namespace Prisma {
   export const OrderScalarFieldEnum: {
     id: 'id',
     orderNumber: 'orderNumber',
+    title: 'title',
     description: 'description',
     scheduledDate: 'scheduledDate',
     startTime: 'startTime',
@@ -33855,6 +33929,10 @@ export namespace Prisma {
     priority: 'priority',
     specialInstructions: 'specialInstructions',
     status: 'status',
+    isArchived: 'isArchived',
+    archivedAt: 'archivedAt',
+    estimatedHours: 'estimatedHours',
+    actualHours: 'actualHours',
     customerId: 'customerId',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
@@ -35252,6 +35330,7 @@ export namespace Prisma {
     NOT?: OrderWhereInput | OrderWhereInput[]
     id?: StringFilter<"Order"> | string
     orderNumber?: StringFilter<"Order"> | string
+    title?: StringNullableFilter<"Order"> | string | null
     description?: StringNullableFilter<"Order"> | string | null
     scheduledDate?: DateTimeFilter<"Order"> | Date | string
     startTime?: DateTimeNullableFilter<"Order"> | Date | string | null
@@ -35262,6 +35341,10 @@ export namespace Prisma {
     priority?: IntFilter<"Order"> | number
     specialInstructions?: StringNullableFilter<"Order"> | string | null
     status?: EnumOrderStatusFilter<"Order"> | $Enums.OrderStatus
+    isArchived?: BoolFilter<"Order"> | boolean
+    archivedAt?: DateTimeNullableFilter<"Order"> | Date | string | null
+    estimatedHours?: DecimalNullableFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
+    actualHours?: DecimalNullableFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
     customerId?: StringFilter<"Order"> | string
     createdAt?: DateTimeFilter<"Order"> | Date | string
     updatedAt?: DateTimeFilter<"Order"> | Date | string
@@ -35278,6 +35361,7 @@ export namespace Prisma {
   export type OrderOrderByWithRelationInput = {
     id?: SortOrder
     orderNumber?: SortOrder
+    title?: SortOrderInput | SortOrder
     description?: SortOrderInput | SortOrder
     scheduledDate?: SortOrder
     startTime?: SortOrderInput | SortOrder
@@ -35288,6 +35372,10 @@ export namespace Prisma {
     priority?: SortOrder
     specialInstructions?: SortOrderInput | SortOrder
     status?: SortOrder
+    isArchived?: SortOrder
+    archivedAt?: SortOrderInput | SortOrder
+    estimatedHours?: SortOrderInput | SortOrder
+    actualHours?: SortOrderInput | SortOrder
     customerId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -35307,6 +35395,7 @@ export namespace Prisma {
     AND?: OrderWhereInput | OrderWhereInput[]
     OR?: OrderWhereInput[]
     NOT?: OrderWhereInput | OrderWhereInput[]
+    title?: StringNullableFilter<"Order"> | string | null
     description?: StringNullableFilter<"Order"> | string | null
     scheduledDate?: DateTimeFilter<"Order"> | Date | string
     startTime?: DateTimeNullableFilter<"Order"> | Date | string | null
@@ -35317,6 +35406,10 @@ export namespace Prisma {
     priority?: IntFilter<"Order"> | number
     specialInstructions?: StringNullableFilter<"Order"> | string | null
     status?: EnumOrderStatusFilter<"Order"> | $Enums.OrderStatus
+    isArchived?: BoolFilter<"Order"> | boolean
+    archivedAt?: DateTimeNullableFilter<"Order"> | Date | string | null
+    estimatedHours?: DecimalNullableFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
+    actualHours?: DecimalNullableFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
     customerId?: StringFilter<"Order"> | string
     createdAt?: DateTimeFilter<"Order"> | Date | string
     updatedAt?: DateTimeFilter<"Order"> | Date | string
@@ -35333,6 +35426,7 @@ export namespace Prisma {
   export type OrderOrderByWithAggregationInput = {
     id?: SortOrder
     orderNumber?: SortOrder
+    title?: SortOrderInput | SortOrder
     description?: SortOrderInput | SortOrder
     scheduledDate?: SortOrder
     startTime?: SortOrderInput | SortOrder
@@ -35343,6 +35437,10 @@ export namespace Prisma {
     priority?: SortOrder
     specialInstructions?: SortOrderInput | SortOrder
     status?: SortOrder
+    isArchived?: SortOrder
+    archivedAt?: SortOrderInput | SortOrder
+    estimatedHours?: SortOrderInput | SortOrder
+    actualHours?: SortOrderInput | SortOrder
     customerId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -35361,6 +35459,7 @@ export namespace Prisma {
     NOT?: OrderScalarWhereWithAggregatesInput | OrderScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Order"> | string
     orderNumber?: StringWithAggregatesFilter<"Order"> | string
+    title?: StringNullableWithAggregatesFilter<"Order"> | string | null
     description?: StringNullableWithAggregatesFilter<"Order"> | string | null
     scheduledDate?: DateTimeWithAggregatesFilter<"Order"> | Date | string
     startTime?: DateTimeNullableWithAggregatesFilter<"Order"> | Date | string | null
@@ -35371,6 +35470,10 @@ export namespace Prisma {
     priority?: IntWithAggregatesFilter<"Order"> | number
     specialInstructions?: StringNullableWithAggregatesFilter<"Order"> | string | null
     status?: EnumOrderStatusWithAggregatesFilter<"Order"> | $Enums.OrderStatus
+    isArchived?: BoolWithAggregatesFilter<"Order"> | boolean
+    archivedAt?: DateTimeNullableWithAggregatesFilter<"Order"> | Date | string | null
+    estimatedHours?: DecimalNullableWithAggregatesFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
+    actualHours?: DecimalNullableWithAggregatesFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
     customerId?: StringWithAggregatesFilter<"Order"> | string
     createdAt?: DateTimeWithAggregatesFilter<"Order"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Order"> | Date | string
@@ -37695,6 +37798,7 @@ export namespace Prisma {
   export type OrderCreateInput = {
     id?: string
     orderNumber: string
+    title?: string | null
     description?: string | null
     scheduledDate: Date | string
     startTime?: Date | string | null
@@ -37705,6 +37809,10 @@ export namespace Prisma {
     priority?: number
     specialInstructions?: string | null
     status?: $Enums.OrderStatus
+    isArchived?: boolean
+    archivedAt?: Date | string | null
+    estimatedHours?: Decimal | DecimalJsLike | number | string | null
+    actualHours?: Decimal | DecimalJsLike | number | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     createdBy?: string | null
@@ -37720,6 +37828,7 @@ export namespace Prisma {
   export type OrderUncheckedCreateInput = {
     id?: string
     orderNumber: string
+    title?: string | null
     description?: string | null
     scheduledDate: Date | string
     startTime?: Date | string | null
@@ -37730,6 +37839,10 @@ export namespace Prisma {
     priority?: number
     specialInstructions?: string | null
     status?: $Enums.OrderStatus
+    isArchived?: boolean
+    archivedAt?: Date | string | null
+    estimatedHours?: Decimal | DecimalJsLike | number | string | null
+    actualHours?: Decimal | DecimalJsLike | number | string | null
     customerId: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -37745,6 +37858,7 @@ export namespace Prisma {
   export type OrderUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     orderNumber?: StringFieldUpdateOperationsInput | string
+    title?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     scheduledDate?: DateTimeFieldUpdateOperationsInput | Date | string
     startTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -37755,6 +37869,10 @@ export namespace Prisma {
     priority?: IntFieldUpdateOperationsInput | number
     specialInstructions?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    isArchived?: BoolFieldUpdateOperationsInput | boolean
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    estimatedHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    actualHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
@@ -37770,6 +37888,7 @@ export namespace Prisma {
   export type OrderUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     orderNumber?: StringFieldUpdateOperationsInput | string
+    title?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     scheduledDate?: DateTimeFieldUpdateOperationsInput | Date | string
     startTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -37780,6 +37899,10 @@ export namespace Prisma {
     priority?: IntFieldUpdateOperationsInput | number
     specialInstructions?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    isArchived?: BoolFieldUpdateOperationsInput | boolean
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    estimatedHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    actualHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     customerId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -37795,6 +37918,7 @@ export namespace Prisma {
   export type OrderCreateManyInput = {
     id?: string
     orderNumber: string
+    title?: string | null
     description?: string | null
     scheduledDate: Date | string
     startTime?: Date | string | null
@@ -37805,6 +37929,10 @@ export namespace Prisma {
     priority?: number
     specialInstructions?: string | null
     status?: $Enums.OrderStatus
+    isArchived?: boolean
+    archivedAt?: Date | string | null
+    estimatedHours?: Decimal | DecimalJsLike | number | string | null
+    actualHours?: Decimal | DecimalJsLike | number | string | null
     customerId: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -37815,6 +37943,7 @@ export namespace Prisma {
   export type OrderUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     orderNumber?: StringFieldUpdateOperationsInput | string
+    title?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     scheduledDate?: DateTimeFieldUpdateOperationsInput | Date | string
     startTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -37825,6 +37954,10 @@ export namespace Prisma {
     priority?: IntFieldUpdateOperationsInput | number
     specialInstructions?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    isArchived?: BoolFieldUpdateOperationsInput | boolean
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    estimatedHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    actualHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
@@ -37834,6 +37967,7 @@ export namespace Prisma {
   export type OrderUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     orderNumber?: StringFieldUpdateOperationsInput | string
+    title?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     scheduledDate?: DateTimeFieldUpdateOperationsInput | Date | string
     startTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -37844,6 +37978,10 @@ export namespace Prisma {
     priority?: IntFieldUpdateOperationsInput | number
     specialInstructions?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    isArchived?: BoolFieldUpdateOperationsInput | boolean
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    estimatedHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    actualHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     customerId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -40325,6 +40463,7 @@ export namespace Prisma {
   export type OrderCountOrderByAggregateInput = {
     id?: SortOrder
     orderNumber?: SortOrder
+    title?: SortOrder
     description?: SortOrder
     scheduledDate?: SortOrder
     startTime?: SortOrder
@@ -40335,6 +40474,10 @@ export namespace Prisma {
     priority?: SortOrder
     specialInstructions?: SortOrder
     status?: SortOrder
+    isArchived?: SortOrder
+    archivedAt?: SortOrder
+    estimatedHours?: SortOrder
+    actualHours?: SortOrder
     customerId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -40346,11 +40489,14 @@ export namespace Prisma {
     duration?: SortOrder
     requiredEmployees?: SortOrder
     priority?: SortOrder
+    estimatedHours?: SortOrder
+    actualHours?: SortOrder
   }
 
   export type OrderMaxOrderByAggregateInput = {
     id?: SortOrder
     orderNumber?: SortOrder
+    title?: SortOrder
     description?: SortOrder
     scheduledDate?: SortOrder
     startTime?: SortOrder
@@ -40361,6 +40507,10 @@ export namespace Prisma {
     priority?: SortOrder
     specialInstructions?: SortOrder
     status?: SortOrder
+    isArchived?: SortOrder
+    archivedAt?: SortOrder
+    estimatedHours?: SortOrder
+    actualHours?: SortOrder
     customerId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -40371,6 +40521,7 @@ export namespace Prisma {
   export type OrderMinOrderByAggregateInput = {
     id?: SortOrder
     orderNumber?: SortOrder
+    title?: SortOrder
     description?: SortOrder
     scheduledDate?: SortOrder
     startTime?: SortOrder
@@ -40381,6 +40532,10 @@ export namespace Prisma {
     priority?: SortOrder
     specialInstructions?: SortOrder
     status?: SortOrder
+    isArchived?: SortOrder
+    archivedAt?: SortOrder
+    estimatedHours?: SortOrder
+    actualHours?: SortOrder
     customerId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -40392,6 +40547,8 @@ export namespace Prisma {
     duration?: SortOrder
     requiredEmployees?: SortOrder
     priority?: SortOrder
+    estimatedHours?: SortOrder
+    actualHours?: SortOrder
   }
 
   export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -46086,6 +46243,7 @@ export namespace Prisma {
   export type OrderCreateWithoutCustomerInput = {
     id?: string
     orderNumber: string
+    title?: string | null
     description?: string | null
     scheduledDate: Date | string
     startTime?: Date | string | null
@@ -46096,6 +46254,10 @@ export namespace Prisma {
     priority?: number
     specialInstructions?: string | null
     status?: $Enums.OrderStatus
+    isArchived?: boolean
+    archivedAt?: Date | string | null
+    estimatedHours?: Decimal | DecimalJsLike | number | string | null
+    actualHours?: Decimal | DecimalJsLike | number | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     createdBy?: string | null
@@ -46110,6 +46272,7 @@ export namespace Prisma {
   export type OrderUncheckedCreateWithoutCustomerInput = {
     id?: string
     orderNumber: string
+    title?: string | null
     description?: string | null
     scheduledDate: Date | string
     startTime?: Date | string | null
@@ -46120,6 +46283,10 @@ export namespace Prisma {
     priority?: number
     specialInstructions?: string | null
     status?: $Enums.OrderStatus
+    isArchived?: boolean
+    archivedAt?: Date | string | null
+    estimatedHours?: Decimal | DecimalJsLike | number | string | null
+    actualHours?: Decimal | DecimalJsLike | number | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     createdBy?: string | null
@@ -46230,6 +46397,7 @@ export namespace Prisma {
     NOT?: OrderScalarWhereInput | OrderScalarWhereInput[]
     id?: StringFilter<"Order"> | string
     orderNumber?: StringFilter<"Order"> | string
+    title?: StringNullableFilter<"Order"> | string | null
     description?: StringNullableFilter<"Order"> | string | null
     scheduledDate?: DateTimeFilter<"Order"> | Date | string
     startTime?: DateTimeNullableFilter<"Order"> | Date | string | null
@@ -46240,6 +46408,10 @@ export namespace Prisma {
     priority?: IntFilter<"Order"> | number
     specialInstructions?: StringNullableFilter<"Order"> | string | null
     status?: EnumOrderStatusFilter<"Order"> | $Enums.OrderStatus
+    isArchived?: BoolFilter<"Order"> | boolean
+    archivedAt?: DateTimeNullableFilter<"Order"> | Date | string | null
+    estimatedHours?: DecimalNullableFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
+    actualHours?: DecimalNullableFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
     customerId?: StringFilter<"Order"> | string
     createdAt?: DateTimeFilter<"Order"> | Date | string
     updatedAt?: DateTimeFilter<"Order"> | Date | string
@@ -47015,6 +47187,7 @@ export namespace Prisma {
   export type OrderCreateWithoutQualificationsInput = {
     id?: string
     orderNumber: string
+    title?: string | null
     description?: string | null
     scheduledDate: Date | string
     startTime?: Date | string | null
@@ -47025,6 +47198,10 @@ export namespace Prisma {
     priority?: number
     specialInstructions?: string | null
     status?: $Enums.OrderStatus
+    isArchived?: boolean
+    archivedAt?: Date | string | null
+    estimatedHours?: Decimal | DecimalJsLike | number | string | null
+    actualHours?: Decimal | DecimalJsLike | number | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     createdBy?: string | null
@@ -47039,6 +47216,7 @@ export namespace Prisma {
   export type OrderUncheckedCreateWithoutQualificationsInput = {
     id?: string
     orderNumber: string
+    title?: string | null
     description?: string | null
     scheduledDate: Date | string
     startTime?: Date | string | null
@@ -47049,6 +47227,10 @@ export namespace Prisma {
     priority?: number
     specialInstructions?: string | null
     status?: $Enums.OrderStatus
+    isArchived?: boolean
+    archivedAt?: Date | string | null
+    estimatedHours?: Decimal | DecimalJsLike | number | string | null
+    actualHours?: Decimal | DecimalJsLike | number | string | null
     customerId: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -47110,6 +47292,7 @@ export namespace Prisma {
   export type OrderUpdateWithoutQualificationsInput = {
     id?: StringFieldUpdateOperationsInput | string
     orderNumber?: StringFieldUpdateOperationsInput | string
+    title?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     scheduledDate?: DateTimeFieldUpdateOperationsInput | Date | string
     startTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -47120,6 +47303,10 @@ export namespace Prisma {
     priority?: IntFieldUpdateOperationsInput | number
     specialInstructions?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    isArchived?: BoolFieldUpdateOperationsInput | boolean
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    estimatedHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    actualHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
@@ -47134,6 +47321,7 @@ export namespace Prisma {
   export type OrderUncheckedUpdateWithoutQualificationsInput = {
     id?: StringFieldUpdateOperationsInput | string
     orderNumber?: StringFieldUpdateOperationsInput | string
+    title?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     scheduledDate?: DateTimeFieldUpdateOperationsInput | Date | string
     startTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -47144,6 +47332,10 @@ export namespace Prisma {
     priority?: IntFieldUpdateOperationsInput | number
     specialInstructions?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    isArchived?: BoolFieldUpdateOperationsInput | boolean
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    estimatedHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    actualHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     customerId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -47195,6 +47387,7 @@ export namespace Prisma {
   export type OrderCreateWithoutEmployeeAssignmentsInput = {
     id?: string
     orderNumber: string
+    title?: string | null
     description?: string | null
     scheduledDate: Date | string
     startTime?: Date | string | null
@@ -47205,6 +47398,10 @@ export namespace Prisma {
     priority?: number
     specialInstructions?: string | null
     status?: $Enums.OrderStatus
+    isArchived?: boolean
+    archivedAt?: Date | string | null
+    estimatedHours?: Decimal | DecimalJsLike | number | string | null
+    actualHours?: Decimal | DecimalJsLike | number | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     createdBy?: string | null
@@ -47219,6 +47416,7 @@ export namespace Prisma {
   export type OrderUncheckedCreateWithoutEmployeeAssignmentsInput = {
     id?: string
     orderNumber: string
+    title?: string | null
     description?: string | null
     scheduledDate: Date | string
     startTime?: Date | string | null
@@ -47229,6 +47427,10 @@ export namespace Prisma {
     priority?: number
     specialInstructions?: string | null
     status?: $Enums.OrderStatus
+    isArchived?: boolean
+    archivedAt?: Date | string | null
+    estimatedHours?: Decimal | DecimalJsLike | number | string | null
+    actualHours?: Decimal | DecimalJsLike | number | string | null
     customerId: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -47386,6 +47588,7 @@ export namespace Prisma {
   export type OrderUpdateWithoutEmployeeAssignmentsInput = {
     id?: StringFieldUpdateOperationsInput | string
     orderNumber?: StringFieldUpdateOperationsInput | string
+    title?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     scheduledDate?: DateTimeFieldUpdateOperationsInput | Date | string
     startTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -47396,6 +47599,10 @@ export namespace Prisma {
     priority?: IntFieldUpdateOperationsInput | number
     specialInstructions?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    isArchived?: BoolFieldUpdateOperationsInput | boolean
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    estimatedHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    actualHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
@@ -47410,6 +47617,7 @@ export namespace Prisma {
   export type OrderUncheckedUpdateWithoutEmployeeAssignmentsInput = {
     id?: StringFieldUpdateOperationsInput | string
     orderNumber?: StringFieldUpdateOperationsInput | string
+    title?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     scheduledDate?: DateTimeFieldUpdateOperationsInput | Date | string
     startTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -47420,6 +47628,10 @@ export namespace Prisma {
     priority?: IntFieldUpdateOperationsInput | number
     specialInstructions?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    isArchived?: BoolFieldUpdateOperationsInput | boolean
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    estimatedHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    actualHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     customerId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -47535,6 +47747,7 @@ export namespace Prisma {
   export type OrderCreateWithoutOrderAssignmentsInput = {
     id?: string
     orderNumber: string
+    title?: string | null
     description?: string | null
     scheduledDate: Date | string
     startTime?: Date | string | null
@@ -47545,6 +47758,10 @@ export namespace Prisma {
     priority?: number
     specialInstructions?: string | null
     status?: $Enums.OrderStatus
+    isArchived?: boolean
+    archivedAt?: Date | string | null
+    estimatedHours?: Decimal | DecimalJsLike | number | string | null
+    actualHours?: Decimal | DecimalJsLike | number | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     createdBy?: string | null
@@ -47559,6 +47776,7 @@ export namespace Prisma {
   export type OrderUncheckedCreateWithoutOrderAssignmentsInput = {
     id?: string
     orderNumber: string
+    title?: string | null
     description?: string | null
     scheduledDate: Date | string
     startTime?: Date | string | null
@@ -47569,6 +47787,10 @@ export namespace Prisma {
     priority?: number
     specialInstructions?: string | null
     status?: $Enums.OrderStatus
+    isArchived?: boolean
+    archivedAt?: Date | string | null
+    estimatedHours?: Decimal | DecimalJsLike | number | string | null
+    actualHours?: Decimal | DecimalJsLike | number | string | null
     customerId: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -47678,6 +47900,7 @@ export namespace Prisma {
   export type OrderUpdateWithoutOrderAssignmentsInput = {
     id?: StringFieldUpdateOperationsInput | string
     orderNumber?: StringFieldUpdateOperationsInput | string
+    title?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     scheduledDate?: DateTimeFieldUpdateOperationsInput | Date | string
     startTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -47688,6 +47911,10 @@ export namespace Prisma {
     priority?: IntFieldUpdateOperationsInput | number
     specialInstructions?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    isArchived?: BoolFieldUpdateOperationsInput | boolean
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    estimatedHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    actualHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
@@ -47702,6 +47929,7 @@ export namespace Prisma {
   export type OrderUncheckedUpdateWithoutOrderAssignmentsInput = {
     id?: StringFieldUpdateOperationsInput | string
     orderNumber?: StringFieldUpdateOperationsInput | string
+    title?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     scheduledDate?: DateTimeFieldUpdateOperationsInput | Date | string
     startTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -47712,6 +47940,10 @@ export namespace Prisma {
     priority?: IntFieldUpdateOperationsInput | number
     specialInstructions?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    isArchived?: BoolFieldUpdateOperationsInput | boolean
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    estimatedHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    actualHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     customerId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -47975,6 +48207,7 @@ export namespace Prisma {
   export type OrderCreateWithoutRatingsInput = {
     id?: string
     orderNumber: string
+    title?: string | null
     description?: string | null
     scheduledDate: Date | string
     startTime?: Date | string | null
@@ -47985,6 +48218,10 @@ export namespace Prisma {
     priority?: number
     specialInstructions?: string | null
     status?: $Enums.OrderStatus
+    isArchived?: boolean
+    archivedAt?: Date | string | null
+    estimatedHours?: Decimal | DecimalJsLike | number | string | null
+    actualHours?: Decimal | DecimalJsLike | number | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     createdBy?: string | null
@@ -47999,6 +48236,7 @@ export namespace Prisma {
   export type OrderUncheckedCreateWithoutRatingsInput = {
     id?: string
     orderNumber: string
+    title?: string | null
     description?: string | null
     scheduledDate: Date | string
     startTime?: Date | string | null
@@ -48009,6 +48247,10 @@ export namespace Prisma {
     priority?: number
     specialInstructions?: string | null
     status?: $Enums.OrderStatus
+    isArchived?: boolean
+    archivedAt?: Date | string | null
+    estimatedHours?: Decimal | DecimalJsLike | number | string | null
+    actualHours?: Decimal | DecimalJsLike | number | string | null
     customerId: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -48153,6 +48395,7 @@ export namespace Prisma {
   export type OrderUpdateWithoutRatingsInput = {
     id?: StringFieldUpdateOperationsInput | string
     orderNumber?: StringFieldUpdateOperationsInput | string
+    title?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     scheduledDate?: DateTimeFieldUpdateOperationsInput | Date | string
     startTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -48163,6 +48406,10 @@ export namespace Prisma {
     priority?: IntFieldUpdateOperationsInput | number
     specialInstructions?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    isArchived?: BoolFieldUpdateOperationsInput | boolean
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    estimatedHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    actualHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
@@ -48177,6 +48424,7 @@ export namespace Prisma {
   export type OrderUncheckedUpdateWithoutRatingsInput = {
     id?: StringFieldUpdateOperationsInput | string
     orderNumber?: StringFieldUpdateOperationsInput | string
+    title?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     scheduledDate?: DateTimeFieldUpdateOperationsInput | Date | string
     startTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -48187,6 +48435,10 @@ export namespace Prisma {
     priority?: IntFieldUpdateOperationsInput | number
     specialInstructions?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    isArchived?: BoolFieldUpdateOperationsInput | boolean
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    estimatedHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    actualHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     customerId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -49067,6 +49319,7 @@ export namespace Prisma {
   export type OrderCreateWithoutFilesInput = {
     id?: string
     orderNumber: string
+    title?: string | null
     description?: string | null
     scheduledDate: Date | string
     startTime?: Date | string | null
@@ -49077,6 +49330,10 @@ export namespace Prisma {
     priority?: number
     specialInstructions?: string | null
     status?: $Enums.OrderStatus
+    isArchived?: boolean
+    archivedAt?: Date | string | null
+    estimatedHours?: Decimal | DecimalJsLike | number | string | null
+    actualHours?: Decimal | DecimalJsLike | number | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     createdBy?: string | null
@@ -49091,6 +49348,7 @@ export namespace Prisma {
   export type OrderUncheckedCreateWithoutFilesInput = {
     id?: string
     orderNumber: string
+    title?: string | null
     description?: string | null
     scheduledDate: Date | string
     startTime?: Date | string | null
@@ -49101,6 +49359,10 @@ export namespace Prisma {
     priority?: number
     specialInstructions?: string | null
     status?: $Enums.OrderStatus
+    isArchived?: boolean
+    archivedAt?: Date | string | null
+    estimatedHours?: Decimal | DecimalJsLike | number | string | null
+    actualHours?: Decimal | DecimalJsLike | number | string | null
     customerId: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -49257,6 +49519,7 @@ export namespace Prisma {
   export type OrderUpdateWithoutFilesInput = {
     id?: StringFieldUpdateOperationsInput | string
     orderNumber?: StringFieldUpdateOperationsInput | string
+    title?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     scheduledDate?: DateTimeFieldUpdateOperationsInput | Date | string
     startTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -49267,6 +49530,10 @@ export namespace Prisma {
     priority?: IntFieldUpdateOperationsInput | number
     specialInstructions?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    isArchived?: BoolFieldUpdateOperationsInput | boolean
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    estimatedHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    actualHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
@@ -49281,6 +49548,7 @@ export namespace Prisma {
   export type OrderUncheckedUpdateWithoutFilesInput = {
     id?: StringFieldUpdateOperationsInput | string
     orderNumber?: StringFieldUpdateOperationsInput | string
+    title?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     scheduledDate?: DateTimeFieldUpdateOperationsInput | Date | string
     startTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -49291,6 +49559,10 @@ export namespace Prisma {
     priority?: IntFieldUpdateOperationsInput | number
     specialInstructions?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    isArchived?: BoolFieldUpdateOperationsInput | boolean
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    estimatedHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    actualHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     customerId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -50421,6 +50693,7 @@ export namespace Prisma {
   export type OrderCreateManyCustomerInput = {
     id?: string
     orderNumber: string
+    title?: string | null
     description?: string | null
     scheduledDate: Date | string
     startTime?: Date | string | null
@@ -50431,6 +50704,10 @@ export namespace Prisma {
     priority?: number
     specialInstructions?: string | null
     status?: $Enums.OrderStatus
+    isArchived?: boolean
+    archivedAt?: Date | string | null
+    estimatedHours?: Decimal | DecimalJsLike | number | string | null
+    actualHours?: Decimal | DecimalJsLike | number | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     createdBy?: string | null
@@ -50481,6 +50758,7 @@ export namespace Prisma {
   export type OrderUpdateWithoutCustomerInput = {
     id?: StringFieldUpdateOperationsInput | string
     orderNumber?: StringFieldUpdateOperationsInput | string
+    title?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     scheduledDate?: DateTimeFieldUpdateOperationsInput | Date | string
     startTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -50491,6 +50769,10 @@ export namespace Prisma {
     priority?: IntFieldUpdateOperationsInput | number
     specialInstructions?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    isArchived?: BoolFieldUpdateOperationsInput | boolean
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    estimatedHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    actualHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
@@ -50505,6 +50787,7 @@ export namespace Prisma {
   export type OrderUncheckedUpdateWithoutCustomerInput = {
     id?: StringFieldUpdateOperationsInput | string
     orderNumber?: StringFieldUpdateOperationsInput | string
+    title?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     scheduledDate?: DateTimeFieldUpdateOperationsInput | Date | string
     startTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -50515,6 +50798,10 @@ export namespace Prisma {
     priority?: IntFieldUpdateOperationsInput | number
     specialInstructions?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    isArchived?: BoolFieldUpdateOperationsInput | boolean
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    estimatedHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    actualHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
@@ -50529,6 +50816,7 @@ export namespace Prisma {
   export type OrderUncheckedUpdateManyWithoutCustomerInput = {
     id?: StringFieldUpdateOperationsInput | string
     orderNumber?: StringFieldUpdateOperationsInput | string
+    title?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     scheduledDate?: DateTimeFieldUpdateOperationsInput | Date | string
     startTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -50539,6 +50827,10 @@ export namespace Prisma {
     priority?: IntFieldUpdateOperationsInput | number
     specialInstructions?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    isArchived?: BoolFieldUpdateOperationsInput | boolean
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    estimatedHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    actualHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
