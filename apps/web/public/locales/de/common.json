@@ -1,0 +1,27 @@
+{
+  "navigation": {
+    "products": "Produkte",
+    "features": "Funktionen", 
+    "pricing": "Preise",
+    "about": "Über uns",
+    "login": "Anmelden",
+    "getStarted": "Loslegen",
+    "dashboard": "Dashboard"
+  },
+  "language": {
+    "english": "English",
+    "german": "Deutsch"
+  },
+  "common": {
+    "loading": "Wird geladen...",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "delete": "Löschen",
+    "edit": "Bearbeiten",
+    "add": "Hinzufügen",
+    "search": "Suchen",
+    "filter": "Filtern",
+    "export": "Exportieren",
+    "import": "Importieren"
+  }
+}
