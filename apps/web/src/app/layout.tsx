@@ -10,6 +10,8 @@ export const metadata = {
     "Matar, enterprise resource planning, business management, employee tracking, performance management",
 };
 
+
+
 export default function RootLayout({
   children,
 }: {

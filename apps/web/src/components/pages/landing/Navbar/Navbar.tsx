@@ -12,6 +12,9 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import { useTranslation } from "react-i18next";
+import { useLanguageDetection } from "@/hooks/useLanguageDetection";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 interface NavigationItem {
   name: string;
@@ -20,12 +23,7 @@ interface NavigationItem {
   isButton?: boolean;
 }
 
-const navigation: NavigationItem[] = [
-  { name: "Products", href: "#products" },
-  { name: "Features", href: "#features" },
-  { name: "Pricing", href: "#pricing" },
-  { name: "About", href: "#about" },
-];
+
 
 const callsToAction: NavigationItem[] = [
   {
@@ -37,17 +35,28 @@ const callsToAction: NavigationItem[] = [
   { name: "Get Started", href: "/signup", isButton: true },
 ];
 
-const mobileMenuItems: NavigationItem[] = [
-  {
-    name: "Dashboard",
-    href: "/dashboard-employee",
-    icon: <LayoutDashboard className="w-5 h-5" />,
-  },
-];
+
 
 const Navbar = () => {
   const router = useRouter();
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = React.useState(false);
+  useLanguageDetection();
+
+  const navigation = [
+    { name: t('navigation.products'), href: "#products" },
+    { name: t('navigation.features'), href: "#features" },
+    { name: t('navigation.pricing'), href: "#pricing" },
+    { name: t('navigation.about'), href: "#about" },
+  ];
+
+  const mobileMenuItems = [
+    {
+      name: t('navigation.dashboard'),
+      href: "/dashboard-employee",
+      icon: <LayoutDashboard className="w-5 h-5" />,
+    },
+  ];
 
   return (
     <nav className="bg-white shadow-sm">
@@ -80,12 +89,13 @@ const Navbar = () => {
 
             {/* Call to action buttons */}
             <div className="flex items-center space-x-4">
+              <LanguageSwitcher />
               <Link
                 href="/login"
                 className="text-gray-600 hover:text-primary px-3 py-2 text-sm font-medium flex items-center gap-2"
               >
                 <LogIn className="w-4 h-4" />
-                Log In
+                {t('navigation.login')}
               </Link>
               <Button
                 onClick={() => {
@@ -93,7 +103,7 @@ const Navbar = () => {
                 }}
                 className="bg-secondary hover:text-[#d4f3ff]"
               >
-                Get Started
+                {t('navigation.getStarted')}
               </Button>
             </div>
           </div>
@@ -132,6 +142,9 @@ const Navbar = () => {
               </Link>
             ))}
             <div className="mt-4 flex flex-col gap-2">
+              <div className="mb-2">
+                <LanguageSwitcher />
+              </div>
               <Button
                 variant="outline"
                 className="w-full justify-start gap-2"
@@ -141,7 +154,7 @@ const Navbar = () => {
                 }}
               >
                 <LogIn className="w-4 h-4" />
-                Log In
+                {t('navigation.login')}
               </Button>
               <Button
                 className="w-full bg-secondary hover:text-[#d4f3ff]"
@@ -150,7 +163,7 @@ const Navbar = () => {
                   router.push("/signup");
                 }}
               >
-                Get Started
+                {t('navigation.getStarted')}
               </Button>
             </div>
           </div>
