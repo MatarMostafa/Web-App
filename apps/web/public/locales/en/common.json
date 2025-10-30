@@ -1,0 +1,27 @@
+{
+  "navigation": {
+    "products": "Products",
+    "features": "Features", 
+    "pricing": "Pricing",
+    "about": "About",
+    "login": "Log In",
+    "getStarted": "Get Started",
+    "dashboard": "Dashboard"
+  },
+  "language": {
+    "english": "English",
+    "german": "Deutsch"
+  },
+  "common": {
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "search": "Search",
+    "filter": "Filter",
+    "export": "Export",
+    "import": "Import"
+  }
+}
