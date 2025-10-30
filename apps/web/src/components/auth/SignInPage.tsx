@@ -10,7 +10,7 @@ import {
   CardHeader,
 } from "@/components/ui";
 import { useRouter } from "next/navigation";
-import { signIn } from "next-auth/react";
+import { signIn, getSession } from "next-auth/react";
 import toast from "react-hot-toast";
 
 export default function SignInPage() {
@@ -21,10 +21,12 @@ export default function SignInPage() {
     password: "",
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [loadingMessage, setLoadingMessage] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setLoadingMessage("Authenticating...");
 
     try {
       const result = await signIn("credentials", {
@@ -36,17 +38,19 @@ export default function SignInPage() {
       console.log("NextAuth result:", result);
 
       if (result?.ok) {
+        setLoadingMessage("Logging in to dashboard...");
         toast.success("Login successful!");
 
-        // Get session to determine role-based redirect
-        const response = await fetch("/api/auth/session");
-        const session = await response.json();
+        // Wait for NextAuth to properly set session
+        const session = await getSession();
 
         if (session?.user?.role === "ADMIN") {
           router.push("/dashboard-admin");
         } else {
           router.push("/dashboard-employee");
         }
+        // Don't reset loading state - let redirect handle it
+        return;
       } else {
         // Handle different error cases
         console.log("Login failed. Error:", result?.error);
@@ -68,11 +72,11 @@ export default function SignInPage() {
           toast.error("Login failed. Please try again.");
         }
       }
-    } catch (error) {
-      console.log("Catch error:", error);
+    } catch (error: any) {
+      console.log('Catch error:', error);
       toast.error("An unexpected error occurred");
-    } finally {
       setIsLoading(false);
+      setLoadingMessage("");
     }
   };
 
@@ -158,13 +162,13 @@ export default function SignInPage() {
 
               <Button
                 type="submit"
-                disabled={isLoading}
+                disabled={isLoading || !formData.identifier || !formData.password}
                 className="w-full rounded-xl h-12 text-base font-medium bg-primary hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isLoading ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Signing In...
+                    {loadingMessage || "Signing In..."}
                   </>
                 ) : (
                   "Sign In"
