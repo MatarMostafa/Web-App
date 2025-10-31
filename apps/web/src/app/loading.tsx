@@ -7,7 +7,6 @@ export default function Loading({ text = "ERP" }) {
   return (
    <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="text-center">
-        {/* Spinner */}
         <div className="inline-flex items-center px-4 py-2 font-semibold leading-6 text-sm text-primary">
           <svg
             className="animate-spin -ml-1 mr-3 h-8 w-8 text-primary"
@@ -32,7 +31,6 @@ export default function Loading({ text = "ERP" }) {
           Loading {text}...
         </div>
 
-        {/* Progress bar (optional) */}
         <div className="mt-4 w-64 mx-auto">
           <div className="bg-gray-200 rounded-full h-1">
             <div
