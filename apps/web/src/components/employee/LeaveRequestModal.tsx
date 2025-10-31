@@ -30,10 +30,10 @@ interface LeaveRequestModalProps {
 const LEAVE_TYPES = [
   { value: "VACATION", label: "Vacation" },
   { value: "SICK_LEAVE", label: "Sick Leave" },
-  { value: "PERSONAL", label: "Personal Leave" },
-  { value: "EMERGENCY", label: "Emergency Leave" },
-  { value: "MATERNITY", label: "Maternity Leave" },
-  { value: "PATERNITY", label: "Paternity Leave" },
+  { value: "PERSONAL_LEAVE", label: "Personal Leave" },
+  // { value: "EMERGENCY_LEAVE", label: "Emergency Leave" },
+  { value: "MATERNITY_LEAVE", label: "Maternity Leave" },
+  { value: "PATERNITY_LEAVE", label: "Paternity Leave" },
 ];
 
 export const LeaveRequestModal: React.FC<LeaveRequestModalProps> = ({
