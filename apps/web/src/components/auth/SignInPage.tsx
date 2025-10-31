@@ -71,12 +71,15 @@ export default function SignInPage() {
         } else {
           toast.error("Login failed. Please try again.");
         }
+        setIsLoading(false);
+        setLoadingMessage("");
       }
     } catch (error: any) {
       console.log('Catch error:', error);
       toast.error("An unexpected error occurred");
       setIsLoading(false);
       setLoadingMessage("");
+      
     }
   };
 
