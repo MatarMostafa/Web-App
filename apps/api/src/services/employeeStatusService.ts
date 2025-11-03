@@ -1,5 +1,6 @@
 // src/services/employeeStatusService.ts
 import { prisma } from "@repo/db";
+import { ensureEmployeeExists } from "../utils/employeeUtils";
 
 /**
  * Creates an Absence record for a user (employee found by userId)
@@ -13,10 +14,7 @@ export const createAbsence = async (opts: {
   documentUrls?: string[];
   requestedBy?: string | null;
 }) => {
-  const employee = await prisma.employee.findUnique({
-    where: { userId: opts.employeeUserId },
-  });
-  if (!employee) throw new Error("Employee not found");
+  const employee = await ensureEmployeeExists(opts.employeeUserId);
 
   // Check for overlapping absences
   const overlapping = await prisma.absence.findFirst({
@@ -27,7 +25,7 @@ export const createAbsence = async (opts: {
     },
   });
   if (overlapping)
-    throw new Error("Absence dates overlap with existing absence");
+    throw new Error("Abwesenheitsdaten überschneiden sich mit bestehender Abwesenheit");
 
   const absence = await prisma.absence.create({
     data: {
@@ -88,10 +86,7 @@ export const blockEmployee = async (
   reason: string,
   actedByUserId?: string | null
 ) => {
-  const employee = await prisma.employee.findUnique({
-    where: { userId },
-  });
-  if (!employee) return null;
+  const employee = await ensureEmployeeExists(userId);
   console.log("blockedReason = ", reason);
   const oldData = {
     id: employee.id,
@@ -145,10 +140,7 @@ export const unblockEmployee = async (
   userId: string,
   actedByUserId?: string | null
 ) => {
-  const employee = await prisma.employee.findUnique({
-    where: { userId },
-  });
-  if (!employee) return null;
+  const employee = await ensureEmployeeExists(userId);
 
   const oldData = {
     id: employee.id,

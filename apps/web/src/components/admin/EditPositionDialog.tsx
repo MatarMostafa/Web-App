@@ -16,6 +16,7 @@ import { usePositionStore } from "@/store/positionStore";
 import { useDepartmentStore } from "@/store/departmentStore";
 import { Position, UpdatePositionData } from "@/types/position";
 import toast from "react-hot-toast";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface EditPositionDialogProps {
   position: Position;
@@ -28,10 +29,15 @@ const EditPositionDialog: React.FC<EditPositionDialogProps> = ({
   open,
   onOpenChange,
 }) => {
+  const { t, ready } = useTranslation();
   const { updatePosition } = usePositionStore();
   const { departments, fetchDepartments } = useDepartmentStore();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState<UpdatePositionData>({});
+  
+  if (!ready) {
+    return null;
+  }
 
   useEffect(() => {
     if (open) {
@@ -58,7 +64,7 @@ const EditPositionDialog: React.FC<EditPositionDialogProps> = ({
       await updatePosition(position.id, formData);
       onOpenChange(false);
     } catch (error) {
-      toast.error("Failed to update position");
+      toast.error(t("admin.positions.form.updateError"));
     } finally {
       setLoading(false);
     }
@@ -72,11 +78,11 @@ const EditPositionDialog: React.FC<EditPositionDialogProps> = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>Edit Position</DialogTitle>
+          <DialogTitle>{t("admin.positions.form.editPosition")}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <Label htmlFor="title">Position Title *</Label>
+            <Label htmlFor="title">{t("admin.positions.form.positionTitle")} *</Label>
             <Input
               id="title"
               value={formData.title || ""}
@@ -86,13 +92,13 @@ const EditPositionDialog: React.FC<EditPositionDialogProps> = ({
           </div>
 
           <div>
-            <Label htmlFor="departmentId">Department *</Label>
+            <Label htmlFor="departmentId">{t("admin.positions.form.department")} *</Label>
             <Select
               value={formData.departmentId || ""}
               onValueChange={(value) => handleInputChange("departmentId", value)}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Select department" />
+                <SelectValue placeholder={t("admin.positions.form.selectDepartment")} />
               </SelectTrigger>
               <SelectContent>
                 {departments.map((department) => (
@@ -105,7 +111,7 @@ const EditPositionDialog: React.FC<EditPositionDialogProps> = ({
           </div>
 
           <div>
-            <Label htmlFor="description">Description</Label>
+            <Label htmlFor="description">{t("admin.positions.form.description")}</Label>
             <Textarea
               id="description"
               value={formData.description || ""}
@@ -120,7 +126,7 @@ const EditPositionDialog: React.FC<EditPositionDialogProps> = ({
               checked={formData.isActive ?? true}
               onCheckedChange={(checked) => handleInputChange("isActive", checked)}
             />
-            <Label htmlFor="isActive">Active</Label>
+            <Label htmlFor="isActive">{t("admin.positions.form.active")}</Label>
           </div>
 
           <div className="flex justify-end gap-2 pt-4">
@@ -129,10 +135,10 @@ const EditPositionDialog: React.FC<EditPositionDialogProps> = ({
               variant="outline"
               onClick={() => onOpenChange(false)}
             >
-              Cancel
+              {t("admin.positions.form.cancel")}
             </Button>
             <Button type="submit" disabled={loading || !formData.departmentId}>
-              {loading ? "Updating..." : "Update Position"}
+              {loading ? t("admin.positions.form.updating") : t("admin.positions.form.updatePosition")}
             </Button>
           </div>
         </form>

@@ -19,12 +19,14 @@ import {
 import { Employee } from "@/types/employee";
 import { useEmployeeStore } from "@/store/employeeStore";
 import LeaveActionModal from "@/components/modals/LeaveActionModal";
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface EmployeeProfileProps {
   employee: Employee & { name: string };
 }
 
 const EmployeeProfile: React.FC<EmployeeProfileProps> = ({ employee }) => {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState("assignments");
   const [modalState, setModalState] = useState<{
     isOpen: boolean;
@@ -120,11 +122,11 @@ const EmployeeProfile: React.FC<EmployeeProfileProps> = ({ employee }) => {
     <div className="space-y-6">
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid w-full grid-cols-5">
-          <TabsTrigger value="assignments">Assignments</TabsTrigger>
-          <TabsTrigger value="performance">Performance</TabsTrigger>
-          <TabsTrigger value="qualifications">Skills</TabsTrigger>
-          <TabsTrigger value="attendance">Attendance</TabsTrigger>
-          <TabsTrigger value="documents">Documents</TabsTrigger>
+          <TabsTrigger value="assignments">{t('admin.employeeDetails.tabs.assignments')}</TabsTrigger>
+          <TabsTrigger value="performance">{t('admin.employeeDetails.tabs.performance')}</TabsTrigger>
+          <TabsTrigger value="qualifications">{t('admin.employeeDetails.tabs.skills')}</TabsTrigger>
+          <TabsTrigger value="attendance">{t('admin.employeeDetails.tabs.attendance')}</TabsTrigger>
+          <TabsTrigger value="documents">{t('admin.employeeDetails.tabs.documents')}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="assignments" className="space-y-6">
@@ -132,7 +134,7 @@ const EmployeeProfile: React.FC<EmployeeProfileProps> = ({ employee }) => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Briefcase className="h-5 w-5" />
-                Assignments ({employeeAssignments.length})
+                {t('admin.employeeDetails.assignments.title')} ({employeeAssignments.length})
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -140,15 +142,15 @@ const EmployeeProfile: React.FC<EmployeeProfileProps> = ({ employee }) => {
                 <div className="text-center py-8">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
                   <p className="mt-2 text-sm text-muted-foreground">
-                    Loading assignments...
+                    {t('admin.employeeDetails.assignments.loading')}
                   </p>
                 </div>
               ) : employeeAssignments.length === 0 ? (
                 <div className="text-center py-8 text-muted-foreground">
                   <Briefcase className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                  <p>No assignments found</p>
+                  <p>{t('admin.employeeDetails.assignments.noAssignments')}</p>
                   <p className="text-sm">
-                    This employee has no current or past assignments
+                    {t('admin.employeeDetails.assignments.noAssignmentsDesc')}
                   </p>
                 </div>
               ) : (
@@ -186,7 +188,7 @@ const EmployeeProfile: React.FC<EmployeeProfileProps> = ({ employee }) => {
                         <div className="flex items-center gap-1">
                           <Calendar className="h-4 w-4 text-muted-foreground" />
                           <span>
-                            Assigned:{" "}
+                            {t('admin.employeeDetails.assignments.assigned')}:{" "}
                             {new Date(
                               assignment.assignedDate
                             ).toLocaleDateString()}
@@ -195,7 +197,7 @@ const EmployeeProfile: React.FC<EmployeeProfileProps> = ({ employee }) => {
                         <div className="flex items-center gap-1">
                           <Calendar className="h-4 w-4 text-muted-foreground" />
                           <span>
-                            Scheduled:{" "}
+                            {t('admin.employeeDetails.assignments.scheduled')}:{" "}
                             {new Date(
                               assignment.order.scheduledDate
                             ).toLocaleDateString()}
@@ -203,18 +205,18 @@ const EmployeeProfile: React.FC<EmployeeProfileProps> = ({ employee }) => {
                         </div>
                         <div className="flex items-center gap-1">
                           <TrendingUp className="h-4 w-4 text-muted-foreground" />
-                          <span>Priority: {assignment.order.priority}</span>
+                          <span>{t('admin.employeeDetails.assignments.priority')}: {assignment.order.priority}</span>
                         </div>
                         {assignment.estimatedHours && (
                           <div className="flex items-center gap-1">
                             <Clock className="h-4 w-4 text-muted-foreground" />
-                            <span>Est: {assignment.estimatedHours}h</span>
+                            <span>{t('admin.employeeDetails.assignments.estimated')}: {assignment.estimatedHours}h</span>
                           </div>
                         )}
                       </div>
                       {assignment.notes && (
                         <div className="mt-2 p-2 bg-gray-100 rounded text-sm">
-                          <strong>Notes:</strong> {assignment.notes}
+                          <strong>{t('admin.employeeDetails.assignments.notes')}:</strong> {assignment.notes}
                         </div>
                       )}
                     </div>
@@ -230,7 +232,7 @@ const EmployeeProfile: React.FC<EmployeeProfileProps> = ({ employee }) => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <TrendingUp className="h-5 w-5" />
-                Performance Overview ({employeePerformance.length})
+                {t('admin.employeeDetails.performance.title')} ({employeePerformance.length})
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -238,15 +240,15 @@ const EmployeeProfile: React.FC<EmployeeProfileProps> = ({ employee }) => {
                 <div className="text-center py-8">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
                   <p className="mt-2 text-sm text-muted-foreground">
-                    Loading performance data...
+                    {t('admin.employeeDetails.performance.loading')}
                   </p>
                 </div>
               ) : employeePerformance.length === 0 ? (
                 <div className="text-center py-8 text-muted-foreground">
                   <TrendingUp className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                  <p>No performance data available</p>
+                  <p>{t('admin.employeeDetails.performance.noData')}</p>
                   <p className="text-sm">
-                    Performance metrics will appear here when available
+                    {t('admin.employeeDetails.performance.noDataDesc')}
                   </p>
                 </div>
               ) : (
@@ -259,7 +261,7 @@ const EmployeeProfile: React.FC<EmployeeProfileProps> = ({ employee }) => {
                       <div className="flex justify-between items-start mb-2">
                         <div>
                           <h4 className="font-medium text-lg">
-                            Period:{" "}
+                            {t('admin.employeeDetails.performance.period')}:{" "}
                             {new Date(
                               performance.periodStart
                             ).toLocaleDateString()}{" "}
@@ -269,7 +271,7 @@ const EmployeeProfile: React.FC<EmployeeProfileProps> = ({ employee }) => {
                             ).toLocaleDateString()}
                           </h4>
                           <p className="text-sm text-muted-foreground">
-                            Score: {performance.score}
+                            {t('admin.employeeDetails.performance.score')}: {performance.score}
                           </p>
                         </div>
                         <div className="flex gap-2">
@@ -285,13 +287,13 @@ const EmployeeProfile: React.FC<EmployeeProfileProps> = ({ employee }) => {
                             {performance.trafficLight}
                           </Badge>
                           {performance.manualOverride && (
-                            <Badge variant="outline">Manual Override</Badge>
+                            <Badge variant="outline">{t('admin.employeeDetails.performance.manualOverride')}</Badge>
                           )}
                         </div>
                       </div>
                       {performance.trafficLightReason && (
                         <div className="mt-2 p-2 bg-gray-100 rounded text-sm">
-                          <strong>Reason:</strong>{" "}
+                          <strong>{t('admin.employeeDetails.performance.reason')}:</strong>{" "}
                           {performance.trafficLightReason}
                         </div>
                       )}
@@ -308,7 +310,7 @@ const EmployeeProfile: React.FC<EmployeeProfileProps> = ({ employee }) => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Award className="h-5 w-5" />
-                Skills & Qualifications ({employeeQualifications.length})
+                {t('admin.employeeDetails.qualifications.title')} ({employeeQualifications.length})
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -316,15 +318,15 @@ const EmployeeProfile: React.FC<EmployeeProfileProps> = ({ employee }) => {
                 <div className="text-center py-8">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
                   <p className="mt-2 text-sm text-muted-foreground">
-                    Loading qualifications...
+                    {t('admin.employeeDetails.qualifications.loading')}
                   </p>
                 </div>
               ) : employeeQualifications.length === 0 ? (
                 <div className="text-center py-8 text-muted-foreground">
                   <Award className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                  <p>No qualifications recorded</p>
+                  <p>{t('admin.employeeDetails.qualifications.noQualifications')}</p>
                   <p className="text-sm">
-                    Employee skills and certifications will appear here
+                    {t('admin.employeeDetails.qualifications.noQualificationsDesc')}
                   </p>
                 </div>
               ) : (
@@ -345,21 +347,21 @@ const EmployeeProfile: React.FC<EmployeeProfileProps> = ({ employee }) => {
                         </div>
                         <div className="flex gap-2">
                           <Badge variant="outline">
-                            Level {qual.proficiencyLevel}
+                            {t('admin.employeeDetails.qualifications.level')} {qual.proficiencyLevel}
                           </Badge>
                           {qual.isVerified && (
-                            <Badge variant="default">Verified</Badge>
+                            <Badge variant="default">{t('admin.employeeDetails.qualifications.verified')}</Badge>
                           )}
                         </div>
                       </div>
                       <div className="text-sm text-muted-foreground">
                         <p>
-                          Acquired:{" "}
+                          {t('admin.employeeDetails.qualifications.acquired')}:{" "}
                           {new Date(qual.acquiredDate).toLocaleDateString()}
                         </p>
                         {qual.expiryDate && (
                           <p>
-                            Expires:{" "}
+                            {t('admin.employeeDetails.qualifications.expires')}:{" "}
                             {new Date(qual.expiryDate).toLocaleDateString()}
                           </p>
                         )}
@@ -382,7 +384,7 @@ const EmployeeProfile: React.FC<EmployeeProfileProps> = ({ employee }) => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Clock className="h-5 w-5" />
-                Attendance & Time Off ({employeeAbsences.length})
+                {t('admin.employeeDetails.attendance.title')} ({employeeAbsences.length})
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -390,15 +392,15 @@ const EmployeeProfile: React.FC<EmployeeProfileProps> = ({ employee }) => {
                 <div className="text-center py-8">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
                   <p className="mt-2 text-sm text-muted-foreground">
-                    Loading attendance data...
+                    {t('admin.employeeDetails.attendance.loading')}
                   </p>
                 </div>
               ) : employeeAbsences.length === 0 ? (
                 <div className="text-center py-8 text-muted-foreground">
                   <Clock className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                  <p>No attendance records</p>
+                  <p>{t('admin.employeeDetails.attendance.noRecords')}</p>
                   <p className="text-sm">
-                    Time tracking and absence data will appear here
+                    {t('admin.employeeDetails.attendance.noRecordsDesc')}
                   </p>
                 </div>
               ) : (
@@ -442,8 +444,8 @@ const EmployeeProfile: React.FC<EmployeeProfileProps> = ({ employee }) => {
                               >
                                 <CheckCircle className="h-3 w-3 mr-1" />
                                 {absence.status === "REJECTED"
-                                  ? "Re-approve"
-                                  : "Approve"}
+                                  ? t('admin.employeeDetails.attendance.reApprove')
+                                  : t('admin.employeeDetails.attendance.approve')}
                               </Button>
                             )}
                             {absence.status !== "REJECTED" && (
@@ -457,8 +459,8 @@ const EmployeeProfile: React.FC<EmployeeProfileProps> = ({ employee }) => {
                               >
                                 <XCircle className="h-3 w-3 mr-1" />
                                 {absence.status === "APPROVED"
-                                  ? "Revoke"
-                                  : "Reject"}
+                                  ? t('admin.employeeDetails.attendance.revoke')
+                                  : t('admin.employeeDetails.attendance.reject')}
                               </Button>
                             )}
                           </div>
@@ -466,7 +468,7 @@ const EmployeeProfile: React.FC<EmployeeProfileProps> = ({ employee }) => {
                       </div>
                       {absence.reason && (
                         <div className="mt-2 p-2 bg-gray-100 rounded text-sm">
-                          <strong>Reason:</strong> {absence.reason}
+                          <strong>{t('admin.employeeDetails.attendance.reason')}:</strong> {absence.reason}
                         </div>
                       )}
                     </div>
@@ -482,7 +484,7 @@ const EmployeeProfile: React.FC<EmployeeProfileProps> = ({ employee }) => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <FileText className="h-5 w-5" />
-                Documents & Files ({employeeFiles.length})
+                {t('admin.employeeDetails.documents.title')} ({employeeFiles.length})
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -490,15 +492,15 @@ const EmployeeProfile: React.FC<EmployeeProfileProps> = ({ employee }) => {
                 <div className="text-center py-8">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
                   <p className="mt-2 text-sm text-muted-foreground">
-                    Loading documents...
+                    {t('admin.employeeDetails.documents.loading')}
                   </p>
                 </div>
               ) : employeeFiles.length === 0 ? (
                 <div className="text-center py-8 text-muted-foreground">
                   <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                  <p>No documents uploaded</p>
+                  <p>{t('admin.employeeDetails.documents.noDocuments')}</p>
                   <p className="text-sm">
-                    Employee documents and files will appear here
+                    {t('admin.employeeDetails.documents.noDocumentsDesc')}
                   </p>
                 </div>
               ) : (
@@ -530,7 +532,7 @@ const EmployeeProfile: React.FC<EmployeeProfileProps> = ({ employee }) => {
                             className="bg-blue-100 text-blue-700 hover:bg-blue-200 hover:text-blue-800"
                           >
                             <Eye className="h-4 w-4 mr-1" />
-                            View
+                            {t('admin.employeeDetails.documents.view')}
                           </Button>
                           <Button
                             variant="secondary"
@@ -542,10 +544,10 @@ const EmployeeProfile: React.FC<EmployeeProfileProps> = ({ employee }) => {
                             className="bg-green-100 text-green-700 hover:bg-green-200 hover:text-green-800"
                           >
                             <Download className="h-4 w-4 mr-1" />
-                            Download
+                            {t('admin.employeeDetails.documents.download')}
                           </Button>
                           {file.isVerified && (
-                            <Badge variant="default">Verified</Badge>
+                            <Badge variant="default">{t('admin.employeeDetails.documents.verified')}</Badge>
                           )}
                           <Badge variant="outline">
                             {file.mimeType.split("/")[1].toUpperCase()}
@@ -554,11 +556,11 @@ const EmployeeProfile: React.FC<EmployeeProfileProps> = ({ employee }) => {
                       </div>
                       {file.description && (
                         <div className="mt-2 p-2 bg-gray-100 rounded text-sm">
-                          <strong>Description:</strong> {file.description}
+                          <strong>{t('admin.employeeDetails.documents.description')}:</strong> {file.description}
                         </div>
                       )}
                       <div className="mt-2 text-xs text-muted-foreground">
-                        Uploaded:{" "}
+                        {t('admin.employeeDetails.documents.uploaded')}:{" "}
                         {new Date(file.createdAt).toLocaleDateString()}
                       </div>
                     </div>

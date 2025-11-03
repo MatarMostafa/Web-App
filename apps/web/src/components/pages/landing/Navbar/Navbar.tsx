@@ -1,3 +1,4 @@
+"use client";
 import Link from "next/link";
 import Image from "next/image";
 import React from "react";
@@ -12,7 +13,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@/hooks/useTranslation";
 import { useLanguageDetection } from "@/hooks/useLanguageDetection";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 
@@ -39,7 +40,7 @@ const callsToAction: NavigationItem[] = [
 
 const Navbar = () => {
   const router = useRouter();
-  const { t } = useTranslation();
+  const { t, ready } = useTranslation();
   const [isOpen, setIsOpen] = React.useState(false);
   useLanguageDetection();
 
@@ -57,6 +58,34 @@ const Navbar = () => {
       icon: <LayoutDashboard className="w-5 h-5" />,
     },
   ];
+
+  if (!ready) {
+    return (
+      <nav className="bg-white shadow-sm">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="flex h-16 justify-between items-center">
+            <div className="flex-shrink-0">
+              <Link href="/" className="flex items-center">
+                <Image
+                  src="/img/matar_Logo.png"
+                  alt="ERP Beta"
+                  width={120}
+                  height={40}
+                  className="h-8 w-auto"
+                />
+              </Link>
+            </div>
+            <div className="hidden md:flex md:items-center md:space-x-8">
+              <div className="w-32 h-6 bg-gray-200 animate-pulse rounded"></div>
+              <div className="w-32 h-6 bg-gray-200 animate-pulse rounded"></div>
+              <div className="w-32 h-6 bg-gray-200 animate-pulse rounded"></div>
+              <div className="w-32 h-6 bg-gray-200 animate-pulse rounded"></div>
+            </div>
+          </div>
+        </div>
+      </nav>
+    );
+  }
 
   return (
     <nav className="bg-white shadow-sm">

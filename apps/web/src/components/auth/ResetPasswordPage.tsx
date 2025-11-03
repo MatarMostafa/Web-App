@@ -12,8 +12,10 @@ import {
 import { useRouter, useSearchParams } from "next/navigation";
 import { api } from "@/lib/api";
 import toast from "react-hot-toast";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function ResetPasswordPage() {
+  const { t, ready } = useTranslation();
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
@@ -28,16 +30,16 @@ export default function ResetPasswordPage() {
 
   useEffect(() => {
     if (!token) {
-      toast.error("Invalid reset link");
+      toast.error(t("auth.invalidResetLink"));
       router.push("/forgot-password");
     }
-  }, [token, router]);
+  }, [token, router, t]);
 
   const passwordRequirements = [
-    { text: "At least 8 characters", met: formData.password.length >= 8 },
-    { text: "Contains uppercase letter", met: /[A-Z]/.test(formData.password) },
-    { text: "Contains lowercase letter", met: /[a-z]/.test(formData.password) },
-    { text: "Contains number", met: /\d/.test(formData.password) },
+    { text: t("auth.atLeast8Characters"), met: formData.password.length >= 8 },
+    { text: t("auth.containsUppercase"), met: /[A-Z]/.test(formData.password) },
+    { text: t("auth.containsLowercase"), met: /[a-z]/.test(formData.password) },
+    { text: t("auth.containsNumber"), met: /\d/.test(formData.password) },
   ];
 
   const allRequirementsMet = passwordRequirements.every((req) => req.met);
@@ -53,10 +55,10 @@ export default function ResetPasswordPage() {
 
     try {
       await api.resetPassword(token, formData.password);
-      toast.success("Password reset successful!");
+      toast.success(t("auth.passwordResetSuccessful"));
       router.push("/login");
     } catch (error: any) {
-      const errorMessage = error.message || "Failed to reset password";
+      const errorMessage = error.message || t("auth.failedToResetPassword");
       toast.error(errorMessage);
     } finally {
       setIsLoading(false);
@@ -66,6 +68,20 @@ export default function ResetPasswordPage() {
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
+
+  if (!ready) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent/10 flex items-center justify-center p-4">
+        <div className="w-full max-w-md space-y-8">
+          <Card className="border-0 shadow-xl bg-card/80 backdrop-blur-sm p-5">
+            <CardContent className="flex items-center justify-center py-8">
+              <Loader2 className="h-8 w-8 animate-spin" />
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent/10 flex items-center justify-center p-4">
@@ -84,21 +100,21 @@ export default function ResetPasswordPage() {
               </div>
             </div>
             <h1 className="text-2xl font-bold text-foreground">
-              Reset Your Password
+              {t("auth.resetYourPassword")}
             </h1>
-            <p className="text-mforeground">Enter your new password below</p>
+            <p className="text-mforeground">{t("auth.enterNewPasswordBelow")}</p>
           </CardHeader>
 
           <CardContent className="space-y-6">
             {/* Reset Form */}
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="password">New Password</Label>
+                <Label htmlFor="password">{t("auth.newPassword")}</Label>
                 <div className="relative">
                   <Input
                     id="password"
                     type={showPassword ? "text" : "password"}
-                    placeholder="Create a new password"
+                    placeholder={t("auth.createNewPassword")}
                     value={formData.password}
                     onChange={(e) =>
                       handleInputChange("password", e.target.value)
@@ -124,7 +140,7 @@ export default function ResetPasswordPage() {
               {formData.password && (
                 <div className="bg-accent/20 rounded-xl p-4 space-y-2">
                   <p className="text-sm font-medium text-foreground">
-                    Password Requirements:
+                    {t("auth.passwordRequirements")}
                   </p>
                   {passwordRequirements.map((req, index) => (
                     <div
@@ -149,12 +165,12 @@ export default function ResetPasswordPage() {
               )}
 
               <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Confirm New Password</Label>
+                <Label htmlFor="confirmPassword">{t("auth.confirmNewPassword")}</Label>
                 <div className="relative">
                   <Input
                     id="confirmPassword"
                     type={showConfirmPassword ? "text" : "password"}
-                    placeholder="Confirm your new password"
+                    placeholder={t("auth.confirmYourNewPassword")}
                     value={formData.confirmPassword}
                     onChange={(e) =>
                       handleInputChange("confirmPassword", e.target.value)
@@ -176,13 +192,13 @@ export default function ResetPasswordPage() {
                 </div>
                 {formData.confirmPassword && !passwordsMatch && (
                   <p className="text-sm text-destructive">
-                    Passwords do not match
+                    {t("auth.passwordsDoNotMatch")}
                   </p>
                 )}
                 {passwordsMatch && formData.confirmPassword && (
                   <p className="text-sm text-green-600 flex items-center gap-1">
                     <CheckCircle2 className="h-4 w-4" />
-                    Passwords match
+                    {t("auth.passwordsMatch")}
                   </p>
                 )}
               </div>
@@ -195,10 +211,10 @@ export default function ResetPasswordPage() {
                 {isLoading ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Resetting...
+                    {t("auth.resetting")}
                   </>
                 ) : (
-                  "Reset Password"
+                  t("auth.resetPasswordButton")
                 )}
               </Button>
             </form>
@@ -206,12 +222,12 @@ export default function ResetPasswordPage() {
             {/* Sign In Link */}
             <div className="text-center pt-4 border-t border-border/50">
               <p className="text-sm text-mforeground">
-                Remember your password?{" "}
+                {t("auth.rememberPassword")}{" "}
                 <button
                   onClick={() => router.push("/login")}
                   className="text-primary hover:underline font-medium"
                 >
-                  Sign in
+                  {t("auth.signInLink")}
                 </button>
               </p>
             </div>

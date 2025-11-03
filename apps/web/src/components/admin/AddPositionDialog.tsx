@@ -17,16 +17,22 @@ import { usePositionStore } from "@/store/positionStore";
 import { useDepartmentStore } from "@/store/departmentStore";
 import { CreatePositionData } from "@/types/position";
 import toast from "react-hot-toast";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface AddPositionDialogProps {
   trigger: React.ReactNode;
 }
 
 const AddPositionDialog: React.FC<AddPositionDialogProps> = ({ trigger }) => {
+  const { t, ready } = useTranslation();
   const { createPosition } = usePositionStore();
   const { departments, fetchDepartments } = useDepartmentStore();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  
+  if (!ready) {
+    return null;
+  }
   const [formData, setFormData] = useState<CreatePositionData & { isActive: boolean }>({
     title: "",
     description: "",
@@ -54,7 +60,7 @@ const AddPositionDialog: React.FC<AddPositionDialogProps> = ({ trigger }) => {
         isActive: true,
       });
     } catch (error) {
-      toast.error("Failed to create position");
+      toast.error(t("admin.positions.form.createError"));
     } finally {
       setLoading(false);
     }
@@ -69,11 +75,11 @@ const AddPositionDialog: React.FC<AddPositionDialogProps> = ({ trigger }) => {
       <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>Add New Position</DialogTitle>
+          <DialogTitle>{t("admin.positions.form.addNewPosition")}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <Label htmlFor="title">Position Title *</Label>
+            <Label htmlFor="title">{t("admin.positions.form.positionTitle")} *</Label>
             <Input
               id="title"
               value={formData.title}
@@ -83,13 +89,13 @@ const AddPositionDialog: React.FC<AddPositionDialogProps> = ({ trigger }) => {
           </div>
 
           <div>
-            <Label htmlFor="departmentId">Department *</Label>
+            <Label htmlFor="departmentId">{t("admin.positions.form.department")} *</Label>
             <Select
               value={formData.departmentId}
               onValueChange={(value) => handleInputChange("departmentId", value)}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Select department" />
+                <SelectValue placeholder={t("admin.positions.form.selectDepartment")} />
               </SelectTrigger>
               <SelectContent>
                 {departments.map((department) => (
@@ -102,7 +108,7 @@ const AddPositionDialog: React.FC<AddPositionDialogProps> = ({ trigger }) => {
           </div>
 
           <div>
-            <Label htmlFor="description">Description</Label>
+            <Label htmlFor="description">{t("admin.positions.form.description")}</Label>
             <Textarea
               id="description"
               value={formData.description}
@@ -117,7 +123,7 @@ const AddPositionDialog: React.FC<AddPositionDialogProps> = ({ trigger }) => {
               checked={formData.isActive}
               onCheckedChange={(checked) => handleInputChange("isActive", checked)}
             />
-            <Label htmlFor="isActive">Active</Label>
+            <Label htmlFor="isActive">{t("admin.positions.form.active")}</Label>
           </div>
 
           <div className="flex justify-end gap-2 pt-4">
@@ -126,10 +132,10 @@ const AddPositionDialog: React.FC<AddPositionDialogProps> = ({ trigger }) => {
               variant="outline"
               onClick={() => setOpen(false)}
             >
-              Cancel
+              {t("admin.positions.form.cancel")}
             </Button>
             <Button type="submit" disabled={loading || !formData.departmentId}>
-              {loading ? "Creating..." : "Create Position"}
+              {loading ? t("admin.positions.form.creating") : t("admin.positions.form.createPosition")}
             </Button>
           </div>
         </form>

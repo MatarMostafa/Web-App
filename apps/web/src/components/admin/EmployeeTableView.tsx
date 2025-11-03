@@ -15,6 +15,7 @@ import { Edit3, Trash2, Shield, ShieldOff } from "lucide-react";
 import { format } from "date-fns";
 import { Employee } from "@/types/employee";
 import { useRouter } from "next/navigation";
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface EmployeeTableViewProps {
   employees: Employee[];
@@ -33,6 +34,7 @@ const EmployeeTableView: React.FC<EmployeeTableViewProps> = ({
   onBlock,
   onUnblock,
 }) => {
+  const { t } = useTranslation();
   const { currentPage, setCurrentPage, paginatedItems, totalItems } = usePagination(employees);
   const getInitials = (firstName: string, lastName: string) => {
     return `${firstName?.[0] || ""}${lastName?.[0] || ""}`.toUpperCase();
@@ -44,27 +46,27 @@ const EmployeeTableView: React.FC<EmployeeTableViewProps> = ({
         <Table>
           <TableHeader className="sticky top-0 bg-background z-10">
             <TableRow className="border-b">
-              <TableHead className="w-[200px]">Employee</TableHead>
-              <TableHead className="w-[150px]">Employee Code</TableHead>
-              <TableHead className="w-[200px]">User ID</TableHead>
-              <TableHead className="w-[150px]">Phone</TableHead>
-              <TableHead className="w-[150px]">Hire Date</TableHead>
-              <TableHead className="w-[150px]">Schedule</TableHead>
-              <TableHead className="w-[100px]">Status</TableHead>
-              <TableHead className="w-[150px] text-center">Actions</TableHead>
+              <TableHead className="w-[200px]">{t('admin.employees.table.employee')}</TableHead>
+              <TableHead className="w-[150px]">{t('admin.employees.table.employeeCode')}</TableHead>
+              <TableHead className="w-[200px]">{t('admin.employees.table.userId')}</TableHead>
+              <TableHead className="w-[150px]">{t('admin.employees.table.phone')}</TableHead>
+              <TableHead className="w-[150px]">{t('admin.employees.table.hireDate')}</TableHead>
+              <TableHead className="w-[150px]">{t('admin.employees.table.schedule')}</TableHead>
+              <TableHead className="w-[100px]">{t('admin.employees.table.status')}</TableHead>
+              <TableHead className="w-[150px] text-center">{t('admin.employees.table.actions')}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {loading ? (
               <TableRow>
                 <TableCell colSpan={8} className="text-center py-8">
-                  Loading employees...
+                  {t('common.loading')}
                 </TableCell>
               </TableRow>
             ) : employees.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={8} className="text-center py-8">
-                  No employees found
+                  {t('admin.employees.noEmployeesFound')}
                 </TableCell>
               </TableRow>
             ) : (
@@ -132,7 +134,7 @@ const EmployeeTableView: React.FC<EmployeeTableViewProps> = ({
                       variant={employee.isAvailable ? "default" : "destructive"}
                       className="text-xs"
                     >
-                      {employee.isAvailable ? "Available" : "Blocked"}
+                      {employee.isAvailable ? t('admin.employees.table.available') : t('admin.employees.table.blocked')}
                     </Badge>
                   </TableCell>
 
@@ -144,7 +146,7 @@ const EmployeeTableView: React.FC<EmployeeTableViewProps> = ({
                           variant="ghost"
                           size="sm"
                           onClick={() => onEdit(employee)}
-                          title="Edit Employee"
+                          title={t('admin.employees.table.editEmployee')}
                         >
                           <Edit3 className="h-4 w-4" />
                         </Button>
@@ -155,7 +157,7 @@ const EmployeeTableView: React.FC<EmployeeTableViewProps> = ({
                             variant="ghost"
                             size="sm"
                             onClick={() => onBlock(employee)}
-                            title="Block Employee"
+                            title={t('admin.employees.table.blockEmployee')}
                             className="text-red-600 hover:text-red-700 hover:bg-red-50"
                           >
                             <Shield className="h-4 w-4" />
@@ -167,7 +169,7 @@ const EmployeeTableView: React.FC<EmployeeTableViewProps> = ({
                             variant="ghost"
                             size="sm"
                             onClick={() => onUnblock(employee)}
-                            title="Unblock Employee"
+                            title={t('admin.employees.table.unblockEmployee')}
                             className="text-green-600 hover:text-green-700 hover:bg-green-50"
                           >
                             <ShieldOff className="h-4 w-4" />
@@ -179,7 +181,7 @@ const EmployeeTableView: React.FC<EmployeeTableViewProps> = ({
                           variant="ghost"
                           size="sm"
                           onClick={() => onDelete(employee.id)}
-                          title="Delete Employee"
+                          title={t('admin.employees.table.deleteEmployee')}
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>

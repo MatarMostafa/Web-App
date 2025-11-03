@@ -1,6 +1,6 @@
 "use client";
 import React from 'react';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from '@/hooks/useTranslation';
 import { useLanguageStore } from '@/store/languageStore';
 import {
   Select,

@@ -36,7 +36,7 @@ export default function SignInPage() {
       console.log("NextAuth result:", result);
 
       if (result?.ok) {
-        toast.success("Login successful!");
+        toast.success("Erfolgreich angemeldet!");
 
         // Get session to determine role-based redirect
         const response = await fetch("/api/auth/session");
@@ -53,24 +53,22 @@ export default function SignInPage() {
 
         // Handle specific error types
         if (result?.error === "RATE_LIMIT") {
-          toast.error(
-            "Too many login attempts. Please wait before trying again."
-          );
+          toast.error("Zu viele Anmeldeversuche. Bitte warten Sie, bevor Sie es erneut versuchen.");
         } else if (result?.error === "INVALID_CREDENTIALS") {
-          toast.error("Invalid email or password");
+          toast.error("Ungültige E-Mail oder Passwort");
         } else if (result?.error === "CredentialsSignin") {
-          toast.error("Invalid email or password");
+          toast.error("Ungültige E-Mail oder Passwort");
         } else if (result?.error && result.error.includes('blocked')) {
           toast.error(result.error);
         } else if (result?.error) {
-          toast.error("Login failed. Please try again.");
+          toast.error("Anmeldung fehlgeschlagen. Bitte versuchen Sie es erneut.");
         } else {
-          toast.error("Login failed. Please try again.");
+          toast.error("Anmeldung fehlgeschlagen. Bitte versuchen Sie es erneut.");
         }
       }
     } catch (error) {
       console.log("Catch error:", error);
-      toast.error("An unexpected error occurred");
+      toast.error("Ein unerwarteter Fehler ist aufgetreten");
     } finally {
       setIsLoading(false);
     }
@@ -96,9 +94,9 @@ export default function SignInPage() {
                 <LogIn className="h-8 w-8 text-primary" />
               </div>
             </div>
-            <h1 className="text-2xl font-bold text-foreground">Welcome Back</h1>
+            <h1 className="text-2xl font-bold text-foreground">Willkommen zurück</h1>
             <p className="text-mforeground">
-              Sign in to continue your networking journey
+              Melden Sie sich an, um fortzufahren
             </p>
           </CardHeader>
 
@@ -106,10 +104,10 @@ export default function SignInPage() {
             {/* Sign In Form */}
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="identifier">Username or Email</Label>
+                <Label htmlFor="identifier">Benutzername oder E-Mail</Label>
                 <Input
                   id="identifier"
-                  placeholder="Enter your username or email"
+                  placeholder="Geben Sie Ihren Benutzername oder E-Mail ein"
                   value={formData.identifier}
                   onChange={(e) => handleInputChange("identifier", e.target.value)}
                   className="rounded-xl border-border/50 focus:border-primary"
@@ -118,12 +116,12 @@ export default function SignInPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password">Passwort</Label>
                 <div className="relative">
                   <Input
                     id="password"
                     type={showPassword ? "text" : "password"}
-                    placeholder="Enter your password"
+                    placeholder="Geben Sie Ihr Passwort ein"
                     value={formData.password}
                     onChange={(e) =>
                       handleInputChange("password", e.target.value)
@@ -152,7 +150,7 @@ export default function SignInPage() {
                   onClick={() => router.push("/forgot-password")}
                   className="text-sm text-primary hover:underline font-medium"
                 >
-                  Forgot Password?
+                  Passwort vergessen?
                 </button>
               </div>
 
@@ -164,10 +162,10 @@ export default function SignInPage() {
                 {isLoading ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Signing In...
+                    Wird angemeldet...
                   </>
                 ) : (
-                  "Sign In"
+                  "Anmelden"
                 )}
               </Button>
             </form>
@@ -175,12 +173,12 @@ export default function SignInPage() {
             {/* Sign Up Link */}
             <div className="text-center pt-4 border-t border-border/50">
               <p className="text-sm text-mforeground">
-                Don't have an account?{" "}
+                Noch kein Konto?{" "}
                 <button
                   onClick={() => router.push("/signup")}
                   className="text-primary hover:underline font-medium"
                 >
-                  Sign up
+                  Registrieren
                 </button>
               </p>
             </div>

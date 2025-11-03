@@ -6,6 +6,7 @@ import { Pagination, usePagination } from "@/components/ui/pagination";
 import { Edit, Trash2, Calendar, MapPin, Users } from "lucide-react";
 import { Order, OrderStatus } from "@/types/order";
 import { format } from "date-fns";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface OrderTableViewProps {
   orders: Order[];
@@ -41,7 +42,43 @@ const OrderTableView: React.FC<OrderTableViewProps> = ({
   onEdit,
   onDelete,
 }) => {
+  const { t, ready } = useTranslation();
+  
+  if (!ready) {
+    return (
+      <div className="border rounded-lg">
+        <div className="p-4">
+          <div className="animate-pulse space-y-4">
+            {[...Array(5)].map((_, i) => (
+              <div key={i} className="h-16 bg-muted rounded" />
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
   const { currentPage, setCurrentPage, paginatedItems, totalItems } = usePagination(orders);
+
+  const getStatusText = (status: OrderStatus) => {
+    switch (status) {
+      case OrderStatus.DRAFT:
+        return t("admin.orders.status.draft");
+      case OrderStatus.OPEN:
+        return t("admin.orders.status.open");
+      case OrderStatus.ACTIVE:
+        return t("admin.orders.status.active");
+      case OrderStatus.IN_PROGRESS:
+        return t("admin.orders.status.inProgress");
+      case OrderStatus.COMPLETED:
+        return t("admin.orders.status.completed");
+      case OrderStatus.CANCELLED:
+        return t("admin.orders.status.cancelled");
+      case OrderStatus.EXPIRED:
+        return t("admin.orders.status.expired");
+      default:
+        return String(status).replace("_", " ");
+    }
+  };
   if (loading) {
     return (
       <div className="border rounded-lg">
@@ -62,13 +99,13 @@ const OrderTableView: React.FC<OrderTableViewProps> = ({
         <table className="w-full">
           <thead className="bg-muted/50">
             <tr>
-              <th className="text-left p-4 font-medium">Order</th>
-              <th className="text-left p-4 font-medium">Status</th>
-              <th className="text-left p-4 font-medium">Scheduled Date</th>
-              <th className="text-left p-4 font-medium">Location</th>
-              <th className="text-left p-4 font-medium">Required Staff</th>
-              <th className="text-left p-4 font-medium">Priority</th>
-              <th className="text-right p-4 font-medium">Actions</th>
+              <th className="text-left p-4 font-medium">{t("admin.orders.table.order")}</th>
+              <th className="text-left p-4 font-medium">{t("admin.orders.table.status")}</th>
+              <th className="text-left p-4 font-medium">{t("admin.orders.table.scheduledDate")}</th>
+              <th className="text-left p-4 font-medium">{t("admin.orders.table.location")}</th>
+              <th className="text-left p-4 font-medium">{t("admin.orders.table.requiredStaff")}</th>
+              <th className="text-left p-4 font-medium">{t("admin.orders.table.priority")}</th>
+              <th className="text-right p-4 font-medium">{t("admin.orders.table.actions")}</th>
             </tr>
           </thead>
           <tbody>
@@ -78,13 +115,13 @@ const OrderTableView: React.FC<OrderTableViewProps> = ({
                   <div>
                     <div className="font-medium">#{order.orderNumber}</div>
                     <div className="text-sm text-muted-foreground">
-                      {order.description || "No description"}
+                      {order.description || t("admin.orders.table.noDescription")}
                     </div>
                   </div>
                 </td>
                 <td className="p-4">
                   <Badge className={getStatusColor(order.status)}>
-                    {order.status.replace("_", " ")}
+                    {getStatusText(order.status)}
                   </Badge>
                 </td>
                 <td className="p-4">
