@@ -10,12 +10,14 @@ import {
   BarChart3,
   Settings,
   LogIn,
+  LogOut,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useLanguageDetection } from "@/hooks/useLanguageDetection";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import { useSession, signOut } from "next-auth/react";
 
 interface NavigationItem {
   name: string;
@@ -40,8 +42,18 @@ const callsToAction: NavigationItem[] = [
 
 const Navbar = () => {
   const router = useRouter();
+  const { data: session, status } = useSession();
   const { t, ready } = useTranslation();
   const [isOpen, setIsOpen] = React.useState(false);
+
+  const handleLogout = async () => {
+    await signOut({ redirect: false });
+    router.push("/");
+  };
+
+  const getDashboardUrl = () => {
+    return session?.user?.role === "ADMIN" ? "/dashboard-admin" : "/dashboard-employee";
+  };
   useLanguageDetection();
 
   const navigation = [
@@ -118,22 +130,46 @@ const Navbar = () => {
 
             {/* Call to action buttons */}
             <div className="flex items-center space-x-4">
-              <LanguageSwitcher />
+              {status === "loading" ? (
+                <div className="w-32 h-10 bg-gray-200 animate-pulse rounded"></div>
+              ) : session ? (
+                <>
+                  <Link
+                    href={getDashboardUrl()}
+                    className="text-gray-600 hover:text-primary px-3 py-2 text-sm font-medium flex items-center gap-2"
+                  >
+                    <LayoutDashboard className="w-4 h-4" />
+                    Dashboard
+                  </Link>
+                  <Button
+                    onClick={handleLogout}
+                    variant="outline"
+                    className="flex items-center gap-2"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    Log Out
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <LanguageSwitcher />
               <Link
-                href="/login"
-                className="text-gray-600 hover:text-primary px-3 py-2 text-sm font-medium flex items-center gap-2"
-              >
-                <LogIn className="w-4 h-4" />
-                {t('navigation.login')}
-              </Link>
-              <Button
-                onClick={() => {
-                  router.push("/signup");
-                }}
-                className="bg-secondary hover:text-[#d4f3ff]"
-              >
-                {t('navigation.getStarted')}
-              </Button>
+                    href="/login"
+                    className="text-gray-600 hover:text-primary px-3 py-2 text-sm font-medium flex items-center gap-2"
+                  >
+                    <LogIn className="w-4 h-4" />
+                    {t('navigation.login')}
+                  </Link>
+                  <Button
+                    onClick={() => {
+                      router.push("/signup");
+                    }}
+                    className="bg-secondary hover:text-[#d4f3ff]"
+                  >
+                    {t('navigation.getStarted')}
+                  </Button>
+                </>
+              )}
             </div>
           </div>
 
@@ -171,29 +207,60 @@ const Navbar = () => {
               </Link>
             ))}
             <div className="mt-4 flex flex-col gap-2">
-              <div className="mb-2">
+              {status === "loading" ? (
+                <div className="w-full h-10 bg-gray-200 animate-pulse rounded"></div>
+              ) : session ? (
+                <>
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start gap-2"
+                    onClick={() => {
+                      setIsOpen(false);
+                      router.push(getDashboardUrl());
+                    }}
+                  >
+                    <LayoutDashboard className="w-4 h-4" />
+                    Dashboard
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start gap-2"
+                    onClick={() => {
+                      setIsOpen(false);
+                      handleLogout();
+                    }}
+                  >
+                    <LogOut className="w-4 h-4" />
+                    Log Out
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <div className="mb-2">
                 <LanguageSwitcher />
               </div>
               <Button
-                variant="outline"
-                className="w-full justify-start gap-2"
-                onClick={() => {
-                  setIsOpen(false);
-                  router.push("/login");
-                }}
-              >
-                <LogIn className="w-4 h-4" />
-                {t('navigation.login')}
-              </Button>
-              <Button
-                className="w-full bg-secondary hover:text-[#d4f3ff]"
-                onClick={() => {
-                  setIsOpen(false);
-                  router.push("/signup");
-                }}
-              >
-                {t('navigation.getStarted')}
-              </Button>
+                    variant="outline"
+                    className="w-full justify-start gap-2"
+                    onClick={() => {
+                      setIsOpen(false);
+                      router.push("/login");
+                    }}
+                  >
+                    <LogIn className="w-4 h-4" />
+                    {t('navigation.login')}
+                  </Button>
+                  <Button
+                    className="w-full bg-secondary hover:text-[#d4f3ff]"
+                    onClick={() => {
+                      setIsOpen(false);
+                      router.push("/signup");
+                    }}
+                  >
+                    {t('navigation.getStarted')}
+                  </Button>
+                </>
+              )}
             </div>
           </div>
         </div>
