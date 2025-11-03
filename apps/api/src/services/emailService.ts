@@ -22,13 +22,13 @@ export const sendEmail = async (options: EmailOptions) => {
 
     if (error) {
       console.error({ error });
-      throw new Error(`Email sending failed: ${error.message}`);
+      throw new Error(`E-Mail-Versand fehlgeschlagen: ${error.message}`);
     }
 
     console.log({ data });
     return data;
   } catch (error: any) {
     console.error("Email sending failed:", error);
-    throw new Error(error.message || "Failed to send email");
+    throw new Error(error.message || "Fehler beim Senden der E-Mail");
   }
 };

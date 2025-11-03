@@ -17,8 +17,10 @@ import {
 } from "lucide-react";
 import { useEmployeeStore } from "@/store/employeeStore";
 import LeaveActionModal from "@/components/modals/LeaveActionModal";
+import { useTranslation } from "@/hooks/useTranslation";
 
 const LeaveRequestsPage = () => {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState("pending");
   const [modalState, setModalState] = useState<{
     isOpen: boolean;
@@ -55,6 +57,19 @@ const LeaveRequestsPage = () => {
         return "bg-red-100 text-red-800 hover:bg-red-200";
       default:
         return "bg-gray-100 text-gray-800 hover:bg-gray-200";
+    }
+  };
+
+  const getStatusText = (status: string) => {
+    switch (status) {
+      case "APPROVED":
+        return t("admin.leaveManagement.status.approved");
+      case "PENDING":
+        return t("admin.leaveManagement.status.pending");
+      case "REJECTED":
+        return t("admin.leaveManagement.status.rejected");
+      default:
+        return status;
     }
   };
 
@@ -114,19 +129,19 @@ const LeaveRequestsPage = () => {
   return (
     <div className="p-3 sm:p-4 lg:p-6">
       <div className="mb-4 sm:mb-6">
-        <h1 className="text-xl sm:text-2xl font-bold mb-2">Leave Requests Management</h1>
+        <h1 className="text-xl sm:text-2xl font-bold mb-2">{t("admin.leaveManagement.title")}</h1>
         <p className="text-sm sm:text-base text-muted-foreground">
-          Manage employee leave requests and time-off approvals
+          {t("admin.leaveManagement.subtitle")}
         </p>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <div className="overflow-x-auto">
           <TabsList className="inline-flex w-full min-w-max sm:grid sm:grid-cols-4 h-auto p-1">
-            <TabsTrigger value="pending" className="flex-1 sm:flex-none text-xs sm:text-sm px-2 sm:px-4 py-2 whitespace-nowrap">Pending</TabsTrigger>
-            <TabsTrigger value="approved" className="flex-1 sm:flex-none text-xs sm:text-sm px-2 sm:px-4 py-2 whitespace-nowrap">Approved</TabsTrigger>
-            <TabsTrigger value="rejected" className="flex-1 sm:flex-none text-xs sm:text-sm px-2 sm:px-4 py-2 whitespace-nowrap">Rejected</TabsTrigger>
-            <TabsTrigger value="all" className="flex-1 sm:flex-none text-xs sm:text-sm px-2 sm:px-4 py-2 whitespace-nowrap">All</TabsTrigger>
+            <TabsTrigger value="pending" className="flex-1 sm:flex-none text-xs sm:text-sm px-2 sm:px-4 py-2 whitespace-nowrap">{t("admin.leaveManagement.tabs.pending")}</TabsTrigger>
+            <TabsTrigger value="approved" className="flex-1 sm:flex-none text-xs sm:text-sm px-2 sm:px-4 py-2 whitespace-nowrap">{t("admin.leaveManagement.tabs.approved")}</TabsTrigger>
+            <TabsTrigger value="rejected" className="flex-1 sm:flex-none text-xs sm:text-sm px-2 sm:px-4 py-2 whitespace-nowrap">{t("admin.leaveManagement.tabs.rejected")}</TabsTrigger>
+            <TabsTrigger value="all" className="flex-1 sm:flex-none text-xs sm:text-sm px-2 sm:px-4 py-2 whitespace-nowrap">{t("admin.leaveManagement.tabs.all")}</TabsTrigger>
           </TabsList>
         </div>
 
@@ -137,8 +152,8 @@ const LeaveRequestsPage = () => {
                 <Clock className="h-4 w-4 sm:h-5 sm:w-5" />
                 <span className="truncate">
                   {activeTab === "all"
-                    ? "All Leave Requests"
-                    : `${activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} Requests`}{" "}
+                    ? t("admin.leaveManagement.requests.allLeaveRequests")
+                    : t(`admin.leaveManagement.requests.${activeTab}Requests`)}{" "}
                   ({allAbsences.length})
                 </span>
               </CardTitle>
@@ -146,18 +161,21 @@ const LeaveRequestsPage = () => {
             <CardContent className="p-4 sm:p-6">
               {loading ? (
                 <div className="flex justify-center py-6 sm:py-8">
-                  <LoadingSpinnerWithText text="Loading requests..." />
+                  <LoadingSpinnerWithText text={t("admin.leaveManagement.requests.loadingRequests")} />
                 </div>
               ) : allAbsences.length === 0 ? (
                 <div className="text-center py-6 sm:py-8 text-muted-foreground">
                   <Clock className="h-8 w-8 sm:h-12 sm:w-12 mx-auto mb-4 opacity-50" />
                   <p className="text-sm sm:text-base">
-                    No {activeTab === "all" ? "" : activeTab} requests found
+                    {activeTab === "all" 
+                      ? t("admin.leaveManagement.requests.noRequestsFoundGeneral")
+                      : `No ${activeTab} requests found`
+                    }
                   </p>
                   <p className="text-xs sm:text-sm">
                     {activeTab === "pending"
-                      ? "All leave requests have been processed"
-                      : "No requests match the current filter"}
+                      ? t("admin.leaveManagement.requests.allProcessed")
+                      : t("admin.leaveManagement.requests.noMatchingFilter")}
                   </p>
                 </div>
               ) : (
@@ -196,7 +214,7 @@ const LeaveRequestsPage = () => {
                           <Badge
                             className={`${getStatusBadgeClass(absence.status)} text-xs`}
                           >
-                            {absence.status}
+                            {getStatusText(absence.status)}
                           </Badge>
                           <div className="flex flex-col sm:flex-row gap-1 w-full sm:w-auto">
                             {absence.status !== "APPROVED" && (
@@ -210,8 +228,8 @@ const LeaveRequestsPage = () => {
                                 <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
                                 <span className="hidden sm:inline">
                                   {absence.status === "REJECTED"
-                                    ? "Re-approve"
-                                    : "Approve"}
+                                    ? t("admin.leaveManagement.actions.reApprove")
+                                    : t("admin.leaveManagement.actions.approve")}
                                 </span>
                                 <span className="sm:hidden">✓</span>
                               </Button>
@@ -228,8 +246,8 @@ const LeaveRequestsPage = () => {
                                 <XCircle className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
                                 <span className="hidden sm:inline">
                                   {absence.status === "APPROVED"
-                                    ? "Revoke"
-                                    : "Reject"}
+                                    ? t("admin.leaveManagement.actions.revoke")
+                                    : t("admin.leaveManagement.actions.reject")}
                                 </span>
                                 <span className="sm:hidden">✗</span>
                               </Button>
@@ -241,7 +259,7 @@ const LeaveRequestsPage = () => {
                       <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4 mb-3">
                         <div>
                           <span className="text-xs sm:text-sm font-medium text-muted-foreground">
-                            Type:
+                            {t("admin.leaveManagement.details.type")}:
                           </span>
                           <p className="text-xs sm:text-sm truncate">
                             {absence.type.replace("_", " ")}
@@ -249,16 +267,16 @@ const LeaveRequestsPage = () => {
                         </div>
                         <div>
                           <span className="text-xs sm:text-sm font-medium text-muted-foreground">
-                            Duration:
+                            {t("admin.leaveManagement.details.duration")}:
                           </span>
                           <p className="text-xs sm:text-sm">
                             {calculateDays(absence.startDate, absence.endDate)}{" "}
-                            day(s)
+                            {t("admin.leaveManagement.details.days")}
                           </p>
                         </div>
                         <div>
                           <span className="text-xs sm:text-sm font-medium text-muted-foreground">
-                            Start Date:
+                            {t("admin.leaveManagement.details.startDate")}:
                           </span>
                           <p className="text-xs sm:text-sm">
                             {formatDate(absence.startDate)}
@@ -266,7 +284,7 @@ const LeaveRequestsPage = () => {
                         </div>
                         <div>
                           <span className="text-xs sm:text-sm font-medium text-muted-foreground">
-                            End Date:
+                            {t("admin.leaveManagement.details.endDate")}:
                           </span>
                           <p className="text-xs sm:text-sm">
                             {formatDate(absence.endDate)}
@@ -277,7 +295,7 @@ const LeaveRequestsPage = () => {
                       {absence.reason && (
                         <div className="mb-3">
                           <span className="text-xs sm:text-sm font-medium text-muted-foreground">
-                            Reason:
+                            {t("admin.leaveManagement.details.reason")}:
                           </span>
                           <p className="text-xs sm:text-sm mt-1 p-2 bg-gray-100 rounded break-words">
                             {absence.reason}
@@ -290,18 +308,18 @@ const LeaveRequestsPage = () => {
                           {absence.status === "APPROVED" &&
                             absence.approvedAt && (
                               <span className="block sm:inline">
-                                Approved on {formatDate(absence.approvedAt)}
+                                {t("admin.leaveManagement.details.approvedOn")} {formatDate(absence.approvedAt)}
                               </span>
                             )}
                           {absence.status === "REJECTED" &&
                             absence.rejectedAt && (
                               <div>
                                 <span className="block sm:inline">
-                                  Rejected on {formatDate(absence.rejectedAt)}
+                                  {t("admin.leaveManagement.details.rejectedOn")} {formatDate(absence.rejectedAt)}
                                 </span>
                                 {absence.rejectionReason && (
                                   <span className="block mt-1 break-words">
-                                    Reason: {absence.rejectionReason}
+                                    {t("admin.leaveManagement.details.reason")}: {absence.rejectionReason}
                                   </span>
                                 )}
                               </div>

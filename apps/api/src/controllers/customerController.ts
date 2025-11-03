@@ -7,7 +7,7 @@ export const getAllCustomers = async (req: Request, res: Response) => {
     const customers = await customerService.getAllCustomers();
     res.json(customers);
   } catch (error) {
-    res.status(500).json({ message: "Error fetching customers", error });
+    res.status(500).json({ message: "Fehler beim Abrufen der Kunden", error });
   }
 };
 
@@ -17,12 +17,12 @@ export const getCustomerById = async (req: Request, res: Response) => {
     const customer = await customerService.getCustomerById(id);
 
     if (!customer) {
-      return res.status(404).json({ message: "Customer not found" });
+      return res.status(404).json({ message: "Kunde nicht gefunden" });
     }
 
     res.json(customer);
   } catch (error) {
-    res.status(500).json({ message: "Error fetching customer", error });
+    res.status(500).json({ message: "Fehler beim Abrufen des Kunden", error });
   }
 };
 
@@ -31,7 +31,7 @@ export const createCustomer = async (req: Request, res: Response) => {
     const customer = await customerService.createCustomer(req.body);
     res.status(201).json(customer);
   } catch (error) {
-    res.status(400).json({ message: "Error creating customer", error });
+    res.status(400).json({ message: "Fehler beim Erstellen des Kunden", error });
   }
 };
 
@@ -41,12 +41,12 @@ export const updateCustomer = async (req: Request, res: Response) => {
     const customer = await customerService.updateCustomer(id, req.body);
 
     if (!customer) {
-      return res.status(404).json({ message: "Customer not found" });
+      return res.status(404).json({ message: "Kunde nicht gefunden" });
     }
 
     res.json(customer);
   } catch (error) {
-    res.status(400).json({ message: "Error updating customer", error });
+    res.status(400).json({ message: "Fehler beim Aktualisieren des Kunden", error });
   }
 };
 
@@ -56,12 +56,12 @@ export const deleteCustomer = async (req: Request, res: Response) => {
     const deleted = await customerService.deleteCustomer(id);
 
     if (!deleted) {
-      return res.status(404).json({ message: "Customer not found" });
+      return res.status(404).json({ message: "Kunde nicht gefunden" });
     }
 
-    res.json({ message: "Customer deleted successfully" });
+    res.json({ message: "Kunde erfolgreich gelöscht" });
   } catch (error) {
-    res.status(500).json({ message: "Error deleting customer", error });
+    res.status(500).json({ message: "Fehler beim Löschen des Kunden", error });
   }
 };
 
@@ -73,7 +73,7 @@ export const createSubAccount = async (req: Request, res: Response) => {
     const subAccount = await customerService.createSubAccount(customerId, req.body);
     res.status(201).json(subAccount);
   } catch (error) {
-    res.status(400).json({ message: "Error creating subaccount", error });
+    res.status(400).json({ message: "Fehler beim Erstellen des Unterkontos", error });
   }
 };
 
@@ -84,7 +84,7 @@ export const getSubAccounts = async (req: Request, res: Response) => {
     const subAccounts = await customerService.getSubAccounts(customerId);
     res.json(subAccounts);
   } catch (error) {
-    res.status(500).json({ message: "Error fetching subaccounts", error });
+    res.status(500).json({ message: "Fehler beim Abrufen der Unterkonten", error });
   }
 };
 
@@ -95,12 +95,12 @@ export const updateSubAccount = async (req: Request, res: Response) => {
     const subAccount = await customerService.updateSubAccount(id, req.body);
 
     if (!subAccount) {
-      return res.status(404).json({ message: "Subaccount not found" });
+      return res.status(404).json({ message: "Unterkonto nicht gefunden" });
     }
 
     res.json(subAccount);
   } catch (error) {
-    res.status(400).json({ message: "Error updating subaccount", error });
+    res.status(400).json({ message: "Fehler beim Aktualisieren des Unterkontos", error });
   }
 };
 
@@ -111,11 +111,11 @@ export const deleteSubAccount = async (req: Request, res: Response) => {
     const deleted = await customerService.deleteSubAccount(id);
 
     if (!deleted) {
-      return res.status(404).json({ message: "Subaccount not found" });
+      return res.status(404).json({ message: "Unterkonto nicht gefunden" });
     }
 
-    res.json({ message: "Subaccount deleted successfully" });
+    res.json({ message: "Unterkonto erfolgreich gelöscht" });
   } catch (error) {
-    res.status(500).json({ message: "Error deleting subaccount", error });
+    res.status(500).json({ message: "Fehler beim Löschen des Unterkontos", error });
   }
 };

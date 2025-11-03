@@ -10,6 +10,7 @@ import {
   Phone,
   MapPin,
 } from "lucide-react";
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface FooterSection {
   title: string;
@@ -20,51 +21,17 @@ interface FooterSection {
   }>;
 }
 
-const footerSections: FooterSection[] = [
-  {
-    title: "Product",
-    links: [
-      {
-        label: "Dashboard",
-        href: "/dashboard",
-        icon: <LayoutGrid className="w-4 h-4" />,
-      },
-      {
-        label: "Employee Management",
-        href: "/employees",
-        icon: <Users className="w-4 h-4" />,
-      },
-      {
-        label: "Performance",
-        href: "/performance",
-        icon: <BarChart3 className="w-4 h-4" />,
-      },
-      {
-        label: "Support",
-        href: "/support",
-        icon: <HelpCircle className="w-4 h-4" />,
-      },
-    ],
-  },
-  {
-    title: "Resources",
-    links: [
-      { label: "Documentation", href: "/docs" },
-      { label: "API Reference", href: "/api-docs" },
-      { label: "Community", href: "/community" },
-      { label: "Blog", href: "/blog" },
-    ],
-  },
-];
+
 
 const Footer = () => {
+  const { t } = useTranslation();
   return (
     <footer className="bg-black text-gray-300">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
         <div className="flex justify-center items-center">
           {/* Contact Info */}
           <div className="space-y-4  text-center">
-            <h3 className="text-lg font-semibold text-white">Contact</h3>
+            <h3 className="text-lg font-semibold text-white">{t('landing.footer.contact')}</h3>
             <div className="space-y-3">
               <p className="flex items-center">
                 <Mail className="mr-2" />
@@ -88,17 +55,17 @@ const Footer = () => {
         <div className="mt-12 pt-8 border-t border-gray-800">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <p className="text-sm">
-              © {new Date().getFullYear()} ERP Beta. All rights reserved.
+              © {new Date().getFullYear()} ERP Beta. {t('landing.footer.allRightsReserved')}
             </p>
             <div className="flex space-x-6 text-sm">
               <Link href="/privacy" className="hover:text-gray-400">
-                Privacy Policy
+                {t('landing.footer.privacyPolicy')}
               </Link>
               <Link href="/terms" className="hover:text-gray-400">
-                Terms of Service
+                {t('landing.footer.termsOfService')}
               </Link>
               <Link href="/security" className="hover:text-gray-400">
-                Security
+                {t('landing.footer.security')}
               </Link>
             </div>
           </div>

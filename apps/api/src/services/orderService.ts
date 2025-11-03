@@ -323,7 +323,7 @@ export const autoAssignEmployeesService = async (
     },
   });
 
-  if (!order) throw new Error("Order not found");
+  if (!order) throw new Error("Auftrag nicht gefunden");
 
   // 2. Check if already has enough assignments
   const existingAssignments = order.employeeAssignments.length;
@@ -333,7 +333,7 @@ export const autoAssignEmployeesService = async (
   );
   if (needed <= 0) {
     return {
-      message: "Order already has sufficient employee assignments",
+      message: "Auftrag hat bereits ausreichend Mitarbeiterzuweisungen",
       assignments: [],
     };
   }
@@ -441,7 +441,7 @@ export const autoAssignEmployeesService = async (
     .slice(0, needed);
 
   if (topCandidates.length === 0) {
-    throw new Error("No qualified employees available for auto-assignment");
+    throw new Error("Keine qualifizierten Mitarbeiter für automatische Zuweisung verfügbar");
   }
 
   // 7. Create assignments
@@ -474,7 +474,7 @@ export const autoAssignEmployeesService = async (
   );
 
   return {
-    message: `Successfully auto-assigned ${assignments.length} employees`,
+    message: `${assignments.length} Mitarbeiter erfolgreich automatisch zugewiesen`,
     assignments,
     summary: {
       requested: needed,

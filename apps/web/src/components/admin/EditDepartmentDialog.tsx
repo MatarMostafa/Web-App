@@ -14,6 +14,7 @@ import {
 import { useDepartmentStore } from "@/store/departmentStore";
 import { Department, UpdateDepartmentData } from "@/types/department";
 import toast from "react-hot-toast";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface EditDepartmentDialogProps {
   department: Department;
@@ -26,6 +27,7 @@ const EditDepartmentDialog: React.FC<EditDepartmentDialogProps> = ({
   open,
   onOpenChange,
 }) => {
+  const { t } = useTranslation();
   const { updateDepartment } = useDepartmentStore();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState<UpdateDepartmentData>({});
@@ -49,7 +51,7 @@ const EditDepartmentDialog: React.FC<EditDepartmentDialogProps> = ({
       await updateDepartment(department.id, formData);
       onOpenChange(false);
     } catch (error) {
-      toast.error("Failed to update department");
+      toast.error(t("admin.departments.form.updateError"));
     } finally {
       setLoading(false);
     }
@@ -63,11 +65,11 @@ const EditDepartmentDialog: React.FC<EditDepartmentDialogProps> = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>Edit Department</DialogTitle>
+          <DialogTitle>{t("admin.departments.form.editDepartment")}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <Label htmlFor="name">Department Name *</Label>
+            <Label htmlFor="name">{t("admin.departments.form.departmentName")} *</Label>
             <Input
               id="name"
               value={formData.name || ""}
@@ -77,7 +79,7 @@ const EditDepartmentDialog: React.FC<EditDepartmentDialogProps> = ({
           </div>
 
           <div>
-            <Label htmlFor="code">Department Code *</Label>
+            <Label htmlFor="code">{t("admin.departments.form.departmentCode")} *</Label>
             <Input
               id="code"
               value={formData.code || ""}
@@ -87,7 +89,7 @@ const EditDepartmentDialog: React.FC<EditDepartmentDialogProps> = ({
           </div>
 
           <div>
-            <Label htmlFor="description">Description</Label>
+            <Label htmlFor="description">{t("admin.departments.form.description")}</Label>
             <Textarea
               id="description"
               value={formData.description || ""}
@@ -102,7 +104,7 @@ const EditDepartmentDialog: React.FC<EditDepartmentDialogProps> = ({
               checked={formData.isActive ?? true}
               onCheckedChange={(checked) => handleInputChange("isActive", checked)}
             />
-            <Label htmlFor="isActive">Active</Label>
+            <Label htmlFor="isActive">{t("admin.departments.form.active")}</Label>
           </div>
 
           <div className="flex justify-end gap-2 pt-4">
@@ -111,10 +113,10 @@ const EditDepartmentDialog: React.FC<EditDepartmentDialogProps> = ({
               variant="outline"
               onClick={() => onOpenChange(false)}
             >
-              Cancel
+              {t("admin.departments.form.cancel")}
             </Button>
             <Button type="submit" disabled={loading}>
-              {loading ? "Updating..." : "Update Department"}
+              {loading ? t("admin.departments.form.updating") : t("admin.departments.form.updateDepartment")}
             </Button>
           </div>
         </form>
