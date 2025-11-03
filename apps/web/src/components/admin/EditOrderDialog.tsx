@@ -23,6 +23,7 @@ import { useEmployeeStore } from "@/store/employeeStore";
 import { useCustomerStore } from "@/store/customerStore";
 import { Order, UpdateOrderData, OrderStatus } from "@/types/order";
 import toast from "react-hot-toast";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface EditOrderDialogProps {
   order: Order;
@@ -35,6 +36,11 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
   open,
   onOpenChange,
 }) => {
+  const { t, ready } = useTranslation();
+  
+  if (!ready) {
+    return null;
+  }
   const { updateOrder, getOrderAssignments } = useOrderStore();
   const { employees, fetchEmployees } = useEmployeeStore();
   const { customers, fetchCustomers } = useCustomerStore();
@@ -84,15 +90,15 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
     
     // Validate required fields
     const newErrors: Record<string, string> = {};
-    if (!formData.customerId) newErrors.customerId = "Customer is required";
-    if (!formData.scheduledDate) newErrors.scheduledDate = "Scheduled date is required";
-    if (!formData.requiredEmployees || formData.requiredEmployees < 1) newErrors.requiredEmployees = "Required employees must be at least 1";
-    if (!formData.priority || formData.priority < 1) newErrors.priority = "Priority must be at least 1";
+    if (!formData.customerId) newErrors.customerId = t("admin.orders.form.customerRequired");
+    if (!formData.scheduledDate) newErrors.scheduledDate = t("admin.orders.form.scheduledDateRequired");
+    if (!formData.requiredEmployees || formData.requiredEmployees < 1) newErrors.requiredEmployees = t("admin.orders.form.requiredEmployeesRequired");
+    if (!formData.priority || formData.priority < 1) newErrors.priority = t("admin.orders.form.priorityRequired");
     
     setErrors(newErrors);
     
     if (Object.keys(newErrors).length > 0) {
-      toast.error("Please fix the validation errors");
+      toast.error(t("admin.orders.form.validationError"));
       return;
     }
     
@@ -115,7 +121,7 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
       await updateOrder(order.id, submitData);
       onOpenChange(false);
     } catch (error) {
-      toast.error("Failed to update order");
+      toast.error(t("admin.orders.form.updateError"));
     } finally {
       setLoading(false);
     }
@@ -153,18 +159,18 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Edit Order</DialogTitle>
+          <DialogTitle>{t("admin.orders.form.editOrder")}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label>Order Number</Label>
+              <Label>{t("admin.orders.form.orderNumber")}</Label>
               <div className="px-3 py-2 bg-muted rounded-md text-sm">
                 {order.orderNumber}
               </div>
             </div>
             <div>
-              <Label>Status</Label>
+              <Label>{t("admin.orders.form.status")}</Label>
               <div className="px-3 py-2 bg-muted rounded-md text-sm">
                 {(formData.status || order.status).replace("_", " ")}
               </div>
@@ -172,7 +178,7 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
           </div>
 
           <div>
-            <Label htmlFor="customerId">Customer *</Label>
+            <Label htmlFor="customerId">{t("admin.orders.form.customer")} *</Label>
             <Select
               value={formData.customerId}
               onValueChange={(value) => {
@@ -181,7 +187,7 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
               }}
             >
               <SelectTrigger className={errors.customerId ? "border-red-500" : ""}>
-                <SelectValue placeholder="Select customer" />
+                <SelectValue placeholder={t("admin.orders.form.selectCustomer")} />
               </SelectTrigger>
               <SelectContent>
                 {customers.map((customer) => (
@@ -195,7 +201,7 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
           </div>
 
           <div>
-            <Label htmlFor="description">Description</Label>
+            <Label htmlFor="description">{t("admin.orders.form.description")}</Label>
             <Textarea
               id="description"
               value={formData.description || ""}
@@ -206,7 +212,7 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="scheduledDate">Scheduled Date *</Label>
+              <Label htmlFor="scheduledDate">{t("admin.orders.form.scheduledDate")} *</Label>
               <Input
                 id="scheduledDate"
                 type="date"
@@ -220,19 +226,19 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
               {errors.scheduledDate && <p className="text-sm text-red-500 mt-1">{errors.scheduledDate}</p>}
             </div>
             <div>
-              <Label htmlFor="location">Location</Label>
+              <Label htmlFor="location">{t("admin.orders.form.location")}</Label>
               <Input
                 id="location"
                 value={formData.location || ""}
                 onChange={(e) => handleInputChange("location", e.target.value)}
-                placeholder="Auto-filled from customer address"
+                placeholder={t("admin.orders.form.locationPlaceholder")}
               />
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="startTime">Start Date & Time</Label>
+              <Label htmlFor="startTime">{t("admin.orders.form.startDateTime")}</Label>
               <Input
                 id="startTime"
                 type="datetime-local"
@@ -241,7 +247,7 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
               />
             </div>
             <div>
-              <Label htmlFor="endTime">End Date & Time</Label>
+              <Label htmlFor="endTime">{t("admin.orders.form.endDateTime")}</Label>
               <Input
                 id="endTime"
                 type="datetime-local"
@@ -253,7 +259,7 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
 
           <div className="grid grid-cols-3 gap-4">
             <div>
-              <Label htmlFor="requiredEmployees">Required Employees *</Label>
+              <Label htmlFor="requiredEmployees">{t("admin.orders.form.requiredEmployees")} *</Label>
               <Input
                 id="requiredEmployees"
                 type="number"
@@ -268,7 +274,7 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
               {errors.requiredEmployees && <p className="text-sm text-red-500 mt-1">{errors.requiredEmployees}</p>}
             </div>
             <div>
-              <Label htmlFor="priority">Priority *</Label>
+              <Label htmlFor="priority">{t("admin.orders.form.priority")} *</Label>
               <Input
                 id="priority"
                 type="number"
@@ -283,7 +289,7 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
               {errors.priority && <p className="text-sm text-red-500 mt-1">{errors.priority}</p>}
             </div>
             <div>
-              <Label htmlFor="duration">Duration (hours)</Label>
+              <Label htmlFor="duration">{t("admin.orders.form.duration")}</Label>
               <Input
                 id="duration"
                 type="number"
@@ -301,7 +307,7 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
           </div>
 
           <div>
-            <Label htmlFor="specialInstructions">Special Instructions</Label>
+            <Label htmlFor="specialInstructions">{t("admin.orders.form.specialInstructions")}</Label>
             <Textarea
               id="specialInstructions"
               value={formData.specialInstructions || ""}
@@ -313,9 +319,9 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
           </div>
 
           <div>
-            <Label>Assign Employees</Label>
+            <Label>{t("admin.orders.form.assignEmployeesEdit")}</Label>
             <div className="text-sm text-muted-foreground mb-2">
-              {(formData.assignedEmployeeIds || []).length} of {formData.requiredEmployees || 1} employees selected
+              {`${(formData.assignedEmployeeIds || []).length} of ${formData.requiredEmployees || 1} employees selected`}
             </div>
             <div className="max-h-40 overflow-y-auto border rounded-md p-3 space-y-2">
               {employees.map((employee) => (
@@ -343,7 +349,7 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
                 </div>
               ))}
               {employees.length === 0 && (
-                <p className="text-sm text-gray-500">No employees available</p>
+                <p className="text-sm text-gray-500">{t("admin.orders.form.noEmployeesAvailable")}</p>
               )}
             </div>
           </div>
@@ -354,10 +360,10 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
               variant="outline"
               onClick={() => onOpenChange(false)}
             >
-              Cancel
+              {t("admin.orders.form.cancel")}
             </Button>
             <Button type="submit" disabled={loading}>
-              {loading ? "Updating..." : "Update Order"}
+              {loading ? t("admin.orders.form.updating") : t("admin.orders.form.updateOrder")}
             </Button>
           </div>
         </form>

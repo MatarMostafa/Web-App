@@ -15,6 +15,7 @@ import { Edit3, Trash2 } from "lucide-react";
 import { format } from "date-fns";
 import { Customer } from "@/types/customer";
 import { useRouter } from "next/navigation";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface CustomerTableViewProps {
   customers: Customer[];
@@ -29,6 +30,7 @@ const CustomerTableView: React.FC<CustomerTableViewProps> = ({
   onEdit,
   onDelete,
 }) => {
+  const { t } = useTranslation();
   const { currentPage, setCurrentPage, paginatedItems, totalItems } = usePagination(customers);
   const getInitials = (companyName: string) => {
     return companyName
@@ -47,27 +49,27 @@ const CustomerTableView: React.FC<CustomerTableViewProps> = ({
         <Table>
           <TableHeader className="sticky top-0 bg-background z-10">
             <TableRow className="border-b">
-              <TableHead className="w-[250px]">Company</TableHead>
-              <TableHead className="w-[200px]">Contact Email</TableHead>
-              <TableHead className="w-[150px]">Phone</TableHead>
-              <TableHead className="w-[150px]">Industry</TableHead>
-              <TableHead className="w-[150px]">Tax Number</TableHead>
-              <TableHead className="w-[100px]">Status</TableHead>
-              <TableHead className="w-[150px]">Created</TableHead>
-              <TableHead className="w-[120px] text-center">Actions</TableHead>
+              <TableHead className="w-[250px]">{t("admin.customers.table.company")}</TableHead>
+              <TableHead className="w-[200px]">{t("admin.customers.table.contactEmail")}</TableHead>
+              <TableHead className="w-[150px]">{t("admin.customers.table.phone")}</TableHead>
+              <TableHead className="w-[150px]">{t("admin.customers.table.industry")}</TableHead>
+              <TableHead className="w-[150px]">{t("admin.customers.table.taxNumber")}</TableHead>
+              <TableHead className="w-[100px]">{t("admin.customers.table.status")}</TableHead>
+              <TableHead className="w-[150px]">{t("admin.customers.table.created")}</TableHead>
+              <TableHead className="w-[120px] text-center">{t("admin.customers.table.actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {loading ? (
               <TableRow>
                 <TableCell colSpan={8} className="text-center py-8">
-                  Loading customers...
+                  {t("admin.customers.table.loadingCustomers")}
                 </TableCell>
               </TableRow>
             ) : customers.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={8} className="text-center py-8">
-                  No customers found
+                  {t("admin.customers.table.noCustomersFound")}
                 </TableCell>
               </TableRow>
             ) : (
@@ -128,7 +130,7 @@ const CustomerTableView: React.FC<CustomerTableViewProps> = ({
                       variant={customer.isActive ? "default" : "destructive"}
                       className="text-xs"
                     >
-                      {customer.isActive ? "Active" : "Inactive"}
+                      {customer.isActive ? t("admin.customers.table.active") : t("admin.customers.table.inactive")}
                     </Badge>
                   </TableCell>
 

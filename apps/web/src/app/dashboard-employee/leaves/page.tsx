@@ -71,13 +71,13 @@ const LeavesPage = () => {
   return (
     <div className="space-y-4 sm:space-y-6 p-3 sm:p-4 lg:p-6">
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
-        <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Leave Management</h1>
+        <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Urlaubsverwaltung</h1>
         <Button
           onClick={() => setShowRequestModal(true)}
           className="flex items-center gap-2 w-full sm:w-auto"
         >
           <Plus className="h-4 w-4" />
-          <span className="sm:inline">Request Leave</span>
+          <span className="sm:inline">Urlaub beantragen</span>
         </Button>
       </div>
 
@@ -87,7 +87,7 @@ const LeavesPage = () => {
           <CardContent className="p-3 sm:p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs sm:text-sm text-gray-600">Total Days</p>
+                <p className="text-xs sm:text-sm text-gray-600">Gesamttage</p>
                 <p className="text-lg sm:text-2xl font-bold">{stats?.totalDays || 0}</p>
               </div>
               <Calendar className="h-6 w-6 sm:h-8 sm:w-8 text-gray-600" />
@@ -99,7 +99,7 @@ const LeavesPage = () => {
           <CardContent className="p-3 sm:p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs sm:text-sm text-gray-600">Approved</p>
+                <p className="text-xs sm:text-sm text-gray-600">Genehmigt</p>
                 <p className="text-lg sm:text-2xl font-bold text-green-600">
                   {stats?.approvedDays || 0}
                 </p>
@@ -113,7 +113,7 @@ const LeavesPage = () => {
           <CardContent className="p-3 sm:p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs sm:text-sm text-gray-600">Pending</p>
+                <p className="text-xs sm:text-sm text-gray-600">Ausstehend</p>
                 <p className="text-lg sm:text-2xl font-bold text-yellow-600">
                   {stats?.pendingDays || 0}
                 </p>
@@ -127,7 +127,7 @@ const LeavesPage = () => {
           <CardContent className="p-3 sm:p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs sm:text-sm text-gray-600">Rejected</p>
+                <p className="text-xs sm:text-sm text-gray-600">Abgelehnt</p>
                 <p className="text-lg sm:text-2xl font-bold text-red-600">
                   {stats?.rejectedDays || 0}
                 </p>
@@ -141,19 +141,19 @@ const LeavesPage = () => {
       {/* Leave Requests */}
       <Card>
         <CardHeader className="p-4 sm:p-6">
-          <CardTitle className="text-lg sm:text-xl">My Leave Requests</CardTitle>
+          <CardTitle className="text-lg sm:text-xl">Meine Urlaubsanträge</CardTitle>
         </CardHeader>
         <CardContent className="p-4 sm:p-6">
           {absences.length === 0 ? (
             <div className="text-center py-6 sm:py-8">
               <Calendar className="h-8 w-8 sm:h-12 sm:w-12 text-gray-400 mx-auto mb-4" />
-              <p className="text-sm sm:text-base text-gray-500">No leave requests found</p>
+              <p className="text-sm sm:text-base text-gray-500">Keine Urlaubsanträge gefunden</p>
               <Button
                 onClick={() => setShowRequestModal(true)}
                 className="mt-4 w-full sm:w-auto"
                 variant="outline"
               >
-                Submit Your First Request
+                Ersten Antrag einreichen
               </Button>
             </div>
           ) : (
@@ -166,18 +166,35 @@ const LeavesPage = () => {
                   <div className="space-y-3">
                     <div className="flex flex-col sm:flex-row sm:items-center gap-2">
                       <h3 className="font-medium text-sm sm:text-base">
-                        {absence.type.replace("_", " ")}
+                        {(() => {
+                          switch(absence.type) {
+                            case 'VACATION': return 'Urlaub';
+                            case 'SICK_LEAVE': return 'Krankenstand';
+                            case 'PERSONAL': return 'Persönlicher Urlaub';
+                            case 'EMERGENCY': return 'Notfall-Urlaub';
+                            case 'MATERNITY': return 'Mutterschaftsurlaub';
+                            case 'PATERNITY': return 'Vaterschaftsurlaub';
+                            default: return absence.type.replace('_', ' ');
+                          }
+                        })()}
                       </h3>
                       <Badge className={`${getStatusColor(absence.status)} text-xs w-fit`}>
                         <div className="flex items-center gap-1">
                           {getStatusIcon(absence.status)}
-                          {absence.status}
+                          {(() => {
+                            switch(absence.status) {
+                              case 'APPROVED': return 'GENEHMIGT';
+                              case 'REJECTED': return 'ABGELEHNT';
+                              case 'PENDING': return 'AUSSTEHEND';
+                              default: return absence.status;
+                            }
+                          })()}
                         </div>
                       </Badge>
                     </div>
                     <div className="text-xs sm:text-sm text-gray-600 space-y-2">
                       <div className="flex flex-col sm:flex-row sm:items-center gap-1">
-                        <span className="font-medium">Duration:</span>
+                        <span className="font-medium">Dauer:</span>
                         <span>
                           {formatDate(absence.startDate, {
                             month: "short",
@@ -192,24 +209,24 @@ const LeavesPage = () => {
                           })}
                         </span>
                         <span className="text-xs text-gray-500">
-                          ({calculateDays(absence.startDate, absence.endDate)} days)
+                          ({calculateDays(absence.startDate, absence.endDate)} Tage)
                         </span>
                       </div>
                       {absence.reason && (
                         <div>
-                          <span className="font-medium">Reason:</span>
+                          <span className="font-medium">Grund:</span>
                           <p className="mt-1 break-words">{absence.reason}</p>
                         </div>
                       )}
                       {absence.status === "REJECTED" &&
                         absence.rejectionReason && (
                           <div className="text-red-600">
-                            <span className="font-medium">Rejection Reason:</span>
+                            <span className="font-medium">Ablehnungsgrund:</span>
                             <p className="mt-1 break-words">{absence.rejectionReason}</p>
                           </div>
                         )}
                       <p className="text-xs text-gray-500">
-                        Submitted on{" "}
+                        Eingereicht am{" "}
                         {formatDate(absence.createdAt, {
                           month: "short",
                           day: "numeric",

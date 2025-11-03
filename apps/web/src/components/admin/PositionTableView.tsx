@@ -6,6 +6,7 @@ import { Pagination, usePagination } from "@/components/ui/pagination";
 import { Edit, Trash2, Briefcase } from "lucide-react";
 import { Position } from "@/types/position";
 import { format } from "date-fns";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface PositionTableViewProps {
   positions: Position[];
@@ -20,13 +21,29 @@ const PositionTableView: React.FC<PositionTableViewProps> = ({
   onEdit,
   onDelete,
 }) => {
+  const { t, ready } = useTranslation();
   const { currentPage, setCurrentPage, paginatedItems, totalItems } = usePagination(positions);
+  
+  if (!ready) {
+    return (
+      <div className="border rounded-lg">
+        <div className="p-4">
+          <div className="animate-pulse space-y-4">
+            {[...Array(5)].map((_, i) => (
+              <div key={i} className="h-16 bg-muted rounded" />
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+  
   if (loading) {
     return (
       <div className="border rounded-lg">
         <div className="p-8 text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-2 text-sm text-muted-foreground">Loading positions...</p>
+          <p className="mt-2 text-sm text-muted-foreground">{t("admin.positions.table.loadingPositions")}</p>
         </div>
       </div>
     );
@@ -38,12 +55,12 @@ const PositionTableView: React.FC<PositionTableViewProps> = ({
         <table className="w-full">
           <thead className="bg-muted/50">
             <tr>
-              <th className="text-left p-4 font-medium">Title</th>
-              <th className="text-left p-4 font-medium">Department</th>
-              <th className="text-left p-4 font-medium">Description</th>
-              <th className="text-left p-4 font-medium">Created</th>
-              <th className="text-left p-4 font-medium">Status</th>
-              <th className="text-right p-4 font-medium">Actions</th>
+              <th className="text-left p-4 font-medium">{t("admin.positions.table.title")}</th>
+              <th className="text-left p-4 font-medium">{t("admin.positions.table.department")}</th>
+              <th className="text-left p-4 font-medium">{t("admin.positions.table.description")}</th>
+              <th className="text-left p-4 font-medium">{t("admin.positions.table.created")}</th>
+              <th className="text-left p-4 font-medium">{t("admin.positions.table.status")}</th>
+              <th className="text-right p-4 font-medium">{t("admin.positions.table.actions")}</th>
             </tr>
           </thead>
           <tbody>
@@ -60,11 +77,11 @@ const PositionTableView: React.FC<PositionTableViewProps> = ({
                   </div>
                 </td>
                 <td className="p-4">
-                  <Badge variant="outline">{position.department?.name || "N/A"}</Badge>
+                  <Badge variant="outline">{position.department?.name || t("admin.positions.table.noDepartment")}</Badge>
                 </td>
                 <td className="p-4">
                   <p className="text-sm text-muted-foreground max-w-xs truncate">
-                    {position.description || "No description"}
+                    {position.description || t("admin.positions.table.noDescription")}
                   </p>
                 </td>
                 <td className="p-4">
@@ -74,7 +91,7 @@ const PositionTableView: React.FC<PositionTableViewProps> = ({
                 </td>
                 <td className="p-4">
                   <Badge variant={position.isActive ? "default" : "destructive"}>
-                    {position.isActive ? "Active" : "Inactive"}
+                    {position.isActive ? t("admin.positions.table.active") : t("admin.positions.table.inactive")}
                   </Badge>
                 </td>
                 <td className="p-4">

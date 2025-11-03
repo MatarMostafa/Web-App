@@ -20,7 +20,7 @@ export const getBlockedEmplyees = async () => {
     });
     return blocks;
   } catch (error) {
-    throw new Error("Failed to fetch employee blocks");
+    throw new Error("Fehler beim Abrufen der Mitarbeitersperren");
   }
 };
 
@@ -35,9 +35,9 @@ export const unblockEmployee = async (employeeId: string) => {
         blockedReason: null,
       },
     });
-    return { message: "Employee unblocked successfully", employee: result };
+    return { message: "Mitarbeiter erfolgreich entsperrt", employee: result };
   } catch (error) {
-    throw new Error("Failed to unblock employee");
+    throw new Error("Fehler beim Entsperren des Mitarbeiters");
   }
 };
 
@@ -66,7 +66,7 @@ export const getCustomerStatistics = async () => {
       avgOrdersPerCustomer: Math.round(avgOrdersPerCustomer * 100) / 100,
     };
   } catch (error) {
-    throw new Error("Failed to fetch customer statistics");
+    throw new Error("Fehler beim Abrufen der Kundenstatistiken");
   }
 };
 
@@ -98,7 +98,7 @@ export const getAverageValues = async () => {
       avgActualHours: avgAssignmentHours._avg.actualHours || 0,
     };
   } catch (error) {
-    throw new Error("Failed to fetch average values");
+    throw new Error("Fehler beim Abrufen der Durchschnittswerte");
   }
 };
 
@@ -146,7 +146,7 @@ export const getHoursPerEmployee = async () => {
 
     return result;
   } catch (error) {
-    throw new Error("Failed to fetch hours per employee");
+    throw new Error("Fehler beim Abrufen der Stunden pro Mitarbeiter");
   }
 };
 
@@ -188,7 +188,7 @@ export const exportOrdersCSV = async () => {
 
     return generateCSV(csvData);
   } catch (error) {
-    throw new Error("Failed to export orders CSV");
+    throw new Error("Fehler beim Exportieren der Aufträge als CSV");
   }
 };
 
@@ -260,6 +260,6 @@ export const getDashboardStatistics = async () => {
       completedOrders,
     };
   } catch (error) {
-    throw new Error("Failed to fetch dashboard statistics");
+    throw new Error("Fehler beim Abrufen der Dashboard-Statistiken");
   }
 };
