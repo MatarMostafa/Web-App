@@ -4,6 +4,7 @@ import { useEmployeeStore } from "@/store/employeeStore";
 import { CreateEmployeeData, WorkScheduleType } from "@/types/employee";
 import { apiClient } from "@/lib/api-client";
 import EmployeeCredentialsModal from "./EmployeeCredentialsModal";
+import { useTranslation } from '@/hooks/useTranslation';
 
 import {
   Dialog,
@@ -59,13 +60,7 @@ interface EmployeeFormData {
   salary?: number;
 }
 
-const scheduleTypeOptions = [
-  { value: WorkScheduleType.FULL_TIME, label: "Full Time" },
-  { value: WorkScheduleType.PART_TIME, label: "Part Time" },
-  { value: WorkScheduleType.CONTRACT, label: "Contract" },
-  { value: WorkScheduleType.TEMPORARY, label: "Temporary" },
-  { value: WorkScheduleType.INTERN, label: "Intern" },
-];
+
 
 export default function AddEmployeeDialog({
   trigger,
@@ -73,6 +68,15 @@ export default function AddEmployeeDialog({
   onOpenChange,
 }: AddEmployeeDialogProps) {
   const { createEmployee } = useEmployeeStore();
+  const { t } = useTranslation();
+
+  const scheduleTypeOptions = [
+    { value: WorkScheduleType.FULL_TIME, label: t('employee.fullTime') },
+    { value: WorkScheduleType.PART_TIME, label: t('employee.partTime') },
+    { value: WorkScheduleType.CONTRACT, label: t('employee.contract') },
+    { value: WorkScheduleType.TEMPORARY, label: t('employee.temporary') },
+    { value: WorkScheduleType.INTERN, label: t('employee.intern') },
+  ];
 
   const [internalOpen, setInternalOpen] = useState(false);
 
@@ -167,7 +171,7 @@ export default function AddEmployeeDialog({
       !formData.username.trim() ||
       !formData.password.trim()
     ) {
-      toast.error("Username and password are required");
+      toast.error(t('forms.required'));
       return;
     }
 
@@ -244,7 +248,7 @@ export default function AddEmployeeDialog({
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold text-foreground">
-            Add New Employee
+            {t('employee.addEmployee')}
           </DialogTitle>
         </DialogHeader>
 

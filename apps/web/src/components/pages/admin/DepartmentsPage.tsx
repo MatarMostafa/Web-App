@@ -8,8 +8,23 @@ import AddDepartmentDialog from "@/components/admin/AddDepartmentDialog";
 import EditDepartmentDialog from "@/components/admin/EditDepartmentDialog";
 import { useDepartmentStore } from "@/store/departmentStore";
 import { Department } from "@/types/department";
+import { useTranslation } from "@/hooks/useTranslation";
+import { Suspense } from "react";
 
 const DepartmentsPage = () => {
+  const { t, ready } = useTranslation();
+  
+  if (!ready) {
+    return (
+      <div className="p-6">
+        <div className="animate-pulse">
+          <div className="h-8 bg-gray-200 rounded w-1/4 mb-2"></div>
+          <div className="h-4 bg-gray-200 rounded w-1/2 mb-6"></div>
+          <div className="h-64 bg-gray-200 rounded"></div>
+        </div>
+      </div>
+    );
+  }
   const { departments, loading, fetchDepartments, deleteDepartment } = useDepartmentStore();
   const [searchQuery, setSearchQuery] = useState("");
   const [editingDepartment, setEditingDepartment] = useState<Department | null>(null);
@@ -32,7 +47,7 @@ const DepartmentsPage = () => {
   };
 
   const handleDelete = async (id: string) => {
-    if (confirm("Are you sure you want to delete this department?")) {
+    if (confirm(t("admin.departments.confirmDelete"))) {
       await deleteDepartment(id);
     }
   };
@@ -41,16 +56,16 @@ const DepartmentsPage = () => {
     <div className="p-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-foreground mb-1">Departments</h1>
+          <h1 className="text-3xl font-bold text-foreground mb-1">{t("admin.departments.title")}</h1>
           <p className="text-muted-foreground">
-            Manage your organization's departments
+            {t("admin.departments.subtitle")}
           </p>
         </div>
         <div className="flex gap-2">
           <AddDepartmentDialog
             trigger={
               <Button className="bg-primary hover:bg-primary/90">
-                <Plus className="h-4 w-4 mr-2" /> Add Department
+                <Plus className="h-4 w-4 mr-2" /> {t("admin.departments.addDepartment")}
               </Button>
             }
           />
@@ -61,7 +76,7 @@ const DepartmentsPage = () => {
         <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
           <Input
-            placeholder="Search departments by name, code, or description..."
+            placeholder={t("admin.departments.searchPlaceholder")}
             className="pl-10 bg-background"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -92,14 +107,14 @@ const DepartmentsPage = () => {
           <div className="bg-muted w-16 h-16 rounded-full flex items-center justify-center mb-4">
             <Building className="h-8 w-8 text-muted-foreground" />
           </div>
-          <h3 className="text-lg font-medium mb-1">No departments found</h3>
+          <h3 className="text-lg font-medium mb-1">{t("admin.departments.noDepartmentsFound")}</h3>
           <p className="text-muted-foreground mb-4">
-            Get started by adding your first department
+            {t("admin.departments.getStartedMessage")}
           </p>
           <AddDepartmentDialog
             trigger={
               <Button>
-                <Plus className="h-4 w-4 mr-2" /> Add Department
+                <Plus className="h-4 w-4 mr-2" /> {t("admin.departments.addDepartment")}
               </Button>
             }
           />

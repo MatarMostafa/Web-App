@@ -7,7 +7,7 @@ export const getAllEmployees = async (req: Request, res: Response) => {
     const employees = await employeeService.getAllEmployees();
     res.json(employees);
   } catch (error) {
-    res.status(500).json({ message: "Error fetching employees", error });
+    res.status(500).json({ message: "Fehler beim Abrufen der Mitarbeiter", error });
   }
 };
 
@@ -22,18 +22,18 @@ export const getEmployeeById = async (req: Request, res: Response) => {
     if (userRole === "EMPLOYEE") {
       const employee = await employeeService.getEmployeeById(userId as string);
       if (!employee || employee.id !== id) {
-        return res.status(403).json({ message: "Access denied" });
+        return res.status(403).json({ message: "Zugriff verweigert" });
       }
     }
 
     const employee = await employeeService.getEmployeeById(id);
     if (!employee) {
-      return res.status(404).json({ message: "Employee not found" });
+      return res.status(404).json({ message: "Mitarbeiter nicht gefunden" });
     }
 
     res.json(employee);
   } catch (error) {
-    res.status(500).json({ message: "Error fetching employee", error });
+    res.status(500).json({ message: "Fehler beim Abrufen des Mitarbeiters", error });
   }
 };
 
@@ -59,13 +59,13 @@ export const updateEmployee = async (req: Request, res: Response) => {
     if (userRole === "EMPLOYEE") {
       const employee = await employeeService.getEmployeeById(userId as string);
       if (!employee || employee.id !== id) {
-        return res.status(403).json({ message: "Access denied" });
+        return res.status(403).json({ message: "Zugriff verweigert" });
       }
     }
 
     const employee = await employeeService.updateEmployee(id, req.body);
     if (!employee) {
-      return res.status(404).json({ message: "Update Error" });
+      return res.status(404).json({ message: "Aktualisierungsfehler" });
     }
 
     res.json(employee);
@@ -82,11 +82,11 @@ export const deleteEmployee = async (req: Request, res: Response) => {
     const deleted = await employeeService.deleteEmployee(id);
 
     if (!deleted) {
-      return res.status(404).json({ message: "Employee not found" });
+      return res.status(404).json({ message: "Mitarbeiter nicht gefunden" });
     }
 
-    res.json({ message: "Employee deleted successfully" });
+    res.json({ message: "Mitarbeiter erfolgreich gelöscht" });
   } catch (error) {
-    res.status(500).json({ message: "Error deleting employee", error });
+    res.status(500).json({ message: "Fehler beim Löschen des Mitarbeiters", error });
   }
 };

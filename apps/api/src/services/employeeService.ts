@@ -61,7 +61,7 @@ export const getAllEmployees = async (): Promise<Employee[]> => {
     return users.map(transformUserToEmployee);
   } catch (error) {
     console.error("Error:", error);
-    throw new Error("Failed to fetch employees");
+    throw new Error("Fehler beim Abrufen der Mitarbeiter");
   }
 };
 
@@ -121,7 +121,7 @@ export const getEmployeeById = async (id: string): Promise<Employee | null> => {
     return transformUserToEmployee(userWithEmployee);
   } catch (error) {
     console.error("Error:", error);
-    throw new Error("Failed to fetch employee");
+    throw new Error("Fehler beim Abrufen des Mitarbeiters");
   }
 };
 
@@ -131,7 +131,7 @@ export const createEmployee = async (data: any): Promise<Employee> => {
     
     // Username is required, email is optional
     if (!username || !password) {
-      throw new Error('Username and password are required');
+      throw new Error('Benutzername und Passwort sind erforderlich');
     }
     
     // Check for existing username
@@ -139,7 +139,7 @@ export const createEmployee = async (data: any): Promise<Employee> => {
       where: { username },
     });
     if (existingUsername) {
-      throw new Error(`Username '${username}' is already taken`);
+      throw new Error(`Benutzername '${username}' ist bereits vergeben`);
     }
     
     // Check for existing email if provided
@@ -148,7 +148,7 @@ export const createEmployee = async (data: any): Promise<Employee> => {
         where: { email },
       });
       if (existingEmail) {
-        throw new Error(`Email '${email}' is already registered`);
+        throw new Error(`E-Mail '${email}' ist bereits registriert`);
       }
     }
 
@@ -159,7 +159,7 @@ export const createEmployee = async (data: any): Promise<Employee> => {
       });
       if (!department) {
         throw new Error(
-          `Department with ID ${employeeData.departmentId} not found`
+          `Abteilung mit ID ${employeeData.departmentId} nicht gefunden`
         );
       }
     }
@@ -171,7 +171,7 @@ export const createEmployee = async (data: any): Promise<Employee> => {
       });
       if (!position) {
         throw new Error(
-          `Position with ID ${employeeData.positionId} not found`
+          `Position mit ID ${employeeData.positionId} nicht gefunden`
         );
       }
     }
@@ -182,7 +182,7 @@ export const createEmployee = async (data: any): Promise<Employee> => {
         where: { id: employeeData.managerId },
       });
       if (!manager) {
-        throw new Error(`Manager with ID ${employeeData.managerId} not found`);
+        throw new Error(`Vorgesetzter mit ID ${employeeData.managerId} nicht gefunden`);
       }
     }
 
@@ -229,11 +229,11 @@ export const createEmployee = async (data: any): Promise<Employee> => {
     if (error.code === 'P2002') {
       const field = error.meta?.target?.[0];
       if (field === 'username') {
-        throw new Error(`Username '${data.username}' is already taken`);
+        throw new Error(`Benutzername '${data.username}' ist bereits vergeben`);
       } else if (field === 'email') {
-        throw new Error(`Email '${data.email}' is already registered`);
+        throw new Error(`E-Mail '${data.email}' ist bereits registriert`);
       }
-      throw new Error('A user with this information already exists');
+      throw new Error('Ein Benutzer mit diesen Informationen existiert bereits');
     }
     
     throw error;
@@ -254,7 +254,7 @@ export const updateEmployee = async (
     });
 
     if (!employee) {
-      throw new Error(`Employee with ID ${id} not found`);
+      throw new Error(`Mitarbeiter mit ID ${id} nicht gefunden`);
     }
     
     // Check for existing email if provided and different from current
@@ -263,7 +263,7 @@ export const updateEmployee = async (
         where: { email },
       });
       if (existingEmail && existingEmail.id !== employee.userId) {
-        throw new Error(`Email '${email}' is already registered`);
+        throw new Error(`E-Mail '${email}' ist bereits registriert`);
       }
     }
 
@@ -307,11 +307,11 @@ export const updateEmployee = async (
     if (error.code === 'P2002') {
       const field = error.meta?.target?.[0];
       if (field === 'username') {
-        throw new Error(`Username '${username}' is already taken`);
+        throw new Error(`Benutzername '${username}' ist bereits vergeben`);
       } else if (field === 'email') {
-        throw new Error(`Email '${email}' is already registered`);
+        throw new Error(`E-Mail '${email}' ist bereits registriert`);
       }
-      throw new Error('A user with this information already exists');
+      throw new Error('Ein Benutzer mit diesen Informationen existiert bereits');
     }
     
     throw error;
