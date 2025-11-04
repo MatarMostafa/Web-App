@@ -5,6 +5,7 @@ import { Calendar, MapPin, Users } from "lucide-react";
 import { OrderStatus } from "@/types/order";
 import { format } from "date-fns";
 
+
 interface Assignment {
   id: string;
   employeeId: string;
@@ -54,6 +55,7 @@ const EmployeeOrderTableView: React.FC<EmployeeOrderTableViewProps> = ({
   loading,
   onViewNotes,
 }) => {
+
   if (loading) {
     return (
       <div className="border rounded-lg">
@@ -74,11 +76,11 @@ const EmployeeOrderTableView: React.FC<EmployeeOrderTableViewProps> = ({
         <table className="w-full">
           <thead className="bg-muted/50">
             <tr>
-              <th className="text-left p-4 font-medium">Order</th>
+              <th className="text-left p-4 font-medium">Auftrag</th>
               <th className="text-left p-4 font-medium">Status</th>
-              <th className="text-left p-4 font-medium">Scheduled Date</th>
-              <th className="text-left p-4 font-medium">Priority</th>
-              <th className="text-left p-4 font-medium">Assigned Date</th>
+              <th className="text-left p-4 font-medium">Geplantes Datum</th>
+              <th className="text-left p-4 font-medium">Priorität</th>
+              <th className="text-left p-4 font-medium">Zuweisungsdatum</th>
             </tr>
           </thead>
           <tbody>
@@ -99,7 +101,21 @@ const EmployeeOrderTableView: React.FC<EmployeeOrderTableViewProps> = ({
                 <td className="p-4">
                   <div className="flex items-center gap-2">
                     <Badge className={getStatusColor(assignment.order.status)}>
-                      {assignment.order.status.replace("_", " ")}
+                      {(() => {
+                      const status = assignment.order.status.toLowerCase();
+                      switch(status) {
+                        case 'active': return 'Aktiv';
+                        case 'assigned': return 'Zugewiesen';
+                        case 'in_progress': return 'In Bearbeitung';
+                        case 'pending': return 'Ausstehend';
+                        case 'completed': return 'Abgeschlossen';
+                        case 'draft': return 'Entwurf';
+                        case 'open': return 'Offen';
+                        case 'cancelled': return 'Storniert';
+                        case 'expired': return 'Abgelaufen';
+                        default: return assignment.order.status.replace('_', ' ');
+                      }
+                    })()}
                     </Badge>
                     {assignment.order.status === "IN_REVIEW" && (
                       <div className="h-2 w-2 bg-orange-500 rounded-full" />

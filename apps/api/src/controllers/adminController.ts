@@ -6,7 +6,7 @@ export const getBlockedEmplyees = async (req: Request, res: Response) => {
     const blocks = await adminService.getBlockedEmplyees();
     res.json(blocks);
   } catch (error) {
-    res.status(500).json({ message: "Error fetching blocks", error });
+    res.status(500).json({ message: "Fehler beim Abrufen der Sperren", error });
   }
 };
 
@@ -16,7 +16,7 @@ export const unblockEmployee = async (req: Request, res: Response) => {
     const result = await adminService.unblockEmployee(employeeId);
     res.json(result);
   } catch (error) {
-    res.status(500).json({ message: "Error unblocking employee", error });
+    res.status(500).json({ message: "Fehler beim Entsperren des Mitarbeiters", error });
   }
 };
 
@@ -27,7 +27,7 @@ export const getCustomerStatistics = async (req: Request, res: Response) => {
   } catch (error) {
     res
       .status(500)
-      .json({ message: "Error fetching customer statistics", error });
+      .json({ message: "Fehler beim Abrufen der Kundenstatistiken", error });
   }
 };
 
@@ -36,7 +36,7 @@ export const getAverageValues = async (req: Request, res: Response) => {
     const averages = await adminService.getAverageValues();
     res.json(averages);
   } catch (error) {
-    res.status(500).json({ message: "Error fetching average values", error });
+    res.status(500).json({ message: "Fehler beim Abrufen der Durchschnittswerte", error });
   }
 };
 
@@ -47,7 +47,7 @@ export const hoursperEmployee = async (req: Request, res: Response) => {
   } catch (error) {
     res
       .status(500)
-      .json({ message: "Error fetching hours per employee", error });
+      .json({ message: "Fehler beim Abrufen der Stunden pro Mitarbeiter", error });
   }
 };
 
@@ -58,7 +58,7 @@ export const exportOrdersCSV = async (req: Request, res: Response) => {
     res.setHeader("Content-Disposition", 'attachment; filename="orders.csv"');
     res.send(csvData);
   } catch (error) {
-    res.status(500).json({ message: "Error exporting orders CSV", error });
+    res.status(500).json({ message: "Fehler beim Exportieren der Aufträge als CSV", error });
   }
 };
 
@@ -69,6 +69,6 @@ export const getDashboardStatistics = async (req: Request, res: Response) => {
   } catch (error) {
     res
       .status(500)
-      .json({ message: "Error fetching dashboard statistics", error });
+      .json({ message: "Fehler beim Abrufen der Dashboard-Statistiken", error });
   }
 };

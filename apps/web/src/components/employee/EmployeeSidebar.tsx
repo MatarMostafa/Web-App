@@ -55,15 +55,15 @@ const EmployeeSidebar: React.FC<SidebarProps> = ({
 
   const dashboardNavItems = [
     { name: "Dashboard", path: "/dashboard-employee", icon: LayoutGrid },
-    { name: "Orders", path: "/dashboard-employee/orders", icon: FileBox },
-    { name: "Leaves", path: "/dashboard-employee/leaves", icon: CalendarDays },
+    { name: "Aufträge", path: "/dashboard-employee/orders", icon: FileBox },
+    { name: "Urlaub", path: "/dashboard-employee/leaves", icon: CalendarDays },
   ];
 
   const settingsNavItems = [
-    { name: "Profile", path: "/settings", icon: User },
-    { name: "Notifications", path: "/settings/notifications", icon: Bell },
-    { name: "Privacy & Security", path: "/settings/privacy", icon: Shield },
-    { name: "Help & Support", path: "/settings/help", icon: HelpCircle },
+    { name: "Profil", path: "/settings", icon: User },
+    { name: "Benachrichtigungen", path: "/settings/notifications", icon: Bell },
+    { name: "Datenschutz & Sicherheit", path: "/settings/privacy", icon: Shield },
+    { name: "Hilfe & Support", path: "/settings/help", icon: HelpCircle },
   ];
 
   const navItems = isSettingsPath ? settingsNavItems : dashboardNavItems;
@@ -212,14 +212,14 @@ const EmployeeSidebar: React.FC<SidebarProps> = ({
                               )}
                             />
                             {(!collapsed || isMobile) && (
-                              <span>Back to Dashboard</span>
+                              <span>Zurück zum Dashboard</span>
                             )}
                           </Link>
                         </Button>
                       </TooltipTrigger>
                       {collapsed && !isMobile && (
                         <TooltipContent side="right">
-                          Back to Dashboard
+                          Zurück zum Dashboard
                         </TooltipContent>
                       )}
                     </Tooltip>
@@ -240,11 +240,11 @@ const EmployeeSidebar: React.FC<SidebarProps> = ({
                               collapsed && !isMobile ? "mr-0" : "mr-2"
                             )}
                           />
-                          {(!collapsed || isMobile) && <span>Log Out</span>}
+                          {(!collapsed || isMobile) && <span>Abmelden</span>}
                         </Button>
                       </TooltipTrigger>
                       {collapsed && !isMobile && (
-                        <TooltipContent side="right">Log Out</TooltipContent>
+                        <TooltipContent side="right">Abmelden</TooltipContent>
                       )}
                     </Tooltip>
                   </>
@@ -266,11 +266,11 @@ const EmployeeSidebar: React.FC<SidebarProps> = ({
                               collapsed && !isMobile ? "mr-0" : "mr-2"
                             )}
                           />
-                          {(!collapsed || isMobile) && <span>Log Out</span>}
+                          {(!collapsed || isMobile) && <span>Abmelden</span>}
                         </Button>
                       </TooltipTrigger>
                       {collapsed && !isMobile && (
-                        <TooltipContent side="right">Log Out</TooltipContent>
+                        <TooltipContent side="right">Abmelden</TooltipContent>
                       )}
                     </Tooltip>
                   </>

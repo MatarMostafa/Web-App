@@ -6,8 +6,10 @@ import EmployeeSummary from "@/components/admin/EmployeeSummary";
 import EmployeeProfile from "@/components/admin/EmployeeProfile";
 import { useEmployeeStore } from "@/store/employeeStore";
 import { LoadingSpinnerWithText } from "@/components/ui";
+import { useTranslation } from '@/hooks/useTranslation';
 
 const EmployeeDetailPage = () => {
+  const { t } = useTranslation();
   const params = useParams();
   const id = params?.id as string;
   const { currentEmployee, isLoadingEmployee, fetchEmployee } =
@@ -22,13 +24,13 @@ const EmployeeDetailPage = () => {
   if (isLoadingEmployee) {
     return (
       <div className="w-full h-full min-h-[calc(100vh-130px)] flex items-center justify-center">
-        <LoadingSpinnerWithText text={"Loading Employee"} />
+        <LoadingSpinnerWithText text={t('admin.employeeDetails.loading')} />
       </div>
     );
   }
 
   if (!currentEmployee) {
-    return <div className="p-8">Employee not found</div>;
+    return <div className="p-8">{t('admin.employeeDetails.notFound')}</div>;
   }
 
   return (

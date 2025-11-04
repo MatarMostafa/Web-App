@@ -24,7 +24,7 @@ export const create = (departmentId: string, data: any) => {
   // Validate thresholds before creating
   const validation = validateThresholds(data);
   if (!validation.isValid) {
-    throw new Error(`Invalid thresholds: ${validation.errors.join(", ")}`);
+    throw new Error(`Ungültige Schwellenwerte: ${validation.errors.join(", ")}`);
   }
 
   return prisma.performanceThreshold.create({
@@ -40,7 +40,7 @@ export const update = (id: string, data: any) => {
   // Validate thresholds before updating
   const validation = validateThresholds(data);
   if (!validation.isValid) {
-    throw new Error(`Invalid thresholds: ${validation.errors.join(", ")}`);
+    throw new Error(`Ungültige Schwellenwerte: ${validation.errors.join(", ")}`);
   }
 
   return prisma.performanceThreshold.update({

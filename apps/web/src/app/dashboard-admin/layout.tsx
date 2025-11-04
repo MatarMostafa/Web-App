@@ -6,6 +6,7 @@ import Header from "@/components/Header";
 import { cn } from "@/lib/utils/helpers";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useLayoutStore } from "@/store/layoutStore";
+import '@/lib/i18n';
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const isMobile = useIsMobile();
