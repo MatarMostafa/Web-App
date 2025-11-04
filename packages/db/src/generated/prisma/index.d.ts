@@ -124,6 +124,11 @@ export type NotificationOutbox = $Result.DefaultSelection<Prisma.$NotificationOu
  */
 export type NotificationPreference = $Result.DefaultSelection<Prisma.$NotificationPreferencePayload>
 /**
+ * Model OrderNote
+ * 
+ */
+export type OrderNote = $Result.DefaultSelection<Prisma.$OrderNotePayload>
+/**
  * Model File
  * 
  */
@@ -168,6 +173,7 @@ export const OrderStatus: {
   OPEN: 'OPEN',
   ACTIVE: 'ACTIVE',
   IN_PROGRESS: 'IN_PROGRESS',
+  IN_REVIEW: 'IN_REVIEW',
   COMPLETED: 'COMPLETED',
   CANCELLED: 'CANCELLED',
   EXPIRED: 'EXPIRED'
@@ -218,6 +224,16 @@ export const DocumentType: {
 };
 
 export type DocumentType = (typeof DocumentType)[keyof typeof DocumentType]
+
+
+export const NoteCategory: {
+  COMPLETION_REQUEST: 'COMPLETION_REQUEST',
+  ADMIN_RESPONSE: 'ADMIN_RESPONSE',
+  GENERAL_UPDATE: 'GENERAL_UPDATE',
+  ISSUE_REPORT: 'ISSUE_REPORT'
+};
+
+export type NoteCategory = (typeof NoteCategory)[keyof typeof NoteCategory]
 
 
 export const AbsenceType: {
@@ -282,6 +298,10 @@ export const AssignmentTier: typeof $Enums.AssignmentTier
 export type DocumentType = $Enums.DocumentType
 
 export const DocumentType: typeof $Enums.DocumentType
+
+export type NoteCategory = $Enums.NoteCategory
+
+export const NoteCategory: typeof $Enums.NoteCategory
 
 export type AbsenceType = $Enums.AbsenceType
 
@@ -632,6 +652,16 @@ export class PrismaClient<
     * ```
     */
   get notificationPreference(): Prisma.NotificationPreferenceDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.orderNote`: Exposes CRUD operations for the **OrderNote** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more OrderNotes
+    * const orderNotes = await prisma.orderNote.findMany()
+    * ```
+    */
+  get orderNote(): Prisma.OrderNoteDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.file`: Exposes CRUD operations for the **File** model.
@@ -1125,6 +1155,7 @@ export namespace Prisma {
     NotificationRecipient: 'NotificationRecipient',
     NotificationOutbox: 'NotificationOutbox',
     NotificationPreference: 'NotificationPreference',
+    OrderNote: 'OrderNote',
     File: 'File',
     SystemConfig: 'SystemConfig',
     AuditLog: 'AuditLog'
@@ -1146,7 +1177,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "employee" | "employeePerformance" | "performanceThreshold" | "department" | "position" | "customer" | "subAccount" | "order" | "qualification" | "employeeQualification" | "orderQualification" | "assignment" | "orderAssignment" | "absence" | "rating" | "workStatistic" | "notificationTemplate" | "notification" | "notificationRecipient" | "notificationOutbox" | "notificationPreference" | "file" | "systemConfig" | "auditLog"
+      modelProps: "user" | "employee" | "employeePerformance" | "performanceThreshold" | "department" | "position" | "customer" | "subAccount" | "order" | "qualification" | "employeeQualification" | "orderQualification" | "assignment" | "orderAssignment" | "absence" | "rating" | "workStatistic" | "notificationTemplate" | "notification" | "notificationRecipient" | "notificationOutbox" | "notificationPreference" | "orderNote" | "file" | "systemConfig" | "auditLog"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -2778,6 +2809,80 @@ export namespace Prisma {
           }
         }
       }
+      OrderNote: {
+        payload: Prisma.$OrderNotePayload<ExtArgs>
+        fields: Prisma.OrderNoteFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.OrderNoteFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrderNotePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.OrderNoteFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrderNotePayload>
+          }
+          findFirst: {
+            args: Prisma.OrderNoteFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrderNotePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.OrderNoteFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrderNotePayload>
+          }
+          findMany: {
+            args: Prisma.OrderNoteFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrderNotePayload>[]
+          }
+          create: {
+            args: Prisma.OrderNoteCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrderNotePayload>
+          }
+          createMany: {
+            args: Prisma.OrderNoteCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.OrderNoteCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrderNotePayload>[]
+          }
+          delete: {
+            args: Prisma.OrderNoteDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrderNotePayload>
+          }
+          update: {
+            args: Prisma.OrderNoteUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrderNotePayload>
+          }
+          deleteMany: {
+            args: Prisma.OrderNoteDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.OrderNoteUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.OrderNoteUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrderNotePayload>[]
+          }
+          upsert: {
+            args: Prisma.OrderNoteUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrderNotePayload>
+          }
+          aggregate: {
+            args: Prisma.OrderNoteAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateOrderNote>
+          }
+          groupBy: {
+            args: Prisma.OrderNoteGroupByArgs<ExtArgs>
+            result: $Utils.Optional<OrderNoteGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.OrderNoteCountArgs<ExtArgs>
+            result: $Utils.Optional<OrderNoteCountAggregateOutputType> | number
+          }
+        }
+      }
       File: {
         payload: Prisma.$FilePayload<ExtArgs>
         fields: Prisma.FileFieldRefs
@@ -3118,6 +3223,7 @@ export namespace Prisma {
     notificationRecipient?: NotificationRecipientOmit
     notificationOutbox?: NotificationOutboxOmit
     notificationPreference?: NotificationPreferenceOmit
+    orderNote?: OrderNoteOmit
     file?: FileOmit
     systemConfig?: SystemConfigOmit
     auditLog?: AuditLogOmit
@@ -3204,12 +3310,14 @@ export namespace Prisma {
     manualOverrides: number
     subordinates: number
     notificationRecipients: number
+    orderNotes: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     manualOverrides?: boolean | UserCountOutputTypeCountManualOverridesArgs
     subordinates?: boolean | UserCountOutputTypeCountSubordinatesArgs
     notificationRecipients?: boolean | UserCountOutputTypeCountNotificationRecipientsArgs
+    orderNotes?: boolean | UserCountOutputTypeCountOrderNotesArgs
   }
 
   // Custom InputTypes
@@ -3242,6 +3350,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountNotificationRecipientsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: NotificationRecipientWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountOrderNotesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: OrderNoteWhereInput
   }
 
 
@@ -3478,6 +3593,7 @@ export namespace Prisma {
     employeeAssignments: number
     ratings: number
     files: number
+    notes: number
   }
 
   export type OrderCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -3486,6 +3602,7 @@ export namespace Prisma {
     employeeAssignments?: boolean | OrderCountOutputTypeCountEmployeeAssignmentsArgs
     ratings?: boolean | OrderCountOutputTypeCountRatingsArgs
     files?: boolean | OrderCountOutputTypeCountFilesArgs
+    notes?: boolean | OrderCountOutputTypeCountNotesArgs
   }
 
   // Custom InputTypes
@@ -3532,6 +3649,13 @@ export namespace Prisma {
    */
   export type OrderCountOutputTypeCountFilesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: FileWhereInput
+  }
+
+  /**
+   * OrderCountOutputType without action
+   */
+  export type OrderCountOutputTypeCountNotesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: OrderNoteWhereInput
   }
 
 
@@ -3931,6 +4055,7 @@ export namespace Prisma {
     subordinates?: boolean | User$subordinatesArgs<ExtArgs>
     notificationRecipients?: boolean | User$notificationRecipientsArgs<ExtArgs>
     notificationPreferences?: boolean | User$notificationPreferencesArgs<ExtArgs>
+    orderNotes?: boolean | User$orderNotesArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -4007,6 +4132,7 @@ export namespace Prisma {
     subordinates?: boolean | User$subordinatesArgs<ExtArgs>
     notificationRecipients?: boolean | User$notificationRecipientsArgs<ExtArgs>
     notificationPreferences?: boolean | User$notificationPreferencesArgs<ExtArgs>
+    orderNotes?: boolean | User$orderNotesArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -4020,6 +4146,7 @@ export namespace Prisma {
       subordinates: Prisma.$EmployeePayload<ExtArgs>[]
       notificationRecipients: Prisma.$NotificationRecipientPayload<ExtArgs>[]
       notificationPreferences: Prisma.$NotificationPreferencePayload<ExtArgs> | null
+      orderNotes: Prisma.$OrderNotePayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -4440,6 +4567,7 @@ export namespace Prisma {
     subordinates<T extends User$subordinatesArgs<ExtArgs> = {}>(args?: Subset<T, User$subordinatesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EmployeePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     notificationRecipients<T extends User$notificationRecipientsArgs<ExtArgs> = {}>(args?: Subset<T, User$notificationRecipientsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationRecipientPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     notificationPreferences<T extends User$notificationPreferencesArgs<ExtArgs> = {}>(args?: Subset<T, User$notificationPreferencesArgs<ExtArgs>>): Prisma__NotificationPreferenceClient<$Result.GetResult<Prisma.$NotificationPreferencePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    orderNotes<T extends User$orderNotesArgs<ExtArgs> = {}>(args?: Subset<T, User$orderNotesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderNotePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -4983,6 +5111,30 @@ export namespace Prisma {
      */
     include?: NotificationPreferenceInclude<ExtArgs> | null
     where?: NotificationPreferenceWhereInput
+  }
+
+  /**
+   * User.orderNotes
+   */
+  export type User$orderNotesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderNote
+     */
+    select?: OrderNoteSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderNote
+     */
+    omit?: OrderNoteOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderNoteInclude<ExtArgs> | null
+    where?: OrderNoteWhereInput
+    orderBy?: OrderNoteOrderByWithRelationInput | OrderNoteOrderByWithRelationInput[]
+    cursor?: OrderNoteWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: OrderNoteScalarFieldEnum | OrderNoteScalarFieldEnum[]
   }
 
   /**
@@ -14127,6 +14279,7 @@ export namespace Prisma {
     employeeAssignments?: boolean | Order$employeeAssignmentsArgs<ExtArgs>
     ratings?: boolean | Order$ratingsArgs<ExtArgs>
     files?: boolean | Order$filesArgs<ExtArgs>
+    notes?: boolean | Order$notesArgs<ExtArgs>
     _count?: boolean | OrderCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["order"]>
 
@@ -14215,6 +14368,7 @@ export namespace Prisma {
     employeeAssignments?: boolean | Order$employeeAssignmentsArgs<ExtArgs>
     ratings?: boolean | Order$ratingsArgs<ExtArgs>
     files?: boolean | Order$filesArgs<ExtArgs>
+    notes?: boolean | Order$notesArgs<ExtArgs>
     _count?: boolean | OrderCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type OrderIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -14233,6 +14387,7 @@ export namespace Prisma {
       employeeAssignments: Prisma.$AssignmentPayload<ExtArgs>[]
       ratings: Prisma.$RatingPayload<ExtArgs>[]
       files: Prisma.$FilePayload<ExtArgs>[]
+      notes: Prisma.$OrderNotePayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -14657,6 +14812,7 @@ export namespace Prisma {
     employeeAssignments<T extends Order$employeeAssignmentsArgs<ExtArgs> = {}>(args?: Subset<T, Order$employeeAssignmentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AssignmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     ratings<T extends Order$ratingsArgs<ExtArgs> = {}>(args?: Subset<T, Order$ratingsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RatingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     files<T extends Order$filesArgs<ExtArgs> = {}>(args?: Subset<T, Order$filesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FilePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    notes<T extends Order$notesArgs<ExtArgs> = {}>(args?: Subset<T, Order$notesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderNotePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -15221,6 +15377,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: FileScalarFieldEnum | FileScalarFieldEnum[]
+  }
+
+  /**
+   * Order.notes
+   */
+  export type Order$notesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderNote
+     */
+    select?: OrderNoteSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderNote
+     */
+    omit?: OrderNoteOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderNoteInclude<ExtArgs> | null
+    where?: OrderNoteWhereInput
+    orderBy?: OrderNoteOrderByWithRelationInput | OrderNoteOrderByWithRelationInput[]
+    cursor?: OrderNoteWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: OrderNoteScalarFieldEnum | OrderNoteScalarFieldEnum[]
   }
 
   /**
@@ -30348,6 +30528,1124 @@ export namespace Prisma {
 
 
   /**
+   * Model OrderNote
+   */
+
+  export type AggregateOrderNote = {
+    _count: OrderNoteCountAggregateOutputType | null
+    _min: OrderNoteMinAggregateOutputType | null
+    _max: OrderNoteMaxAggregateOutputType | null
+  }
+
+  export type OrderNoteMinAggregateOutputType = {
+    id: string | null
+    orderId: string | null
+    authorId: string | null
+    content: string | null
+    triggersStatus: $Enums.OrderStatus | null
+    category: $Enums.NoteCategory | null
+    isInternal: boolean | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type OrderNoteMaxAggregateOutputType = {
+    id: string | null
+    orderId: string | null
+    authorId: string | null
+    content: string | null
+    triggersStatus: $Enums.OrderStatus | null
+    category: $Enums.NoteCategory | null
+    isInternal: boolean | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type OrderNoteCountAggregateOutputType = {
+    id: number
+    orderId: number
+    authorId: number
+    content: number
+    triggersStatus: number
+    category: number
+    isInternal: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type OrderNoteMinAggregateInputType = {
+    id?: true
+    orderId?: true
+    authorId?: true
+    content?: true
+    triggersStatus?: true
+    category?: true
+    isInternal?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type OrderNoteMaxAggregateInputType = {
+    id?: true
+    orderId?: true
+    authorId?: true
+    content?: true
+    triggersStatus?: true
+    category?: true
+    isInternal?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type OrderNoteCountAggregateInputType = {
+    id?: true
+    orderId?: true
+    authorId?: true
+    content?: true
+    triggersStatus?: true
+    category?: true
+    isInternal?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type OrderNoteAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which OrderNote to aggregate.
+     */
+    where?: OrderNoteWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of OrderNotes to fetch.
+     */
+    orderBy?: OrderNoteOrderByWithRelationInput | OrderNoteOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: OrderNoteWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` OrderNotes from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` OrderNotes.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned OrderNotes
+    **/
+    _count?: true | OrderNoteCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: OrderNoteMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: OrderNoteMaxAggregateInputType
+  }
+
+  export type GetOrderNoteAggregateType<T extends OrderNoteAggregateArgs> = {
+        [P in keyof T & keyof AggregateOrderNote]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateOrderNote[P]>
+      : GetScalarType<T[P], AggregateOrderNote[P]>
+  }
+
+
+
+
+  export type OrderNoteGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: OrderNoteWhereInput
+    orderBy?: OrderNoteOrderByWithAggregationInput | OrderNoteOrderByWithAggregationInput[]
+    by: OrderNoteScalarFieldEnum[] | OrderNoteScalarFieldEnum
+    having?: OrderNoteScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: OrderNoteCountAggregateInputType | true
+    _min?: OrderNoteMinAggregateInputType
+    _max?: OrderNoteMaxAggregateInputType
+  }
+
+  export type OrderNoteGroupByOutputType = {
+    id: string
+    orderId: string
+    authorId: string
+    content: string
+    triggersStatus: $Enums.OrderStatus | null
+    category: $Enums.NoteCategory
+    isInternal: boolean
+    createdAt: Date
+    updatedAt: Date
+    _count: OrderNoteCountAggregateOutputType | null
+    _min: OrderNoteMinAggregateOutputType | null
+    _max: OrderNoteMaxAggregateOutputType | null
+  }
+
+  type GetOrderNoteGroupByPayload<T extends OrderNoteGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<OrderNoteGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof OrderNoteGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], OrderNoteGroupByOutputType[P]>
+            : GetScalarType<T[P], OrderNoteGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type OrderNoteSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    orderId?: boolean
+    authorId?: boolean
+    content?: boolean
+    triggersStatus?: boolean
+    category?: boolean
+    isInternal?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    order?: boolean | OrderDefaultArgs<ExtArgs>
+    author?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["orderNote"]>
+
+  export type OrderNoteSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    orderId?: boolean
+    authorId?: boolean
+    content?: boolean
+    triggersStatus?: boolean
+    category?: boolean
+    isInternal?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    order?: boolean | OrderDefaultArgs<ExtArgs>
+    author?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["orderNote"]>
+
+  export type OrderNoteSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    orderId?: boolean
+    authorId?: boolean
+    content?: boolean
+    triggersStatus?: boolean
+    category?: boolean
+    isInternal?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    order?: boolean | OrderDefaultArgs<ExtArgs>
+    author?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["orderNote"]>
+
+  export type OrderNoteSelectScalar = {
+    id?: boolean
+    orderId?: boolean
+    authorId?: boolean
+    content?: boolean
+    triggersStatus?: boolean
+    category?: boolean
+    isInternal?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type OrderNoteOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "orderId" | "authorId" | "content" | "triggersStatus" | "category" | "isInternal" | "createdAt" | "updatedAt", ExtArgs["result"]["orderNote"]>
+  export type OrderNoteInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    order?: boolean | OrderDefaultArgs<ExtArgs>
+    author?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type OrderNoteIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    order?: boolean | OrderDefaultArgs<ExtArgs>
+    author?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type OrderNoteIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    order?: boolean | OrderDefaultArgs<ExtArgs>
+    author?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $OrderNotePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "OrderNote"
+    objects: {
+      order: Prisma.$OrderPayload<ExtArgs>
+      author: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      orderId: string
+      authorId: string
+      content: string
+      triggersStatus: $Enums.OrderStatus | null
+      category: $Enums.NoteCategory
+      isInternal: boolean
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["orderNote"]>
+    composites: {}
+  }
+
+  type OrderNoteGetPayload<S extends boolean | null | undefined | OrderNoteDefaultArgs> = $Result.GetResult<Prisma.$OrderNotePayload, S>
+
+  type OrderNoteCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<OrderNoteFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: OrderNoteCountAggregateInputType | true
+    }
+
+  export interface OrderNoteDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['OrderNote'], meta: { name: 'OrderNote' } }
+    /**
+     * Find zero or one OrderNote that matches the filter.
+     * @param {OrderNoteFindUniqueArgs} args - Arguments to find a OrderNote
+     * @example
+     * // Get one OrderNote
+     * const orderNote = await prisma.orderNote.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends OrderNoteFindUniqueArgs>(args: SelectSubset<T, OrderNoteFindUniqueArgs<ExtArgs>>): Prisma__OrderNoteClient<$Result.GetResult<Prisma.$OrderNotePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one OrderNote that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {OrderNoteFindUniqueOrThrowArgs} args - Arguments to find a OrderNote
+     * @example
+     * // Get one OrderNote
+     * const orderNote = await prisma.orderNote.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends OrderNoteFindUniqueOrThrowArgs>(args: SelectSubset<T, OrderNoteFindUniqueOrThrowArgs<ExtArgs>>): Prisma__OrderNoteClient<$Result.GetResult<Prisma.$OrderNotePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first OrderNote that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OrderNoteFindFirstArgs} args - Arguments to find a OrderNote
+     * @example
+     * // Get one OrderNote
+     * const orderNote = await prisma.orderNote.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends OrderNoteFindFirstArgs>(args?: SelectSubset<T, OrderNoteFindFirstArgs<ExtArgs>>): Prisma__OrderNoteClient<$Result.GetResult<Prisma.$OrderNotePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first OrderNote that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OrderNoteFindFirstOrThrowArgs} args - Arguments to find a OrderNote
+     * @example
+     * // Get one OrderNote
+     * const orderNote = await prisma.orderNote.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends OrderNoteFindFirstOrThrowArgs>(args?: SelectSubset<T, OrderNoteFindFirstOrThrowArgs<ExtArgs>>): Prisma__OrderNoteClient<$Result.GetResult<Prisma.$OrderNotePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more OrderNotes that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OrderNoteFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all OrderNotes
+     * const orderNotes = await prisma.orderNote.findMany()
+     * 
+     * // Get first 10 OrderNotes
+     * const orderNotes = await prisma.orderNote.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const orderNoteWithIdOnly = await prisma.orderNote.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends OrderNoteFindManyArgs>(args?: SelectSubset<T, OrderNoteFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderNotePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a OrderNote.
+     * @param {OrderNoteCreateArgs} args - Arguments to create a OrderNote.
+     * @example
+     * // Create one OrderNote
+     * const OrderNote = await prisma.orderNote.create({
+     *   data: {
+     *     // ... data to create a OrderNote
+     *   }
+     * })
+     * 
+     */
+    create<T extends OrderNoteCreateArgs>(args: SelectSubset<T, OrderNoteCreateArgs<ExtArgs>>): Prisma__OrderNoteClient<$Result.GetResult<Prisma.$OrderNotePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many OrderNotes.
+     * @param {OrderNoteCreateManyArgs} args - Arguments to create many OrderNotes.
+     * @example
+     * // Create many OrderNotes
+     * const orderNote = await prisma.orderNote.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends OrderNoteCreateManyArgs>(args?: SelectSubset<T, OrderNoteCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many OrderNotes and returns the data saved in the database.
+     * @param {OrderNoteCreateManyAndReturnArgs} args - Arguments to create many OrderNotes.
+     * @example
+     * // Create many OrderNotes
+     * const orderNote = await prisma.orderNote.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many OrderNotes and only return the `id`
+     * const orderNoteWithIdOnly = await prisma.orderNote.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends OrderNoteCreateManyAndReturnArgs>(args?: SelectSubset<T, OrderNoteCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderNotePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a OrderNote.
+     * @param {OrderNoteDeleteArgs} args - Arguments to delete one OrderNote.
+     * @example
+     * // Delete one OrderNote
+     * const OrderNote = await prisma.orderNote.delete({
+     *   where: {
+     *     // ... filter to delete one OrderNote
+     *   }
+     * })
+     * 
+     */
+    delete<T extends OrderNoteDeleteArgs>(args: SelectSubset<T, OrderNoteDeleteArgs<ExtArgs>>): Prisma__OrderNoteClient<$Result.GetResult<Prisma.$OrderNotePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one OrderNote.
+     * @param {OrderNoteUpdateArgs} args - Arguments to update one OrderNote.
+     * @example
+     * // Update one OrderNote
+     * const orderNote = await prisma.orderNote.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends OrderNoteUpdateArgs>(args: SelectSubset<T, OrderNoteUpdateArgs<ExtArgs>>): Prisma__OrderNoteClient<$Result.GetResult<Prisma.$OrderNotePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more OrderNotes.
+     * @param {OrderNoteDeleteManyArgs} args - Arguments to filter OrderNotes to delete.
+     * @example
+     * // Delete a few OrderNotes
+     * const { count } = await prisma.orderNote.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends OrderNoteDeleteManyArgs>(args?: SelectSubset<T, OrderNoteDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more OrderNotes.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OrderNoteUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many OrderNotes
+     * const orderNote = await prisma.orderNote.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends OrderNoteUpdateManyArgs>(args: SelectSubset<T, OrderNoteUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more OrderNotes and returns the data updated in the database.
+     * @param {OrderNoteUpdateManyAndReturnArgs} args - Arguments to update many OrderNotes.
+     * @example
+     * // Update many OrderNotes
+     * const orderNote = await prisma.orderNote.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more OrderNotes and only return the `id`
+     * const orderNoteWithIdOnly = await prisma.orderNote.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends OrderNoteUpdateManyAndReturnArgs>(args: SelectSubset<T, OrderNoteUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderNotePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one OrderNote.
+     * @param {OrderNoteUpsertArgs} args - Arguments to update or create a OrderNote.
+     * @example
+     * // Update or create a OrderNote
+     * const orderNote = await prisma.orderNote.upsert({
+     *   create: {
+     *     // ... data to create a OrderNote
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the OrderNote we want to update
+     *   }
+     * })
+     */
+    upsert<T extends OrderNoteUpsertArgs>(args: SelectSubset<T, OrderNoteUpsertArgs<ExtArgs>>): Prisma__OrderNoteClient<$Result.GetResult<Prisma.$OrderNotePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of OrderNotes.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OrderNoteCountArgs} args - Arguments to filter OrderNotes to count.
+     * @example
+     * // Count the number of OrderNotes
+     * const count = await prisma.orderNote.count({
+     *   where: {
+     *     // ... the filter for the OrderNotes we want to count
+     *   }
+     * })
+    **/
+    count<T extends OrderNoteCountArgs>(
+      args?: Subset<T, OrderNoteCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], OrderNoteCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a OrderNote.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OrderNoteAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends OrderNoteAggregateArgs>(args: Subset<T, OrderNoteAggregateArgs>): Prisma.PrismaPromise<GetOrderNoteAggregateType<T>>
+
+    /**
+     * Group by OrderNote.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OrderNoteGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends OrderNoteGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: OrderNoteGroupByArgs['orderBy'] }
+        : { orderBy?: OrderNoteGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, OrderNoteGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetOrderNoteGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the OrderNote model
+   */
+  readonly fields: OrderNoteFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for OrderNote.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__OrderNoteClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    order<T extends OrderDefaultArgs<ExtArgs> = {}>(args?: Subset<T, OrderDefaultArgs<ExtArgs>>): Prisma__OrderClient<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    author<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the OrderNote model
+   */
+  interface OrderNoteFieldRefs {
+    readonly id: FieldRef<"OrderNote", 'String'>
+    readonly orderId: FieldRef<"OrderNote", 'String'>
+    readonly authorId: FieldRef<"OrderNote", 'String'>
+    readonly content: FieldRef<"OrderNote", 'String'>
+    readonly triggersStatus: FieldRef<"OrderNote", 'OrderStatus'>
+    readonly category: FieldRef<"OrderNote", 'NoteCategory'>
+    readonly isInternal: FieldRef<"OrderNote", 'Boolean'>
+    readonly createdAt: FieldRef<"OrderNote", 'DateTime'>
+    readonly updatedAt: FieldRef<"OrderNote", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * OrderNote findUnique
+   */
+  export type OrderNoteFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderNote
+     */
+    select?: OrderNoteSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderNote
+     */
+    omit?: OrderNoteOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderNoteInclude<ExtArgs> | null
+    /**
+     * Filter, which OrderNote to fetch.
+     */
+    where: OrderNoteWhereUniqueInput
+  }
+
+  /**
+   * OrderNote findUniqueOrThrow
+   */
+  export type OrderNoteFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderNote
+     */
+    select?: OrderNoteSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderNote
+     */
+    omit?: OrderNoteOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderNoteInclude<ExtArgs> | null
+    /**
+     * Filter, which OrderNote to fetch.
+     */
+    where: OrderNoteWhereUniqueInput
+  }
+
+  /**
+   * OrderNote findFirst
+   */
+  export type OrderNoteFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderNote
+     */
+    select?: OrderNoteSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderNote
+     */
+    omit?: OrderNoteOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderNoteInclude<ExtArgs> | null
+    /**
+     * Filter, which OrderNote to fetch.
+     */
+    where?: OrderNoteWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of OrderNotes to fetch.
+     */
+    orderBy?: OrderNoteOrderByWithRelationInput | OrderNoteOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for OrderNotes.
+     */
+    cursor?: OrderNoteWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` OrderNotes from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` OrderNotes.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of OrderNotes.
+     */
+    distinct?: OrderNoteScalarFieldEnum | OrderNoteScalarFieldEnum[]
+  }
+
+  /**
+   * OrderNote findFirstOrThrow
+   */
+  export type OrderNoteFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderNote
+     */
+    select?: OrderNoteSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderNote
+     */
+    omit?: OrderNoteOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderNoteInclude<ExtArgs> | null
+    /**
+     * Filter, which OrderNote to fetch.
+     */
+    where?: OrderNoteWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of OrderNotes to fetch.
+     */
+    orderBy?: OrderNoteOrderByWithRelationInput | OrderNoteOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for OrderNotes.
+     */
+    cursor?: OrderNoteWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` OrderNotes from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` OrderNotes.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of OrderNotes.
+     */
+    distinct?: OrderNoteScalarFieldEnum | OrderNoteScalarFieldEnum[]
+  }
+
+  /**
+   * OrderNote findMany
+   */
+  export type OrderNoteFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderNote
+     */
+    select?: OrderNoteSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderNote
+     */
+    omit?: OrderNoteOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderNoteInclude<ExtArgs> | null
+    /**
+     * Filter, which OrderNotes to fetch.
+     */
+    where?: OrderNoteWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of OrderNotes to fetch.
+     */
+    orderBy?: OrderNoteOrderByWithRelationInput | OrderNoteOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing OrderNotes.
+     */
+    cursor?: OrderNoteWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` OrderNotes from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` OrderNotes.
+     */
+    skip?: number
+    distinct?: OrderNoteScalarFieldEnum | OrderNoteScalarFieldEnum[]
+  }
+
+  /**
+   * OrderNote create
+   */
+  export type OrderNoteCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderNote
+     */
+    select?: OrderNoteSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderNote
+     */
+    omit?: OrderNoteOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderNoteInclude<ExtArgs> | null
+    /**
+     * The data needed to create a OrderNote.
+     */
+    data: XOR<OrderNoteCreateInput, OrderNoteUncheckedCreateInput>
+  }
+
+  /**
+   * OrderNote createMany
+   */
+  export type OrderNoteCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many OrderNotes.
+     */
+    data: OrderNoteCreateManyInput | OrderNoteCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * OrderNote createManyAndReturn
+   */
+  export type OrderNoteCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderNote
+     */
+    select?: OrderNoteSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderNote
+     */
+    omit?: OrderNoteOmit<ExtArgs> | null
+    /**
+     * The data used to create many OrderNotes.
+     */
+    data: OrderNoteCreateManyInput | OrderNoteCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderNoteIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * OrderNote update
+   */
+  export type OrderNoteUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderNote
+     */
+    select?: OrderNoteSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderNote
+     */
+    omit?: OrderNoteOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderNoteInclude<ExtArgs> | null
+    /**
+     * The data needed to update a OrderNote.
+     */
+    data: XOR<OrderNoteUpdateInput, OrderNoteUncheckedUpdateInput>
+    /**
+     * Choose, which OrderNote to update.
+     */
+    where: OrderNoteWhereUniqueInput
+  }
+
+  /**
+   * OrderNote updateMany
+   */
+  export type OrderNoteUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update OrderNotes.
+     */
+    data: XOR<OrderNoteUpdateManyMutationInput, OrderNoteUncheckedUpdateManyInput>
+    /**
+     * Filter which OrderNotes to update
+     */
+    where?: OrderNoteWhereInput
+    /**
+     * Limit how many OrderNotes to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * OrderNote updateManyAndReturn
+   */
+  export type OrderNoteUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderNote
+     */
+    select?: OrderNoteSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderNote
+     */
+    omit?: OrderNoteOmit<ExtArgs> | null
+    /**
+     * The data used to update OrderNotes.
+     */
+    data: XOR<OrderNoteUpdateManyMutationInput, OrderNoteUncheckedUpdateManyInput>
+    /**
+     * Filter which OrderNotes to update
+     */
+    where?: OrderNoteWhereInput
+    /**
+     * Limit how many OrderNotes to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderNoteIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * OrderNote upsert
+   */
+  export type OrderNoteUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderNote
+     */
+    select?: OrderNoteSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderNote
+     */
+    omit?: OrderNoteOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderNoteInclude<ExtArgs> | null
+    /**
+     * The filter to search for the OrderNote to update in case it exists.
+     */
+    where: OrderNoteWhereUniqueInput
+    /**
+     * In case the OrderNote found by the `where` argument doesn't exist, create a new OrderNote with this data.
+     */
+    create: XOR<OrderNoteCreateInput, OrderNoteUncheckedCreateInput>
+    /**
+     * In case the OrderNote was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<OrderNoteUpdateInput, OrderNoteUncheckedUpdateInput>
+  }
+
+  /**
+   * OrderNote delete
+   */
+  export type OrderNoteDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderNote
+     */
+    select?: OrderNoteSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderNote
+     */
+    omit?: OrderNoteOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderNoteInclude<ExtArgs> | null
+    /**
+     * Filter which OrderNote to delete.
+     */
+    where: OrderNoteWhereUniqueInput
+  }
+
+  /**
+   * OrderNote deleteMany
+   */
+  export type OrderNoteDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which OrderNotes to delete
+     */
+    where?: OrderNoteWhereInput
+    /**
+     * Limit how many OrderNotes to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * OrderNote without action
+   */
+  export type OrderNoteDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderNote
+     */
+    select?: OrderNoteSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderNote
+     */
+    omit?: OrderNoteOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderNoteInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Model File
    */
 
@@ -34150,6 +35448,21 @@ export namespace Prisma {
   export type NotificationPreferenceScalarFieldEnum = (typeof NotificationPreferenceScalarFieldEnum)[keyof typeof NotificationPreferenceScalarFieldEnum]
 
 
+  export const OrderNoteScalarFieldEnum: {
+    id: 'id',
+    orderId: 'orderId',
+    authorId: 'authorId',
+    content: 'content',
+    triggersStatus: 'triggersStatus',
+    category: 'category',
+    isInternal: 'isInternal',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type OrderNoteScalarFieldEnum = (typeof OrderNoteScalarFieldEnum)[keyof typeof OrderNoteScalarFieldEnum]
+
+
   export const FileScalarFieldEnum: {
     id: 'id',
     filename: 'filename',
@@ -34460,6 +35773,20 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'NoteCategory'
+   */
+  export type EnumNoteCategoryFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'NoteCategory'>
+    
+
+
+  /**
+   * Reference to a field of type 'NoteCategory[]'
+   */
+  export type ListEnumNoteCategoryFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'NoteCategory[]'>
+    
+
+
+  /**
    * Reference to a field of type 'DocumentType'
    */
   export type EnumDocumentTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DocumentType'>
@@ -34518,6 +35845,7 @@ export namespace Prisma {
     subordinates?: EmployeeListRelationFilter
     notificationRecipients?: NotificationRecipientListRelationFilter
     notificationPreferences?: XOR<NotificationPreferenceNullableScalarRelationFilter, NotificationPreferenceWhereInput> | null
+    orderNotes?: OrderNoteListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -34545,6 +35873,7 @@ export namespace Prisma {
     subordinates?: EmployeeOrderByRelationAggregateInput
     notificationRecipients?: NotificationRecipientOrderByRelationAggregateInput
     notificationPreferences?: NotificationPreferenceOrderByWithRelationInput
+    orderNotes?: OrderNoteOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -34575,6 +35904,7 @@ export namespace Prisma {
     subordinates?: EmployeeListRelationFilter
     notificationRecipients?: NotificationRecipientListRelationFilter
     notificationPreferences?: XOR<NotificationPreferenceNullableScalarRelationFilter, NotificationPreferenceWhereInput> | null
+    orderNotes?: OrderNoteListRelationFilter
   }, "id" | "email" | "username">
 
   export type UserOrderByWithAggregationInput = {
@@ -35356,6 +36686,7 @@ export namespace Prisma {
     employeeAssignments?: AssignmentListRelationFilter
     ratings?: RatingListRelationFilter
     files?: FileListRelationFilter
+    notes?: OrderNoteListRelationFilter
   }
 
   export type OrderOrderByWithRelationInput = {
@@ -35387,6 +36718,7 @@ export namespace Prisma {
     employeeAssignments?: AssignmentOrderByRelationAggregateInput
     ratings?: RatingOrderByRelationAggregateInput
     files?: FileOrderByRelationAggregateInput
+    notes?: OrderNoteOrderByRelationAggregateInput
   }
 
   export type OrderWhereUniqueInput = Prisma.AtLeast<{
@@ -35421,6 +36753,7 @@ export namespace Prisma {
     employeeAssignments?: AssignmentListRelationFilter
     ratings?: RatingListRelationFilter
     files?: FileListRelationFilter
+    notes?: OrderNoteListRelationFilter
   }, "id" | "orderNumber">
 
   export type OrderOrderByWithAggregationInput = {
@@ -36565,6 +37898,84 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"NotificationPreference"> | Date | string
   }
 
+  export type OrderNoteWhereInput = {
+    AND?: OrderNoteWhereInput | OrderNoteWhereInput[]
+    OR?: OrderNoteWhereInput[]
+    NOT?: OrderNoteWhereInput | OrderNoteWhereInput[]
+    id?: StringFilter<"OrderNote"> | string
+    orderId?: StringFilter<"OrderNote"> | string
+    authorId?: StringFilter<"OrderNote"> | string
+    content?: StringFilter<"OrderNote"> | string
+    triggersStatus?: EnumOrderStatusNullableFilter<"OrderNote"> | $Enums.OrderStatus | null
+    category?: EnumNoteCategoryFilter<"OrderNote"> | $Enums.NoteCategory
+    isInternal?: BoolFilter<"OrderNote"> | boolean
+    createdAt?: DateTimeFilter<"OrderNote"> | Date | string
+    updatedAt?: DateTimeFilter<"OrderNote"> | Date | string
+    order?: XOR<OrderScalarRelationFilter, OrderWhereInput>
+    author?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }
+
+  export type OrderNoteOrderByWithRelationInput = {
+    id?: SortOrder
+    orderId?: SortOrder
+    authorId?: SortOrder
+    content?: SortOrder
+    triggersStatus?: SortOrderInput | SortOrder
+    category?: SortOrder
+    isInternal?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    order?: OrderOrderByWithRelationInput
+    author?: UserOrderByWithRelationInput
+  }
+
+  export type OrderNoteWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: OrderNoteWhereInput | OrderNoteWhereInput[]
+    OR?: OrderNoteWhereInput[]
+    NOT?: OrderNoteWhereInput | OrderNoteWhereInput[]
+    orderId?: StringFilter<"OrderNote"> | string
+    authorId?: StringFilter<"OrderNote"> | string
+    content?: StringFilter<"OrderNote"> | string
+    triggersStatus?: EnumOrderStatusNullableFilter<"OrderNote"> | $Enums.OrderStatus | null
+    category?: EnumNoteCategoryFilter<"OrderNote"> | $Enums.NoteCategory
+    isInternal?: BoolFilter<"OrderNote"> | boolean
+    createdAt?: DateTimeFilter<"OrderNote"> | Date | string
+    updatedAt?: DateTimeFilter<"OrderNote"> | Date | string
+    order?: XOR<OrderScalarRelationFilter, OrderWhereInput>
+    author?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }, "id">
+
+  export type OrderNoteOrderByWithAggregationInput = {
+    id?: SortOrder
+    orderId?: SortOrder
+    authorId?: SortOrder
+    content?: SortOrder
+    triggersStatus?: SortOrderInput | SortOrder
+    category?: SortOrder
+    isInternal?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: OrderNoteCountOrderByAggregateInput
+    _max?: OrderNoteMaxOrderByAggregateInput
+    _min?: OrderNoteMinOrderByAggregateInput
+  }
+
+  export type OrderNoteScalarWhereWithAggregatesInput = {
+    AND?: OrderNoteScalarWhereWithAggregatesInput | OrderNoteScalarWhereWithAggregatesInput[]
+    OR?: OrderNoteScalarWhereWithAggregatesInput[]
+    NOT?: OrderNoteScalarWhereWithAggregatesInput | OrderNoteScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"OrderNote"> | string
+    orderId?: StringWithAggregatesFilter<"OrderNote"> | string
+    authorId?: StringWithAggregatesFilter<"OrderNote"> | string
+    content?: StringWithAggregatesFilter<"OrderNote"> | string
+    triggersStatus?: EnumOrderStatusNullableWithAggregatesFilter<"OrderNote"> | $Enums.OrderStatus | null
+    category?: EnumNoteCategoryWithAggregatesFilter<"OrderNote"> | $Enums.NoteCategory
+    isInternal?: BoolWithAggregatesFilter<"OrderNote"> | boolean
+    createdAt?: DateTimeWithAggregatesFilter<"OrderNote"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"OrderNote"> | Date | string
+  }
+
   export type FileWhereInput = {
     AND?: FileWhereInput | FileWhereInput[]
     OR?: FileWhereInput[]
@@ -36857,6 +38268,7 @@ export namespace Prisma {
     subordinates?: EmployeeCreateNestedManyWithoutManagerInput
     notificationRecipients?: NotificationRecipientCreateNestedManyWithoutUserInput
     notificationPreferences?: NotificationPreferenceCreateNestedOneWithoutUserInput
+    orderNotes?: OrderNoteCreateNestedManyWithoutAuthorInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -36884,6 +38296,7 @@ export namespace Prisma {
     subordinates?: EmployeeUncheckedCreateNestedManyWithoutManagerInput
     notificationRecipients?: NotificationRecipientUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: NotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
+    orderNotes?: OrderNoteUncheckedCreateNestedManyWithoutAuthorInput
   }
 
   export type UserUpdateInput = {
@@ -36911,6 +38324,7 @@ export namespace Prisma {
     subordinates?: EmployeeUpdateManyWithoutManagerNestedInput
     notificationRecipients?: NotificationRecipientUpdateManyWithoutUserNestedInput
     notificationPreferences?: NotificationPreferenceUpdateOneWithoutUserNestedInput
+    orderNotes?: OrderNoteUpdateManyWithoutAuthorNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -36938,6 +38352,7 @@ export namespace Prisma {
     subordinates?: EmployeeUncheckedUpdateManyWithoutManagerNestedInput
     notificationRecipients?: NotificationRecipientUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: NotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
+    orderNotes?: OrderNoteUncheckedUpdateManyWithoutAuthorNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -37823,6 +39238,7 @@ export namespace Prisma {
     employeeAssignments?: AssignmentCreateNestedManyWithoutOrderInput
     ratings?: RatingCreateNestedManyWithoutOrderInput
     files?: FileCreateNestedManyWithoutOrderInput
+    notes?: OrderNoteCreateNestedManyWithoutOrderInput
   }
 
   export type OrderUncheckedCreateInput = {
@@ -37853,6 +39269,7 @@ export namespace Prisma {
     employeeAssignments?: AssignmentUncheckedCreateNestedManyWithoutOrderInput
     ratings?: RatingUncheckedCreateNestedManyWithoutOrderInput
     files?: FileUncheckedCreateNestedManyWithoutOrderInput
+    notes?: OrderNoteUncheckedCreateNestedManyWithoutOrderInput
   }
 
   export type OrderUpdateInput = {
@@ -37883,6 +39300,7 @@ export namespace Prisma {
     employeeAssignments?: AssignmentUpdateManyWithoutOrderNestedInput
     ratings?: RatingUpdateManyWithoutOrderNestedInput
     files?: FileUpdateManyWithoutOrderNestedInput
+    notes?: OrderNoteUpdateManyWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateInput = {
@@ -37913,6 +39331,7 @@ export namespace Prisma {
     employeeAssignments?: AssignmentUncheckedUpdateManyWithoutOrderNestedInput
     ratings?: RatingUncheckedUpdateManyWithoutOrderNestedInput
     files?: FileUncheckedUpdateManyWithoutOrderNestedInput
+    notes?: OrderNoteUncheckedUpdateManyWithoutOrderNestedInput
   }
 
   export type OrderCreateManyInput = {
@@ -39168,6 +40587,88 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type OrderNoteCreateInput = {
+    id?: string
+    content: string
+    triggersStatus?: $Enums.OrderStatus | null
+    category?: $Enums.NoteCategory
+    isInternal?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    order: OrderCreateNestedOneWithoutNotesInput
+    author: UserCreateNestedOneWithoutOrderNotesInput
+  }
+
+  export type OrderNoteUncheckedCreateInput = {
+    id?: string
+    orderId: string
+    authorId: string
+    content: string
+    triggersStatus?: $Enums.OrderStatus | null
+    category?: $Enums.NoteCategory
+    isInternal?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type OrderNoteUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    triggersStatus?: NullableEnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus | null
+    category?: EnumNoteCategoryFieldUpdateOperationsInput | $Enums.NoteCategory
+    isInternal?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    order?: OrderUpdateOneRequiredWithoutNotesNestedInput
+    author?: UserUpdateOneRequiredWithoutOrderNotesNestedInput
+  }
+
+  export type OrderNoteUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orderId?: StringFieldUpdateOperationsInput | string
+    authorId?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    triggersStatus?: NullableEnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus | null
+    category?: EnumNoteCategoryFieldUpdateOperationsInput | $Enums.NoteCategory
+    isInternal?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type OrderNoteCreateManyInput = {
+    id?: string
+    orderId: string
+    authorId: string
+    content: string
+    triggersStatus?: $Enums.OrderStatus | null
+    category?: $Enums.NoteCategory
+    isInternal?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type OrderNoteUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    triggersStatus?: NullableEnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus | null
+    category?: EnumNoteCategoryFieldUpdateOperationsInput | $Enums.NoteCategory
+    isInternal?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type OrderNoteUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orderId?: StringFieldUpdateOperationsInput | string
+    authorId?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    triggersStatus?: NullableEnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus | null
+    category?: EnumNoteCategoryFieldUpdateOperationsInput | $Enums.NoteCategory
+    isInternal?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type FileCreateInput = {
     id?: string
     filename: string
@@ -39565,6 +41066,12 @@ export namespace Prisma {
     isNot?: NotificationPreferenceWhereInput | null
   }
 
+  export type OrderNoteListRelationFilter = {
+    every?: OrderNoteWhereInput
+    some?: OrderNoteWhereInput
+    none?: OrderNoteWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -39579,6 +41086,10 @@ export namespace Prisma {
   }
 
   export type NotificationRecipientOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type OrderNoteOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -41353,6 +42864,76 @@ export namespace Prisma {
     quietHoursEnd?: SortOrder
   }
 
+  export type EnumOrderStatusNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.OrderStatus | EnumOrderStatusFieldRefInput<$PrismaModel> | null
+    in?: $Enums.OrderStatus[] | ListEnumOrderStatusFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.OrderStatus[] | ListEnumOrderStatusFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumOrderStatusNullableFilter<$PrismaModel> | $Enums.OrderStatus | null
+  }
+
+  export type EnumNoteCategoryFilter<$PrismaModel = never> = {
+    equals?: $Enums.NoteCategory | EnumNoteCategoryFieldRefInput<$PrismaModel>
+    in?: $Enums.NoteCategory[] | ListEnumNoteCategoryFieldRefInput<$PrismaModel>
+    notIn?: $Enums.NoteCategory[] | ListEnumNoteCategoryFieldRefInput<$PrismaModel>
+    not?: NestedEnumNoteCategoryFilter<$PrismaModel> | $Enums.NoteCategory
+  }
+
+  export type OrderNoteCountOrderByAggregateInput = {
+    id?: SortOrder
+    orderId?: SortOrder
+    authorId?: SortOrder
+    content?: SortOrder
+    triggersStatus?: SortOrder
+    category?: SortOrder
+    isInternal?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type OrderNoteMaxOrderByAggregateInput = {
+    id?: SortOrder
+    orderId?: SortOrder
+    authorId?: SortOrder
+    content?: SortOrder
+    triggersStatus?: SortOrder
+    category?: SortOrder
+    isInternal?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type OrderNoteMinOrderByAggregateInput = {
+    id?: SortOrder
+    orderId?: SortOrder
+    authorId?: SortOrder
+    content?: SortOrder
+    triggersStatus?: SortOrder
+    category?: SortOrder
+    isInternal?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type EnumOrderStatusNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.OrderStatus | EnumOrderStatusFieldRefInput<$PrismaModel> | null
+    in?: $Enums.OrderStatus[] | ListEnumOrderStatusFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.OrderStatus[] | ListEnumOrderStatusFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumOrderStatusNullableWithAggregatesFilter<$PrismaModel> | $Enums.OrderStatus | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedEnumOrderStatusNullableFilter<$PrismaModel>
+    _max?: NestedEnumOrderStatusNullableFilter<$PrismaModel>
+  }
+
+  export type EnumNoteCategoryWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.NoteCategory | EnumNoteCategoryFieldRefInput<$PrismaModel>
+    in?: $Enums.NoteCategory[] | ListEnumNoteCategoryFieldRefInput<$PrismaModel>
+    notIn?: $Enums.NoteCategory[] | ListEnumNoteCategoryFieldRefInput<$PrismaModel>
+    not?: NestedEnumNoteCategoryWithAggregatesFilter<$PrismaModel> | $Enums.NoteCategory
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumNoteCategoryFilter<$PrismaModel>
+    _max?: NestedEnumNoteCategoryFilter<$PrismaModel>
+  }
+
   export type EnumDocumentTypeFilter<$PrismaModel = never> = {
     equals?: $Enums.DocumentType | EnumDocumentTypeFieldRefInput<$PrismaModel>
     in?: $Enums.DocumentType[] | ListEnumDocumentTypeFieldRefInput<$PrismaModel>
@@ -41542,6 +43123,13 @@ export namespace Prisma {
     connect?: NotificationPreferenceWhereUniqueInput
   }
 
+  export type OrderNoteCreateNestedManyWithoutAuthorInput = {
+    create?: XOR<OrderNoteCreateWithoutAuthorInput, OrderNoteUncheckedCreateWithoutAuthorInput> | OrderNoteCreateWithoutAuthorInput[] | OrderNoteUncheckedCreateWithoutAuthorInput[]
+    connectOrCreate?: OrderNoteCreateOrConnectWithoutAuthorInput | OrderNoteCreateOrConnectWithoutAuthorInput[]
+    createMany?: OrderNoteCreateManyAuthorInputEnvelope
+    connect?: OrderNoteWhereUniqueInput | OrderNoteWhereUniqueInput[]
+  }
+
   export type EmployeeUncheckedCreateNestedOneWithoutUserInput = {
     create?: XOR<EmployeeCreateWithoutUserInput, EmployeeUncheckedCreateWithoutUserInput>
     connectOrCreate?: EmployeeCreateOrConnectWithoutUserInput
@@ -41573,6 +43161,13 @@ export namespace Prisma {
     create?: XOR<NotificationPreferenceCreateWithoutUserInput, NotificationPreferenceUncheckedCreateWithoutUserInput>
     connectOrCreate?: NotificationPreferenceCreateOrConnectWithoutUserInput
     connect?: NotificationPreferenceWhereUniqueInput
+  }
+
+  export type OrderNoteUncheckedCreateNestedManyWithoutAuthorInput = {
+    create?: XOR<OrderNoteCreateWithoutAuthorInput, OrderNoteUncheckedCreateWithoutAuthorInput> | OrderNoteCreateWithoutAuthorInput[] | OrderNoteUncheckedCreateWithoutAuthorInput[]
+    connectOrCreate?: OrderNoteCreateOrConnectWithoutAuthorInput | OrderNoteCreateOrConnectWithoutAuthorInput[]
+    createMany?: OrderNoteCreateManyAuthorInputEnvelope
+    connect?: OrderNoteWhereUniqueInput | OrderNoteWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -41661,6 +43256,20 @@ export namespace Prisma {
     update?: XOR<XOR<NotificationPreferenceUpdateToOneWithWhereWithoutUserInput, NotificationPreferenceUpdateWithoutUserInput>, NotificationPreferenceUncheckedUpdateWithoutUserInput>
   }
 
+  export type OrderNoteUpdateManyWithoutAuthorNestedInput = {
+    create?: XOR<OrderNoteCreateWithoutAuthorInput, OrderNoteUncheckedCreateWithoutAuthorInput> | OrderNoteCreateWithoutAuthorInput[] | OrderNoteUncheckedCreateWithoutAuthorInput[]
+    connectOrCreate?: OrderNoteCreateOrConnectWithoutAuthorInput | OrderNoteCreateOrConnectWithoutAuthorInput[]
+    upsert?: OrderNoteUpsertWithWhereUniqueWithoutAuthorInput | OrderNoteUpsertWithWhereUniqueWithoutAuthorInput[]
+    createMany?: OrderNoteCreateManyAuthorInputEnvelope
+    set?: OrderNoteWhereUniqueInput | OrderNoteWhereUniqueInput[]
+    disconnect?: OrderNoteWhereUniqueInput | OrderNoteWhereUniqueInput[]
+    delete?: OrderNoteWhereUniqueInput | OrderNoteWhereUniqueInput[]
+    connect?: OrderNoteWhereUniqueInput | OrderNoteWhereUniqueInput[]
+    update?: OrderNoteUpdateWithWhereUniqueWithoutAuthorInput | OrderNoteUpdateWithWhereUniqueWithoutAuthorInput[]
+    updateMany?: OrderNoteUpdateManyWithWhereWithoutAuthorInput | OrderNoteUpdateManyWithWhereWithoutAuthorInput[]
+    deleteMany?: OrderNoteScalarWhereInput | OrderNoteScalarWhereInput[]
+  }
+
   export type EmployeeUncheckedUpdateOneWithoutUserNestedInput = {
     create?: XOR<EmployeeCreateWithoutUserInput, EmployeeUncheckedCreateWithoutUserInput>
     connectOrCreate?: EmployeeCreateOrConnectWithoutUserInput
@@ -41721,6 +43330,20 @@ export namespace Prisma {
     delete?: NotificationPreferenceWhereInput | boolean
     connect?: NotificationPreferenceWhereUniqueInput
     update?: XOR<XOR<NotificationPreferenceUpdateToOneWithWhereWithoutUserInput, NotificationPreferenceUpdateWithoutUserInput>, NotificationPreferenceUncheckedUpdateWithoutUserInput>
+  }
+
+  export type OrderNoteUncheckedUpdateManyWithoutAuthorNestedInput = {
+    create?: XOR<OrderNoteCreateWithoutAuthorInput, OrderNoteUncheckedCreateWithoutAuthorInput> | OrderNoteCreateWithoutAuthorInput[] | OrderNoteUncheckedCreateWithoutAuthorInput[]
+    connectOrCreate?: OrderNoteCreateOrConnectWithoutAuthorInput | OrderNoteCreateOrConnectWithoutAuthorInput[]
+    upsert?: OrderNoteUpsertWithWhereUniqueWithoutAuthorInput | OrderNoteUpsertWithWhereUniqueWithoutAuthorInput[]
+    createMany?: OrderNoteCreateManyAuthorInputEnvelope
+    set?: OrderNoteWhereUniqueInput | OrderNoteWhereUniqueInput[]
+    disconnect?: OrderNoteWhereUniqueInput | OrderNoteWhereUniqueInput[]
+    delete?: OrderNoteWhereUniqueInput | OrderNoteWhereUniqueInput[]
+    connect?: OrderNoteWhereUniqueInput | OrderNoteWhereUniqueInput[]
+    update?: OrderNoteUpdateWithWhereUniqueWithoutAuthorInput | OrderNoteUpdateWithWhereUniqueWithoutAuthorInput[]
+    updateMany?: OrderNoteUpdateManyWithWhereWithoutAuthorInput | OrderNoteUpdateManyWithWhereWithoutAuthorInput[]
+    deleteMany?: OrderNoteScalarWhereInput | OrderNoteScalarWhereInput[]
   }
 
   export type DepartmentCreateNestedOneWithoutEmployeesInput = {
@@ -42612,6 +44235,13 @@ export namespace Prisma {
     connect?: FileWhereUniqueInput | FileWhereUniqueInput[]
   }
 
+  export type OrderNoteCreateNestedManyWithoutOrderInput = {
+    create?: XOR<OrderNoteCreateWithoutOrderInput, OrderNoteUncheckedCreateWithoutOrderInput> | OrderNoteCreateWithoutOrderInput[] | OrderNoteUncheckedCreateWithoutOrderInput[]
+    connectOrCreate?: OrderNoteCreateOrConnectWithoutOrderInput | OrderNoteCreateOrConnectWithoutOrderInput[]
+    createMany?: OrderNoteCreateManyOrderInputEnvelope
+    connect?: OrderNoteWhereUniqueInput | OrderNoteWhereUniqueInput[]
+  }
+
   export type OrderQualificationUncheckedCreateNestedManyWithoutOrderInput = {
     create?: XOR<OrderQualificationCreateWithoutOrderInput, OrderQualificationUncheckedCreateWithoutOrderInput> | OrderQualificationCreateWithoutOrderInput[] | OrderQualificationUncheckedCreateWithoutOrderInput[]
     connectOrCreate?: OrderQualificationCreateOrConnectWithoutOrderInput | OrderQualificationCreateOrConnectWithoutOrderInput[]
@@ -42645,6 +44275,13 @@ export namespace Prisma {
     connectOrCreate?: FileCreateOrConnectWithoutOrderInput | FileCreateOrConnectWithoutOrderInput[]
     createMany?: FileCreateManyOrderInputEnvelope
     connect?: FileWhereUniqueInput | FileWhereUniqueInput[]
+  }
+
+  export type OrderNoteUncheckedCreateNestedManyWithoutOrderInput = {
+    create?: XOR<OrderNoteCreateWithoutOrderInput, OrderNoteUncheckedCreateWithoutOrderInput> | OrderNoteCreateWithoutOrderInput[] | OrderNoteUncheckedCreateWithoutOrderInput[]
+    connectOrCreate?: OrderNoteCreateOrConnectWithoutOrderInput | OrderNoteCreateOrConnectWithoutOrderInput[]
+    createMany?: OrderNoteCreateManyOrderInputEnvelope
+    connect?: OrderNoteWhereUniqueInput | OrderNoteWhereUniqueInput[]
   }
 
   export type NullableIntFieldUpdateOperationsInput = {
@@ -42737,6 +44374,20 @@ export namespace Prisma {
     deleteMany?: FileScalarWhereInput | FileScalarWhereInput[]
   }
 
+  export type OrderNoteUpdateManyWithoutOrderNestedInput = {
+    create?: XOR<OrderNoteCreateWithoutOrderInput, OrderNoteUncheckedCreateWithoutOrderInput> | OrderNoteCreateWithoutOrderInput[] | OrderNoteUncheckedCreateWithoutOrderInput[]
+    connectOrCreate?: OrderNoteCreateOrConnectWithoutOrderInput | OrderNoteCreateOrConnectWithoutOrderInput[]
+    upsert?: OrderNoteUpsertWithWhereUniqueWithoutOrderInput | OrderNoteUpsertWithWhereUniqueWithoutOrderInput[]
+    createMany?: OrderNoteCreateManyOrderInputEnvelope
+    set?: OrderNoteWhereUniqueInput | OrderNoteWhereUniqueInput[]
+    disconnect?: OrderNoteWhereUniqueInput | OrderNoteWhereUniqueInput[]
+    delete?: OrderNoteWhereUniqueInput | OrderNoteWhereUniqueInput[]
+    connect?: OrderNoteWhereUniqueInput | OrderNoteWhereUniqueInput[]
+    update?: OrderNoteUpdateWithWhereUniqueWithoutOrderInput | OrderNoteUpdateWithWhereUniqueWithoutOrderInput[]
+    updateMany?: OrderNoteUpdateManyWithWhereWithoutOrderInput | OrderNoteUpdateManyWithWhereWithoutOrderInput[]
+    deleteMany?: OrderNoteScalarWhereInput | OrderNoteScalarWhereInput[]
+  }
+
   export type OrderQualificationUncheckedUpdateManyWithoutOrderNestedInput = {
     create?: XOR<OrderQualificationCreateWithoutOrderInput, OrderQualificationUncheckedCreateWithoutOrderInput> | OrderQualificationCreateWithoutOrderInput[] | OrderQualificationUncheckedCreateWithoutOrderInput[]
     connectOrCreate?: OrderQualificationCreateOrConnectWithoutOrderInput | OrderQualificationCreateOrConnectWithoutOrderInput[]
@@ -42805,6 +44456,20 @@ export namespace Prisma {
     update?: FileUpdateWithWhereUniqueWithoutOrderInput | FileUpdateWithWhereUniqueWithoutOrderInput[]
     updateMany?: FileUpdateManyWithWhereWithoutOrderInput | FileUpdateManyWithWhereWithoutOrderInput[]
     deleteMany?: FileScalarWhereInput | FileScalarWhereInput[]
+  }
+
+  export type OrderNoteUncheckedUpdateManyWithoutOrderNestedInput = {
+    create?: XOR<OrderNoteCreateWithoutOrderInput, OrderNoteUncheckedCreateWithoutOrderInput> | OrderNoteCreateWithoutOrderInput[] | OrderNoteUncheckedCreateWithoutOrderInput[]
+    connectOrCreate?: OrderNoteCreateOrConnectWithoutOrderInput | OrderNoteCreateOrConnectWithoutOrderInput[]
+    upsert?: OrderNoteUpsertWithWhereUniqueWithoutOrderInput | OrderNoteUpsertWithWhereUniqueWithoutOrderInput[]
+    createMany?: OrderNoteCreateManyOrderInputEnvelope
+    set?: OrderNoteWhereUniqueInput | OrderNoteWhereUniqueInput[]
+    disconnect?: OrderNoteWhereUniqueInput | OrderNoteWhereUniqueInput[]
+    delete?: OrderNoteWhereUniqueInput | OrderNoteWhereUniqueInput[]
+    connect?: OrderNoteWhereUniqueInput | OrderNoteWhereUniqueInput[]
+    update?: OrderNoteUpdateWithWhereUniqueWithoutOrderInput | OrderNoteUpdateWithWhereUniqueWithoutOrderInput[]
+    updateMany?: OrderNoteUpdateManyWithWhereWithoutOrderInput | OrderNoteUpdateManyWithWhereWithoutOrderInput[]
+    deleteMany?: OrderNoteScalarWhereInput | OrderNoteScalarWhereInput[]
   }
 
   export type EmployeeQualificationCreateNestedManyWithoutQualificationInput = {
@@ -43332,6 +44997,42 @@ export namespace Prisma {
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutNotificationPreferencesInput, UserUpdateWithoutNotificationPreferencesInput>, UserUncheckedUpdateWithoutNotificationPreferencesInput>
   }
 
+  export type OrderCreateNestedOneWithoutNotesInput = {
+    create?: XOR<OrderCreateWithoutNotesInput, OrderUncheckedCreateWithoutNotesInput>
+    connectOrCreate?: OrderCreateOrConnectWithoutNotesInput
+    connect?: OrderWhereUniqueInput
+  }
+
+  export type UserCreateNestedOneWithoutOrderNotesInput = {
+    create?: XOR<UserCreateWithoutOrderNotesInput, UserUncheckedCreateWithoutOrderNotesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutOrderNotesInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type NullableEnumOrderStatusFieldUpdateOperationsInput = {
+    set?: $Enums.OrderStatus | null
+  }
+
+  export type EnumNoteCategoryFieldUpdateOperationsInput = {
+    set?: $Enums.NoteCategory
+  }
+
+  export type OrderUpdateOneRequiredWithoutNotesNestedInput = {
+    create?: XOR<OrderCreateWithoutNotesInput, OrderUncheckedCreateWithoutNotesInput>
+    connectOrCreate?: OrderCreateOrConnectWithoutNotesInput
+    upsert?: OrderUpsertWithoutNotesInput
+    connect?: OrderWhereUniqueInput
+    update?: XOR<XOR<OrderUpdateToOneWithWhereWithoutNotesInput, OrderUpdateWithoutNotesInput>, OrderUncheckedUpdateWithoutNotesInput>
+  }
+
+  export type UserUpdateOneRequiredWithoutOrderNotesNestedInput = {
+    create?: XOR<UserCreateWithoutOrderNotesInput, UserUncheckedCreateWithoutOrderNotesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutOrderNotesInput
+    upsert?: UserUpsertWithoutOrderNotesInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutOrderNotesInput, UserUpdateWithoutOrderNotesInput>, UserUncheckedUpdateWithoutOrderNotesInput>
+  }
+
   export type EmployeeCreateNestedOneWithoutFilesInput = {
     create?: XOR<EmployeeCreateWithoutFilesInput, EmployeeUncheckedCreateWithoutFilesInput>
     connectOrCreate?: EmployeeCreateOrConnectWithoutFilesInput
@@ -43855,6 +45556,40 @@ export namespace Prisma {
     not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
   }
 
+  export type NestedEnumOrderStatusNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.OrderStatus | EnumOrderStatusFieldRefInput<$PrismaModel> | null
+    in?: $Enums.OrderStatus[] | ListEnumOrderStatusFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.OrderStatus[] | ListEnumOrderStatusFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumOrderStatusNullableFilter<$PrismaModel> | $Enums.OrderStatus | null
+  }
+
+  export type NestedEnumNoteCategoryFilter<$PrismaModel = never> = {
+    equals?: $Enums.NoteCategory | EnumNoteCategoryFieldRefInput<$PrismaModel>
+    in?: $Enums.NoteCategory[] | ListEnumNoteCategoryFieldRefInput<$PrismaModel>
+    notIn?: $Enums.NoteCategory[] | ListEnumNoteCategoryFieldRefInput<$PrismaModel>
+    not?: NestedEnumNoteCategoryFilter<$PrismaModel> | $Enums.NoteCategory
+  }
+
+  export type NestedEnumOrderStatusNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.OrderStatus | EnumOrderStatusFieldRefInput<$PrismaModel> | null
+    in?: $Enums.OrderStatus[] | ListEnumOrderStatusFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.OrderStatus[] | ListEnumOrderStatusFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumOrderStatusNullableWithAggregatesFilter<$PrismaModel> | $Enums.OrderStatus | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedEnumOrderStatusNullableFilter<$PrismaModel>
+    _max?: NestedEnumOrderStatusNullableFilter<$PrismaModel>
+  }
+
+  export type NestedEnumNoteCategoryWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.NoteCategory | EnumNoteCategoryFieldRefInput<$PrismaModel>
+    in?: $Enums.NoteCategory[] | ListEnumNoteCategoryFieldRefInput<$PrismaModel>
+    notIn?: $Enums.NoteCategory[] | ListEnumNoteCategoryFieldRefInput<$PrismaModel>
+    not?: NestedEnumNoteCategoryWithAggregatesFilter<$PrismaModel> | $Enums.NoteCategory
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumNoteCategoryFilter<$PrismaModel>
+    _max?: NestedEnumNoteCategoryFilter<$PrismaModel>
+  }
+
   export type NestedEnumDocumentTypeFilter<$PrismaModel = never> = {
     equals?: $Enums.DocumentType | EnumDocumentTypeFieldRefInput<$PrismaModel>
     in?: $Enums.DocumentType[] | ListEnumDocumentTypeFieldRefInput<$PrismaModel>
@@ -44132,6 +45867,38 @@ export namespace Prisma {
     create: XOR<NotificationPreferenceCreateWithoutUserInput, NotificationPreferenceUncheckedCreateWithoutUserInput>
   }
 
+  export type OrderNoteCreateWithoutAuthorInput = {
+    id?: string
+    content: string
+    triggersStatus?: $Enums.OrderStatus | null
+    category?: $Enums.NoteCategory
+    isInternal?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    order: OrderCreateNestedOneWithoutNotesInput
+  }
+
+  export type OrderNoteUncheckedCreateWithoutAuthorInput = {
+    id?: string
+    orderId: string
+    content: string
+    triggersStatus?: $Enums.OrderStatus | null
+    category?: $Enums.NoteCategory
+    isInternal?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type OrderNoteCreateOrConnectWithoutAuthorInput = {
+    where: OrderNoteWhereUniqueInput
+    create: XOR<OrderNoteCreateWithoutAuthorInput, OrderNoteUncheckedCreateWithoutAuthorInput>
+  }
+
+  export type OrderNoteCreateManyAuthorInputEnvelope = {
+    data: OrderNoteCreateManyAuthorInput | OrderNoteCreateManyAuthorInput[]
+    skipDuplicates?: boolean
+  }
+
   export type EmployeeUpsertWithoutUserInput = {
     update: XOR<EmployeeUpdateWithoutUserInput, EmployeeUncheckedUpdateWithoutUserInput>
     create: XOR<EmployeeCreateWithoutUserInput, EmployeeUncheckedCreateWithoutUserInput>
@@ -44363,6 +46130,37 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type OrderNoteUpsertWithWhereUniqueWithoutAuthorInput = {
+    where: OrderNoteWhereUniqueInput
+    update: XOR<OrderNoteUpdateWithoutAuthorInput, OrderNoteUncheckedUpdateWithoutAuthorInput>
+    create: XOR<OrderNoteCreateWithoutAuthorInput, OrderNoteUncheckedCreateWithoutAuthorInput>
+  }
+
+  export type OrderNoteUpdateWithWhereUniqueWithoutAuthorInput = {
+    where: OrderNoteWhereUniqueInput
+    data: XOR<OrderNoteUpdateWithoutAuthorInput, OrderNoteUncheckedUpdateWithoutAuthorInput>
+  }
+
+  export type OrderNoteUpdateManyWithWhereWithoutAuthorInput = {
+    where: OrderNoteScalarWhereInput
+    data: XOR<OrderNoteUpdateManyMutationInput, OrderNoteUncheckedUpdateManyWithoutAuthorInput>
+  }
+
+  export type OrderNoteScalarWhereInput = {
+    AND?: OrderNoteScalarWhereInput | OrderNoteScalarWhereInput[]
+    OR?: OrderNoteScalarWhereInput[]
+    NOT?: OrderNoteScalarWhereInput | OrderNoteScalarWhereInput[]
+    id?: StringFilter<"OrderNote"> | string
+    orderId?: StringFilter<"OrderNote"> | string
+    authorId?: StringFilter<"OrderNote"> | string
+    content?: StringFilter<"OrderNote"> | string
+    triggersStatus?: EnumOrderStatusNullableFilter<"OrderNote"> | $Enums.OrderStatus | null
+    category?: EnumNoteCategoryFilter<"OrderNote"> | $Enums.NoteCategory
+    isInternal?: BoolFilter<"OrderNote"> | boolean
+    createdAt?: DateTimeFilter<"OrderNote"> | Date | string
+    updatedAt?: DateTimeFilter<"OrderNote"> | Date | string
+  }
+
   export type DepartmentCreateWithoutEmployeesInput = {
     id?: string
     name: string
@@ -44451,6 +46249,7 @@ export namespace Prisma {
     manualOverrides?: EmployeePerformanceCreateNestedManyWithoutManualOverrideByInput
     notificationRecipients?: NotificationRecipientCreateNestedManyWithoutUserInput
     notificationPreferences?: NotificationPreferenceCreateNestedOneWithoutUserInput
+    orderNotes?: OrderNoteCreateNestedManyWithoutAuthorInput
   }
 
   export type UserUncheckedCreateWithoutSubordinatesInput = {
@@ -44477,6 +46276,7 @@ export namespace Prisma {
     manualOverrides?: EmployeePerformanceUncheckedCreateNestedManyWithoutManualOverrideByInput
     notificationRecipients?: NotificationRecipientUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: NotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
+    orderNotes?: OrderNoteUncheckedCreateNestedManyWithoutAuthorInput
   }
 
   export type UserCreateOrConnectWithoutSubordinatesInput = {
@@ -44546,6 +46346,7 @@ export namespace Prisma {
     subordinates?: EmployeeCreateNestedManyWithoutManagerInput
     notificationRecipients?: NotificationRecipientCreateNestedManyWithoutUserInput
     notificationPreferences?: NotificationPreferenceCreateNestedOneWithoutUserInput
+    orderNotes?: OrderNoteCreateNestedManyWithoutAuthorInput
   }
 
   export type UserUncheckedCreateWithoutEmployeeInput = {
@@ -44572,6 +46373,7 @@ export namespace Prisma {
     subordinates?: EmployeeUncheckedCreateNestedManyWithoutManagerInput
     notificationRecipients?: NotificationRecipientUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: NotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
+    orderNotes?: OrderNoteUncheckedCreateNestedManyWithoutAuthorInput
   }
 
   export type UserCreateOrConnectWithoutEmployeeInput = {
@@ -44964,6 +46766,7 @@ export namespace Prisma {
     manualOverrides?: EmployeePerformanceUpdateManyWithoutManualOverrideByNestedInput
     notificationRecipients?: NotificationRecipientUpdateManyWithoutUserNestedInput
     notificationPreferences?: NotificationPreferenceUpdateOneWithoutUserNestedInput
+    orderNotes?: OrderNoteUpdateManyWithoutAuthorNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSubordinatesInput = {
@@ -44990,6 +46793,7 @@ export namespace Prisma {
     manualOverrides?: EmployeePerformanceUncheckedUpdateManyWithoutManualOverrideByNestedInput
     notificationRecipients?: NotificationRecipientUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: NotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
+    orderNotes?: OrderNoteUncheckedUpdateManyWithoutAuthorNestedInput
   }
 
   export type EmployeePerformanceUpsertWithWhereUniqueWithoutEmployeeInput = {
@@ -45043,6 +46847,7 @@ export namespace Prisma {
     subordinates?: EmployeeUpdateManyWithoutManagerNestedInput
     notificationRecipients?: NotificationRecipientUpdateManyWithoutUserNestedInput
     notificationPreferences?: NotificationPreferenceUpdateOneWithoutUserNestedInput
+    orderNotes?: OrderNoteUpdateManyWithoutAuthorNestedInput
   }
 
   export type UserUncheckedUpdateWithoutEmployeeInput = {
@@ -45069,6 +46874,7 @@ export namespace Prisma {
     subordinates?: EmployeeUncheckedUpdateManyWithoutManagerNestedInput
     notificationRecipients?: NotificationRecipientUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: NotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
+    orderNotes?: OrderNoteUncheckedUpdateManyWithoutAuthorNestedInput
   }
 
   export type EmployeeQualificationUpsertWithWhereUniqueWithoutEmployeeInput = {
@@ -45415,6 +47221,7 @@ export namespace Prisma {
     subordinates?: EmployeeCreateNestedManyWithoutManagerInput
     notificationRecipients?: NotificationRecipientCreateNestedManyWithoutUserInput
     notificationPreferences?: NotificationPreferenceCreateNestedOneWithoutUserInput
+    orderNotes?: OrderNoteCreateNestedManyWithoutAuthorInput
   }
 
   export type UserUncheckedCreateWithoutManualOverridesInput = {
@@ -45441,6 +47248,7 @@ export namespace Prisma {
     subordinates?: EmployeeUncheckedCreateNestedManyWithoutManagerInput
     notificationRecipients?: NotificationRecipientUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: NotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
+    orderNotes?: OrderNoteUncheckedCreateNestedManyWithoutAuthorInput
   }
 
   export type UserCreateOrConnectWithoutManualOverridesInput = {
@@ -45568,6 +47376,7 @@ export namespace Prisma {
     subordinates?: EmployeeUpdateManyWithoutManagerNestedInput
     notificationRecipients?: NotificationRecipientUpdateManyWithoutUserNestedInput
     notificationPreferences?: NotificationPreferenceUpdateOneWithoutUserNestedInput
+    orderNotes?: OrderNoteUpdateManyWithoutAuthorNestedInput
   }
 
   export type UserUncheckedUpdateWithoutManualOverridesInput = {
@@ -45594,6 +47403,7 @@ export namespace Prisma {
     subordinates?: EmployeeUncheckedUpdateManyWithoutManagerNestedInput
     notificationRecipients?: NotificationRecipientUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: NotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
+    orderNotes?: OrderNoteUncheckedUpdateManyWithoutAuthorNestedInput
   }
 
   export type DepartmentCreateWithoutPerformanceThresholdInput = {
@@ -46267,6 +48077,7 @@ export namespace Prisma {
     employeeAssignments?: AssignmentCreateNestedManyWithoutOrderInput
     ratings?: RatingCreateNestedManyWithoutOrderInput
     files?: FileCreateNestedManyWithoutOrderInput
+    notes?: OrderNoteCreateNestedManyWithoutOrderInput
   }
 
   export type OrderUncheckedCreateWithoutCustomerInput = {
@@ -46296,6 +48107,7 @@ export namespace Prisma {
     employeeAssignments?: AssignmentUncheckedCreateNestedManyWithoutOrderInput
     ratings?: RatingUncheckedCreateNestedManyWithoutOrderInput
     files?: FileUncheckedCreateNestedManyWithoutOrderInput
+    notes?: OrderNoteUncheckedCreateNestedManyWithoutOrderInput
   }
 
   export type OrderCreateOrConnectWithoutCustomerInput = {
@@ -46730,6 +48542,38 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type OrderNoteCreateWithoutOrderInput = {
+    id?: string
+    content: string
+    triggersStatus?: $Enums.OrderStatus | null
+    category?: $Enums.NoteCategory
+    isInternal?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    author: UserCreateNestedOneWithoutOrderNotesInput
+  }
+
+  export type OrderNoteUncheckedCreateWithoutOrderInput = {
+    id?: string
+    authorId: string
+    content: string
+    triggersStatus?: $Enums.OrderStatus | null
+    category?: $Enums.NoteCategory
+    isInternal?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type OrderNoteCreateOrConnectWithoutOrderInput = {
+    where: OrderNoteWhereUniqueInput
+    create: XOR<OrderNoteCreateWithoutOrderInput, OrderNoteUncheckedCreateWithoutOrderInput>
+  }
+
+  export type OrderNoteCreateManyOrderInputEnvelope = {
+    data: OrderNoteCreateManyOrderInput | OrderNoteCreateManyOrderInput[]
+    skipDuplicates?: boolean
+  }
+
   export type CustomerUpsertWithoutOrdersInput = {
     update: XOR<CustomerUpdateWithoutOrdersInput, CustomerUncheckedUpdateWithoutOrdersInput>
     create: XOR<CustomerCreateWithoutOrdersInput, CustomerUncheckedCreateWithoutOrdersInput>
@@ -46860,6 +48704,22 @@ export namespace Prisma {
   export type FileUpdateManyWithWhereWithoutOrderInput = {
     where: FileScalarWhereInput
     data: XOR<FileUpdateManyMutationInput, FileUncheckedUpdateManyWithoutOrderInput>
+  }
+
+  export type OrderNoteUpsertWithWhereUniqueWithoutOrderInput = {
+    where: OrderNoteWhereUniqueInput
+    update: XOR<OrderNoteUpdateWithoutOrderInput, OrderNoteUncheckedUpdateWithoutOrderInput>
+    create: XOR<OrderNoteCreateWithoutOrderInput, OrderNoteUncheckedCreateWithoutOrderInput>
+  }
+
+  export type OrderNoteUpdateWithWhereUniqueWithoutOrderInput = {
+    where: OrderNoteWhereUniqueInput
+    data: XOR<OrderNoteUpdateWithoutOrderInput, OrderNoteUncheckedUpdateWithoutOrderInput>
+  }
+
+  export type OrderNoteUpdateManyWithWhereWithoutOrderInput = {
+    where: OrderNoteScalarWhereInput
+    data: XOR<OrderNoteUpdateManyMutationInput, OrderNoteUncheckedUpdateManyWithoutOrderInput>
   }
 
   export type EmployeeQualificationCreateWithoutQualificationInput = {
@@ -47211,6 +49071,7 @@ export namespace Prisma {
     employeeAssignments?: AssignmentCreateNestedManyWithoutOrderInput
     ratings?: RatingCreateNestedManyWithoutOrderInput
     files?: FileCreateNestedManyWithoutOrderInput
+    notes?: OrderNoteCreateNestedManyWithoutOrderInput
   }
 
   export type OrderUncheckedCreateWithoutQualificationsInput = {
@@ -47240,6 +49101,7 @@ export namespace Prisma {
     employeeAssignments?: AssignmentUncheckedCreateNestedManyWithoutOrderInput
     ratings?: RatingUncheckedCreateNestedManyWithoutOrderInput
     files?: FileUncheckedCreateNestedManyWithoutOrderInput
+    notes?: OrderNoteUncheckedCreateNestedManyWithoutOrderInput
   }
 
   export type OrderCreateOrConnectWithoutQualificationsInput = {
@@ -47316,6 +49178,7 @@ export namespace Prisma {
     employeeAssignments?: AssignmentUpdateManyWithoutOrderNestedInput
     ratings?: RatingUpdateManyWithoutOrderNestedInput
     files?: FileUpdateManyWithoutOrderNestedInput
+    notes?: OrderNoteUpdateManyWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateWithoutQualificationsInput = {
@@ -47345,6 +49208,7 @@ export namespace Prisma {
     employeeAssignments?: AssignmentUncheckedUpdateManyWithoutOrderNestedInput
     ratings?: RatingUncheckedUpdateManyWithoutOrderNestedInput
     files?: FileUncheckedUpdateManyWithoutOrderNestedInput
+    notes?: OrderNoteUncheckedUpdateManyWithoutOrderNestedInput
   }
 
   export type QualificationUpsertWithoutOrderQualificationsInput = {
@@ -47411,6 +49275,7 @@ export namespace Prisma {
     orderAssignments?: OrderAssignmentCreateNestedManyWithoutOrderInput
     ratings?: RatingCreateNestedManyWithoutOrderInput
     files?: FileCreateNestedManyWithoutOrderInput
+    notes?: OrderNoteCreateNestedManyWithoutOrderInput
   }
 
   export type OrderUncheckedCreateWithoutEmployeeAssignmentsInput = {
@@ -47440,6 +49305,7 @@ export namespace Prisma {
     orderAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutOrderInput
     ratings?: RatingUncheckedCreateNestedManyWithoutOrderInput
     files?: FileUncheckedCreateNestedManyWithoutOrderInput
+    notes?: OrderNoteUncheckedCreateNestedManyWithoutOrderInput
   }
 
   export type OrderCreateOrConnectWithoutEmployeeAssignmentsInput = {
@@ -47612,6 +49478,7 @@ export namespace Prisma {
     orderAssignments?: OrderAssignmentUpdateManyWithoutOrderNestedInput
     ratings?: RatingUpdateManyWithoutOrderNestedInput
     files?: FileUpdateManyWithoutOrderNestedInput
+    notes?: OrderNoteUpdateManyWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateWithoutEmployeeAssignmentsInput = {
@@ -47641,6 +49508,7 @@ export namespace Prisma {
     orderAssignments?: OrderAssignmentUncheckedUpdateManyWithoutOrderNestedInput
     ratings?: RatingUncheckedUpdateManyWithoutOrderNestedInput
     files?: FileUncheckedUpdateManyWithoutOrderNestedInput
+    notes?: OrderNoteUncheckedUpdateManyWithoutOrderNestedInput
   }
 
   export type EmployeeUpsertWithoutAssignmentsInput = {
@@ -47771,6 +49639,7 @@ export namespace Prisma {
     employeeAssignments?: AssignmentCreateNestedManyWithoutOrderInput
     ratings?: RatingCreateNestedManyWithoutOrderInput
     files?: FileCreateNestedManyWithoutOrderInput
+    notes?: OrderNoteCreateNestedManyWithoutOrderInput
   }
 
   export type OrderUncheckedCreateWithoutOrderAssignmentsInput = {
@@ -47800,6 +49669,7 @@ export namespace Prisma {
     employeeAssignments?: AssignmentUncheckedCreateNestedManyWithoutOrderInput
     ratings?: RatingUncheckedCreateNestedManyWithoutOrderInput
     files?: FileUncheckedCreateNestedManyWithoutOrderInput
+    notes?: OrderNoteUncheckedCreateNestedManyWithoutOrderInput
   }
 
   export type OrderCreateOrConnectWithoutOrderAssignmentsInput = {
@@ -47924,6 +49794,7 @@ export namespace Prisma {
     employeeAssignments?: AssignmentUpdateManyWithoutOrderNestedInput
     ratings?: RatingUpdateManyWithoutOrderNestedInput
     files?: FileUpdateManyWithoutOrderNestedInput
+    notes?: OrderNoteUpdateManyWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateWithoutOrderAssignmentsInput = {
@@ -47953,6 +49824,7 @@ export namespace Prisma {
     employeeAssignments?: AssignmentUncheckedUpdateManyWithoutOrderNestedInput
     ratings?: RatingUncheckedUpdateManyWithoutOrderNestedInput
     files?: FileUncheckedUpdateManyWithoutOrderNestedInput
+    notes?: OrderNoteUncheckedUpdateManyWithoutOrderNestedInput
   }
 
   export type EmployeeUpsertWithoutOrderAssignmentsInput = {
@@ -48231,6 +50103,7 @@ export namespace Prisma {
     orderAssignments?: OrderAssignmentCreateNestedManyWithoutOrderInput
     employeeAssignments?: AssignmentCreateNestedManyWithoutOrderInput
     files?: FileCreateNestedManyWithoutOrderInput
+    notes?: OrderNoteCreateNestedManyWithoutOrderInput
   }
 
   export type OrderUncheckedCreateWithoutRatingsInput = {
@@ -48260,6 +50133,7 @@ export namespace Prisma {
     orderAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutOrderInput
     employeeAssignments?: AssignmentUncheckedCreateNestedManyWithoutOrderInput
     files?: FileUncheckedCreateNestedManyWithoutOrderInput
+    notes?: OrderNoteUncheckedCreateNestedManyWithoutOrderInput
   }
 
   export type OrderCreateOrConnectWithoutRatingsInput = {
@@ -48419,6 +50293,7 @@ export namespace Prisma {
     orderAssignments?: OrderAssignmentUpdateManyWithoutOrderNestedInput
     employeeAssignments?: AssignmentUpdateManyWithoutOrderNestedInput
     files?: FileUpdateManyWithoutOrderNestedInput
+    notes?: OrderNoteUpdateManyWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateWithoutRatingsInput = {
@@ -48448,6 +50323,7 @@ export namespace Prisma {
     orderAssignments?: OrderAssignmentUncheckedUpdateManyWithoutOrderNestedInput
     employeeAssignments?: AssignmentUncheckedUpdateManyWithoutOrderNestedInput
     files?: FileUncheckedUpdateManyWithoutOrderNestedInput
+    notes?: OrderNoteUncheckedUpdateManyWithoutOrderNestedInput
   }
 
   export type EmployeeUpsertWithoutRatingsInput = {
@@ -48910,6 +50786,7 @@ export namespace Prisma {
     manualOverrides?: EmployeePerformanceCreateNestedManyWithoutManualOverrideByInput
     subordinates?: EmployeeCreateNestedManyWithoutManagerInput
     notificationPreferences?: NotificationPreferenceCreateNestedOneWithoutUserInput
+    orderNotes?: OrderNoteCreateNestedManyWithoutAuthorInput
   }
 
   export type UserUncheckedCreateWithoutNotificationRecipientsInput = {
@@ -48936,6 +50813,7 @@ export namespace Prisma {
     manualOverrides?: EmployeePerformanceUncheckedCreateNestedManyWithoutManualOverrideByInput
     subordinates?: EmployeeUncheckedCreateNestedManyWithoutManagerInput
     notificationPreferences?: NotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
+    orderNotes?: OrderNoteUncheckedCreateNestedManyWithoutAuthorInput
   }
 
   export type UserCreateOrConnectWithoutNotificationRecipientsInput = {
@@ -49017,6 +50895,7 @@ export namespace Prisma {
     manualOverrides?: EmployeePerformanceUpdateManyWithoutManualOverrideByNestedInput
     subordinates?: EmployeeUpdateManyWithoutManagerNestedInput
     notificationPreferences?: NotificationPreferenceUpdateOneWithoutUserNestedInput
+    orderNotes?: OrderNoteUpdateManyWithoutAuthorNestedInput
   }
 
   export type UserUncheckedUpdateWithoutNotificationRecipientsInput = {
@@ -49043,6 +50922,7 @@ export namespace Prisma {
     manualOverrides?: EmployeePerformanceUncheckedUpdateManyWithoutManualOverrideByNestedInput
     subordinates?: EmployeeUncheckedUpdateManyWithoutManagerNestedInput
     notificationPreferences?: NotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
+    orderNotes?: OrderNoteUncheckedUpdateManyWithoutAuthorNestedInput
   }
 
   export type NotificationCreateWithoutNotificationOutboxInput = {
@@ -49141,6 +51021,7 @@ export namespace Prisma {
     manualOverrides?: EmployeePerformanceCreateNestedManyWithoutManualOverrideByInput
     subordinates?: EmployeeCreateNestedManyWithoutManagerInput
     notificationRecipients?: NotificationRecipientCreateNestedManyWithoutUserInput
+    orderNotes?: OrderNoteCreateNestedManyWithoutAuthorInput
   }
 
   export type UserUncheckedCreateWithoutNotificationPreferencesInput = {
@@ -49167,6 +51048,7 @@ export namespace Prisma {
     manualOverrides?: EmployeePerformanceUncheckedCreateNestedManyWithoutManualOverrideByInput
     subordinates?: EmployeeUncheckedCreateNestedManyWithoutManagerInput
     notificationRecipients?: NotificationRecipientUncheckedCreateNestedManyWithoutUserInput
+    orderNotes?: OrderNoteUncheckedCreateNestedManyWithoutAuthorInput
   }
 
   export type UserCreateOrConnectWithoutNotificationPreferencesInput = {
@@ -49209,6 +51091,7 @@ export namespace Prisma {
     manualOverrides?: EmployeePerformanceUpdateManyWithoutManualOverrideByNestedInput
     subordinates?: EmployeeUpdateManyWithoutManagerNestedInput
     notificationRecipients?: NotificationRecipientUpdateManyWithoutUserNestedInput
+    orderNotes?: OrderNoteUpdateManyWithoutAuthorNestedInput
   }
 
   export type UserUncheckedUpdateWithoutNotificationPreferencesInput = {
@@ -49235,6 +51118,267 @@ export namespace Prisma {
     manualOverrides?: EmployeePerformanceUncheckedUpdateManyWithoutManualOverrideByNestedInput
     subordinates?: EmployeeUncheckedUpdateManyWithoutManagerNestedInput
     notificationRecipients?: NotificationRecipientUncheckedUpdateManyWithoutUserNestedInput
+    orderNotes?: OrderNoteUncheckedUpdateManyWithoutAuthorNestedInput
+  }
+
+  export type OrderCreateWithoutNotesInput = {
+    id?: string
+    orderNumber: string
+    title?: string | null
+    description?: string | null
+    scheduledDate: Date | string
+    startTime?: Date | string | null
+    endTime?: Date | string | null
+    duration?: number | null
+    location?: string | null
+    requiredEmployees?: number
+    priority?: number
+    specialInstructions?: string | null
+    status?: $Enums.OrderStatus
+    isArchived?: boolean
+    archivedAt?: Date | string | null
+    estimatedHours?: Decimal | DecimalJsLike | number | string | null
+    actualHours?: Decimal | DecimalJsLike | number | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    createdBy?: string | null
+    updatedBy?: string | null
+    customer: CustomerCreateNestedOneWithoutOrdersInput
+    qualifications?: OrderQualificationCreateNestedManyWithoutOrderInput
+    orderAssignments?: OrderAssignmentCreateNestedManyWithoutOrderInput
+    employeeAssignments?: AssignmentCreateNestedManyWithoutOrderInput
+    ratings?: RatingCreateNestedManyWithoutOrderInput
+    files?: FileCreateNestedManyWithoutOrderInput
+  }
+
+  export type OrderUncheckedCreateWithoutNotesInput = {
+    id?: string
+    orderNumber: string
+    title?: string | null
+    description?: string | null
+    scheduledDate: Date | string
+    startTime?: Date | string | null
+    endTime?: Date | string | null
+    duration?: number | null
+    location?: string | null
+    requiredEmployees?: number
+    priority?: number
+    specialInstructions?: string | null
+    status?: $Enums.OrderStatus
+    isArchived?: boolean
+    archivedAt?: Date | string | null
+    estimatedHours?: Decimal | DecimalJsLike | number | string | null
+    actualHours?: Decimal | DecimalJsLike | number | string | null
+    customerId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    createdBy?: string | null
+    updatedBy?: string | null
+    qualifications?: OrderQualificationUncheckedCreateNestedManyWithoutOrderInput
+    orderAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutOrderInput
+    employeeAssignments?: AssignmentUncheckedCreateNestedManyWithoutOrderInput
+    ratings?: RatingUncheckedCreateNestedManyWithoutOrderInput
+    files?: FileUncheckedCreateNestedManyWithoutOrderInput
+  }
+
+  export type OrderCreateOrConnectWithoutNotesInput = {
+    where: OrderWhereUniqueInput
+    create: XOR<OrderCreateWithoutNotesInput, OrderUncheckedCreateWithoutNotesInput>
+  }
+
+  export type UserCreateWithoutOrderNotesInput = {
+    id?: string
+    email?: string | null
+    username: string
+    password: string
+    role?: $Enums.UserRole
+    isActive?: boolean
+    lastLogin?: Date | string | null
+    refreshToken?: string | null
+    emailVerificationToken?: string | null
+    emailVerificationExpires?: Date | string | null
+    passwordResetToken?: string | null
+    passwordResetExpires?: Date | string | null
+    emailVerified?: boolean
+    twoFactorEnabled?: boolean
+    twoFactorSecret?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    createdBy?: string | null
+    updatedBy?: string | null
+    employee?: EmployeeCreateNestedOneWithoutUserInput
+    manualOverrides?: EmployeePerformanceCreateNestedManyWithoutManualOverrideByInput
+    subordinates?: EmployeeCreateNestedManyWithoutManagerInput
+    notificationRecipients?: NotificationRecipientCreateNestedManyWithoutUserInput
+    notificationPreferences?: NotificationPreferenceCreateNestedOneWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutOrderNotesInput = {
+    id?: string
+    email?: string | null
+    username: string
+    password: string
+    role?: $Enums.UserRole
+    isActive?: boolean
+    lastLogin?: Date | string | null
+    refreshToken?: string | null
+    emailVerificationToken?: string | null
+    emailVerificationExpires?: Date | string | null
+    passwordResetToken?: string | null
+    passwordResetExpires?: Date | string | null
+    emailVerified?: boolean
+    twoFactorEnabled?: boolean
+    twoFactorSecret?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    createdBy?: string | null
+    updatedBy?: string | null
+    employee?: EmployeeUncheckedCreateNestedOneWithoutUserInput
+    manualOverrides?: EmployeePerformanceUncheckedCreateNestedManyWithoutManualOverrideByInput
+    subordinates?: EmployeeUncheckedCreateNestedManyWithoutManagerInput
+    notificationRecipients?: NotificationRecipientUncheckedCreateNestedManyWithoutUserInput
+    notificationPreferences?: NotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutOrderNotesInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutOrderNotesInput, UserUncheckedCreateWithoutOrderNotesInput>
+  }
+
+  export type OrderUpsertWithoutNotesInput = {
+    update: XOR<OrderUpdateWithoutNotesInput, OrderUncheckedUpdateWithoutNotesInput>
+    create: XOR<OrderCreateWithoutNotesInput, OrderUncheckedCreateWithoutNotesInput>
+    where?: OrderWhereInput
+  }
+
+  export type OrderUpdateToOneWithWhereWithoutNotesInput = {
+    where?: OrderWhereInput
+    data: XOR<OrderUpdateWithoutNotesInput, OrderUncheckedUpdateWithoutNotesInput>
+  }
+
+  export type OrderUpdateWithoutNotesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orderNumber?: StringFieldUpdateOperationsInput | string
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    scheduledDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    startTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    endTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    duration?: NullableIntFieldUpdateOperationsInput | number | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    requiredEmployees?: IntFieldUpdateOperationsInput | number
+    priority?: IntFieldUpdateOperationsInput | number
+    specialInstructions?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    isArchived?: BoolFieldUpdateOperationsInput | boolean
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    estimatedHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    actualHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    customer?: CustomerUpdateOneRequiredWithoutOrdersNestedInput
+    qualifications?: OrderQualificationUpdateManyWithoutOrderNestedInput
+    orderAssignments?: OrderAssignmentUpdateManyWithoutOrderNestedInput
+    employeeAssignments?: AssignmentUpdateManyWithoutOrderNestedInput
+    ratings?: RatingUpdateManyWithoutOrderNestedInput
+    files?: FileUpdateManyWithoutOrderNestedInput
+  }
+
+  export type OrderUncheckedUpdateWithoutNotesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orderNumber?: StringFieldUpdateOperationsInput | string
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    scheduledDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    startTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    endTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    duration?: NullableIntFieldUpdateOperationsInput | number | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    requiredEmployees?: IntFieldUpdateOperationsInput | number
+    priority?: IntFieldUpdateOperationsInput | number
+    specialInstructions?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    isArchived?: BoolFieldUpdateOperationsInput | boolean
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    estimatedHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    actualHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    customerId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    qualifications?: OrderQualificationUncheckedUpdateManyWithoutOrderNestedInput
+    orderAssignments?: OrderAssignmentUncheckedUpdateManyWithoutOrderNestedInput
+    employeeAssignments?: AssignmentUncheckedUpdateManyWithoutOrderNestedInput
+    ratings?: RatingUncheckedUpdateManyWithoutOrderNestedInput
+    files?: FileUncheckedUpdateManyWithoutOrderNestedInput
+  }
+
+  export type UserUpsertWithoutOrderNotesInput = {
+    update: XOR<UserUpdateWithoutOrderNotesInput, UserUncheckedUpdateWithoutOrderNotesInput>
+    create: XOR<UserCreateWithoutOrderNotesInput, UserUncheckedCreateWithoutOrderNotesInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutOrderNotesInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutOrderNotesInput, UserUncheckedUpdateWithoutOrderNotesInput>
+  }
+
+  export type UserUpdateWithoutOrderNotesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    username?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    lastLogin?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    passwordResetToken?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordResetExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    twoFactorEnabled?: BoolFieldUpdateOperationsInput | boolean
+    twoFactorSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    employee?: EmployeeUpdateOneWithoutUserNestedInput
+    manualOverrides?: EmployeePerformanceUpdateManyWithoutManualOverrideByNestedInput
+    subordinates?: EmployeeUpdateManyWithoutManagerNestedInput
+    notificationRecipients?: NotificationRecipientUpdateManyWithoutUserNestedInput
+    notificationPreferences?: NotificationPreferenceUpdateOneWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutOrderNotesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    username?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    lastLogin?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    passwordResetToken?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordResetExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    twoFactorEnabled?: BoolFieldUpdateOperationsInput | boolean
+    twoFactorSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    employee?: EmployeeUncheckedUpdateOneWithoutUserNestedInput
+    manualOverrides?: EmployeePerformanceUncheckedUpdateManyWithoutManualOverrideByNestedInput
+    subordinates?: EmployeeUncheckedUpdateManyWithoutManagerNestedInput
+    notificationRecipients?: NotificationRecipientUncheckedUpdateManyWithoutUserNestedInput
+    notificationPreferences?: NotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
   }
 
   export type EmployeeCreateWithoutFilesInput = {
@@ -49343,6 +51487,7 @@ export namespace Prisma {
     orderAssignments?: OrderAssignmentCreateNestedManyWithoutOrderInput
     employeeAssignments?: AssignmentCreateNestedManyWithoutOrderInput
     ratings?: RatingCreateNestedManyWithoutOrderInput
+    notes?: OrderNoteCreateNestedManyWithoutOrderInput
   }
 
   export type OrderUncheckedCreateWithoutFilesInput = {
@@ -49372,6 +51517,7 @@ export namespace Prisma {
     orderAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutOrderInput
     employeeAssignments?: AssignmentUncheckedCreateNestedManyWithoutOrderInput
     ratings?: RatingUncheckedCreateNestedManyWithoutOrderInput
+    notes?: OrderNoteUncheckedCreateNestedManyWithoutOrderInput
   }
 
   export type OrderCreateOrConnectWithoutFilesInput = {
@@ -49543,6 +51689,7 @@ export namespace Prisma {
     orderAssignments?: OrderAssignmentUpdateManyWithoutOrderNestedInput
     employeeAssignments?: AssignmentUpdateManyWithoutOrderNestedInput
     ratings?: RatingUpdateManyWithoutOrderNestedInput
+    notes?: OrderNoteUpdateManyWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateWithoutFilesInput = {
@@ -49572,6 +51719,7 @@ export namespace Prisma {
     orderAssignments?: OrderAssignmentUncheckedUpdateManyWithoutOrderNestedInput
     employeeAssignments?: AssignmentUncheckedUpdateManyWithoutOrderNestedInput
     ratings?: RatingUncheckedUpdateManyWithoutOrderNestedInput
+    notes?: OrderNoteUncheckedUpdateManyWithoutOrderNestedInput
   }
 
   export type AssignmentUpsertWithoutFilesInput = {
@@ -49674,6 +51822,17 @@ export namespace Prisma {
     status?: string
     error?: string | null
     createdAt?: Date | string
+  }
+
+  export type OrderNoteCreateManyAuthorInput = {
+    id?: string
+    orderId: string
+    content: string
+    triggersStatus?: $Enums.OrderStatus | null
+    category?: $Enums.NoteCategory
+    isInternal?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type EmployeePerformanceUpdateWithoutManualOverrideByInput = {
@@ -49855,6 +52014,39 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     error?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type OrderNoteUpdateWithoutAuthorInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    triggersStatus?: NullableEnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus | null
+    category?: EnumNoteCategoryFieldUpdateOperationsInput | $Enums.NoteCategory
+    isInternal?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    order?: OrderUpdateOneRequiredWithoutNotesNestedInput
+  }
+
+  export type OrderNoteUncheckedUpdateWithoutAuthorInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orderId?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    triggersStatus?: NullableEnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus | null
+    category?: EnumNoteCategoryFieldUpdateOperationsInput | $Enums.NoteCategory
+    isInternal?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type OrderNoteUncheckedUpdateManyWithoutAuthorInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orderId?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    triggersStatus?: NullableEnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus | null
+    category?: EnumNoteCategoryFieldUpdateOperationsInput | $Enums.NoteCategory
+    isInternal?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type EmployeePerformanceCreateManyEmployeeInput = {
@@ -50782,6 +52974,7 @@ export namespace Prisma {
     employeeAssignments?: AssignmentUpdateManyWithoutOrderNestedInput
     ratings?: RatingUpdateManyWithoutOrderNestedInput
     files?: FileUpdateManyWithoutOrderNestedInput
+    notes?: OrderNoteUpdateManyWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateWithoutCustomerInput = {
@@ -50811,6 +53004,7 @@ export namespace Prisma {
     employeeAssignments?: AssignmentUncheckedUpdateManyWithoutOrderNestedInput
     ratings?: RatingUncheckedUpdateManyWithoutOrderNestedInput
     files?: FileUncheckedUpdateManyWithoutOrderNestedInput
+    notes?: OrderNoteUncheckedUpdateManyWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateManyWithoutCustomerInput = {
@@ -50941,6 +53135,17 @@ export namespace Prisma {
     uploadedBy?: string | null
     isVerified?: boolean
     isPublic?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type OrderNoteCreateManyOrderInput = {
+    id?: string
+    authorId: string
+    content: string
+    triggersStatus?: $Enums.OrderStatus | null
+    category?: $Enums.NoteCategory
+    isInternal?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -51141,6 +53346,39 @@ export namespace Prisma {
     uploadedBy?: NullableStringFieldUpdateOperationsInput | string | null
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     isPublic?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type OrderNoteUpdateWithoutOrderInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    triggersStatus?: NullableEnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus | null
+    category?: EnumNoteCategoryFieldUpdateOperationsInput | $Enums.NoteCategory
+    isInternal?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    author?: UserUpdateOneRequiredWithoutOrderNotesNestedInput
+  }
+
+  export type OrderNoteUncheckedUpdateWithoutOrderInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    authorId?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    triggersStatus?: NullableEnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus | null
+    category?: EnumNoteCategoryFieldUpdateOperationsInput | $Enums.NoteCategory
+    isInternal?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type OrderNoteUncheckedUpdateManyWithoutOrderInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    authorId?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    triggersStatus?: NullableEnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus | null
+    category?: EnumNoteCategoryFieldUpdateOperationsInput | $Enums.NoteCategory
+    isInternal?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
