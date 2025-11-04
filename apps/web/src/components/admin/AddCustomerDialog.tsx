@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { useCustomerStore } from "@/store/customerStore";
 import { CreateCustomerData } from "@/types/customer";
+import { useTranslation } from "@/hooks/useTranslation";
 
 import {
   Dialog,
@@ -39,6 +40,7 @@ export default function AddCustomerDialog({
   open,
   onOpenChange,
 }: AddCustomerDialogProps) {
+  const { t } = useTranslation();
   const { createCustomer } = useCustomerStore();
 
   const [internalOpen, setInternalOpen] = useState(false);
@@ -79,7 +81,7 @@ export default function AddCustomerDialog({
     e.preventDefault();
 
     if (!formData.companyName.trim()) {
-      toast.error("Company name is required");
+      toast.error(t("admin.customers.form.companyNameRequired"));
       return;
     }
 
@@ -103,7 +105,7 @@ export default function AddCustomerDialog({
     } catch (error) {
       console.error("Customer creation failed:", error);
       toast.error(
-        error instanceof Error ? error.message : "Failed to create customer"
+        error instanceof Error ? error.message : t("admin.customers.form.createError")
       );
     } finally {
       setLoading(false);
@@ -114,13 +116,13 @@ export default function AddCustomerDialog({
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         {trigger || (
-          <Button onClick={() => setIsOpen(true)}>Add Customer</Button>
+          <Button onClick={() => setIsOpen(true)}>{t("admin.customers.addCustomer")}</Button>
         )}
       </DialogTrigger>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold text-foreground">
-            Add New Customer
+            {t("admin.customers.form.addNewCustomer")}
           </DialogTitle>
         </DialogHeader>
 
@@ -130,19 +132,19 @@ export default function AddCustomerDialog({
             <div className="flex items-center gap-2 mb-3">
               <Building className="h-4 w-4 text-primary" />
               <h3 className="text-sm font-medium text-foreground">
-                Company Information
+                {t("admin.customers.form.companyInformation")}
               </h3>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="companyName">Company Name *</Label>
+              <Label htmlFor="companyName">{t("admin.customers.form.companyName")} *</Label>
               <Input
                 id="companyName"
                 value={formData.companyName}
                 onChange={(e) =>
                   handleInputChange("companyName", e.target.value)
                 }
-                placeholder="Enter company name"
+                placeholder={t("admin.customers.form.companyNamePlaceholder")}
                 required
                 className="rounded-lg"
               />
@@ -150,7 +152,7 @@ export default function AddCustomerDialog({
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="contactEmail">Contact Email</Label>
+                <Label htmlFor="contactEmail">{t("admin.customers.form.contactEmail")}</Label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
@@ -160,13 +162,13 @@ export default function AddCustomerDialog({
                     onChange={(e) =>
                       handleInputChange("contactEmail", e.target.value)
                     }
-                    placeholder="contact@company.com"
+                    placeholder={t("admin.customers.form.contactEmailPlaceholder")}
                     className="pl-10 rounded-lg"
                   />
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="contactPhone">Contact Phone</Label>
+                <Label htmlFor="contactPhone">{t("admin.customers.form.contactPhone")}</Label>
                 <div className="relative">
                   <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
@@ -176,7 +178,7 @@ export default function AddCustomerDialog({
                     onChange={(e) =>
                       handleInputChange("contactPhone", e.target.value)
                     }
-                    placeholder="+1 (555) 000-0000"
+                    placeholder={t("admin.customers.form.contactPhonePlaceholder")}
                     className="pl-10 rounded-lg"
                   />
                 </div>
@@ -184,14 +186,14 @@ export default function AddCustomerDialog({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="address">Address</Label>
+              <Label htmlFor="address">{t("admin.customers.form.address")}</Label>
               <div className="relative">
                 <MapPin className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                 <Textarea
                   id="address"
                   value={formData.address}
                   onChange={(e) => handleInputChange("address", e.target.value)}
-                  placeholder="Enter company address"
+                  placeholder={t("admin.customers.form.addressPlaceholder")}
                   className="pl-10 rounded-lg"
                   rows={3}
                 />
@@ -200,26 +202,26 @@ export default function AddCustomerDialog({
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="industry">Industry</Label>
+                <Label htmlFor="industry">{t("admin.customers.form.industry")}</Label>
                 <Input
                   id="industry"
                   value={formData.industry}
                   onChange={(e) =>
                     handleInputChange("industry", e.target.value)
                   }
-                  placeholder="e.g., Technology, Healthcare"
+                  placeholder={t("admin.customers.form.industryPlaceholder")}
                   className="rounded-lg"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="taxNumber">Tax Number</Label>
+                <Label htmlFor="taxNumber">{t("admin.customers.form.taxNumber")}</Label>
                 <Input
                   id="taxNumber"
                   value={formData.taxNumber}
                   onChange={(e) =>
                     handleInputChange("taxNumber", e.target.value)
                   }
-                  placeholder="Enter tax number"
+                  placeholder={t("admin.customers.form.taxNumberPlaceholder")}
                   className="rounded-lg"
                 />
               </div>
@@ -233,7 +235,7 @@ export default function AddCustomerDialog({
                   handleInputChange("isActive", checked)
                 }
               />
-              <Label htmlFor="isActive">Active Customer</Label>
+              <Label htmlFor="isActive">{t("admin.customers.form.activeCustomer")}</Label>
             </div>
           </div>
 
@@ -246,7 +248,7 @@ export default function AddCustomerDialog({
               onClick={() => setIsOpen(false)}
               disabled={loading}
             >
-              Cancel
+              {t("admin.customers.form.cancel")}
             </Button>
             <Button
               type="submit"
@@ -256,10 +258,10 @@ export default function AddCustomerDialog({
               {loading ? (
                 <>
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Creating...
+                  {t("admin.customers.form.creating")}
                 </>
               ) : (
-                "Add Customer"
+                t("admin.customers.form.addCustomer")
               )}
             </Button>
           </div>

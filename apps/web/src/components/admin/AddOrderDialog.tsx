@@ -24,12 +24,18 @@ import { useEmployeeStore } from "@/store/employeeStore";
 import { useCustomerStore } from "@/store/customerStore";
 import { CreateOrderData, OrderStatus } from "@/types/order";
 import toast from "react-hot-toast";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface AddOrderDialogProps {
   trigger: React.ReactNode;
 }
 
 const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
+  const { t, ready } = useTranslation();
+  
+  if (!ready) {
+    return null;
+  }
   const { createOrder } = useOrderStore();
   const { employees, fetchEmployees } = useEmployeeStore();
   const { customers, fetchCustomers } = useCustomerStore();
@@ -99,16 +105,16 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
 
     // Validate required fields
     const newErrors: Record<string, string> = {};
-    if (!formData.customerId) newErrors.customerId = "Customer is required";
-    if (!formData.scheduledDate) newErrors.scheduledDate = "Scheduled date is required";
-    if (!formData.requiredEmployees || formData.requiredEmployees < 1) newErrors.requiredEmployees = "Required employees must be at least 1";
-    if (!formData.priority || formData.priority < 1) newErrors.priority = "Priority must be at least 1";
+    if (!formData.customerId) newErrors.customerId = t("admin.orders.form.customerRequired");
+    if (!formData.scheduledDate) newErrors.scheduledDate = t("admin.orders.form.scheduledDateRequired");
+    if (!formData.requiredEmployees || formData.requiredEmployees < 1) newErrors.requiredEmployees = t("admin.orders.form.requiredEmployeesRequired");
+    if (!formData.priority || formData.priority < 1) newErrors.priority = t("admin.orders.form.priorityRequired");
     
     setErrors(newErrors);
     console.log("Validation errors:", newErrors);
     
     if (Object.keys(newErrors).length > 0) {
-      toast.error("Please fix the validation errors");
+      toast.error(t("admin.orders.form.validationError"));
       return;
     }
 
@@ -140,7 +146,7 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
       resetFormData();
     } catch (error) {
       console.error("Error creating order:", error);
-      toast.error("Failed to create order");
+      toast.error(t("admin.orders.form.createError"));
     } finally {
       setLoading(false);
     }
@@ -179,11 +185,11 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
       <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Add New Order</DialogTitle>
+          <DialogTitle>{t("admin.orders.form.addNewOrder")}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <Label htmlFor="customerId">Customer *</Label>
+            <Label htmlFor="customerId">{t("admin.orders.form.customer")} *</Label>
             <Select
               value={formData.customerId}
               onValueChange={(value) => {
@@ -192,7 +198,7 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
               }}
             >
               <SelectTrigger className={errors.customerId ? "border-red-500" : ""}>
-                <SelectValue placeholder="Select customer" />
+                <SelectValue placeholder={t("admin.orders.form.selectCustomer")} />
               </SelectTrigger>
               <SelectContent>
                 {customers.map((customer) => (
@@ -206,7 +212,7 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
           </div>
 
           <div>
-            <Label htmlFor="description">Description</Label>
+            <Label htmlFor="description">{t("admin.orders.form.description")}</Label>
             <Textarea
               id="description"
               value={formData.description}
@@ -217,7 +223,7 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="scheduledDate">Scheduled Date *</Label>
+              <Label htmlFor="scheduledDate">{t("admin.orders.form.scheduledDate")} *</Label>
               <Input
                 id="scheduledDate"
                 type="date"
@@ -231,19 +237,19 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
               {errors.scheduledDate && <p className="text-sm text-red-500 mt-1">{errors.scheduledDate}</p>}
             </div>
             <div>
-              <Label htmlFor="location">Location</Label>
+              <Label htmlFor="location">{t("admin.orders.form.location")}</Label>
               <Input
                 id="location"
                 value={formData.location}
                 onChange={(e) => handleInputChange("location", e.target.value)}
-                placeholder="Auto-filled from customer address"
+                placeholder={t("admin.orders.form.locationPlaceholder")}
               />
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="startTime">Start Date & Time</Label>
+              <Label htmlFor="startTime">{t("admin.orders.form.startDateTime")}</Label>
               <Input
                 id="startTime"
                 type="datetime-local"
@@ -252,7 +258,7 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
               />
             </div>
             <div>
-              <Label htmlFor="endTime">End Date & Time</Label>
+              <Label htmlFor="endTime">{t("admin.orders.form.endDateTime")}</Label>
               <Input
                 id="endTime"
                 type="datetime-local"
@@ -264,7 +270,7 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
 
           <div className="grid grid-cols-2 gap-4">
             {/* <div>
-              <Label htmlFor="requiredEmployees">Required Employees *</Label>
+              <Label htmlFor="requiredEmployees">{t("admin.orders.form.requiredEmployees")} *</Label>
               <Input
                 id="requiredEmployees"
                 type="number"
@@ -279,7 +285,7 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
               {errors.requiredEmployees && <p className="text-sm text-red-500 mt-1">{errors.requiredEmployees}</p>}
             </div> */}
             <div>
-              <Label htmlFor="priority">Priority *</Label>
+              <Label htmlFor="priority">{t("admin.orders.form.priority")} *</Label>
               <Input
                 id="priority"
                 type="number"
@@ -295,7 +301,7 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
               {errors.priority && <p className="text-sm text-red-500 mt-1">{errors.priority}</p>}
             </div>
             <div>
-              <Label htmlFor="duration">Duration (hours)</Label>
+              <Label htmlFor="duration">{t("admin.orders.form.duration")}</Label>
               <Input
                 id="duration"
                 type="number"
@@ -313,7 +319,7 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
           </div>
 
           <div>
-            <Label htmlFor="specialInstructions">Special Instructions</Label>
+            <Label htmlFor="specialInstructions">{t("admin.orders.form.specialInstructions")}</Label>
             <Textarea
               id="specialInstructions"
               value={formData.specialInstructions}
@@ -325,9 +331,9 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
           </div>
 
           <div>
-            <Label>Assign Employees (Optional)</Label>
+            <Label>{t("admin.orders.form.assignEmployees")}</Label>
             <div className="text-sm text-muted-foreground mb-2">
-              {(formData.assignedEmployeeIds || []).length} of {formData.requiredEmployees || 1} employees selected
+              {`${(formData.assignedEmployeeIds || []).length} of ${formData.requiredEmployees || 1} employees selected`}
             </div>
             <div className="max-h-40 overflow-y-auto border rounded-md p-3 space-y-2">
               {employees.map((employee) => (
@@ -355,7 +361,7 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
                 </div>
               ))}
               {employees.length === 0 && (
-                <p className="text-sm text-gray-500">No employees available</p>
+                <p className="text-sm text-gray-500">{t("admin.orders.form.noEmployeesAvailable")}</p>
               )}
             </div>
           </div>
@@ -369,10 +375,10 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
                 setOpen(false);
               }}
             >
-              Cancel
+              {t("admin.orders.form.cancel")}
             </Button>
             <Button type="submit" disabled={loading}>
-              {loading ? "Creating..." : "Create Order"}
+              {loading ? t("admin.orders.form.creating") : t("admin.orders.form.createOrder")}
             </Button>
           </div>
         </form>

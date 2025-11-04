@@ -28,12 +28,12 @@ interface LeaveRequestModalProps {
 }
 
 const LEAVE_TYPES = [
-  { value: "VACATION", label: "Vacation" },
-  { value: "SICK_LEAVE", label: "Sick Leave" },
-  { value: "PERSONAL_LEAVE", label: "Personal Leave" },
-  // { value: "EMERGENCY_LEAVE", label: "Emergency Leave" },
-  { value: "MATERNITY_LEAVE", label: "Maternity Leave" },
-  { value: "PATERNITY_LEAVE", label: "Paternity Leave" },
+  { value: "VACATION", label: "Urlaub" },
+  { value: "SICK_LEAVE", label: "Krankenstand" },
+  { value: "PERSONAL_LEAVE", label: "Persönlicher Urlaub" },
+  // { value: "EMERGENCY_LEAVE", label: "Notfall-Urlaub" },
+  { value: "MATERNITY_LEAVE", label: "Mutterschaftsurlaub" },
+  { value: "PATERNITY_LEAVE", label: "Vaterschaftsurlaub" },
 ];
 
 export const LeaveRequestModal: React.FC<LeaveRequestModalProps> = ({
@@ -55,15 +55,15 @@ export const LeaveRequestModal: React.FC<LeaveRequestModalProps> = ({
     const newErrors: Record<string, string> = {};
 
     if (!formData.type) {
-      newErrors.type = "Leave type is required";
+      newErrors.type = "Urlaubsart ist erforderlich";
     }
 
     if (!formData.startDate) {
-      newErrors.startDate = "Start date is required";
+      newErrors.startDate = "Startdatum ist erforderlich";
     }
 
     if (!formData.endDate) {
-      newErrors.endDate = "End date is required";
+      newErrors.endDate = "Enddatum ist erforderlich";
     }
 
     if (formData.startDate && formData.endDate) {
@@ -73,11 +73,11 @@ export const LeaveRequestModal: React.FC<LeaveRequestModalProps> = ({
       today.setHours(0, 0, 0, 0);
 
       if (startDate < today) {
-        newErrors.startDate = "Start date cannot be in the past";
+        newErrors.startDate = "Startdatum kann nicht in der Vergangenheit liegen";
       }
 
       if (endDate < startDate) {
-        newErrors.endDate = "End date must be after start date";
+        newErrors.endDate = "Enddatum muss nach dem Startdatum liegen";
       }
     }
 
@@ -126,18 +126,18 @@ export const LeaveRequestModal: React.FC<LeaveRequestModalProps> = ({
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Request Leave</DialogTitle>
+          <DialogTitle>Urlaub beantragen</DialogTitle>
         </DialogHeader>
         
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="type">Leave Type</Label>
+            <Label htmlFor="type">Urlaubsart</Label>
             <Select
               value={formData.type}
               onValueChange={(value) => setFormData({ ...formData, type: value })}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Select leave type" />
+                <SelectValue placeholder="Urlaubsart auswählen" />
               </SelectTrigger>
               <SelectContent>
                 {LEAVE_TYPES.map((type) => (
@@ -152,7 +152,7 @@ export const LeaveRequestModal: React.FC<LeaveRequestModalProps> = ({
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="startDate">Start Date</Label>
+              <Label htmlFor="startDate">Startdatum</Label>
               <Input
                 id="startDate"
                 type="date"
@@ -164,7 +164,7 @@ export const LeaveRequestModal: React.FC<LeaveRequestModalProps> = ({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="endDate">End Date</Label>
+              <Label htmlFor="endDate">Enddatum</Label>
               <Input
                 id="endDate"
                 type="date"
@@ -179,16 +179,16 @@ export const LeaveRequestModal: React.FC<LeaveRequestModalProps> = ({
           {formData.startDate && formData.endDate && (
             <div className="bg-blue-50 p-3 rounded-lg">
               <p className="text-sm text-blue-800">
-                <strong>Duration:</strong> {calculateDays()} day{calculateDays() !== 1 ? 's' : ''}
+                <strong>Dauer:</strong> {calculateDays()} Tag{calculateDays() !== 1 ? 'e' : ''}
               </p>
             </div>
           )}
 
           <div className="space-y-2">
-            <Label htmlFor="reason">Reason (Optional)</Label>
+            <Label htmlFor="reason">Grund (Optional)</Label>
             <Textarea
               id="reason"
-              placeholder="Provide additional details about your leave request..."
+              placeholder="Geben Sie zusätzliche Details zu Ihrem Urlaubsantrag an..."
               value={formData.reason}
               onChange={(e) => setFormData({ ...formData, reason: e.target.value })}
               rows={3}
@@ -197,10 +197,10 @@ export const LeaveRequestModal: React.FC<LeaveRequestModalProps> = ({
 
           <div className="flex justify-end gap-2 pt-4">
             <Button type="button" variant="outline" onClick={handleClose}>
-              Cancel
+              Abbrechen
             </Button>
             <Button type="submit" disabled={loading}>
-              {loading ? "Submitting..." : "Submit Request"}
+              {loading ? "Wird eingereicht..." : "Antrag einreichen"}
             </Button>
           </div>
         </form>

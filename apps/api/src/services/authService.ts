@@ -25,7 +25,7 @@ export const register = async (userData: any) => {
   });
 
   if (existingEmail) {
-    throw new Error("Email already exists");
+    throw new Error("E-Mail-Adresse existiert bereits");
   }
 
   // Check for existing username
@@ -34,7 +34,7 @@ export const register = async (userData: any) => {
   });
 
   if (existingUsername) {
-    throw new Error("Username is not available");
+    throw new Error("Benutzername ist nicht verfügbar");
   }
 
   const hashedPassword = await bcrypt.hash(password, 12);
@@ -81,7 +81,7 @@ export const register = async (userData: any) => {
 
   return {
     message:
-      "Registration successful. Please check your email to verify your account.",
+      "Registrierung erfolgreich. Bitte überprüfen Sie Ihre E-Mail, um Ihr Konto zu verifizieren.",
   };
 };
 
@@ -110,26 +110,26 @@ export const login = async (identifier: string, password: string) => {
 
   if (!user) {
     console.log('No user found with identifier:', identifier);
-    throw new Error("Invalid credentials");
+    throw new Error("Ungültige Anmeldedaten");
   }
   
   console.log('User found - isActive:', user.isActive, 'role:', user.role);
   
   if (!user.isActive) {
     console.log('User account not active');
-    throw new Error("Account not verified");
+    throw new Error("Konto nicht verifiziert");
   }
 
   const isValidPassword = await bcrypt.compare(password, user.password);
   console.log('Password valid:', isValidPassword);
   
   if (!isValidPassword) {
-    throw new Error("Invalid credentials");
+    throw new Error("Ungültige Anmeldedaten");
   }
 
   // Check if employee is blocked after password validation
   if (user.employee && !user.employee.isAvailable) {
-    throw new Error("Your access to the system has been blocked. Please contact admin.");
+    throw new Error("Ihr Zugang zum System wurde gesperrt. Bitte wenden Sie sich an den Administrator.");
   }
 
   const { accessToken, refreshToken } = generateTokens(
@@ -163,7 +163,7 @@ export const refreshToken = async (token: string) => {
     const user = await prisma.user.findUnique({ where: { id: decoded.id } });
 
     if (!user) {
-      throw new Error("Invalid refresh token");
+      throw new Error("Ungültiger Aktualisierungstoken");
     }
 
     const { accessToken, refreshToken: newRefreshToken } = generateTokens(
@@ -174,14 +174,14 @@ export const refreshToken = async (token: string) => {
 
     return { accessToken, refreshToken: newRefreshToken };
   } catch (error) {
-    throw new Error("Invalid refresh token");
+    throw new Error("Ungültiger Aktualisierungstoken");
   }
 };
 
 export const forgotPassword = async (email: string) => {
   const user = await prisma.user.findUnique({ where: { email } });
   if (!user) {
-    throw new Error("User not found");
+    throw new Error("Benutzer nicht gefunden");
   }
 
   // Create JWT token for password reset
@@ -202,7 +202,7 @@ export const forgotPassword = async (email: string) => {
     `,
   });
 
-  return { message: "Password reset email sent" };
+  return { message: "E-Mail zum Zurücksetzen des Passworts gesendet" };
 };
 
 export const resetPassword = async (token: string, newPassword: string) => {
@@ -210,14 +210,14 @@ export const resetPassword = async (token: string, newPassword: string) => {
     const decoded = jwt.verify(token, JWT_SECRET) as any;
 
     if (decoded.type !== "password-reset") {
-      throw new Error("Invalid token type");
+      throw new Error("Ungültiger Token-Typ");
     }
 
     const user = await prisma.user.findUnique({
       where: { id: decoded.userId },
     });
     if (!user) {
-      throw new Error("User not found");
+      throw new Error("Benutzer nicht gefunden");
     }
 
     const hashedPassword = await bcrypt.hash(newPassword, 12);
@@ -227,9 +227,9 @@ export const resetPassword = async (token: string, newPassword: string) => {
       data: { password: hashedPassword },
     });
 
-    return { message: "Password reset successful" };
+    return { message: "Passwort erfolgreich zurückgesetzt" };
   } catch (error) {
-    throw new Error("Invalid or expired reset token");
+    throw new Error("Ungültiger oder abgelaufener Reset-Token");
   }
 };
 
@@ -239,7 +239,7 @@ export const verifyEmail = async (token: string) => {
     const user = await prisma.user.findUnique({ where: { id: token } });
 
     if (!user) {
-      throw new Error("Invalid verification token");
+      throw new Error("Ungültiger Verifizierungstoken");
     }
 
     await prisma.user.update({
@@ -247,9 +247,9 @@ export const verifyEmail = async (token: string) => {
       data: { isActive: true, emailVerified:true },
     });
 
-    return { message: "Email verified successfully" };
+    return { message: "E-Mail erfolgreich verifiziert" };
   } catch (error) {
-    throw new Error("Invalid or expired verification token");
+    throw new Error("Ungültiger oder abgelaufener Verifizierungstoken");
   }
 };
 
@@ -260,12 +260,12 @@ export const changePassword = async (
 ) => {
   const user = await prisma.user.findUnique({ where: { id: userId } });
   if (!user) {
-    throw new Error("User not found");
+    throw new Error("Benutzer nicht gefunden");
   }
 
   const isValidPassword = await bcrypt.compare(currentPassword, user.password);
   if (!isValidPassword) {
-    throw new Error("Current password is incorrect");
+    throw new Error("Aktuelles Passwort ist falsch");
   }
 
   const hashedPassword = await bcrypt.hash(newPassword, 12);
@@ -277,29 +277,29 @@ export const changePassword = async (
     },
   });
 
-  return { message: "Password changed successfully" };
+  return { message: "Passwort erfolgreich geändert" };
 };
 
 export const logout = async (userId: string) => {
   // Refresh token clearing temporarily disabled until schema is updated
 
-  return { message: "Logged out successfully" };
+  return { message: "Erfolgreich abgemeldet" };
 };
 export const resendVerificationEmail = async (email: string) => {
   const user = await prisma.user.findUnique({ where: { email } });
   
   if (!user) {
-    throw new Error("User not found");
+    throw new Error("Benutzer nicht gefunden");
   }
 
   if (user.isActive) {
-    throw new Error("Email already verified");
+    throw new Error("E-Mail bereits verifiziert");
   }
 
   // Check if user has requested resend recently (5 minutes cooldown)
   const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
   if (user.updatedAt > fiveMinutesAgo) {
-    throw new Error("Please wait 5 minutes before requesting another verification email");
+    throw new Error("Bitte warten Sie 5 Minuten, bevor Sie eine weitere Verifizierungs-E-Mail anfordern");
   }
 
   // Update user's updatedAt to track last resend time
@@ -319,5 +319,5 @@ export const resendVerificationEmail = async (email: string) => {
     `,
   });
 
-  return { message: "Verification email resent successfully" };
+  return { message: "Verifizierungs-E-Mail erfolgreich erneut gesendet" };
 };

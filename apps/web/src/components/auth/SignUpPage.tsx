@@ -12,8 +12,10 @@ import {
 import { useRouter } from "next/navigation";
 import { api } from "@/lib/api";
 import toast from "react-hot-toast";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function SignUpPage() {
+  const { t, ready } = useTranslation();
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
@@ -32,28 +34,28 @@ export default function SignUpPage() {
 
   // Validation functions
   const validateName = (name: string) => {
-    if (!name || name.length < 2) return "Name must be at least 2 characters";
-    if (!/^[a-zA-Z\s]+$/.test(name)) return "Name can only contain letters and spaces";
+    if (!name || name.length < 2) return t("auth.nameMinLength");
+    if (!/^[a-zA-Z\s]+$/.test(name)) return t("auth.nameLettersOnly");
     return "";
   };
 
   const validateUsername = (username: string) => {
-    if (!username || username.length < 3) return "Username must be at least 3 characters";
-    if (!/^[a-zA-Z0-9._-]+$/.test(username)) return "Username can only contain letters, numbers, dots, hyphens, and underscores";
-    if (/\s/.test(username)) return "Username cannot contain spaces";
+    if (!username || username.length < 3) return t("auth.usernameMinLength");
+    if (!/^[a-zA-Z0-9._-]+$/.test(username)) return t("auth.usernameInvalidChars");
+    if (/\s/.test(username)) return t("auth.usernameNoSpaces");
     return "";
   };
 
   const validateEmail = (email: string) => {
-    if (!email) return "Email is required";
+    if (!email) return t("auth.emailRequired");
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) return "Please enter a valid email";
+    if (!emailRegex.test(email)) return t("auth.enterValidEmail");
     return "";
   };
 
   const validatePassword = (password: string) => {
     if (!password || password.length < 8)
-      return "Password must be at least 8 characters";
+      return t("auth.passwordMinLength");
     return "";
   };
 
@@ -80,7 +82,7 @@ export default function SignUpPage() {
       );
     } catch (error: any) {
       const errorMessage =
-        error.message || "Registration failed. Please try again.";
+        error.message || t("auth.registrationFailed");
       toast.error(errorMessage);
     } finally {
       setIsLoading(false);
@@ -107,6 +109,20 @@ export default function SignUpPage() {
     setErrors((prev) => ({ ...prev, [field]: error }));
   };
 
+  if (!ready) {
+    return (
+      <div className="min-h-screen bg-linear-to-br from-primary/5 via-background to-accent/10 flex items-center justify-center p-4">
+        <div className="w-full max-w-md space-y-8">
+          <Card className="border-0 shadow-xl bg-card/80 backdrop-blur-sm p-5">
+            <CardContent className="flex items-center justify-center py-8">
+              <Loader2 className="h-8 w-8 animate-spin" />
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-linear-to-br from-primary/5 via-background to-accent/10 flex items-center justify-center p-4">
       <div className="w-full max-w-md space-y-8">
@@ -119,10 +135,10 @@ export default function SignUpPage() {
         <Card className="border-0 shadow-xl bg-card/80 backdrop-blur-sm p-5 ">
           <CardHeader className="text-center space-y-2 pb-6">
             <h1 className="text-2xl font-bold text-foreground">
-              Welcome to ERP!
+              {t("auth.welcomeToERP")}
             </h1>
             <p className="text-mforeground">
-              Create your account to start using System
+              {t("auth.createAccountSubtitle")}
             </p>
           </CardHeader>
 
@@ -141,11 +157,11 @@ export default function SignUpPage() {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="name">Full Name</Label>
+                  <Label htmlFor="name">{t("auth.fullName")}</Label>
                   <Input
                     id="name"
                     type="text"
-                    placeholder="Enter your full name"
+                    placeholder={t("auth.enterFullName")}
                     value={formData.name}
                     onChange={(e) => {
                       const value = e.target.value.replace(/[^a-zA-Z\s]/g, "");
@@ -162,11 +178,11 @@ export default function SignUpPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="userName">Username</Label>
+                  <Label htmlFor="userName">{t("auth.username")}</Label>
                   <Input
                     id="userName"
                     type="text"
-                    placeholder="Enter your username"
+                    placeholder={t("auth.enterUsername")}
                     value={formData.userName}
                     onChange={(e) => {
                       const value = e.target.value.replace(/[^a-zA-Z0-9._-]/g, "");
@@ -184,11 +200,11 @@ export default function SignUpPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email">{t("common.email")}</Label>
                 <Input
                   id="email"
                   type="email"
-                  placeholder="Enter your email"
+                  placeholder={t("auth.enterEmail")}
                   value={formData.email}
                   onChange={(e) => handleInputChange("email", e.target.value)}
                   className={`rounded-xl border-border/50 focus:border-primary ${
@@ -202,12 +218,12 @@ export default function SignUpPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password">{t("auth.password")}</Label>
                 <div className="relative">
                   <Input
                     id="password"
                     type={showPassword ? "text" : "password"}
-                    placeholder="Create a password"
+                    placeholder={t("auth.createPassword")}
                     value={formData.password}
                     onChange={(e) =>
                       handleInputChange("password", e.target.value)
@@ -242,31 +258,31 @@ export default function SignUpPage() {
                 {isLoading ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Creating Account...
+                    {t("auth.creatingAccount")}
                   </>
                 ) : (
-                  "Create Account"
+                  t("auth.createAccount")
                 )}
               </Button>
             </form>
 
             {/* Terms Link */}
             <p className="text-center text-sm text-mforeground">
-              By signing up, you agree to our{" "}
+              {t("auth.bySigningUp")}{" "}
               <button className="text-primary hover:underline font-medium">
-                Terms & Conditions
+                {t("auth.termsConditions")}
               </button>
             </p>
 
             {/* Sign In Link */}
             <div className="text-center pt-4 border-t border-border/50">
               <p className="text-sm text-mforeground">
-                Already have an account?{" "}
+                {t("auth.alreadyHaveAccountQuestion")}{" "}
                 <button
                   onClick={() => router.push("/login")}
                   className="text-primary hover:underline font-medium"
                 >
-                  Sign in
+                  {t("auth.signInLink")}
                 </button>
               </p>
             </div>
