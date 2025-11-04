@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { Input } from "@/components/ui";
 import { Search, Package } from "lucide-react";
 import EmployeeOrderTableView from "@/components/employee/EmployeeOrderTableView";
+import { OrderNotesDialog } from "@/components/order-notes";
 import { useEmployeeOrderStore } from "@/store/employee/employeeOrderStore";
 import { useSession } from "next-auth/react";
 
@@ -28,6 +29,8 @@ const EmployeeOrdersPage = () => {
     fetchEmployeeAssignments,
   } = useEmployeeOrderStore();
   const [searchQuery, setSearchQuery] = useState("");
+  const [notesOrder, setNotesOrder] = useState<any>(null);
+  const [notesDialogOpen, setNotesDialogOpen] = useState(false);
   const { data: session } = useSession();
 
   useEffect(() => {
@@ -35,6 +38,11 @@ const EmployeeOrdersPage = () => {
       fetchEmployeeAssignments(session.user.id);
     }
   }, [fetchEmployeeAssignments, session?.user?.id]);
+
+  const handleViewNotes = (order: any) => {
+    setNotesOrder(order);
+    setNotesDialogOpen(true);
+  };
 
   const filteredAssignments = employeeAssignments.filter(
     (assignment: Assignment) =>
@@ -70,6 +78,7 @@ const EmployeeOrdersPage = () => {
       <EmployeeOrderTableView
         assignments={filteredAssignments}
         loading={isLoadingAssignments}
+        onViewNotes={handleViewNotes}
       />
 
       {!isLoadingAssignments && employeeAssignments.length === 0 && (
@@ -82,6 +91,25 @@ const EmployeeOrdersPage = () => {
             You don't have any orders assigned to you yet
           </p>
         </div>
+      )}
+
+      {notesOrder && (
+        <OrderNotesDialog
+          orderId={notesOrder.id}
+          orderNumber={notesOrder.orderNumber}
+          orderStatus={notesOrder.status}
+          orderDetails={{
+            scheduledDate: notesOrder.scheduledDate,
+            location: notesOrder.location,
+            assignedEmployee: session?.user?.name || "You"
+          }}
+          open={notesDialogOpen}
+          onOpenChange={(open) => {
+            setNotesDialogOpen(open);
+            if (!open) setNotesOrder(null);
+          }}
+          userRole="EMPLOYEE"
+        />
       )}
     </div>
   );

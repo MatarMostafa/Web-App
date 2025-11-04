@@ -262,8 +262,8 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
             </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-4">
-            <div>
+          <div className="grid grid-cols-2 gap-4">
+            {/* <div>
               <Label htmlFor="requiredEmployees">Required Employees *</Label>
               <Input
                 id="requiredEmployees"
@@ -277,13 +277,14 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
                 className={errors.requiredEmployees ? "border-red-500" : ""}
               />
               {errors.requiredEmployees && <p className="text-sm text-red-500 mt-1">{errors.requiredEmployees}</p>}
-            </div>
+            </div> */}
             <div>
               <Label htmlFor="priority">Priority *</Label>
               <Input
                 id="priority"
                 type="number"
                 min="1"
+                max="1"
                 value={formData.priority}
                 onChange={(e) => {
                   handleInputChange("priority", Number(e.target.value));

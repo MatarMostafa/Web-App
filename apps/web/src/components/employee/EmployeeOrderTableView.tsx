@@ -23,6 +23,7 @@ interface Assignment {
 interface EmployeeOrderTableViewProps {
   assignments: Assignment[];
   loading: boolean;
+  onViewNotes: (order: any) => void;
 }
 
 const getStatusColor = (status: string) => {
@@ -35,6 +36,8 @@ const getStatusColor = (status: string) => {
       return "bg-green-100 text-green-800";
     case OrderStatus.IN_PROGRESS:
       return "bg-yellow-100 text-yellow-800";
+    case OrderStatus.IN_REVIEW:
+      return "bg-orange-100 text-orange-800";
     case OrderStatus.COMPLETED:
       return "bg-emerald-100 text-emerald-800";
     case OrderStatus.CANCELLED:
@@ -49,6 +52,7 @@ const getStatusColor = (status: string) => {
 const EmployeeOrderTableView: React.FC<EmployeeOrderTableViewProps> = ({
   assignments,
   loading,
+  onViewNotes,
 }) => {
   if (loading) {
     return (
@@ -79,7 +83,11 @@ const EmployeeOrderTableView: React.FC<EmployeeOrderTableViewProps> = ({
           </thead>
           <tbody>
             {assignments.map((assignment) => (
-              <tr key={assignment.id} className="border-t hover:bg-muted/25">
+              <tr 
+                key={assignment.id} 
+                className="border-t hover:bg-muted/25 cursor-pointer"
+                onClick={() => onViewNotes(assignment.order)}
+              >
                 <td className="p-4">
                   <div>
                     <div className="font-medium">{assignment.order.title}</div>
@@ -89,9 +97,14 @@ const EmployeeOrderTableView: React.FC<EmployeeOrderTableViewProps> = ({
                   </div>
                 </td>
                 <td className="p-4">
-                  <Badge className={getStatusColor(assignment.order.status)}>
-                    {assignment.order.status.replace("_", " ")}
-                  </Badge>
+                  <div className="flex items-center gap-2">
+                    <Badge className={getStatusColor(assignment.order.status)}>
+                      {assignment.order.status.replace("_", " ")}
+                    </Badge>
+                    {assignment.order.status === "IN_REVIEW" && (
+                      <div className="h-2 w-2 bg-orange-500 rounded-full" />
+                    )}
+                  </div>
                 </td>
                 <td className="p-4">
                   <div className="flex items-center gap-2">

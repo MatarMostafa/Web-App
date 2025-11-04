@@ -6,6 +6,7 @@ import { Search, Plus, Package, LogOut } from "lucide-react";
 import OrderTableView from "@/components/admin/OrderTableView";
 import AddOrderDialog from "@/components/admin/AddOrderDialog";
 import EditOrderDialog from "@/components/admin/EditOrderDialog";
+import { OrderNotesDialog } from "@/components/order-notes";
 import { useOrderStore } from "@/store/orderStore";
 import { Order } from "@/types/order";
 import { signOut } from "next-auth/react";
@@ -17,6 +18,8 @@ const OrdersPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [editingOrder, setEditingOrder] = useState<Order | null>(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [notesOrder, setNotesOrder] = useState<Order | null>(null);
+  const [notesDialogOpen, setNotesDialogOpen] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -46,6 +49,11 @@ const OrdersPage = () => {
         toast.error("Failed to delete order");
       }
     }
+  };
+
+  const handleViewNotes = (order: Order) => {
+    setNotesOrder(order);
+    setNotesDialogOpen(true);
   };
 
   return (
@@ -85,6 +93,7 @@ const OrdersPage = () => {
         loading={loading}
         onEdit={handleEdit}
         onDelete={handleDelete}
+        onViewNotes={handleViewNotes}
       />
 
       {editingOrder && (
@@ -95,6 +104,25 @@ const OrdersPage = () => {
             setEditDialogOpen(open);
             if (!open) setEditingOrder(null);
           }}
+        />
+      )}
+
+      {notesOrder && (
+        <OrderNotesDialog
+          orderId={notesOrder.id}
+          orderNumber={notesOrder.orderNumber}
+          orderStatus={notesOrder.status}
+          orderDetails={{
+            scheduledDate: notesOrder.scheduledDate,
+            location: notesOrder.location,
+            assignedEmployee: "Employee Name" // Will be fetched from backend
+          }}
+          open={notesDialogOpen}
+          onOpenChange={(open) => {
+            setNotesDialogOpen(open);
+            if (!open) setNotesOrder(null);
+          }}
+          userRole="ADMIN"
         />
       )}
 

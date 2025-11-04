@@ -20,6 +20,14 @@ import {
   updateOrderRatingSchema,
   autoAssignEmployeesSchema,
 } from "../validation/orderSchemas";
+import {
+  createOrderNoteRequestSchema,
+  updateOrderNoteRequestSchema,
+  getOrderNotesRequestSchema,
+  getOrderNoteByIdRequestSchema,
+  deleteOrderNoteRequestSchema,
+  getOrderNotesCountRequestSchema,
+} from "../validation/orderNotesSchemas";
 import { z } from "zod";
 import { prisma } from "@repo/db";
 import {
@@ -47,6 +55,14 @@ import {
   updateOrderRating,
   deleteOrderRating,
 } from "../controllers/orderController";
+import {
+  getOrderNotes,
+  createOrderNote,
+  getOrderNoteById,
+  updateOrderNote,
+  deleteOrderNote,
+  getOrderNotesCount,
+} from "../controllers/orderNotesController";
 
 const router = express.Router();
 
@@ -282,6 +298,51 @@ router.delete(
   roleMiddleware(["ADMIN", "TEAM_LEADER"]),
   validateRequest(deleteOrderRatingSchema),
   deleteOrderRating
+);
+
+/**
+ * @section Order Notes
+ */
+router.get(
+  "/:orderId/notes",
+  authMiddleware,
+  validateRequest(getOrderNotesRequestSchema),
+  getOrderNotes
+);
+
+router.post(
+  "/:orderId/notes",
+  authMiddleware,
+  validateRequest(createOrderNoteRequestSchema),
+  createOrderNote
+);
+
+router.get(
+  "/:orderId/notes/count",
+  authMiddleware,
+  validateRequest(getOrderNotesCountRequestSchema),
+  getOrderNotesCount
+);
+
+router.get(
+  "/:orderId/notes/:noteId",
+  authMiddleware,
+  validateRequest(getOrderNoteByIdRequestSchema),
+  getOrderNoteById
+);
+
+router.put(
+  "/:orderId/notes/:noteId",
+  authMiddleware,
+  validateRequest(updateOrderNoteRequestSchema),
+  updateOrderNote
+);
+
+router.delete(
+  "/:orderId/notes/:noteId",
+  authMiddleware,
+  validateRequest(deleteOrderNoteRequestSchema),
+  deleteOrderNote
 );
 
 export default router;

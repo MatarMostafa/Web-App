@@ -3,7 +3,7 @@ import React from "react";
 import { Button } from "@/components/ui";
 import { Badge } from "@/components/ui";
 import { Pagination, usePagination } from "@/components/ui/pagination";
-import { Edit, Trash2, Calendar, MapPin, Users } from "lucide-react";
+import { Edit, Trash2, Calendar, MapPin, Users, MessageSquare } from "lucide-react";
 import { Order, OrderStatus } from "@/types/order";
 import { format } from "date-fns";
 
@@ -12,6 +12,7 @@ interface OrderTableViewProps {
   loading: boolean;
   onEdit: (order: Order) => void;
   onDelete: (id: string) => void;
+  onViewNotes: (order: Order) => void;
 }
 
 const getStatusColor = (status: OrderStatus) => {
@@ -24,6 +25,8 @@ const getStatusColor = (status: OrderStatus) => {
       return "bg-green-100 text-green-800";
     case OrderStatus.IN_PROGRESS:
       return "bg-yellow-100 text-yellow-800";
+    case OrderStatus.IN_REVIEW:
+      return "bg-orange-100 text-orange-800";
     case OrderStatus.COMPLETED:
       return "bg-emerald-100 text-emerald-800";
     case OrderStatus.CANCELLED:
@@ -40,6 +43,7 @@ const OrderTableView: React.FC<OrderTableViewProps> = ({
   loading,
   onEdit,
   onDelete,
+  onViewNotes,
 }) => {
   const { currentPage, setCurrentPage, paginatedItems, totalItems } = usePagination(orders);
   if (loading) {
@@ -116,6 +120,17 @@ const OrderTableView: React.FC<OrderTableViewProps> = ({
                 </td>
                 <td className="p-4">
                   <div className="flex items-center justify-end gap-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => onViewNotes(order)}
+                      className="relative"
+                    >
+                      <MessageSquare className="h-4 w-4" />
+                      {order.status === OrderStatus.IN_REVIEW && (
+                        <div className="absolute -top-1 -right-1 h-2 w-2 bg-orange-500 rounded-full" />
+                      )}
+                    </Button>
                     <Button
                       variant="ghost"
                       size="sm"
