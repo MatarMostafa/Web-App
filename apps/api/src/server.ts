@@ -11,6 +11,8 @@ import swaggerUi from "swagger-ui-express";
 import path from "path";
 import { log } from "@repo/logger";
 import { startWeeklyArchiveWorker } from "./workers/weeklyArchiveWorker";
+import { startOrderStatusCron } from "./workers/orderStatusCron";
+import { startHourlyReminderCron } from "./workers/hourlyReminderCron";
 
 const app = express();
 const port = process.env.PORT || 3001;
@@ -58,8 +60,10 @@ const specs = swaggerJsdoc(options);
 app.listen(port, () => {
   log(`api running on ${port}`);
   
-  // Start the weekly archive worker
+  // Start background workers
   startWeeklyArchiveWorker();
+  startOrderStatusCron();
+  startHourlyReminderCron();
 });
 
 // Default export for Vercel

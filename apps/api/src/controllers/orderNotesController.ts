@@ -22,9 +22,11 @@ export const getOrderNotes = async (req: Request, res: Response) => {
     // Transform response to include author name
     const transformedNotes = notes.map((note) => ({
       ...note,
-      authorName: note.author.employee
-        ? `${note.author.employee.firstName} ${note.author.employee.lastName}`
-        : note.author.username,
+      authorName: note.author
+        ? (note.author.employee
+          ? `${note.author.employee.firstName} ${note.author.employee.lastName}`
+          : note.author.username)
+        : 'System',
     }));
 
     res.json({
@@ -72,9 +74,11 @@ export const createOrderNote = async (req: Request, res: Response) => {
     // Transform response to include author name
     const transformedNote = {
       ...note,
-      authorName: note.author.employee
-        ? `${note.author.employee.firstName} ${note.author.employee.lastName}`
-        : note.author.username,
+      authorName: note.author
+        ? (note.author.employee
+          ? `${note.author.employee.firstName} ${note.author.employee.lastName}`
+          : note.author.username)
+        : 'System',
     };
 
     res.status(201).json({
@@ -122,9 +126,11 @@ export const getOrderNoteById = async (req: Request, res: Response) => {
     // Transform response to include author name
     const transformedNote = {
       ...note,
-      authorName: note.author.employee
-        ? `${note.author.employee.firstName} ${note.author.employee.lastName}`
-        : note.author.username,
+      authorName: note.author
+        ? (note.author.employee
+          ? `${note.author.employee.firstName} ${note.author.employee.lastName}`
+          : note.author.username)
+        : 'System',
     };
 
     res.json({
@@ -178,9 +184,11 @@ export const updateOrderNote = async (req: Request, res: Response) => {
     // Transform response to include author name
     const transformedNote = {
       ...note,
-      authorName: note.author.employee
-        ? `${note.author.employee.firstName} ${note.author.employee.lastName}`
-        : note.author.username,
+      authorName: note.author
+        ? (note.author.employee
+          ? `${note.author.employee.firstName} ${note.author.employee.lastName}`
+          : note.author.username)
+        : 'System',
     };
 
     res.json({

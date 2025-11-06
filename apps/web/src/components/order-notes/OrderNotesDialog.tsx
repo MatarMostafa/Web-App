@@ -12,6 +12,7 @@ import { NotesThread } from "./NotesThread";
 import { NoteComposer } from "./NoteComposer";
 import { Calendar, MapPin, User } from "lucide-react";
 import { orderNotesApi, OrderNote } from "@/lib/orderNotesApi";
+import { useOrderStore } from "@/store/orderStore";
 import toast from "react-hot-toast";
 
 interface OrderNotesDialogProps {
@@ -46,7 +47,7 @@ const getStatusColor = (status: OrderStatus) => {
 export const OrderNotesDialog: React.FC<OrderNotesDialogProps> = ({
   orderId,
   orderNumber,
-  orderStatus,
+  orderStatus: initialOrderStatus,
   orderDetails,
   open,
   onOpenChange,
@@ -54,6 +55,11 @@ export const OrderNotesDialog: React.FC<OrderNotesDialogProps> = ({
 }) => {
   const [notes, setNotes] = useState<OrderNote[]>([]);
   const [loading, setLoading] = useState(false);
+  const { updateOrderStatus, orders } = useOrderStore();
+  
+  // Get current order status from store or use initial
+  const currentOrder = orders.find(order => order.id === orderId);
+  const orderStatus = currentOrder?.status || initialOrderStatus;
 
   // Fetch notes when dialog opens
   useEffect(() => {
@@ -76,10 +82,12 @@ export const OrderNotesDialog: React.FC<OrderNotesDialogProps> = ({
   };
 
   const handleNoteCreated = (newNote: OrderNote) => {
-    setNotes((prev) => [...prev, newNote]);
+    setNotes((prev) => [newNote, ...prev]); // Add new note at the beginning
   };
 
   const handleStatusChange = (newStatus: OrderStatus) => {
+    // Update order status in store for real-time updates
+    updateOrderStatus(orderId, newStatus);
     // Refresh notes to get updated status
     fetchNotes();
     // Notify parent component of status change

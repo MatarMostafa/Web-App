@@ -45,7 +45,8 @@ export const NoteComposer: React.FC<NoteComposerProps> = ({
     try {
       // Determine category: auto for status actions, manual for general notes
       const category = triggersStatus ? 
-        (triggersStatus === OrderStatus.IN_REVIEW ? "COMPLETION_REQUEST" : "ADMIN_RESPONSE") : 
+        (triggersStatus === OrderStatus.IN_REVIEW ? "COMPLETION_REQUEST" : 
+         triggersStatus === OrderStatus.IN_PROGRESS ? "GENERAL_UPDATE" : "ADMIN_RESPONSE") : 
         selectedCategory;
       
       const noteData: CreateOrderNoteData = {
@@ -59,12 +60,14 @@ export const NoteComposer: React.FC<NoteComposerProps> = ({
       
       if (newNote) {
         onNoteCreated(newNote);
-        if (triggersStatus) {
-          onStatusChange(triggersStatus);
-        }
         setContent("");
         setSelectedCategory("GENERAL_UPDATE");
         toast.success("Note added successfully");
+        
+        // Trigger status change after successful note creation
+        if (triggersStatus) {
+          onStatusChange(triggersStatus);
+        }
       } else {
         toast.error("Failed to create note");
       }
@@ -83,6 +86,23 @@ export const NoteComposer: React.FC<NoteComposerProps> = ({
 
     // Employee actions
     if (userRole === "EMPLOYEE") {
+      if (orderStatus === OrderStatus.ACTIVE) {
+        buttons.push(
+          <Button
+            key="start"
+            onClick={() => {
+              setIsStatusAction(true);
+              handleSubmit(OrderStatus.IN_PROGRESS);
+            }}
+            disabled={!content.trim() || loading}
+            className="bg-blue-600 hover:bg-blue-700"
+          >
+            <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+            <span className="text-xs sm:text-sm">Start Work</span>
+          </Button>
+        );
+      }
+      
       if (orderStatus === OrderStatus.IN_PROGRESS) {
         buttons.push(
           <Button
@@ -186,6 +206,8 @@ export const NoteComposer: React.FC<NoteComposerProps> = ({
           placeholder={
             orderStatus === OrderStatus.IN_REVIEW && userRole === "ADMIN"
               ? "Review the completed work and provide feedback..."
+              : orderStatus === OrderStatus.ACTIVE && userRole === "EMPLOYEE"
+              ? "Add a note and start work on this order..."
               : orderStatus === OrderStatus.IN_PROGRESS && userRole === "EMPLOYEE"
               ? "Add an update or mark work as complete..."
               : "Add a note..."
@@ -219,6 +241,13 @@ export const NoteComposer: React.FC<NoteComposerProps> = ({
         <div className="text-xs text-muted-foreground bg-orange-50 p-2 rounded border border-orange-200">
           <AlertTriangle className="h-3 w-3 inline mr-1" />
           This order is awaiting review. {userRole === "ADMIN" ? "Please review and approve or request changes." : "Waiting for admin review."}
+        </div>
+      )}
+      
+      {orderStatus === OrderStatus.ACTIVE && userRole === "EMPLOYEE" && (
+        <div className="text-xs text-muted-foreground bg-blue-50 p-2 rounded border border-blue-200">
+          <CheckCircle className="h-3 w-3 inline mr-1" />
+          This order is assigned to you. Add a note and click "Start Work" to begin.
         </div>
       )}
     </div>

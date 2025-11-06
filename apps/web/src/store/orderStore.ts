@@ -15,8 +15,10 @@ interface OrderState {
   fetchOrder: (id: string) => Promise<void>;
   getOrderById: (id: string) => Promise<Order | null>;
   getOrderAssignments: (orderId: string) => Promise<string[]>;
+  getOrderEmployeeNames: (orderId: string) => Promise<string>;
   createOrder: (data: CreateOrderData) => Promise<Order>;
   updateOrder: (id: string, data: UpdateOrderData) => Promise<void>;
+  updateOrderStatus: (id: string, status: string) => void;
   deleteOrder: (id: string) => Promise<void>;
   clearError: () => void;
 }
@@ -72,6 +74,17 @@ export const useOrderStore = create<OrderState>((set, get) => ({
     }
   },
 
+  getOrderEmployeeNames: async (orderId: string) => {
+    try {
+      const assignments = await apiClient.get<Array<{ employee: { firstName: string; lastName: string } }>>(`/api/orders/${orderId}/assignments`);
+      const names = assignments.map(a => `${a.employee.firstName} ${a.employee.lastName}`);
+      return names.length > 0 ? names.join(', ') : 'No employees assigned';
+    } catch (error) {
+      console.error('Failed to fetch employee names:', error);
+      return 'Unknown';
+    }
+  },
+
   createOrder: async (data: CreateOrderData) => {
     set({ loading: true, error: null });
     try {
@@ -101,6 +114,17 @@ export const useOrderStore = create<OrderState>((set, get) => ({
       set({ error: error instanceof Error ? error.message : "Failed to update order", loading: false });
       throw error;
     }
+  },
+
+  updateOrderStatus: (id: string, status: string) => {
+    set(state => ({
+      orders: state.orders.map(order => 
+        order.id === id ? { ...order, status: status as any } : order
+      ),
+      currentOrder: state.currentOrder?.id === id 
+        ? { ...state.currentOrder, status: status as any }
+        : state.currentOrder
+    }));
   },
 
   deleteOrder: async (id: string) => {

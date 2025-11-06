@@ -227,7 +227,17 @@ export const getOrderSummaryService = async (id: string) => {
 
 // -------------------- Assignments --------------------
 export const getAssignmentsService = async (orderId: string) => {
-  return prisma.assignment.findMany({ where: { orderId } });
+  return prisma.assignment.findMany({ 
+    where: { orderId },
+    include: {
+      employee: {
+        select: {
+          firstName: true,
+          lastName: true
+        }
+      }
+    }
+  });
 };
 
 export const createAssignmentService = async (
