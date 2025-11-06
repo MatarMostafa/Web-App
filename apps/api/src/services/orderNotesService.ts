@@ -40,7 +40,7 @@ export const getOrderNotesService = async (orderId: string, userRole: string) =>
         },
       },
     },
-    orderBy: { createdAt: "asc" },
+    orderBy: { createdAt: "desc" },
   });
 };
 
@@ -110,10 +110,30 @@ export const createOrderNoteService = async (data: CreateOrderNoteInput) => {
 
     // Update order status if triggered
     if (triggersStatus) {
+      const updateData: any = { status: triggersStatus };
+      
+      // Record start time when work begins
+      if (triggersStatus === 'IN_PROGRESS') {
+        updateData.startTime = new Date();
+      }
+      
       await tx.order.update({
         where: { id: orderId },
-        data: { status: triggersStatus },
+        data: updateData,
       });
+      
+      // Create additional note for manual start tracking
+      if (triggersStatus === 'IN_PROGRESS') {
+        await tx.orderNote.create({
+          data: {
+            orderId,
+            authorId,
+            content: `Work started manually by employee at ${new Date().toLocaleString()}`,
+            category: 'GENERAL_UPDATE',
+            isInternal: true // Internal tracking note
+          }
+        });
+      }
     }
 
     return note;
