@@ -28,6 +28,7 @@ import {
   deleteOrderNoteRequestSchema,
   getOrderNotesCountRequestSchema,
 } from "../validation/orderNotesSchemas";
+import { OrderAnalyticsService } from "../services/orderAnalyticsService";
 import { z } from "zod";
 import { prisma } from "@repo/db";
 import {
@@ -343,6 +344,61 @@ router.delete(
   authMiddleware,
   validateRequest(deleteOrderNoteRequestSchema),
   deleteOrderNote
+);
+
+/**
+ * @section Analytics
+ */
+router.get(
+  "/analytics/start-methods",
+  authMiddleware,
+  roleMiddleware(["ADMIN", "TEAM_LEADER"]),
+  async (req: Request, res: Response) => {
+    try {
+      const { startDate, endDate } = req.query;
+      
+      const dateRange = startDate && endDate ? {
+        start: new Date(startDate as string),
+        end: new Date(endDate as string)
+      } : undefined;
+      
+      const analytics = await OrderAnalyticsService.getStartMethodAnalytics(dateRange);
+      res.json({ success: true, data: analytics });
+    } catch (error) {
+      console.error("Start method analytics error:", error);
+      res.status(500).json({ 
+        success: false,
+        message: "Failed to get start method analytics",
+        error: String(error)
+      });
+    }
+  }
+);
+
+router.get(
+  "/analytics/completion",
+  authMiddleware,
+  roleMiddleware(["ADMIN", "TEAM_LEADER"]),
+  async (req: Request, res: Response) => {
+    try {
+      const { startDate, endDate } = req.query;
+      
+      const dateRange = startDate && endDate ? {
+        start: new Date(startDate as string),
+        end: new Date(endDate as string)
+      } : undefined;
+      
+      const analytics = await OrderAnalyticsService.getCompletionAnalytics(dateRange);
+      res.json({ success: true, data: analytics });
+    } catch (error) {
+      console.error("Completion analytics error:", error);
+      res.status(500).json({ 
+        success: false,
+        message: "Failed to get completion analytics",
+        error: String(error)
+      });
+    }
+  }
 );
 
 export default router;

@@ -28,7 +28,8 @@ const OrdersPage = () => {
       </div>
     );
   }
-  const { orders, loading, fetchOrders, deleteOrder } = useOrderStore();
+  const { orders, loading, fetchOrders, deleteOrder, getOrderEmployeeNames } = useOrderStore();
+  const [assignedEmployees, setAssignedEmployees] = useState<Record<string, string>>({});
   const [searchQuery, setSearchQuery] = useState("");
   const [editingOrder, setEditingOrder] = useState<Order | null>(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
@@ -65,9 +66,19 @@ const OrdersPage = () => {
     }
   };
 
-  const handleViewNotes = (order: Order) => {
+  const handleViewNotes = async (order: Order) => {
     setNotesOrder(order);
     setNotesDialogOpen(true);
+    
+    // Fetch employee names for this order
+    if (!assignedEmployees[order.id]) {
+      try {
+        const employeeNames = await getOrderEmployeeNames(order.id);
+        setAssignedEmployees(prev => ({ ...prev, [order.id]: employeeNames }));
+      } catch (error) {
+        console.error('Failed to fetch employee names:', error);
+      }
+    }
   };
 
   return (
@@ -129,7 +140,7 @@ const OrdersPage = () => {
           orderDetails={{
             scheduledDate: notesOrder.scheduledDate,
             location: notesOrder.location,
-            assignedEmployee: "Employee Name" // Will be fetched from backend
+            assignedEmployee: assignedEmployees[notesOrder.id] || "Loading..."
           }}
           open={notesDialogOpen}
           onOpenChange={(open) => {
