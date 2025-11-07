@@ -10,6 +10,8 @@ import {
   unblockEmployee,
   getAllStatuses,
   getStatusById,
+  approveLeave,
+  rejectLeave,
 } from "../controllers/employeeStatusController";
 import { validateRequest } from "../middleware/validateRequest";
 import {
@@ -72,6 +74,20 @@ router.get(
   authMiddleware,
   roleMiddleware(["ADMIN", "HR_MANAGER", "TEAM_LEADER", "EMPLOYEE"]),
   getStatusById
+);
+
+router.post(
+  "/leave/:absenceId/approve",
+  authMiddleware,
+  roleMiddleware(["ADMIN", "HR_MANAGER"]),
+  approveLeave
+);
+
+router.post(
+  "/leave/:absenceId/reject",
+  authMiddleware,
+  roleMiddleware(["ADMIN", "HR_MANAGER"]),
+  rejectLeave
 );
 
 export default router;

@@ -602,6 +602,14 @@
         "processing": "Processing...",
         "approve": "Approve",
         "reject": "Reject"
+      },
+      "leaveTypes": {
+        "VACATION": "Vacation",
+        "SICK_LEAVE": "Sick Leave",
+        "PERSONAL_LEAVE": "Personal Leave",
+        "EMERGENCY_LEAVE": "Emergency Leave",
+        "MATERNITY_LEAVE": "Maternity Leave",
+        "PATERNITY_LEAVE": "Paternity Leave"
       }
     },
     "orders": {
@@ -798,11 +806,127 @@
       }
     }
   },
+  "notificationUI": {
+    "title": "Notifications",
+    "markAllRead": "Mark all as read",
+    "marking": "Marking...",
+    "noNotifications": "No notifications"
+  },
+  "notifications": {
+    "assignment": {
+      "created": {
+        "title": "New Order Assignment",
+        "body": "You have been assigned to order \"{{orderNumber}}\". Customer: {{customerName}}"
+      },
+      "updated": {
+        "title": "Assignment Updated",
+        "body": "Your assignment for order \"{{orderNumber}}\" has been updated."
+      },
+      "cancelled": {
+        "title": "Assignment Cancelled",
+        "body": "Your assignment for order \"{{orderNumber}}\" has been cancelled."
+      }
+    },
+    "order": {
+      "statusChanged": {
+        "title": "Order Status Changed",
+        "body": "Order \"{{orderNumber}}\" {{statusMessage}}."
+      },
+      "completed": {
+        "title": "Order Completed",
+        "body": "Order \"{{orderNumber}}\" has been successfully completed. Customer: {{customerName}}"
+      },
+      "workStarted": {
+        "title": "Work Started",
+        "body": "{{employeeName}} has started work on order \"{{orderNumber}}\"."
+      },
+      "reviewRequested": {
+        "title": "Order Completion Review Requested",
+        "body": "{{employeeName}} has completed order \"{{orderNumber}}\" and is requesting your review for final approval."
+      },
+      "noteAdded": {
+        "title": "New Order Note",
+        "body": "New note added to order \"{{orderNumber}}\": {{notePreview}}"
+      },
+      "approved": {
+        "title": "Order Approved",
+        "body": "Order \"{{orderNumber}}\" has been approved and completed."
+      },
+      "rejected": {
+        "title": "Order Rejected",
+        "body": "Order \"{{orderNumber}}\" has been rejected and needs revision.{{reason}}"
+      }
+    },
+    "leave": {
+      "requested": {
+        "title": "Leave Request Submitted",
+        "body": "{{employeeName}} has submitted a {{leaveType}} request from {{startDate}} to {{endDate}}:{{reason}}"
+      },
+      "approved": {
+        "title": "Leave Request Approved",
+        "body": "Your leave request has been approved."
+      },
+      "rejected": {
+        "title": "Leave Request Rejected",
+        "body": "Your leave request has been rejected.{{reason}}"
+      }
+    },
+    "system": {
+      "welcome": {
+        "title": "Welcome to the Team!",
+        "body": "Welcome to our ERP system. Your account has been successfully created."
+      },
+      "profileUpdated": {
+        "title": "Profile Updated",
+        "body": "Your profile has been successfully updated."
+      },
+      "employeeBlocked": {
+        "title": "Account Blocked",
+        "body": "Your account has been blocked.{{reason}}"
+      },
+      "employeeUnblocked": {
+        "title": "Account Unblocked",
+        "body": "Your account has been unblocked. You can now access the system normally."
+      },
+      "departmentCreated": {
+        "title": "New Department Created",
+        "body": "New department \"{{departmentName}}\" has been created."
+      },
+      "positionCreated": {
+        "title": "New Position Created",
+        "body": "New position \"{{positionTitle}}\" has been created."
+      }
+    },
+    "customer": {
+      "created": {
+        "title": "New Customer Added",
+        "body": "New customer \"{{customerName}}\" has been added to the system."
+      }
+    },
+    "statusMessages": {
+      "ACTIVE": "has been activated",
+      "IN_PROGRESS": "is in progress",
+      "IN_REVIEW": "is under review",
+      "COMPLETED": "has been completed",
+      "CANCELLED": "has been cancelled"
+    },
+    "timeAgo": {
+      "justNow": "just now",
+      "minutesAgo": "{{count}} minutes ago",
+      "hoursAgo": "{{count}} hours ago",
+      "daysAgo": "{{count}} days ago"
+    }
+  },
   "employee": {
     "dashboard": {
       "title": "My Dashboard",
       "subtitle": "Overview of your current assignments and performance",
       "loading": "Loading...",
+      "leaveManagement": "Leave Management",
+      "requestLeave": "Request Leave",
+      "myLeaveRequests": "My Leave Requests",
+      "noLeaveRequests": "No leave requests found",
+      "submitFirstRequest": "Submit First Request",
       "metrics": {
         "thisWeekOrders": "This Week's Orders",
         "ordersAssignedThisWeek": "Orders assigned this week",
@@ -857,6 +981,41 @@
         "today": "Today",
         "tomorrow": "Tomorrow"
       }
+    },
+    "leaveTypes": {
+      "VACATION": "Vacation",
+      "SICK_LEAVE": "Sick Leave",
+      "PERSONAL_LEAVE": "Personal Leave",
+      "EMERGENCY_LEAVE": "Emergency Leave",
+      "MATERNITY_LEAVE": "Maternity Leave",
+      "PATERNITY_LEAVE": "Paternity Leave"
+    },
+    "leaveStatus": {
+      "approved": "APPROVED",
+      "rejected": "REJECTED",
+      "pending": "PENDING"
+    },
+    "leaveDuration": "Duration",
+    "days": "days",
+    "day": "day",
+    "reason": "Reason",
+    "rejectionReason": "Rejection Reason",
+    "submittedOn": "Submitted on",
+    "leaveModal": {
+      "title": "Request Leave",
+      "leaveType": "Leave Type",
+      "selectLeaveType": "Select leave type",
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "reason": "Reason (Optional)",
+      "reasonPlaceholder": "Provide additional details for your leave request...",
+      "submitRequest": "Submit Request",
+      "submitting": "Submitting...",
+      "typeRequired": "Leave type is required",
+      "startDateRequired": "Start date is required",
+      "endDateRequired": "End date is required",
+      "startDatePastError": "Start date cannot be in the past",
+      "endDateBeforeStartError": "End date must be after start date"
     }
   }
 }

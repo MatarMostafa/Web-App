@@ -9,10 +9,10 @@ export const requestLeave = async (req: Request, res: Response) => {
     const userId = authReq.user?.id;
     if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
-    const { startDate, endDate, reason } = req.body;
+    const { type, startDate, endDate, reason } = req.body;
     const absence = await statusService.createAbsence({
       employeeUserId: userId,
-      type: "VACATION",
+      type: type || "VACATION",
       startDate,
       endDate,
       reason,
@@ -138,6 +138,46 @@ export const getStatusById = async (req: Request, res: Response) => {
   } catch (error: any) {
     res.status(500).json({
       message: "Error fetching status",
+      error: error.message || error,
+    });
+  }
+};
+
+export const approveLeave = async (req: Request, res: Response) => {
+  const authReq = req as AuthRequest;
+  try {
+    const { absenceId } = req.params;
+    const approvedBy = authReq.user?.id;
+    
+    if (!approvedBy) return res.status(401).json({ message: "Unauthorized" });
+    if (!absenceId) return res.status(400).json({ message: "Missing absenceId" });
+
+    const updated = await statusService.approveAbsence(absenceId, approvedBy);
+    res.json({ message: "Leave request approved", absence: updated });
+  } catch (error: any) {
+    res.status(400).json({
+      message: "Error approving leave request",
+      error: error.message || error,
+    });
+  }
+};
+
+export const rejectLeave = async (req: Request, res: Response) => {
+  const authReq = req as AuthRequest;
+  try {
+    const { absenceId } = req.params;
+    const { reason } = req.body;
+    const rejectedBy = authReq.user?.id;
+    
+    if (!rejectedBy) return res.status(401).json({ message: "Unauthorized" });
+    if (!absenceId) return res.status(400).json({ message: "Missing absenceId" });
+    if (!reason) return res.status(400).json({ message: "Missing rejection reason" });
+
+    const updated = await statusService.rejectAbsence(absenceId, reason, rejectedBy);
+    res.json({ message: "Leave request rejected", absence: updated });
+  } catch (error: any) {
+    res.status(400).json({
+      message: "Error rejecting leave request",
       error: error.message || error,
     });
   }

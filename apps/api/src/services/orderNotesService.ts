@@ -1,5 +1,6 @@
 import { prisma } from "@repo/db";
 import { OrderStatus, NoteCategory } from "@repo/db/src/generated/prisma";
+import { notifyOrderNoteAdded, notifyWorkStarted, notifyOrderReview, notifyOrderApproved, notifyOrderRejected } from "./notificationHelpers";
 
 // Type definitions
 type CreateOrderNoteInput = {
@@ -108,6 +109,11 @@ export const createOrderNoteService = async (data: CreateOrderNoteInput) => {
       },
     });
 
+    // Send notification for new note (unless it's internal)
+    if (!isInternal) {
+      await notifyOrderNoteAdded(orderId, authorId, content);
+    }
+
     // Update order status if triggered
     if (triggersStatus) {
       const updateData: any = { status: triggersStatus };
@@ -122,8 +128,9 @@ export const createOrderNoteService = async (data: CreateOrderNoteInput) => {
         data: updateData,
       });
       
-      // Create additional note for manual start tracking
-      if (triggersStatus === 'IN_PROGRESS') {
+      // Create additional note for manual start tracking and send notification
+      // Only for employee starting work for the first time (ACTIVE -> IN_PROGRESS)
+      if (triggersStatus === 'IN_PROGRESS' && !isAdmin && order.status === 'ACTIVE') {
         await tx.orderNote.create({
           data: {
             orderId,
@@ -133,6 +140,26 @@ export const createOrderNoteService = async (data: CreateOrderNoteInput) => {
             isInternal: true // Internal tracking note
           }
         });
+        
+        // Notify order creator that work has started
+        if (user.employee?.id) {
+          await notifyWorkStarted(orderId, user.employee.id);
+        }
+      }
+      
+      // Handle different status transitions and notifications
+      if (triggersStatus === 'IN_REVIEW' && !isAdmin && user.employee?.id) {
+        // Employee requesting completion review
+        console.log("🔔 Employee requesting order completion review:", { orderId, employeeId: user.employee.id });
+        await notifyOrderReview(orderId, user.employee.id);
+      } else if (triggersStatus === 'COMPLETED' && isAdmin) {
+        // Admin approving completion
+        console.log("🔔 Admin approving order completion:", { orderId });
+        await notifyOrderApproved(orderId, authorId);
+      } else if (triggersStatus === 'IN_PROGRESS' && isAdmin) {
+        // Admin rejecting order (moving back to IN_PROGRESS)
+        console.log("🔔 Admin rejecting order:", { orderId });
+        await notifyOrderRejected(orderId, authorId, content);
       }
     }
 

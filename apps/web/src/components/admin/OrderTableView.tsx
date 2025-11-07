@@ -117,7 +117,12 @@ const OrderTableView: React.FC<OrderTableViewProps> = ({
               <tr key={order.id} className="border-t hover:bg-muted/25">
                 <td className="p-4">
                   <div>
-                    <div className="font-medium">#{order.orderNumber}</div>
+                    <button
+                      onClick={() => window.location.href = `/dashboard-admin/orders/${order.id}`}
+                      className="font-medium text-primary hover:underline cursor-pointer"
+                    >
+                      #{order.orderNumber}
+                    </button>
                     <div className="text-sm text-muted-foreground">
                       {order.description || t("admin.orders.table.noDescription")}
                     </div>

@@ -7,8 +7,7 @@ import {
   XCircle, 
   MessageSquare, 
   AlertTriangle,
-  Send,
-  Paperclip
+  Send
 } from "lucide-react";
 import { OrderStatus } from "@/types/order";
 import { CategorySelector } from "./CategorySelector";
@@ -46,7 +45,8 @@ export const NoteComposer: React.FC<NoteComposerProps> = ({
       // Determine category: auto for status actions, manual for general notes
       const category = triggersStatus ? 
         (triggersStatus === OrderStatus.IN_REVIEW ? "COMPLETION_REQUEST" : 
-         triggersStatus === OrderStatus.IN_PROGRESS ? "GENERAL_UPDATE" : "ADMIN_RESPONSE") : 
+         triggersStatus === OrderStatus.IN_PROGRESS ? "GENERAL_UPDATE" : 
+         triggersStatus === OrderStatus.COMPLETED ? "ADMIN_RESPONSE" : "GENERAL_UPDATE") : 
         selectedCategory;
       
       const noteData: CreateOrderNoteData = {
@@ -109,7 +109,7 @@ export const NoteComposer: React.FC<NoteComposerProps> = ({
             key="complete"
             onClick={() => {
               setIsStatusAction(true);
-              handleSubmit(OrderStatus.IN_REVIEW);
+              handleSubmit(OrderStatus.IN_REVIEW); // Send IN_REVIEW directly
             }}
             disabled={!content.trim() || loading}
             className="bg-green-600 hover:bg-green-700"
@@ -218,19 +218,7 @@ export const NoteComposer: React.FC<NoteComposerProps> = ({
           disabled={loading}
         />
         
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-          <div className="flex items-center gap-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="text-muted-foreground text-xs sm:text-sm"
-              disabled={loading}
-            >
-              <Paperclip className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
-              Attach
-            </Button>
-          </div>
-          
+        <div className="flex justify-end">
           <div className="flex flex-wrap items-center gap-2">
             {getActionButtons()}
           </div>

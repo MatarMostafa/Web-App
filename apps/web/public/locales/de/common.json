@@ -602,6 +602,14 @@
         "processing": "Wird verarbeitet...",
         "approve": "Genehmigen",
         "reject": "Ablehnen"
+      },
+      "leaveTypes": {
+        "VACATION": "Urlaub",
+        "SICK_LEAVE": "Krankenstand",
+        "PERSONAL_LEAVE": "Persönlicher Urlaub",
+        "EMERGENCY_LEAVE": "Notfall-Urlaub",
+        "MATERNITY_LEAVE": "Mutterschaftsurlaub",
+        "PATERNITY_LEAVE": "Vaterschaftsurlaub"
       }
     },
     "orders": {
@@ -798,11 +806,127 @@
       }
     }
   },
+  "notificationUI": {
+    "title": "Benachrichtigungen",
+    "markAllRead": "Alle als gelesen",
+    "marking": "Wird markiert...",
+    "noNotifications": "Keine Benachrichtigungen"
+  },
+  "notifications": {
+    "assignment": {
+      "created": {
+        "title": "Neue Auftragszuweisung",
+        "body": "Sie wurden dem Auftrag \"{{orderNumber}}\" zugewiesen. Kunde: {{customerName}}"
+      },
+      "updated": {
+        "title": "Zuweisung aktualisiert",
+        "body": "Ihre Zuweisung für Auftrag \"{{orderNumber}}\" wurde aktualisiert."
+      },
+      "cancelled": {
+        "title": "Zuweisung storniert",
+        "body": "Ihre Zuweisung für Auftrag \"{{orderNumber}}\" wurde storniert."
+      }
+    },
+    "order": {
+      "statusChanged": {
+        "title": "Auftragsstatus geändert",
+        "body": "Auftrag \"{{orderNumber}}\" {{statusMessage}}."
+      },
+      "completed": {
+        "title": "Auftrag abgeschlossen",
+        "body": "Auftrag \"{{orderNumber}}\" wurde erfolgreich abgeschlossen. Kunde: {{customerName}}"
+      },
+      "workStarted": {
+        "title": "Arbeit begonnen",
+        "body": "{{employeeName}} hat die Arbeit an Auftrag \"{{orderNumber}}\" begonnen."
+      },
+      "reviewRequested": {
+        "title": "Auftragsabschluss-Überprüfung angefordert",
+        "body": "{{employeeName}} hat Auftrag \"{{orderNumber}}\" abgeschlossen und bittet um Ihre Überprüfung für die finale Genehmigung."
+      },
+      "noteAdded": {
+        "title": "Neue Auftragsnotiz",
+        "body": "Neue Notiz zu Auftrag \"{{orderNumber}}\" hinzugefügt: {{notePreview}}"
+      },
+      "approved": {
+        "title": "Auftrag genehmigt",
+        "body": "Auftrag \"{{orderNumber}}\" wurde genehmigt und abgeschlossen."
+      },
+      "rejected": {
+        "title": "Auftrag abgelehnt",
+        "body": "Auftrag \"{{orderNumber}}\" wurde abgelehnt und muss überarbeitet werden.{{reason}}"
+      }
+    },
+    "leave": {
+      "requested": {
+        "title": "Urlaubsantrag eingereicht",
+        "body": "{{employeeName}} hat einen {{leaveType}} Antrag vom {{startDate}} bis {{endDate}} eingereicht:{{reason}}"
+      },
+      "approved": {
+        "title": "Urlaubsantrag genehmigt",
+        "body": "Ihr Urlaubsantrag wurde genehmigt."
+      },
+      "rejected": {
+        "title": "Urlaubsantrag abgelehnt",
+        "body": "Ihr Urlaubsantrag wurde abgelehnt.{{reason}}"
+      }
+    },
+    "system": {
+      "welcome": {
+        "title": "Willkommen im Team!",
+        "body": "Herzlich willkommen in unserem ERP-System. Ihr Konto wurde erfolgreich erstellt."
+      },
+      "profileUpdated": {
+        "title": "Profil aktualisiert",
+        "body": "Ihr Profil wurde erfolgreich aktualisiert."
+      },
+      "employeeBlocked": {
+        "title": "Konto gesperrt",
+        "body": "Ihr Konto wurde gesperrt.{{reason}}"
+      },
+      "employeeUnblocked": {
+        "title": "Konto entsperrt",
+        "body": "Ihr Konto wurde entsperrt. Sie können das System nun normal nutzen."
+      },
+      "departmentCreated": {
+        "title": "Neue Abteilung erstellt",
+        "body": "Neue Abteilung \"{{departmentName}}\" wurde erstellt."
+      },
+      "positionCreated": {
+        "title": "Neue Position erstellt",
+        "body": "Neue Position \"{{positionTitle}}\" wurde erstellt."
+      }
+    },
+    "customer": {
+      "created": {
+        "title": "Neuer Kunde hinzugefügt",
+        "body": "Neuer Kunde \"{{customerName}}\" wurde zum System hinzugefügt."
+      }
+    },
+    "statusMessages": {
+      "ACTIVE": "wurde aktiviert",
+      "IN_PROGRESS": "ist in Bearbeitung",
+      "IN_REVIEW": "ist in Überprüfung",
+      "COMPLETED": "wurde abgeschlossen",
+      "CANCELLED": "wurde storniert"
+    },
+    "timeAgo": {
+      "justNow": "gerade eben",
+      "minutesAgo": "vor {{count}} Minuten",
+      "hoursAgo": "vor {{count}} Stunden",
+      "daysAgo": "vor {{count}} Tagen"
+    }
+  },
   "employee": {
     "dashboard": {
       "title": "Mein Dashboard",
       "subtitle": "Übersicht über Ihre aktuellen Zuweisungen und Leistung",
       "loading": "Wird geladen...",
+      "leaveManagement": "Urlaubsverwaltung",
+      "requestLeave": "Urlaub beantragen",
+      "myLeaveRequests": "Meine Urlaubsanträge",
+      "noLeaveRequests": "Keine Urlaubsanträge gefunden",
+      "submitFirstRequest": "Ersten Antrag einreichen",
       "metrics": {
         "thisWeekOrders": "Aufträge dieser Woche",
         "ordersAssignedThisWeek": "Aufträge diese Woche zugewiesen",
@@ -858,6 +982,41 @@
         "today": "Heute",
         "tomorrow": "Morgen"
       }
+    },
+    "leaveTypes": {
+      "VACATION": "Urlaub",
+      "SICK_LEAVE": "Krankenstand",
+      "PERSONAL_LEAVE": "Persönlicher Urlaub",
+      "EMERGENCY_LEAVE": "Notfall-Urlaub",
+      "MATERNITY_LEAVE": "Mutterschaftsurlaub",
+      "PATERNITY_LEAVE": "Vaterschaftsurlaub"
+    },
+    "leaveStatus": {
+      "approved": "GENEHMIGT",
+      "rejected": "ABGELEHNT",
+      "pending": "AUSSTEHEND"
+    },
+    "leaveDuration": "Dauer",
+    "days": "Tage",
+    "day": "Tag",
+    "reason": "Grund",
+    "rejectionReason": "Ablehnungsgrund",
+    "submittedOn": "Eingereicht am",
+    "leaveModal": {
+      "title": "Urlaub beantragen",
+      "leaveType": "Urlaubsart",
+      "selectLeaveType": "Urlaubsart auswählen",
+      "startDate": "Startdatum",
+      "endDate": "Enddatum",
+      "reason": "Grund (Optional)",
+      "reasonPlaceholder": "Geben Sie zusätzliche Details zu Ihrem Urlaubsantrag an...",
+      "submitRequest": "Antrag einreichen",
+      "submitting": "Wird eingereicht...",
+      "typeRequired": "Urlaubsart ist erforderlich",
+      "startDateRequired": "Startdatum ist erforderlich",
+      "endDateRequired": "Enddatum ist erforderlich",
+      "startDatePastError": "Startdatum kann nicht in der Vergangenheit liegen",
+      "endDateBeforeStartError": "Enddatum muss nach dem Startdatum liegen"
     }
   }
 }

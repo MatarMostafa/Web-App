@@ -76,8 +76,9 @@ export const useOrderStore = create<OrderState>((set, get) => ({
 
   getOrderEmployeeNames: async (orderId: string) => {
     try {
-      const assignments = await apiClient.get<Array<{ employee: { firstName: string; lastName: string } }>>(`/api/orders/${orderId}/assignments`);
-      const names = assignments.map(a => `${a.employee.firstName} ${a.employee.lastName}`);
+      const response = await apiClient.get<any>(`/api/orders/${orderId}/assignments`);
+      const assignments = Array.isArray(response) ? response : response.data || [];
+      const names = assignments.map((a: any) => `${a.employee.firstName} ${a.employee.lastName}`);
       return names.length > 0 ? names.join(', ') : 'No employees assigned';
     } catch (error) {
       console.error('Failed to fetch employee names:', error);

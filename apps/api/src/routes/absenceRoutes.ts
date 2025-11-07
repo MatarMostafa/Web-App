@@ -4,6 +4,7 @@ import { roleMiddleware } from "../middleware/roleMiddleware";
 import { prisma } from "@repo/db";
 import * as statusService from "../services/employeeStatusService";
 import { ensureEmployeeExists } from "../utils/employeeUtils";
+import { notifyLeaveApproved, notifyLeaveRejected } from "../services/notificationHelpers";
 
 const router = express.Router();
 
@@ -221,6 +222,9 @@ router.put(
         },
       });
 
+      // Send notification to employee
+      await notifyLeaveApproved(id, absence.employee.userId, userId);
+
       res.json({
         message: "Absence request approved successfully",
         absence: updatedAbsence,
@@ -275,6 +279,9 @@ router.put(
           },
         },
       });
+
+      // Send notification to employee
+      await notifyLeaveRejected(id, absence.employee.userId, rejectionReason, userId);
 
       res.json({
         message: "Absence request rejected successfully",

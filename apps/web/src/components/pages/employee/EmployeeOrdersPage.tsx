@@ -7,6 +7,8 @@ import { OrderNotesDialog } from "@/components/order-notes";
 import { useEmployeeOrderStore } from "@/store/employee/employeeOrderStore";
 import { useSession } from "next-auth/react";
 
+import toast from "react-hot-toast";
+
 
 interface Assignment {
   id: string;
@@ -40,6 +42,36 @@ const EmployeeOrdersPage = () => {
       fetchEmployeeAssignments(session.user.id);
     }
   }, [fetchEmployeeAssignments, session?.user?.id]);
+
+  useEffect(() => {
+    // Check for stored notification data
+    const storedData = sessionStorage.getItem('openOrderNotes');
+    if (storedData && employeeAssignments.length > 0) {
+      try {
+        const { orderId } = JSON.parse(storedData);
+        const order = employeeAssignments.find(a => a.order.id === orderId)?.order;
+        if (order) {
+          handleViewNotes(order);
+          sessionStorage.removeItem('openOrderNotes');
+        }
+      } catch (error) {
+        console.error('Error parsing stored notification data:', error);
+        sessionStorage.removeItem('openOrderNotes');
+      }
+    }
+
+    // Event listener for same-page notifications
+    const handleOpenOrderNotes = (event: CustomEvent) => {
+      const { orderId } = event.detail;
+      const order = employeeAssignments.find(a => a.order.id === orderId)?.order;
+      if (order) {
+        handleViewNotes(order);
+      }
+    };
+
+    window.addEventListener('openOrderNotes', handleOpenOrderNotes as EventListener);
+    return () => window.removeEventListener('openOrderNotes', handleOpenOrderNotes as EventListener);
+  }, [employeeAssignments]);
 
   const handleViewNotes = (order: any) => {
     setNotesOrder(order);

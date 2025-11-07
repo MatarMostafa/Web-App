@@ -270,14 +270,14 @@ export class OrderAnalyticsService {
         const stats = employeeStats.get(empId);
         stats.totalAssignments++;
 
-        if (assignment.order.status === OrderStatus.COMPLETED) {
+        if (assignment.order?.status === OrderStatus.COMPLETED) {
           stats.completedOrders++;
-        } else if (assignment.order.status === OrderStatus.IN_PROGRESS) {
+        } else if (assignment.order?.status === OrderStatus.IN_PROGRESS) {
           stats.inProgressOrders++;
         }
 
         // Calculate start delay if order has started
-        if (assignment.order.startTime) {
+        if (assignment.order?.startTime) {
           const scheduledTime = new Date(assignment.order.scheduledDate);
           const actualStartTime = new Date(assignment.order.startTime);
           const delayMinutes = Math.floor(

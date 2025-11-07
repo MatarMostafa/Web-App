@@ -14,6 +14,7 @@ import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { useTranslation } from "@/hooks/useTranslation";
 
+
 const OrdersPage = () => {
   const { t, ready } = useTranslation();
   
@@ -40,6 +41,36 @@ const OrdersPage = () => {
   useEffect(() => {
     fetchOrders();
   }, [fetchOrders]);
+
+  useEffect(() => {
+    // Check for stored notification data
+    const storedData = sessionStorage.getItem('openOrderNotes');
+    if (storedData && orders.length > 0) {
+      try {
+        const { orderId } = JSON.parse(storedData);
+        const order = orders.find(o => o.id === orderId);
+        if (order) {
+          handleViewNotes(order);
+          sessionStorage.removeItem('openOrderNotes');
+        }
+      } catch (error) {
+        console.error('Error parsing stored notification data:', error);
+        sessionStorage.removeItem('openOrderNotes');
+      }
+    }
+
+    // Event listener for same-page notifications
+    const handleOpenOrderNotes = (event: CustomEvent) => {
+      const { orderId } = event.detail;
+      const order = orders.find(o => o.id === orderId);
+      if (order) {
+        handleViewNotes(order);
+      }
+    };
+
+    window.addEventListener('openOrderNotes', handleOpenOrderNotes as EventListener);
+    return () => window.removeEventListener('openOrderNotes', handleOpenOrderNotes as EventListener);
+  }, [orders]);
 
   const filteredOrders = orders.filter(
     (order) =>

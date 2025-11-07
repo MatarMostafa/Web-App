@@ -17,6 +17,7 @@ export const unblockSchema = z.object({
 
 export const leaveSchema = z.object({
   body: z.object({
+    type: z.string().min(1, "Leave type is required"),
     startDate: z
       .string()
       .or(z.instanceof(Date))

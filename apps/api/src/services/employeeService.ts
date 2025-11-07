@@ -2,6 +2,7 @@ import { prisma } from "@repo/db";
 import { Employee } from "../types/employee";
 import { WorkScheduleType } from "../types/enums";
 import bcrypt from "bcryptjs";
+import { notifyWelcomeNewEmployee, notifyProfileUpdated } from "./notificationHelpers";
 
 const transformUserToEmployee = (user: any): Employee => {
   const employee = user.employee;
@@ -221,7 +222,14 @@ export const createEmployee = async (data: any): Promise<Employee> => {
       },
     });
 
-    return transformUserToEmployee(user);
+    const employee = transformUserToEmployee(user);
+    
+    // Send welcome notification to new employee
+    if (user.employee) {
+      await notifyWelcomeNewEmployee(user.employee.id);
+    }
+    
+    return employee;
   } catch (error: any) {
     console.error("Error creating employee:", error);
     
@@ -299,7 +307,12 @@ export const updateEmployee = async (
       },
     });
 
-    return transformUserToEmployee(user);
+    const updatedEmployee = transformUserToEmployee(user);
+    
+    // Send profile update notification
+    await notifyProfileUpdated(id);
+    
+    return updatedEmployee;
   } catch (error: any) {
     console.error("Error updating employee:", error);
     
