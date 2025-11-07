@@ -13,6 +13,8 @@ import { log } from "@repo/logger";
 import { startWeeklyArchiveWorker } from "./workers/weeklyArchiveWorker";
 import { startOrderStatusCron } from "./workers/orderStatusCron";
 import { startHourlyReminderCron } from "./workers/hourlyReminderCron";
+import { startOutboxProcessor } from "./workers/outboxWorker";
+import "./workers/notificationWorker";
 
 const app = express();
 const port = process.env.PORT || 3001;
@@ -64,6 +66,8 @@ app.listen(port, () => {
   startWeeklyArchiveWorker();
   startOrderStatusCron();
   startHourlyReminderCron();
+  startOutboxProcessor();
+  log("Notification worker started");
 });
 
 // Default export for Vercel

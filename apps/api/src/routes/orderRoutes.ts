@@ -129,7 +129,7 @@ router.get(
 router.get(
   "/:orderId/assignments",
   authMiddleware,
-  roleMiddleware(["ADMIN", "TEAM_LEADER"]),
+  roleMiddleware(["ADMIN", "TEAM_LEADER", "EMPLOYEE"]),
   getAssignments
 );
 

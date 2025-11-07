@@ -22,8 +22,9 @@ export const getCustomerById = (id: string) => {
   });
 };
 
-export const createCustomer = (data: any) => {
-  return prisma.customer.create({ data });
+export const createCustomer = async (data: any, createdBy?: string) => {
+  const customer = await prisma.customer.create({ data });
+  return customer;
 };
 
 export const updateCustomer = (id: string, data: any) => {

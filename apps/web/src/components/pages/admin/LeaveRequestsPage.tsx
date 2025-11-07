@@ -47,6 +47,25 @@ const LeaveRequestsPage = () => {
     fetchAllAbsences(filters);
   }, [activeTab, fetchAllAbsences]);
 
+  // Listen for refresh events from notifications
+  useEffect(() => {
+    const handleRefreshLeaveData = (event: CustomEvent) => {
+      if (event.detail?.type === 'admin') {
+        // Refresh admin leave data
+        let filters = {};
+        if (activeTab !== "all") {
+          filters = { status: activeTab.toUpperCase() };
+        }
+        fetchAllAbsences(filters);
+      }
+    };
+
+    window.addEventListener('refreshLeaveData', handleRefreshLeaveData as EventListener);
+    return () => {
+      window.removeEventListener('refreshLeaveData', handleRefreshLeaveData as EventListener);
+    };
+  }, [activeTab, fetchAllAbsences]);
+
   const getStatusBadgeClass = (status: string) => {
     switch (status) {
       case "APPROVED":
@@ -262,7 +281,7 @@ const LeaveRequestsPage = () => {
                             {t("admin.leaveManagement.details.type")}:
                           </span>
                           <p className="text-xs sm:text-sm truncate">
-                            {absence.type.replace("_", " ")}
+                            {t(`admin.leaveManagement.leaveTypes.${absence.type}`, absence.type.replace("_", " "))}
                           </p>
                         </div>
                         <div>
