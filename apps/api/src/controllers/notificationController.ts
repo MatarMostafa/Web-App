@@ -35,8 +35,8 @@ export const getUnreadCount = async (req: Request, res: Response) => {
   const authReq = req as AuthRequest;
   try {
     const userId = authReq.user?.id as string;
-    const count = await notificationService.getUnreadCount(userId);
-    res.json({ unreadCount: count });
+    const result = await notificationService.getUnreadCount(userId);
+    res.json(result);
   } catch (error) {
     console.error("getUnreadCount error:", error);
     res
@@ -112,6 +112,23 @@ export const markNotificationRead = async (req: Request, res: Response) => {
     res
       .status(500)
       .json({ message: "Error marking as read", error: String(error) });
+  }
+};
+
+/**
+ * POST /api/notifications/mark-all-read
+ */
+export const markAllNotificationsRead = async (req: Request, res: Response) => {
+  const authReq = req as AuthRequest;
+  try {
+    const userId = authReq.user?.id as string;
+    const result = await notificationService.markAllAsRead(userId);
+    res.json(result);
+  } catch (error) {
+    console.error("markAllNotificationsRead error:", error);
+    res
+      .status(500)
+      .json({ message: "Error marking all as read", error: String(error) });
   }
 };
 

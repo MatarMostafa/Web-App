@@ -42,7 +42,8 @@ router.use("/performance", employeePerformanceRoutes);
 router.use("/performance", performanceThresholdRoutes);
 
 // Notifications routes
-router.use("/notifications", notificationRoutes);
+
+  router.use("/notifications", notificationRoutes);
 
 // Admin routes
 router.use("/admin", adminRoutes);

@@ -13,6 +13,8 @@ import { NoteComposer } from "./NoteComposer";
 import { Calendar, MapPin, User } from "lucide-react";
 import { orderNotesApi, OrderNote } from "@/lib/orderNotesApi";
 import { useOrderStore } from "@/store/orderStore";
+import { useEmployeeOrderStore } from "@/store/employee/employeeOrderStore";
+import { useSession } from "next-auth/react";
 import toast from "react-hot-toast";
 
 interface OrderNotesDialogProps {
@@ -31,14 +33,22 @@ interface OrderNotesDialogProps {
 
 const getStatusColor = (status: OrderStatus) => {
   switch (status) {
-    case OrderStatus.IN_PROGRESS:
+    case OrderStatus.DRAFT:
+      return "bg-gray-100 text-gray-800";
+    case OrderStatus.OPEN:
       return "bg-blue-100 text-blue-800";
+    case OrderStatus.ACTIVE:
+      return "bg-green-100 text-green-800";
+    case OrderStatus.IN_PROGRESS:
+      return "bg-yellow-100 text-yellow-800";
     case OrderStatus.IN_REVIEW:
       return "bg-orange-100 text-orange-800";
     case OrderStatus.COMPLETED:
-      return "bg-green-100 text-green-800";
-    case OrderStatus.ACTIVE:
-      return "bg-yellow-100 text-yellow-800";
+      return "bg-emerald-100 text-emerald-800";
+    case OrderStatus.CANCELLED:
+      return "bg-red-100 text-red-800";
+    case OrderStatus.EXPIRED:
+      return "bg-orange-100 text-orange-800";
     default:
       return "bg-gray-100 text-gray-800";
   }
@@ -56,17 +66,104 @@ export const OrderNotesDialog: React.FC<OrderNotesDialogProps> = ({
   const [notes, setNotes] = useState<OrderNote[]>([]);
   const [loading, setLoading] = useState(false);
   const { updateOrderStatus, orders } = useOrderStore();
+  const { employeeAssignments, fetchEmployeeAssignments } = useEmployeeOrderStore();
+  const { data: session } = useSession();
   
-  // Get current order status from store or use initial
-  const currentOrder = orders.find(order => order.id === orderId);
-  const orderStatus = currentOrder?.status || initialOrderStatus;
+  // Use state to track current status for real-time updates
+  const [currentStatus, setCurrentStatus] = useState<OrderStatus>(initialOrderStatus);
+  
+  // Get current order status from appropriate store based on user role
+  const adminOrder = orders.find(order => order.id === orderId);
+  const employeeAssignment = employeeAssignments.find(a => a.order.id === orderId);
+  const employeeOrder = employeeAssignment?.order;
+  
+  const currentOrder = userRole === "ADMIN" ? adminOrder : employeeOrder;
+  const orderStatus = currentOrder?.status || currentStatus;
+  
+  // Update local status when order from store changes
+  useEffect(() => {
+    if (currentOrder?.status && currentOrder.status !== currentStatus) {
+      setCurrentStatus(currentOrder.status as OrderStatus);
+    }
+  }, [currentOrder?.status, currentStatus]);
+  
+  console.log("📋 Order status debug:", {
+    orderId,
+    currentOrderStatus: currentOrder?.status,
+    currentStatus,
+    initialOrderStatus,
+    finalOrderStatus: orderStatus
+  });
 
-  // Fetch notes when dialog opens
+  // Fetch notes and refresh order status when dialog opens
   useEffect(() => {
     if (open && orderId) {
       fetchNotes();
+      // Refresh the specific order's status from the store
+      refreshOrderStatus();
+      // Also refresh order data from API
+      refreshOrderData();
     }
   }, [open, orderId]);
+  
+  // Also refresh when the dialog is already open and order data changes
+  useEffect(() => {
+    if (open && orderId) {
+      refreshOrderStatus();
+    }
+  }, [open, orderId, orders, employeeAssignments]);
+
+  // Listen for notification-triggered opens and force refresh
+  useEffect(() => {
+    const handleNotificationRefresh = () => {
+      if (open && orderId) {
+        console.log('🔔 Notification triggered refresh for order:', orderId);
+        fetchNotes();
+        refreshOrderData();
+        setTimeout(() => refreshOrderStatus(), 500);
+      }
+    };
+
+    // Add a small delay to ensure the dialog is fully open
+    if (open) {
+      setTimeout(handleNotificationRefresh, 100);
+    }
+  }, [open]);
+  
+  const refreshOrderStatus = () => {
+    // Try to get updated order from appropriate store
+    if (userRole === "ADMIN") {
+      const currentOrder = useOrderStore.getState().orders.find(order => order.id === orderId);
+      if (currentOrder && currentOrder.status !== currentStatus) {
+        console.log('🔄 Admin: Updating status from', currentStatus, 'to', currentOrder.status);
+        setCurrentStatus(currentOrder.status);
+      }
+    } else {
+      const assignment = useEmployeeOrderStore.getState().employeeAssignments.find(a => a.order.id === orderId);
+      if (assignment?.order && assignment.order.status !== currentStatus) {
+        console.log('🔄 Employee: Updating status from', currentStatus, 'to', assignment.order.status);
+        setCurrentStatus(assignment.order.status as OrderStatus);
+      }
+    }
+  };
+
+  const refreshOrderData = async () => {
+    try {
+      if (userRole === "ADMIN") {
+        // Refresh orders for admin
+        const { fetchOrders } = useOrderStore.getState();
+        await fetchOrders();
+      } else {
+        // Refresh employee assignments
+        if (session?.user?.id) {
+          console.log('🔄 Employee: Refreshing assignments data for user:', session.user.id);
+          await fetchEmployeeAssignments(session.user.id);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to refresh order data:', error);
+    }
+  };
 
   const fetchNotes = async () => {
     setLoading(true);
@@ -86,12 +183,33 @@ export const OrderNotesDialog: React.FC<OrderNotesDialogProps> = ({
   };
 
   const handleStatusChange = (newStatus: OrderStatus) => {
-    // Update order status in store for real-time updates
-    updateOrderStatus(orderId, newStatus);
+    console.log("🔄 handleStatusChange called with:", newStatus);
+    // Update local state immediately for real-time UI updates
+    setCurrentStatus(newStatus);
+    
+    // Update appropriate store based on user role
+    if (userRole === "ADMIN") {
+      updateOrderStatus(orderId, newStatus);
+    } else {
+      // For employees, update the assignment's order status
+      const { employeeAssignments } = useEmployeeOrderStore.getState();
+      const updatedAssignments = employeeAssignments.map(assignment => {
+        if (assignment.order.id === orderId) {
+          return {
+            ...assignment,
+            order: { ...assignment.order, status: newStatus }
+          };
+        }
+        return assignment;
+      });
+      useEmployeeOrderStore.setState({ employeeAssignments: updatedAssignments });
+    }
+    
+    console.log("✅ Store and state updated with status:", newStatus);
     // Refresh notes to get updated status
     fetchNotes();
-    // Notify parent component of status change
-    console.log("Status changed to:", newStatus);
+    // Force a refresh of the order status
+    setTimeout(() => refreshOrderStatus(), 100);
   };
 
   return (
@@ -104,7 +222,7 @@ export const OrderNotesDialog: React.FC<OrderNotesDialogProps> = ({
                 Order #{orderNumber}
               </DialogTitle>
               <Badge
-                className={`${getStatusColor(orderStatus)} text-xs whitespace-nowrap flex-shrink-0 mr-4`}
+                className={`${getStatusColor(orderStatus as OrderStatus)} text-xs whitespace-nowrap flex-shrink-0 mr-4`}
               >
                 {orderStatus === "IN_PROGRESS"
                   ? "In Progress"
@@ -154,7 +272,7 @@ export const OrderNotesDialog: React.FC<OrderNotesDialogProps> = ({
             <NoteComposer
               orderId={orderId}
               userRole={userRole}
-              orderStatus={orderStatus}
+              orderStatus={orderStatus as OrderStatus}
               onNoteCreated={handleNoteCreated}
               onStatusChange={handleStatusChange}
             />

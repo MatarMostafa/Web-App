@@ -2,6 +2,7 @@ import React from "react";
 import { User, Menu } from "lucide-react";
 import { useAuthStore } from "@/store/authStore";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import { NotificationDropdown } from "@/components/notifications/NotificationDropdown";
 
 interface HeaderProps {
   onMenuClick?: () => void;
@@ -73,6 +74,7 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
         </div>
 
         <div className="flex items-center gap-3">
+          <NotificationDropdown />
           <LanguageSwitcher />
           
           <DropdownMenu>
