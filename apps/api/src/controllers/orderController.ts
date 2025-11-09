@@ -15,7 +15,6 @@ export const getOrderById = async (req: Request, res: Response) => {
 
 export const createOrder = async (req: Request, res: Response) => {
   try {
-    console.log("Creating order with data:", req.body);
     const order = await orderService.createOrderService(req.body, (req as any).user?.id);
     res.status(201).json(order);
   } catch (error) {
