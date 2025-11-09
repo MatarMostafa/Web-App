@@ -38,6 +38,15 @@ export const register = async (userData: any) => {
   }
 
   const hashedPassword = await bcrypt.hash(password, 12);
+  
+  // Generate secure verification token
+  const verificationToken = jwt.sign(
+    { userId: null, email, type: "email-verification" },
+    JWT_SECRET,
+    { expiresIn: "24h" }
+  );
+  
+  const verificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
 
   const user = await prisma.user.create({
     data: {
@@ -46,6 +55,8 @@ export const register = async (userData: any) => {
       password: hashedPassword,
       role,
       isActive: false,
+      emailVerificationToken: verificationToken,
+      emailVerificationExpires: verificationExpires,
     },
   });
 
@@ -71,7 +82,8 @@ export const register = async (userData: any) => {
       html: `
         <h1>Welcome to Employee Manager!</h1>
         <p>Please click the link below to verify your email:</p>
-        <a href="${process.env.FRONTEND_URL}/confirm-email?token=${user.id}">Verify Email</a>
+        <a href="${process.env.FRONTEND_URL}/confirm-email?token=${verificationToken}">Verify Email</a>
+        <p>This link expires in 24 hours.</p>
       `,
     });
   } catch (emailError: any) {
@@ -190,6 +202,17 @@ export const forgotPassword = async (email: string) => {
     JWT_SECRET,
     { expiresIn: "1h" }
   );
+  
+  const resetExpires = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+
+  // Store token in database
+  await prisma.user.update({
+    where: { id: user.id },
+    data: {
+      passwordResetToken: resetToken,
+      passwordResetExpires: resetExpires,
+    },
+  });
 
   await sendEmail({
     to: email,
@@ -207,49 +230,92 @@ export const forgotPassword = async (email: string) => {
 
 export const resetPassword = async (token: string, newPassword: string) => {
   try {
+    // Verify JWT token
     const decoded = jwt.verify(token, JWT_SECRET) as any;
 
     if (decoded.type !== "password-reset") {
       throw new Error("Ungültiger Token-Typ");
     }
 
-    const user = await prisma.user.findUnique({
-      where: { id: decoded.userId },
+    // Find user by reset token and check expiration
+    const user = await prisma.user.findFirst({
+      where: {
+        passwordResetToken: token,
+        passwordResetExpires: {
+          gt: new Date(), // Token not expired
+        },
+      },
     });
+
     if (!user) {
-      throw new Error("Benutzer nicht gefunden");
+      throw new Error("Ungültiger oder abgelaufener Reset-Token");
     }
 
     const hashedPassword = await bcrypt.hash(newPassword, 12);
 
+    // Update password and clear reset token
     await prisma.user.update({
       where: { id: user.id },
-      data: { password: hashedPassword },
+      data: {
+        password: hashedPassword,
+        passwordResetToken: null,
+        passwordResetExpires: null,
+      },
     });
 
     return { message: "Passwort erfolgreich zurückgesetzt" };
-  } catch (error) {
-    throw new Error("Ungültiger oder abgelaufener Reset-Token");
+  } catch (error: any) {
+    if (error.name === 'JsonWebTokenError' || error.name === 'TokenExpiredError') {
+      throw new Error("Ungültiger oder abgelaufener Reset-Token");
+    }
+    throw new Error(error.message || "Ungültiger oder abgelaufener Reset-Token");
   }
 };
 
 export const verifyEmail = async (token: string) => {
-  // Simple verification using token as user ID until schema is updated
   try {
-    const user = await prisma.user.findUnique({ where: { id: token } });
-
-    if (!user) {
-      throw new Error("Ungültiger Verifizierungstoken");
+    // Verify JWT token
+    const decoded = jwt.verify(token, JWT_SECRET) as any;
+    
+    if (decoded.type !== "email-verification") {
+      throw new Error("Ungültiger Token-Typ");
     }
 
+    // Find user by verification token
+    const user = await prisma.user.findFirst({
+      where: {
+        emailVerificationToken: token,
+        emailVerificationExpires: {
+          gt: new Date(), // Token not expired
+        },
+      },
+    });
+
+    if (!user) {
+      throw new Error("Ungültiger oder abgelaufener Verifizierungstoken");
+    }
+
+    if (user.isActive) {
+      throw new Error("E-Mail bereits verifiziert");
+    }
+
+    // Activate user and clear verification token
     await prisma.user.update({
       where: { id: user.id },
-      data: { isActive: true, emailVerified:true },
+      data: {
+        isActive: true,
+        emailVerified: true,
+        emailVerificationToken: null,
+        emailVerificationExpires: null,
+      },
     });
 
     return { message: "E-Mail erfolgreich verifiziert" };
-  } catch (error) {
-    throw new Error("Ungültiger oder abgelaufener Verifizierungstoken");
+  } catch (error: any) {
+    if (error.name === 'JsonWebTokenError' || error.name === 'TokenExpiredError') {
+      throw new Error("Ungültiger oder abgelaufener Verifizierungstoken");
+    }
+    throw new Error(error.message || "Ungültiger oder abgelaufener Verifizierungstoken");
   }
 };
 
@@ -302,10 +368,23 @@ export const resendVerificationEmail = async (email: string) => {
     throw new Error("Bitte warten Sie 5 Minuten, bevor Sie eine weitere Verifizierungs-E-Mail anfordern");
   }
 
-  // Update user's updatedAt to track last resend time
+  // Generate new verification token
+  const verificationToken = jwt.sign(
+    { userId: user.id, email, type: "email-verification" },
+    JWT_SECRET,
+    { expiresIn: "24h" }
+  );
+  
+  const verificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000);
+
+  // Update user with new token
   await prisma.user.update({
     where: { id: user.id },
-    data: { updatedAt: new Date() },
+    data: {
+      emailVerificationToken: verificationToken,
+      emailVerificationExpires: verificationExpires,
+      updatedAt: new Date(),
+    },
   });
 
   await sendEmail({
@@ -314,8 +393,8 @@ export const resendVerificationEmail = async (email: string) => {
     html: `
       <h1>Email Verification</h1>
       <p>Please click the link below to verify your email:</p>
-      <a href="${process.env.FRONTEND_URL}/confirm-email?token=${user.id}">Verify Email</a>
-      <p>This is a resent verification email.</p>
+      <a href="${process.env.FRONTEND_URL}/confirm-email?token=${verificationToken}">Verify Email</a>
+      <p>This link expires in 24 hours.</p>
     `,
   });
 
