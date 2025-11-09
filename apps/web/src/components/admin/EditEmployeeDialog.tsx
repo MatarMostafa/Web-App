@@ -55,13 +55,7 @@ interface EmployeeFormData {
   salary?: number;
 }
 
-const scheduleTypeOptions = [
-  { value: WorkScheduleType.FULL_TIME, label: "Full Time" },
-  { value: WorkScheduleType.PART_TIME, label: "Part Time" },
-  { value: WorkScheduleType.CONTRACT, label: "Contract" },
-  { value: WorkScheduleType.TEMPORARY, label: "Temporary" },
-  { value: WorkScheduleType.INTERN, label: "Intern" },
-];
+
 
 export default function EditEmployeeDialog({
   employee,
@@ -151,7 +145,7 @@ export default function EditEmployeeDialog({
     e.preventDefault();
 
     if (!formData.username.trim()) {
-      toast.error("Username is required");
+      toast.error(t('employee.usernameRequired'));
       return;
     }
 
@@ -198,7 +192,7 @@ export default function EditEmployeeDialog({
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold text-foreground">
-            {t('employee.editEmployee')}
+            {t('employee.form.editEmployee')}
           </DialogTitle>
         </DialogHeader>
 
@@ -208,32 +202,32 @@ export default function EditEmployeeDialog({
             <div className="flex items-center gap-2 mb-3">
               <User className="h-4 w-4 text-primary" />
               <h3 className="text-sm font-medium text-foreground">
-                Basic Information
+                {t('employee.form.basicInformation')}
               </h3>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="firstName">First Name</Label>
+                <Label htmlFor="firstName">{t('employee.form.firstName')}</Label>
                 <Input
                   id="firstName"
                   value={formData.firstName}
                   onChange={(e) =>
                     handleInputChange("firstName", e.target.value)
                   }
-                  placeholder="Enter first name"
+                  placeholder={t('employee.form.enterFirstName')}
                   className="rounded-lg"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="lastName">Last Name</Label>
+                <Label htmlFor="lastName">{t('employee.form.lastName')}</Label>
                 <Input
                   id="lastName"
                   value={formData.lastName}
                   onChange={(e) =>
                     handleInputChange("lastName", e.target.value)
                   }
-                  placeholder="Enter last name"
+                  placeholder={t('employee.form.enterLastName')}
                   className="rounded-lg"
                 />
               </div>
@@ -241,7 +235,7 @@ export default function EditEmployeeDialog({
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email">{t('common.email')}</Label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
@@ -255,11 +249,11 @@ export default function EditEmployeeDialog({
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="username">Username *</Label>
+                <Label htmlFor="username">{t('auth.username')} *</Label>
                 <Input
                   id="username"
                   value={formData.username}
-                  placeholder="Enter username"
+                  placeholder={t('employee.form.enterUsername')}
                   required
                   disabled
                   className="rounded-lg bg-muted"
@@ -269,7 +263,7 @@ export default function EditEmployeeDialog({
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="phoneNumber">Phone Number</Label>
+                <Label htmlFor="phoneNumber">{t('employee.form.phoneNumber')}</Label>
                 <div className="relative">
                   <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
@@ -285,7 +279,7 @@ export default function EditEmployeeDialog({
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="dateOfBirth">Date of Birth</Label>
+                <Label htmlFor="dateOfBirth">{t('employee.dateOfBirth')}</Label>
                 <Input
                   id="dateOfBirth"
                   type="date"
@@ -306,14 +300,14 @@ export default function EditEmployeeDialog({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="address">Address</Label>
+              <Label htmlFor="address">{t('employee.form.address')}</Label>
               <div className="relative">
                 <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   id="address"
                   value={formData.address}
                   onChange={(e) => handleInputChange("address", e.target.value)}
-                  placeholder="Enter address"
+                  placeholder={t('employee.form.enterAddress')}
                   className="pl-10 rounded-lg"
                 />
               </div>
@@ -325,13 +319,13 @@ export default function EditEmployeeDialog({
             <div className="flex items-center gap-2 mb-3">
               <Building className="h-4 w-4 text-primary" />
               <h3 className="text-sm font-medium text-foreground">
-                Employment Information
+                {t('employee.form.employmentInformation')}
               </h3>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="departmentId">Department</Label>
+                <Label htmlFor="departmentId">{t('employee.form.department')}</Label>
                 <Select
                   value={formData.departmentId}
                   onValueChange={(value) =>
@@ -339,7 +333,7 @@ export default function EditEmployeeDialog({
                   }
                 >
                   <SelectTrigger className="rounded-lg">
-                    <SelectValue placeholder="Select department" />
+                    <SelectValue placeholder={t('employee.form.selectDepartment')} />
                   </SelectTrigger>
                   <SelectContent>
                     {departments.map((dept) => (
@@ -351,7 +345,7 @@ export default function EditEmployeeDialog({
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="positionId">Position</Label>
+                <Label htmlFor="positionId">{t('employee.form.position')}</Label>
                 <Select
                   value={formData.positionId}
                   onValueChange={(value) =>
@@ -359,7 +353,7 @@ export default function EditEmployeeDialog({
                   }
                 >
                   <SelectTrigger className="rounded-lg">
-                    <SelectValue placeholder="Select position" />
+                    <SelectValue placeholder={t('employee.form.selectPosition')} />
                   </SelectTrigger>
                   <SelectContent>
                     {positions.map((pos) => (
@@ -374,7 +368,7 @@ export default function EditEmployeeDialog({
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="scheduleType">Schedule Type</Label>
+                <Label htmlFor="scheduleType">{t('employee.form.scheduleType')}</Label>
                 <Select
                   value={formData.scheduleType}
                   onValueChange={(value) =>
@@ -382,10 +376,16 @@ export default function EditEmployeeDialog({
                   }
                 >
                   <SelectTrigger className="rounded-lg">
-                    <SelectValue placeholder="Select schedule type" />
+                    <SelectValue placeholder={t('employee.form.selectScheduleType')} />
                   </SelectTrigger>
                   <SelectContent>
-                    {scheduleTypeOptions.map((option) => (
+                    {[
+                      { value: WorkScheduleType.FULL_TIME, label: t('employee.form.fullTime') },
+                      { value: WorkScheduleType.PART_TIME, label: t('employee.form.partTime') },
+                      { value: WorkScheduleType.CONTRACT, label: t('employee.form.contract') },
+                      { value: WorkScheduleType.TEMPORARY, label: t('employee.form.temporary') },
+                      { value: WorkScheduleType.INTERN, label: t('employee.form.intern') },
+                    ].map((option) => (
                       <SelectItem key={option.value} value={option.value}>
                         {option.label}
                       </SelectItem>
@@ -394,7 +394,7 @@ export default function EditEmployeeDialog({
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="managerId">Manager</Label>
+                <Label htmlFor="managerId">{t('employee.form.manager')}</Label>
                 <Select
                   value={formData.managerId}
                   onValueChange={(value) =>
@@ -402,7 +402,7 @@ export default function EditEmployeeDialog({
                   }
                 >
                   <SelectTrigger className="rounded-lg">
-                    <SelectValue placeholder="Select manager (optional)" />
+                    <SelectValue placeholder={t('employee.form.selectManager')} />
                   </SelectTrigger>
                   <SelectContent>
                     {managers.map((mgr) => (
@@ -417,7 +417,7 @@ export default function EditEmployeeDialog({
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="salary">Salary</Label>
+                <Label htmlFor="salary">{t('employee.form.salary')}</Label>
                 <Input
                   id="salary"
                   type="number"
@@ -428,12 +428,12 @@ export default function EditEmployeeDialog({
                       e.target.value ? parseFloat(e.target.value) : undefined
                     )
                   }
-                  placeholder="Enter annual salary"
+                  placeholder={t('employee.form.enterAnnualSalary')}
                   className="rounded-lg"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="hourlyRate">Hourly Rate</Label>
+                <Label htmlFor="hourlyRate">{t('employee.form.hourlyRate')}</Label>
                 <Input
                   id="hourlyRate"
                   type="number"
@@ -445,14 +445,14 @@ export default function EditEmployeeDialog({
                       e.target.value ? parseFloat(e.target.value) : undefined
                     )
                   }
-                  placeholder="Enter hourly rate"
+                  placeholder={t('employee.form.enterHourlyRate')}
                   className="rounded-lg"
                 />
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="hireDate">Hire Date</Label>
+              <Label htmlFor="hireDate">{t('employee.form.hireDate')}</Label>
               <Input
                 id="hireDate"
                 type="date"
@@ -481,7 +481,7 @@ export default function EditEmployeeDialog({
               onClick={() => onOpenChange(false)}
               disabled={loading}
             >
-              Cancel
+              {t('common.cancel')}
             </Button>
             <Button
               type="submit"
@@ -491,10 +491,12 @@ export default function EditEmployeeDialog({
               {loading ? (
                 <>
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Updating...
+                  {t('employee.form.updating')}
                 </>
               ) : (
-                "Update Employee"
+                <>
+                {t('employee.form.updateEmployee')}
+                </>
               )}
             </Button>
           </div>

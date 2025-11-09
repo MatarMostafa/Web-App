@@ -21,7 +21,9 @@
     "privacySecurity": "Datenschutz & Sicherheit",
     "helpSupport": "Hilfe & Support",
     "backToDashboard": "Zurück zum Dashboard",
-    "logOut": "Abmelden"
+    "logOut": "Abmelden",
+    "skills": "Fähigkeiten",
+    "qualifications": "Qualifikationen"
   },
   "language": {
     "english": "English",
@@ -246,7 +248,27 @@
     "employeeUpdated": "Mitarbeiter erfolgreich aktualisiert",
     "employeeDeleted": "Mitarbeiter erfolgreich gelöscht",
     "noEmployeesFound": "Keine Mitarbeiter gefunden",
-    "searchEmployees": "Mitarbeiter suchen"
+    "searchEmployees": "Mitarbeiter suchen",
+    "basicInformation": "Grundinformationen",
+    "employmentInformation": "Beschäftigungsinformationen",
+    "selectDepartment": "Abteilung auswählen",
+    "selectPosition": "Position auswählen",
+    "selectManager": "Vorgesetzten auswählen (optional)",
+    "selectScheduleType": "Arbeitszeit-Typ auswählen",
+    "enterFirstName": "Vorname eingeben",
+    "enterLastName": "Nachname eingeben",
+    "enterUsername": "Benutzername eingeben",
+    "enterPassword": "Passwort eingeben",
+    "enterAnnualSalary": "Jahresgehalt eingeben",
+    "enterHourlyRate": "Stundenlohn eingeben",
+    "usernameRequired": "Benutzername ist erforderlich",
+    "creating": "Wird erstellt...",
+    "updating": "Wird aktualisiert...",
+    "updateEmployee": "Mitarbeiter aktualisieren",
+    "address": "Adresse",
+    "enterAddress": "Adresse eingeben",
+    "hireDate": "Einstellungsdatum"
+    
   },
   "order": {
     "order": "Auftrag",
@@ -804,6 +826,47 @@
         "createError": "Fehler beim Erstellen der Position",
         "updateError": "Fehler beim Aktualisieren der Position"
       }
+    },
+    "qualifications": {
+      "title": "Qualifikationsverwaltung",
+      "subtitle": "Verwalten Sie verfügbare Qualifikationen und Fähigkeiten im System",
+      "manage": "Qualifikationen verwalten",
+      "addNew": "Neue Qualifikation hinzufügen",
+      "edit": "Qualifikation bearbeiten",
+      "searchPlaceholder": "Qualifikationen nach Name oder Beschreibung suchen...",
+      "allCategories": "Alle Kategorien",
+      "showInactive": "Inaktive anzeigen",
+      "hideInactive": "Inaktive ausblenden",
+      "loading": "Qualifikationen werden geladen...",
+      "noQualifications": "Keine Qualifikationen gefunden",
+      "active": "Aktiv",
+      "inactive": "Inaktiv",
+      "created": "Erstellt",
+      "form": {
+        "name": "Name",
+        "namePlaceholder": "Qualifikationsname eingeben",
+        "category": "Kategorie",
+        "selectCategory": "Kategorie auswählen",
+        "customCategory": "Benutzerdefinierte Kategorie",
+        "newCategory": "Neue Kategorie",
+        "newCategoryPlaceholder": "Neuen Kategorienamen eingeben",
+        "description": "Beschreibung",
+        "descriptionPlaceholder": "Qualifikationsbeschreibung eingeben (optional)",
+        "active": "Aktiv",
+        "creating": "Wird erstellt...",
+        "create": "Erstellen",
+        "updating": "Wird aktualisiert...",
+        "update": "Aktualisieren"
+      },
+      "delete": {
+        "title": "Qualifikation löschen",
+        "warning": "Sind Sie sicher, dass Sie diese Qualifikation löschen möchten?",
+        "qualificationName": "Qualifikationsname",
+        "category": "Kategorie",
+        "note": "Hinweis: Falls diese Qualifikation derzeit Mitarbeitern zugeordnet ist, wird sie deaktiviert anstatt gelöscht, um die Datenintegrität zu bewahren.",
+        "deleting": "Wird gelöscht...",
+        "confirm": "Qualifikation löschen"
+      }
     }
   },
   "notificationUI": {
@@ -918,6 +981,42 @@
     }
   },
   "employee": {
+    "form": {
+      "addEmployee": "Mitarbeiter hinzufügen",
+      "editEmployee": "Mitarbeiter bearbeiten",
+      "basicInformation": "Grundinformationen",
+      "employmentInformation": "Beschäftigungsinformationen",
+      "firstName": "Vorname",
+      "lastName": "Nachname",
+      "enterFirstName": "Vorname eingeben",
+      "enterLastName": "Nachname eingeben",
+      "enterUsername": "Benutzername eingeben",
+      "enterPassword": "Passwort eingeben",
+      "phoneNumber": "Telefonnummer",
+      "address": "Adresse",
+      "enterAddress": "Adresse eingeben",
+      "department": "Abteilung",
+      "position": "Position",
+      "manager": "Vorgesetzter",
+      "scheduleType": "Arbeitszeit-Typ",
+      "salary": "Gehalt",
+      "hourlyRate": "Stundenlohn",
+      "hireDate": "Einstellungsdatum",
+      "selectDepartment": "Abteilung auswählen",
+      "selectPosition": "Position auswählen",
+      "selectManager": "Vorgesetzten auswählen (optional)",
+      "selectScheduleType": "Arbeitszeit-Typ auswählen",
+      "enterAnnualSalary": "Jahresgehalt eingeben",
+      "enterHourlyRate": "Stundenlohn eingeben",
+      "fullTime": "Vollzeit",
+      "partTime": "Teilzeit",
+      "contract": "Vertrag",
+      "temporary": "Zeitarbeit",
+      "intern": "Praktikant",
+      "creating": "Wird erstellt...",
+      "updating": "Wird aktualisiert...",
+      "updateEmployee": "Mitarbeiter aktualisieren"
+    },
     "dashboard": {
       "title": "Mein Dashboard",
       "subtitle": "Übersicht über Ihre aktuellen Zuweisungen und Leistung",
@@ -1017,6 +1116,31 @@
       "endDateRequired": "Enddatum ist erforderlich",
       "startDatePastError": "Startdatum kann nicht in der Vergangenheit liegen",
       "endDateBeforeStartError": "Enddatum muss nach dem Startdatum liegen"
+    },
+    "skills": {
+      "title": "Meine Fähigkeiten",
+      "subtitle": "Verwalten Sie Ihre beruflichen Qualifikationen und Fähigkeiten",
+      "loading": "Fähigkeiten werden geladen...",
+      "addSkill": "Fähigkeit hinzufügen",
+      "qualification": "Qualifikation",
+      "selectQualification": "Wählen Sie eine Qualifikation",
+      "proficiencyLevel": "Kenntnisstand",
+      "level1": "Grundkenntnisse",
+      "level2": "Erweiterte Grundlagen",
+      "level3": "Fortgeschritten",
+      "level4": "Experte",
+      "level5": "Meister",
+      "certificateUrl": "Zertifikat URL",
+      "expiryDate": "Ablaufdatum",
+      "adding": "Wird hinzugefügt...",
+      "noSkills": "Keine Fähigkeiten hinzugefügt",
+      "noSkillsDesc": "Fügen Sie Ihre ersten beruflichen Qualifikationen hinzu",
+      "addFirstSkill": "Erste Fähigkeit hinzufügen",
+      "verified": "Bestätigt",
+      "pending": "Ausstehend",
+      "proficiency": "Kenntnisstand",
+      "acquired": "Erworben",
+      "expires": "Läuft ab"
     }
   }
 }
