@@ -18,16 +18,29 @@ import {
 } from "lucide-react";
 import { Employee } from "@/types/employee";
 import { useEmployeeStore } from "@/store/employeeStore";
+import { useSkillsStore } from "@/store/skillsStore";
 import LeaveActionModal from "@/components/modals/LeaveActionModal";
+import AddEmployeeSkillModal from "@/components/admin/AddEmployeeSkillModal";
 import { useTranslation } from '@/hooks/useTranslation';
 
 interface EmployeeProfileProps {
   employee: Employee & { name: string };
+  initialTab?: string;
+  onTabChange?: (tab: string) => void;
 }
 
-const EmployeeProfile: React.FC<EmployeeProfileProps> = ({ employee }) => {
+const EmployeeProfile: React.FC<EmployeeProfileProps> = ({ 
+  employee, 
+  initialTab = "assignments",
+  onTabChange 
+}) => {
   const { t } = useTranslation();
-  const [activeTab, setActiveTab] = useState("assignments");
+  const [activeTab, setActiveTab] = useState(initialTab);
+  
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab);
+    onTabChange?.(tab);
+  };
   const [modalState, setModalState] = useState<{
     isOpen: boolean;
     action: "approve" | "reject";
@@ -36,6 +49,7 @@ const EmployeeProfile: React.FC<EmployeeProfileProps> = ({ employee }) => {
     leaveType: string;
   } | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
+  const [showAddSkillModal, setShowAddSkillModal] = useState(false);
   const {
     employeeAssignments,
     employeePerformance,
@@ -57,6 +71,29 @@ const EmployeeProfile: React.FC<EmployeeProfileProps> = ({ employee }) => {
     approveAbsence,
     rejectAbsence,
   } = useEmployeeStore();
+  
+  const {
+    approveEmployeeQualification,
+    rejectEmployeeQualification,
+    addEmployeeQualificationAsAdmin,
+    removeEmployeeQualificationAsAdmin,
+  } = useSkillsStore();
+
+  const handleAddSkill = async (qualificationId: string, proficiencyLevel: number, expiryDate?: string, certificateUrl?: string) => {
+    await addEmployeeQualificationAsAdmin(employee.id, {
+      qualificationId,
+      proficiencyLevel,
+      expiryDate,
+      certificateUrl
+    });
+    refreshQualifications();
+  };
+  
+  const refreshQualifications = () => {
+    if (employee.id) {
+      fetchEmployeeQualifications(employee.id);
+    }
+  };
 
   useEffect(() => {
     if (employee.id) {
@@ -72,9 +109,6 @@ const EmployeeProfile: React.FC<EmployeeProfileProps> = ({ employee }) => {
           break;
         case "attendance":
           fetchEmployeeAbsences(employee.id);
-          break;
-        case "documents":
-          fetchEmployeeFiles(employee.id);
           break;
       }
     }
@@ -120,13 +154,12 @@ const EmployeeProfile: React.FC<EmployeeProfileProps> = ({ employee }) => {
 
   return (
     <div className="space-y-6">
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-5">
+      <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="assignments">{t('admin.employeeDetails.tabs.assignments')}</TabsTrigger>
           <TabsTrigger value="performance">{t('admin.employeeDetails.tabs.performance')}</TabsTrigger>
           <TabsTrigger value="qualifications">{t('admin.employeeDetails.tabs.skills')}</TabsTrigger>
           <TabsTrigger value="attendance">{t('admin.employeeDetails.tabs.attendance')}</TabsTrigger>
-          <TabsTrigger value="documents">{t('admin.employeeDetails.tabs.documents')}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="assignments" className="space-y-6">
@@ -328,51 +361,111 @@ const EmployeeProfile: React.FC<EmployeeProfileProps> = ({ employee }) => {
                   <p className="text-sm">
                     {t('admin.employeeDetails.qualifications.noQualificationsDesc')}
                   </p>
+                  <div className="mt-4">
+                    <Button
+                      onClick={() => setShowAddSkillModal(true)}
+                      variant="outline"
+                    >
+                      <Award className="h-4 w-4 mr-2" />
+                      Fähigkeit hinzufügen
+                    </Button>
+                  </div>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {employeeQualifications.map((qual) => (
-                    <div
-                      key={qual.id}
-                      className="border rounded-lg p-4 hover:bg-gray-50"
+                <div className="space-y-4">
+                  <div className="flex justify-end">
+                    <Button
+                      onClick={() => setShowAddSkillModal(true)}
+                      variant="outline"
                     >
-                      <div className="flex justify-between items-start mb-2">
-                        <div>
-                          <h4 className="font-medium text-lg">
-                            {qual.qualification.name}
-                          </h4>
-                          <p className="text-sm text-muted-foreground">
-                            {qual.qualification.category}
-                          </p>
+                      <Award className="h-4 w-4 mr-2" />
+                      Fähigkeit hinzufügen
+                    </Button>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {employeeQualifications.map((qual) => (
+                      <div
+                        key={qual.id}
+                        className="border rounded-lg p-4 hover:bg-gray-50"
+                      >
+                        <div className="flex justify-between items-start mb-2">
+                          <div>
+                            <h4 className="font-medium text-lg">
+                              {qual.qualification.name}
+                            </h4>
+                            <p className="text-sm text-muted-foreground">
+                              {qual.qualification.category}
+                            </p>
+                          </div>
+                          <div className="flex gap-2">
+                            <Badge variant="outline">
+                              Level {qual.proficiencyLevel}
+                            </Badge>
+                            {qual.isVerified ? (
+                              <div className="flex gap-1">
+                                <Badge className="bg-green-100 text-green-800">Bestätigt</Badge>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={async () => {
+                                    await removeEmployeeQualificationAsAdmin(employee.id, qual.qualification.id);
+                                    refreshQualifications();
+                                  }}
+                                  className="bg-red-50 text-red-700 hover:bg-red-100 px-2 py-1 h-6 text-xs"
+                                >
+                                  <XCircle className="h-3 w-3 mr-1" />
+                                  Entfernen
+                                </Button>
+                              </div>
+                            ) : (
+                              <div className="flex gap-1">
+                                <Badge className="bg-yellow-100 text-yellow-800">Ausstehend</Badge>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={async () => {
+                                    await approveEmployeeQualification(employee.id, qual.qualification.id);
+                                    refreshQualifications();
+                                  }}
+                                  className="bg-green-50 text-green-700 hover:bg-green-100 px-2 py-1 h-6 text-xs"
+                                >
+                                  <CheckCircle className="h-3 w-3 mr-1" />
+                                  Bestätigen
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={async () => {
+                                    await rejectEmployeeQualification(employee.id, qual.qualification.id);
+                                    refreshQualifications();
+                                  }}
+                                  className="bg-red-50 text-red-700 hover:bg-red-100 px-2 py-1 h-6 text-xs"
+                                >
+                                  <XCircle className="h-3 w-3 mr-1" />
+                                  Ablehnen
+                                </Button>
+                              </div>
+                            )}
+                          </div>
                         </div>
-                        <div className="flex gap-2">
-                          <Badge variant="outline">
-                            {t('admin.employeeDetails.qualifications.level')} {qual.proficiencyLevel}
-                          </Badge>
-                          {qual.isVerified && (
-                            <Badge variant="default">{t('admin.employeeDetails.qualifications.verified')}</Badge>
+                        <div className="text-sm text-muted-foreground">
+                          <p>
+                            Erworben: {new Date(qual.acquiredDate).toLocaleDateString()}
+                          </p>
+                          {qual.expiryDate && (
+                            <p>
+                              Läuft ab: {new Date(qual.expiryDate).toLocaleDateString()}
+                            </p>
                           )}
                         </div>
-                      </div>
-                      <div className="text-sm text-muted-foreground">
-                        <p>
-                          {t('admin.employeeDetails.qualifications.acquired')}:{" "}
-                          {new Date(qual.acquiredDate).toLocaleDateString()}
-                        </p>
-                        {qual.expiryDate && (
-                          <p>
-                            {t('admin.employeeDetails.qualifications.expires')}:{" "}
-                            {new Date(qual.expiryDate).toLocaleDateString()}
-                          </p>
+                        {qual.qualification.description && (
+                          <div className="mt-2 p-2 bg-gray-100 rounded text-sm">
+                            {qual.qualification.description}
+                          </div>
                         )}
                       </div>
-                      {qual.qualification.description && (
-                        <div className="mt-2 p-2 bg-gray-100 rounded text-sm">
-                          {qual.qualification.description}
-                        </div>
-                      )}
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
               )}
             </CardContent>
@@ -479,97 +572,7 @@ const EmployeeProfile: React.FC<EmployeeProfileProps> = ({ employee }) => {
           </Card>
         </TabsContent>
 
-        <TabsContent value="documents" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <FileText className="h-5 w-5" />
-                {t('admin.employeeDetails.documents.title')} ({employeeFiles.length})
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {isLoadingFiles ? (
-                <div className="text-center py-8">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-                  <p className="mt-2 text-sm text-muted-foreground">
-                    {t('admin.employeeDetails.documents.loading')}
-                  </p>
-                </div>
-              ) : employeeFiles.length === 0 ? (
-                <div className="text-center py-8 text-muted-foreground">
-                  <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                  <p>{t('admin.employeeDetails.documents.noDocuments')}</p>
-                  <p className="text-sm">
-                    {t('admin.employeeDetails.documents.noDocumentsDesc')}
-                  </p>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {employeeFiles.map((file) => (
-                    <div
-                      key={file.id}
-                      className="border rounded-lg p-4 hover:bg-gray-50"
-                    >
-                      <div className="flex justify-between items-start mb-2">
-                        <div className="flex items-center gap-3">
-                          <FileText className="h-8 w-8 text-blue-500" />
-                          <div>
-                            <h4 className="font-medium text-lg">
-                              {file.originalName}
-                            </h4>
-                            <p className="text-sm text-muted-foreground">
-                              {file.documentType.replace("_", " ")} •{" "}
-                              {(file.size / 1024).toFixed(1)} KB
-                            </p>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Button
-                            variant="secondary"
-                            size="sm"
-                            onClick={() => previewFile(file.id)}
-                            title="View file"
-                            className="bg-blue-100 text-blue-700 hover:bg-blue-200 hover:text-blue-800"
-                          >
-                            <Eye className="h-4 w-4 mr-1" />
-                            {t('admin.employeeDetails.documents.view')}
-                          </Button>
-                          <Button
-                            variant="secondary"
-                            size="sm"
-                            onClick={() =>
-                              downloadFile(file.id, file.originalName)
-                            }
-                            title="Download file"
-                            className="bg-green-100 text-green-700 hover:bg-green-200 hover:text-green-800"
-                          >
-                            <Download className="h-4 w-4 mr-1" />
-                            {t('admin.employeeDetails.documents.download')}
-                          </Button>
-                          {file.isVerified && (
-                            <Badge variant="default">{t('admin.employeeDetails.documents.verified')}</Badge>
-                          )}
-                          <Badge variant="outline">
-                            {file.mimeType.split("/")[1].toUpperCase()}
-                          </Badge>
-                        </div>
-                      </div>
-                      {file.description && (
-                        <div className="mt-2 p-2 bg-gray-100 rounded text-sm">
-                          <strong>{t('admin.employeeDetails.documents.description')}:</strong> {file.description}
-                        </div>
-                      )}
-                      <div className="mt-2 text-xs text-muted-foreground">
-                        {t('admin.employeeDetails.documents.uploaded')}:{" "}
-                        {new Date(file.createdAt).toLocaleDateString()}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
+
       </Tabs>
 
       {modalState && (
@@ -583,6 +586,14 @@ const EmployeeProfile: React.FC<EmployeeProfileProps> = ({ employee }) => {
           loading={actionLoading}
         />
       )}
+      
+      <AddEmployeeSkillModal
+        isOpen={showAddSkillModal}
+        onClose={() => setShowAddSkillModal(false)}
+        employeeId={employee.id}
+        employeeName={employee.name}
+        onSuccess={refreshQualifications}
+      />
     </div>
   );
 };

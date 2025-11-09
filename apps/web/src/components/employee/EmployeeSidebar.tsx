@@ -23,7 +23,9 @@ import {
   Briefcase,
   UserCheck,
   CalendarDays,
+  Award,
 } from "lucide-react";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface SidebarProps {
   isOpen?: boolean;
@@ -46,6 +48,7 @@ const EmployeeSidebar: React.FC<SidebarProps> = ({
   isOpen = false,
   onClose,
 }) => {
+  const { t } = useTranslation();
   const isMobile = useIsMobile();
   const [collapsed, setCollapsed] = useState(false);
   const pathname = usePathname();
@@ -54,16 +57,17 @@ const EmployeeSidebar: React.FC<SidebarProps> = ({
   const isSettingsPath = pathname.startsWith("/settings");
 
   const dashboardNavItems = [
-    { name: "Dashboard", path: "/dashboard-employee", icon: LayoutGrid },
-    { name: "Aufträge", path: "/dashboard-employee/orders", icon: FileBox },
-    { name: "Urlaub", path: "/dashboard-employee/leaves", icon: CalendarDays },
+    { name: t('navigation.dashboard'), path: "/dashboard-employee", icon: LayoutGrid },
+    { name: t('navigation.orders'), path: "/dashboard-employee/orders", icon: FileBox },
+    { name: t('navigation.leaveManagement'), path: "/dashboard-employee/leaves", icon: CalendarDays },
+    { name: t('navigation.skills'), path: "/dashboard-employee/skills", icon: Award },
   ];
 
   const settingsNavItems = [
-    { name: "Profil", path: "/settings", icon: User },
-    { name: "Benachrichtigungen", path: "/settings/notifications", icon: Bell },
-    { name: "Datenschutz & Sicherheit", path: "/settings/privacy", icon: Shield },
-    { name: "Hilfe & Support", path: "/settings/help", icon: HelpCircle },
+    { name: t('navigation.profile'), path: "/settings", icon: User },
+    { name: t('navigation.notifications'), path: "/settings/notifications", icon: Bell },
+    { name: t('navigation.privacySecurity'), path: "/settings/privacy", icon: Shield },
+    { name: t('navigation.helpSupport'), path: "/settings/help", icon: HelpCircle },
   ];
 
   const navItems = isSettingsPath ? settingsNavItems : dashboardNavItems;
@@ -140,7 +144,9 @@ const EmployeeSidebar: React.FC<SidebarProps> = ({
                   (item.path === "/dashboard-employee/leaves" &&
                     pathname.startsWith("/dashboard-employee/leaves")) ||
                   (item.path === "/dashboard-employee/orders" &&
-                    pathname.startsWith("/dashboard-employee/orders/"));
+                    pathname.startsWith("/dashboard-employee/orders/")) ||
+                  (item.path === "/dashboard-employee/skills" &&
+                    pathname.startsWith("/dashboard-employee/skills"));
                 const Icon = item.icon;
 
                 return (
@@ -212,14 +218,14 @@ const EmployeeSidebar: React.FC<SidebarProps> = ({
                               )}
                             />
                             {(!collapsed || isMobile) && (
-                              <span>Zurück zum Dashboard</span>
+                              <span>{t('navigation.backToDashboard')}</span>
                             )}
                           </Link>
                         </Button>
                       </TooltipTrigger>
                       {collapsed && !isMobile && (
                         <TooltipContent side="right">
-                          Zurück zum Dashboard
+                          {t('navigation.backToDashboard')}
                         </TooltipContent>
                       )}
                     </Tooltip>
@@ -240,11 +246,11 @@ const EmployeeSidebar: React.FC<SidebarProps> = ({
                               collapsed && !isMobile ? "mr-0" : "mr-2"
                             )}
                           />
-                          {(!collapsed || isMobile) && <span>Abmelden</span>}
+                          {(!collapsed || isMobile) && <span>{t('navigation.logOut')}</span>}
                         </Button>
                       </TooltipTrigger>
                       {collapsed && !isMobile && (
-                        <TooltipContent side="right">Abmelden</TooltipContent>
+                        <TooltipContent side="right">{t('navigation.logOut')}</TooltipContent>
                       )}
                     </Tooltip>
                   </>
@@ -266,11 +272,11 @@ const EmployeeSidebar: React.FC<SidebarProps> = ({
                               collapsed && !isMobile ? "mr-0" : "mr-2"
                             )}
                           />
-                          {(!collapsed || isMobile) && <span>Abmelden</span>}
+                          {(!collapsed || isMobile) && <span>{t('navigation.logOut')}</span>}
                         </Button>
                       </TooltipTrigger>
                       {collapsed && !isMobile && (
-                        <TooltipContent side="right">Abmelden</TooltipContent>
+                        <TooltipContent side="right">{t('navigation.logOut')}</TooltipContent>
                       )}
                     </Tooltip>
                   </>

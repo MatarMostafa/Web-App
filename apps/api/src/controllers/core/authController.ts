@@ -14,8 +14,6 @@ export const register = async (req: Request, res: Response) => {
 export const login = async (req: Request, res: Response) => {
   try {
     const { identifier, password } = req.body;
-    console.log('Login request body:', req.body);
-    console.log('Login attempt for identifier:', identifier);
     
     if (!identifier || !password) {
       console.log('Missing credentials - identifier:', !!identifier, 'password:', !!password);
@@ -23,10 +21,8 @@ export const login = async (req: Request, res: Response) => {
     }
     
     const result = await authService.login(identifier, password);
-    console.log('Login successful for:', identifier);
     res.json(result);
   } catch (error: any) {
-    console.log('Login failed for:', req.body.identifier, 'Error:', error.message);
     res.status(401).json({ message: error.message });
   }
 };
