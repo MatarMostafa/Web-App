@@ -58,6 +58,10 @@ export function NotificationDropdown() {
       if (error.message && error.message.includes('gesperrt')) {
         return false; // Signal that user is blocked
       }
+      // Handle network errors silently during polling
+      if (error.message && (error.message.includes('Failed to fetch') || error.message.includes('NetworkError'))) {
+        return true; // Continue polling despite network error
+      }
       console.error("Failed to fetch notifications:", error);
       setNotifications([]);
     }
@@ -76,6 +80,10 @@ export function NotificationDropdown() {
       // Handle blocked user silently - don't spam console
       if (error.message && error.message.includes('gesperrt')) {
         return false; // Signal that user is blocked
+      }
+      // Handle network errors silently during polling
+      if (error.message && (error.message.includes('Failed to fetch') || error.message.includes('NetworkError'))) {
+        return true; // Continue polling despite network error
       }
       console.error("Failed to fetch unread count:", error);
       setUnreadCount(0);
@@ -183,6 +191,22 @@ export function NotificationDropdown() {
         // Trigger a custom event to refresh leave data
         setTimeout(() => {
           window.dispatchEvent(new CustomEvent('refreshLeaveData', { detail: { type: 'employee' } }));
+        }, 100);
+      }
+    } else if (data?.category === "skill") {
+      // Handle skill notifications
+      const templateKey = notification.notification.templateKey;
+      if (templateKey === "SKILL_ADDED") {
+        // Admin received skill addition - go to employee details
+        if (data?.employeeId) {
+          router.push(`/dashboard-admin/employees/${data.employeeId}?tab=qualifications`);
+        }
+      } else if (templateKey === "SKILL_APPROVED" || templateKey === "SKILL_REJECTED") {
+        // Employee received approval/rejection - go to skills page
+        router.push("/dashboard-employee/skills");
+        // Refresh skills data
+        setTimeout(() => {
+          window.dispatchEvent(new CustomEvent('refreshSkillsData'));
         }, 100);
       }
     }
