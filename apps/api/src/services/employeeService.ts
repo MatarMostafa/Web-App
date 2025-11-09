@@ -60,7 +60,7 @@ export const getAllEmployees = async (): Promise<Employee[]> => {
     });
 
     // Get unique creator IDs
-    const creatorIds = [...new Set(users.map(u => u.createdBy).filter(Boolean))];
+    const creatorIds = [...new Set(users.map(u => u.createdBy).filter(Boolean))] as string[];
     
     // Fetch creator information
     const creators = await prisma.user.findMany({
