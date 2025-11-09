@@ -37,9 +37,7 @@ const getPreviousWeekRange = () => {
 export const archivePreviousWeekOrders = async () => {
   try {
     const { startOfPreviousWeek, endOfPreviousWeek } = getPreviousWeekRange();
-    
-    console.log(`Archiving orders from ${startOfPreviousWeek.toISOString()} to ${endOfPreviousWeek.toISOString()}`);
-    
+
     // Find all orders from the previous week
     const ordersToArchive = await prisma.order.findMany({
       where: {
@@ -54,7 +52,6 @@ export const archivePreviousWeekOrders = async () => {
     });
     
     if (ordersToArchive.length === 0) {
-      console.log("No orders to archive for the previous week");
       return { archivedCount: 0, orders: [] };
     }
     
@@ -70,8 +67,6 @@ export const archivePreviousWeekOrders = async () => {
         archivedAt: new Date(),
       },
     });
-    
-    console.log(`Successfully archived ${updateResult.count} orders from previous week`);
     
     return {
       archivedCount: updateResult.count,

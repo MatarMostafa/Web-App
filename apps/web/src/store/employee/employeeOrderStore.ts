@@ -10,10 +10,18 @@ interface Assignment {
   order: {
     id: string;
     orderNumber: string;
-    title: string;
+    description?: string;
     scheduledDate: string;
-    status: string;
+    startTime?: string;
+    endTime?: string;
+    duration?: number;
+    location?: string;
+    requiredEmployees: number;
     priority: number;
+    specialInstructions?: string;
+    status: string;
+    createdAt: string;
+    updatedAt: string;
   };
 }
 

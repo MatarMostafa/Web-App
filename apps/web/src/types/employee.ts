@@ -24,7 +24,7 @@ export interface Employee {
   userId: string;
   createdAt: string;
   updatedAt: string;
-  createdBy?: string;
+  createdBy?: string; // Creator name or 'Manually' if no creator
   updatedBy?: string;
 }
 

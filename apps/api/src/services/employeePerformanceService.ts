@@ -64,7 +64,7 @@ export const create = async (data: any) => {
     where: { id: employeeId },
     include: { department: true },
   });
-  if (!employee) throw new Error("Employee not found");
+  if (!employee) throw new Error("Mitarbeiter nicht gefunden");
 
   // 2️⃣ Get department thresholds with fallback
   const dbThresholds = await prisma.performanceThreshold.findUnique({
@@ -91,7 +91,7 @@ export const create = async (data: any) => {
 
   if (manualOverride) {
     if (manualScore == null || !manualLight)
-      throw new Error("Manual override requires score and trafficLight");
+      throw new Error("Manuelle Überschreibung erfordert Bewertung und Ampelstatus");
     score = manualScore;
     trafficLight = manualLight;
     trafficLightReason = manualReason || getTrafficLightReason(trafficLight, score);
@@ -137,7 +137,7 @@ export const update = async (id: string, data: any) => {
     where: { id },
     include: { employee: { include: { department: true } } },
   });
-  if (!existing) throw new Error("Performance record not found");
+  if (!existing) throw new Error("Leistungsnachweis nicht gefunden");
 
   const metrics = data.metrics || existing.metrics;
   const periodStart = data.periodStart || existing.periodStart;

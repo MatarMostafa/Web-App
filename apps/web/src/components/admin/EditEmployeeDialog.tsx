@@ -3,6 +3,7 @@ import toast from "react-hot-toast";
 import { useEmployeeStore } from "@/store/employeeStore";
 import { UpdateEmployeeData, WorkScheduleType, Employee } from "@/types/employee";
 import { apiClient } from "@/lib/api-client";
+import { useTranslation } from '@/hooks/useTranslation';
 
 import {
   Dialog,
@@ -68,6 +69,7 @@ export default function EditEmployeeDialog({
   onOpenChange,
 }: EditEmployeeDialogProps) {
   const { updateEmployee } = useEmployeeStore();
+  const { t } = useTranslation();
 
   const [formData, setFormData] = useState<EmployeeFormData>({
     email: "",
@@ -196,7 +198,7 @@ export default function EditEmployeeDialog({
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold text-foreground">
-            Edit Employee
+            {t('employee.editEmployee')}
           </DialogTitle>
         </DialogHeader>
 

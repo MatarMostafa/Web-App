@@ -3,6 +3,8 @@ import { authMiddleware } from "../middleware/authMiddleware";
 import { roleMiddleware } from "../middleware/roleMiddleware";
 import { prisma } from "@repo/db";
 import * as statusService from "../services/employeeStatusService";
+import { ensureEmployeeExists } from "../utils/employeeUtils";
+import { notifyLeaveApproved, notifyLeaveRejected } from "../services/notificationHelpers";
 
 const router = express.Router();
 
@@ -15,14 +17,14 @@ router.post(
     try {
       const userId = (req as any).user?.id;
       if (!userId) {
-        return res.status(401).json({ message: "Unauthorized" });
+        return res.status(401).json({ message: "Nicht autorisiert" });
       }
 
       const { type, startDate, endDate, reason } = req.body;
       
       if (!type || !startDate || !endDate) {
         return res.status(400).json({ 
-          message: "Missing required fields: type, startDate, endDate" 
+          message: "Fehlende Pflichtfelder: Typ, Startdatum, Enddatum" 
         });
       }
 
@@ -36,13 +38,13 @@ router.post(
       });
 
       res.status(201).json({
-        message: "Leave request submitted successfully",
+        message: "Urlaubsantrag erfolgreich eingereicht",
         absence,
       });
     } catch (error) {
       console.error("Create absence error:", error);
       res.status(400).json({
-        message: "Failed to create leave request",
+        message: "Fehler beim Erstellen des Urlaubsantrags",
         error: error instanceof Error ? error.message : String(error)
       });
     }
@@ -61,13 +63,7 @@ router.get(
         return res.status(401).json({ message: "Unauthorized" });
       }
 
-      const employee = await prisma.employee.findUnique({
-        where: { userId },
-      });
-
-      if (!employee) {
-        return res.status(404).json({ message: "Employee profile not found" });
-      }
+      const employee = await ensureEmployeeExists(userId);
 
       const absences = await prisma.absence.findMany({
         where: { employeeId: employee.id },
@@ -97,13 +93,7 @@ router.get(
         return res.status(401).json({ message: "Unauthorized" });
       }
 
-      const employee = await prisma.employee.findUnique({
-        where: { userId },
-      });
-
-      if (!employee) {
-        return res.status(404).json({ message: "Employee profile not found" });
-      }
+      const employee = await ensureEmployeeExists(userId);
 
       const currentYear = new Date().getFullYear();
       const yearStart = new Date(currentYear, 0, 1);
@@ -232,6 +222,9 @@ router.put(
         },
       });
 
+      // Send notification to employee
+      await notifyLeaveApproved(id, absence.employee.userId, userId);
+
       res.json({
         message: "Absence request approved successfully",
         absence: updatedAbsence,
@@ -286,6 +279,9 @@ router.put(
           },
         },
       });
+
+      // Send notification to employee
+      await notifyLeaveRejected(id, absence.employee.userId, rejectionReason, userId);
 
       res.json({
         message: "Absence request rejected successfully",

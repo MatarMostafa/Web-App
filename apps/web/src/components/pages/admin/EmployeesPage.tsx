@@ -10,8 +10,12 @@ import { useEmployeeStore } from "@/store/employeeStore";
 import { useEmployeeBlockStore } from "@/store/employeeBlockStore";
 import { Employee } from "@/types/employee";
 import BlockEmployeeModal from "@/components/modals/BlockEmployeeModal";
+import { DeleteEmployeeDialog } from "@/components/admin/DeleteEmployeeDialog";
+import { useTranslation } from '@/hooks/useTranslation';
 
 const EmployeesPage = () => {
+  const { t } = useTranslation();
+  const [mounted, setMounted] = useState(false);
   const { employees, loading, fetchEmployees, deleteEmployee } =
     useEmployeeStore();
   const { blockEmployee, unblockEmployee, loading: blockLoading } = useEmployeeBlockStore();
@@ -23,10 +27,19 @@ const EmployeesPage = () => {
     action: "block" | "unblock";
     employee: Employee | null;
   }>({ isOpen: false, action: "block", employee: null });
+  const [deleteModalState, setDeleteModalState] = useState<{
+    isOpen: boolean;
+    employee: Employee | null;
+  }>({ isOpen: false, employee: null });
 
   useEffect(() => {
+    setMounted(true);
     fetchEmployees();
   }, [fetchEmployees]);
+
+  if (!mounted) {
+    return null;
+  }
 
   const filteredEmployees = employees.filter(
     (employee) =>
@@ -42,10 +55,22 @@ const EmployeesPage = () => {
     setEditDialogOpen(true);
   };
 
-  const handleDelete = async (id: string) => {
-    if (confirm("Are you sure you want to delete this employee?")) {
-      await deleteEmployee(id);
+  const handleDelete = (id: string) => {
+    const employee = employees.find(emp => emp.id === id);
+    if (employee) {
+      setDeleteModalState({ isOpen: true, employee });
     }
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (deleteModalState.employee) {
+      await deleteEmployee(deleteModalState.employee.id);
+      setDeleteModalState({ isOpen: false, employee: null });
+    }
+  };
+
+  const handleDeleteModalClose = () => {
+    setDeleteModalState({ isOpen: false, employee: null });
   };
 
   const handleBlock = (employee: Employee) => {
@@ -88,16 +113,16 @@ const EmployeesPage = () => {
     <div className="p-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-foreground mb-1">Employees</h1>
+          <h1 className="text-3xl font-bold text-foreground mb-1">{t('admin.employees.title')}</h1>
           <p className="text-muted-foreground">
-            Manage your organization's employees
+            {t('admin.employees.subtitle')}
           </p>
         </div>
         <div className="flex gap-2">
           <AddEmployeeDialog
             trigger={
               <Button className="bg-primary hover:bg-primary/90">
-                <Plus className="h-4 w-4 mr-2" /> Add Employee
+                <Plus className="h-4 w-4 mr-2" /> {t('admin.employees.addEmployee')}
               </Button>
             }
           />
@@ -108,7 +133,7 @@ const EmployeesPage = () => {
         <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
           <Input
-            placeholder="Search employees by name, code, or phone..."
+            placeholder={t('admin.employees.searchPlaceholder')}
             className="pl-10 bg-background"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -145,19 +170,27 @@ const EmployeesPage = () => {
         loading={blockLoading}
       />
 
+      <DeleteEmployeeDialog
+        isOpen={deleteModalState.isOpen}
+        onClose={handleDeleteModalClose}
+        onConfirm={handleDeleteConfirm}
+        employeeName={deleteModalState.employee ? `${deleteModalState.employee.firstName} ${deleteModalState.employee.lastName}` : ""}
+        loading={loading}
+      />
+
       {!loading && employees.length === 0 && (
         <div className="flex flex-col items-center justify-center text-center p-12 border rounded-lg">
           <div className="bg-muted w-16 h-16 rounded-full flex items-center justify-center mb-4">
             <Users className="h-8 w-8 text-muted-foreground" />
           </div>
-          <h3 className="text-lg font-medium mb-1">No employees found</h3>
+          <h3 className="text-lg font-medium mb-1">{t('admin.employees.noEmployeesFound')}</h3>
           <p className="text-muted-foreground mb-4">
-            Get started by adding your first employee
+            {t('admin.employees.getStartedMessage')}
           </p>
           <AddEmployeeDialog
             trigger={
               <Button>
-                <Plus className="h-4 w-4 mr-2" /> Add Employee
+                <Plus className="h-4 w-4 mr-2" /> {t('admin.employees.addEmployee')}
               </Button>
             }
           />

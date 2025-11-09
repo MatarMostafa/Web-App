@@ -77,7 +77,7 @@ export const useEmployeeLeaveStore = create<EmployeeLeaveState>((set, get) => ({
   createLeaveRequest: async (data: CreateLeaveRequest) => {
     set({ loading: true, error: null });
     try {
-      await apiClient.post("/api/absences", data);
+      await apiClient.post("/api/employees-status/leave", data);
       toast.success("Leave request submitted successfully");
       
       // Refresh data

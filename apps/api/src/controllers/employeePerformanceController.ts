@@ -7,7 +7,7 @@ export const listAll = async (req: Request, res: Response) => {
     const records = await performanceService.listAll();
     res.json(records);
   } catch (error) {
-    res.status(500).json({ message: "Error fetching employee performance records", error });
+    res.status(500).json({ message: "Fehler beim Abrufen der Mitarbeiterleistungsaufzeichnungen", error });
   }
 };
 
@@ -18,12 +18,12 @@ export const getById = async (req: Request, res: Response) => {
     const record = await performanceService.getById(id);
 
     if (!record) {
-      return res.status(404).json({ message: "Performance record not found" });
+      return res.status(404).json({ message: "Leistungsnachweis nicht gefunden" });
     }
 
     res.json(record);
   } catch (error) {
-    res.status(500).json({ message: "Error fetching performance record", error });
+    res.status(500).json({ message: "Fehler beim Abrufen des Leistungsnachweises", error });
   }
 };
 
@@ -35,7 +35,7 @@ export const getEmployeeHistory = async (req: Request, res: Response) => {
 
     res.json(history || []);
   } catch (error) {
-    res.status(500).json({ message: "Error fetching employee performance history", error });
+    res.status(500).json({ message: "Fehler beim Abrufen der Mitarbeiterleistungshistorie", error });
   }
 };
 
@@ -47,7 +47,7 @@ export const create = async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Performance creation error:", error);
     res.status(400).json({ 
-      message: "Error creating performance record", 
+      message: "Fehler beim Erstellen des Leistungsnachweises", 
       error: error instanceof Error ? error.message : String(error)
     });
   }
@@ -60,12 +60,12 @@ export const update = async (req: Request, res: Response) => {
     const record = await performanceService.update(id, req.body);
 
     if (!record) {
-      return res.status(404).json({ message: "Performance record not found" });
+      return res.status(404).json({ message: "Leistungsnachweis nicht gefunden" });
     }
 
     res.json(record);
   } catch (error) {
-    res.status(400).json({ message: "Error updating performance record", error });
+    res.status(400).json({ message: "Fehler beim Aktualisieren des Leistungsnachweises", error });
   }
 };
 
@@ -76,11 +76,11 @@ export const remove = async (req: Request, res: Response) => {
     const deleted = await performanceService.remove(id);
 
     if (!deleted) {
-      return res.status(404).json({ message: "Performance record not found" });
+      return res.status(404).json({ message: "Leistungsnachweis nicht gefunden" });
     }
 
-    res.json({ message: "Performance record deleted successfully" });
+    res.json({ message: "Leistungsnachweis erfolgreich gelöscht" });
   } catch (error) {
-    res.status(500).json({ message: "Error deleting performance record", error });
+    res.status(500).json({ message: "Fehler beim Löschen des Leistungsnachweises", error });
   }
 };

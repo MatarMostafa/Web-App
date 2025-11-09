@@ -1,4 +1,5 @@
 import { prisma } from "@repo/db";
+import { ensureEmployeeExists } from "../utils/employeeUtils";
 
 // Helper function to get start and end of current week (Monday to Sunday)
 const getCurrentWeekRange = () => {
@@ -19,13 +20,7 @@ const getCurrentWeekRange = () => {
 
 export const getCurrentWeekOrders = async (userId: string) => {
   try {
-    const employee = await prisma.employee.findUnique({
-      where: { userId },
-    });
-
-    if (!employee) {
-      throw new Error("Employee not found");
-    }
+    const employee = await ensureEmployeeExists(userId);
 
     const assignments = await prisma.assignment.findMany({
       where: {
@@ -66,13 +61,7 @@ export const getCurrentWeekOrders = async (userId: string) => {
 
 export const getArchivedOrders = async (userId: string) => {
   try {
-    const employee = await prisma.employee.findUnique({
-      where: { userId },
-    });
-
-    if (!employee) {
-      throw new Error("Employee not found");
-    }
+    const employee = await ensureEmployeeExists(userId);
 
     const assignments = await prisma.assignment.findMany({
       where: {
@@ -114,14 +103,7 @@ export const getArchivedOrders = async (userId: string) => {
 
 export const getDashboardStats = async (userId: string) => {
   try {
-    // Find employee by userId
-    const employee = await prisma.employee.findUnique({
-      where: { userId },
-    });
-
-    if (!employee) {
-      throw new Error("Employee not found");
-    }
+    const employee = await ensureEmployeeExists(userId);
 
     const { startOfWeek, endOfWeek } = getCurrentWeekRange();
 
@@ -231,14 +213,7 @@ export const getDashboardStats = async (userId: string) => {
 
 export const updateOrderStatus = async (userId: string, orderId: string, status: string) => {
   try {
-    // Find employee by userId
-    const employee = await prisma.employee.findUnique({
-      where: { userId },
-    });
-
-    if (!employee) {
-      throw new Error("Employee not found");
-    }
+    const employee = await ensureEmployeeExists(userId);
 
     // Check if the order is assigned to this employee
     const assignment = await prisma.assignment.findFirst({
@@ -249,7 +224,7 @@ export const updateOrderStatus = async (userId: string, orderId: string, status:
     });
 
     if (!assignment) {
-      throw new Error("Order not found or not assigned to you");
+      throw new Error("Auftrag nicht gefunden oder Ihnen nicht zugewiesen");
     }
 
     // Update the order status

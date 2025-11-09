@@ -1,0 +1,237 @@
+"use client";
+
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { ArrowLeft, Calendar, MapPin, User, Users, Clock, AlertCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { LoadingSpinnerWithText } from "@/components/ui";
+import { Order, OrderStatus } from "@/types/order";
+import { useOrderStore } from "@/store/orderStore";
+import { useEmployeeOrderStore } from "@/store/employee/employeeOrderStore";
+import { OrderTimeline } from "./OrderTimeline";
+import { OrderActions } from "./OrderActions";
+import { OrderAssignments } from "./OrderAssignments";
+import { useTranslation } from "@/hooks/useTranslation";
+import { format } from "date-fns";
+
+interface OrderDetailPageProps {
+  orderId: string;
+  userRole: "ADMIN" | "EMPLOYEE";
+}
+
+const getStatusColor = (status: OrderStatus) => {
+  switch (status) {
+    case OrderStatus.DRAFT:
+      return "bg-gray-100 text-gray-800";
+    case OrderStatus.OPEN:
+      return "bg-blue-100 text-blue-800";
+    case OrderStatus.ACTIVE:
+      return "bg-green-100 text-green-800";
+    case OrderStatus.IN_PROGRESS:
+      return "bg-yellow-100 text-yellow-800";
+    case OrderStatus.IN_REVIEW:
+      return "bg-orange-100 text-orange-800";
+    case OrderStatus.COMPLETED:
+      return "bg-emerald-100 text-emerald-800";
+    case OrderStatus.CANCELLED:
+      return "bg-red-100 text-red-800";
+    case OrderStatus.EXPIRED:
+      return "bg-orange-100 text-orange-800";
+    default:
+      return "bg-gray-100 text-gray-800";
+  }
+};
+
+export const OrderDetailPage: React.FC<OrderDetailPageProps> = ({
+  orderId,
+  userRole,
+}) => {
+  const { t } = useTranslation();
+  const router = useRouter();
+  const [order, setOrder] = useState<Order | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const { orders, fetchOrders, getOrderEmployeeNames } = useOrderStore();
+  const { employeeAssignments, fetchEmployeeAssignments } = useEmployeeOrderStore();
+
+  useEffect(() => {
+    if (userRole === "ADMIN") {
+      fetchOrders();
+    } else {
+      // For employees, get their assignments
+      import("next-auth/react").then(m => m.getSession()).then(session => {
+        if (session?.user?.id) {
+          fetchEmployeeAssignments(session.user.id);
+        }
+      });
+    }
+  }, [orderId, userRole, fetchOrders, fetchEmployeeAssignments]);
+
+  // Update order when stores change
+  useEffect(() => {
+    if (userRole === "ADMIN") {
+      const foundOrder = orders.find(o => o.id === orderId);
+      if (foundOrder) {
+        setOrder(foundOrder);
+        setError(null);
+      } else if (orders.length > 0) {
+        setError("Order not found");
+      }
+    } else {
+      const assignment = employeeAssignments.find(a => a.order.id === orderId);
+      if (assignment) {
+        setOrder(assignment.order as Order);
+        setError(null);
+      } else if (employeeAssignments.length > 0) {
+        setError("Order not found or not assigned to you");
+      }
+    }
+    setLoading(false);
+  }, [orders, employeeAssignments, orderId, userRole]);
+
+  const handleBack = () => {
+    const basePath = userRole === "ADMIN" ? "/dashboard-admin" : "/dashboard-employee";
+    router.push(`${basePath}/orders`);
+  };
+
+  if (loading) {
+    return (
+      <div className="p-6">
+        <LoadingSpinnerWithText text="Loading order details..." />
+      </div>
+    );
+  }
+
+  if (error || !order) {
+    return (
+      <div className="p-6">
+        <div className="flex items-center gap-2 mb-6">
+          <Button variant="ghost" onClick={handleBack}>
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Orders
+          </Button>
+        </div>
+        <Card>
+          <CardContent className="p-6 text-center">
+            <AlertCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+            <h3 className="text-lg font-medium mb-2">Order Not Found</h3>
+            <p className="text-muted-foreground">{error}</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  return (
+    <div className="p-6 space-y-6">
+      {/* Header */}
+      <div className="flex items-center gap-2 mb-6">
+        <Button variant="ghost" onClick={handleBack}>
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back to Orders
+        </Button>
+      </div>
+
+      {/* Order Header */}
+      <Card>
+        <CardHeader>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <CardTitle className="text-2xl">Order #{order.orderNumber}</CardTitle>
+              <p className="text-muted-foreground mt-1">
+                {order.description || "No description provided"}
+              </p>
+            </div>
+            <Badge className={`${getStatusColor(order.status)} text-sm w-fit`}>
+              {order.status === "IN_PROGRESS"
+                ? "In Progress"
+                : order.status === "IN_REVIEW"
+                  ? "In Review"
+                  : order.status.replace("_", " ")}
+            </Badge>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            <div className="flex items-center gap-2">
+              <Calendar className="h-4 w-4 text-muted-foreground" />
+              <div>
+                <p className="text-sm font-medium">Scheduled Date</p>
+                <p className="text-sm text-muted-foreground">
+                  {format(new Date(order.scheduledDate), "MMM dd, yyyy")}
+                </p>
+                {order.startTime && (
+                  <p className="text-xs text-muted-foreground">
+                    Start: {format(new Date(order.startTime), "HH:mm")}
+                  </p>
+                )}
+              </div>
+            </div>
+            
+            {order.location && (
+              <div className="flex items-center gap-2">
+                <MapPin className="h-4 w-4 text-muted-foreground" />
+                <div>
+                  <p className="text-sm font-medium">Location</p>
+                  <p className="text-sm text-muted-foreground">{order.location}</p>
+                </div>
+              </div>
+            )}
+            
+            <div className="flex items-center gap-2">
+              <Users className="h-4 w-4 text-muted-foreground" />
+              <div>
+                <p className="text-sm font-medium">Required Staff</p>
+                <p className="text-sm text-muted-foreground">
+                  {order.requiredEmployees} {order.requiredEmployees === 1 ? 'person' : 'people'}
+                </p>
+              </div>
+            </div>
+            
+            {order.duration ? (
+              <div className="flex items-center gap-2">
+                <Clock className="h-4 w-4 text-muted-foreground" />
+                <div>
+                  <p className="text-sm font-medium">Duration</p>
+                  <p className="text-sm text-muted-foreground">
+                    {order.duration} {order.duration === 1 ? 'hour' : 'hours'}
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                <AlertCircle className="h-4 w-4 text-muted-foreground" />
+                <div>
+                  <p className="text-sm font-medium">Priority</p>
+                  <Badge variant="outline">P{order.priority}</Badge>
+                </div>
+              </div>
+            )}
+          </div>
+          
+          {order.specialInstructions && (
+            <div className="mt-4 p-3 bg-muted rounded-lg">
+              <p className="text-sm font-medium mb-1">Special Instructions</p>
+              <p className="text-sm text-muted-foreground">{order.specialInstructions}</p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Left Column - Timeline */}
+        <div className="lg:col-span-2 space-y-6">
+          <OrderTimeline orderId={orderId} order={order} userRole={userRole} />
+        </div>
+
+        {/* Right Column - Assignments */}
+        <div>
+          <OrderAssignments orderId={orderId} order={order} userRole={userRole} />
+        </div>
+      </div>
+    </div>
+  );
+};
