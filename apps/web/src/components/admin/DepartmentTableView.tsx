@@ -6,6 +6,7 @@ import { Pagination, usePagination } from "@/components/ui/pagination";
 import { Edit, Trash2, Building } from "lucide-react";
 import { Department } from "@/types/department";
 import { format } from "date-fns";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface DepartmentTableViewProps {
   departments: Department[];
@@ -20,13 +21,14 @@ const DepartmentTableView: React.FC<DepartmentTableViewProps> = ({
   onEdit,
   onDelete,
 }) => {
+  const { t } = useTranslation();
   const { currentPage, setCurrentPage, paginatedItems, totalItems } = usePagination(departments);
   if (loading) {
     return (
       <div className="border rounded-lg">
         <div className="p-8 text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-2 text-sm text-muted-foreground">Loading departments...</p>
+          <p className="mt-2 text-sm text-muted-foreground">{t("admin.departments.table.loadingDepartments")}</p>
         </div>
       </div>
     );
@@ -38,12 +40,12 @@ const DepartmentTableView: React.FC<DepartmentTableViewProps> = ({
         <table className="w-full">
           <thead className="bg-muted/50">
             <tr>
-              <th className="text-left p-4 font-medium">Name</th>
-              <th className="text-left p-4 font-medium">Code</th>
-              <th className="text-left p-4 font-medium">Description</th>
-              <th className="text-left p-4 font-medium">Created</th>
-              <th className="text-left p-4 font-medium">Status</th>
-              <th className="text-right p-4 font-medium">Actions</th>
+              <th className="text-left p-4 font-medium">{t("admin.departments.table.name")}</th>
+              <th className="text-left p-4 font-medium">{t("admin.departments.table.code")}</th>
+              <th className="text-left p-4 font-medium">{t("admin.departments.table.description")}</th>
+              <th className="text-left p-4 font-medium">{t("admin.departments.table.created")}</th>
+              <th className="text-left p-4 font-medium">{t("admin.departments.table.status")}</th>
+              <th className="text-right p-4 font-medium">{t("admin.departments.table.actions")}</th>
             </tr>
           </thead>
           <tbody>
@@ -64,7 +66,7 @@ const DepartmentTableView: React.FC<DepartmentTableViewProps> = ({
                 </td>
                 <td className="p-4">
                   <p className="text-sm text-muted-foreground max-w-xs truncate">
-                    {department.description || "No description"}
+                    {department.description || t("admin.departments.table.noDescription")}
                   </p>
                 </td>
                 <td className="p-4">
@@ -74,7 +76,7 @@ const DepartmentTableView: React.FC<DepartmentTableViewProps> = ({
                 </td>
                 <td className="p-4">
                   <Badge variant={department.isActive ? "default" : "destructive"}>
-                    {department.isActive ? "Active" : "Inactive"}
+                    {department.isActive ? t("admin.departments.table.active") : t("admin.departments.table.inactive")}
                   </Badge>
                 </td>
                 <td className="p-4">

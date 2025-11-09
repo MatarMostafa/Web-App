@@ -1,9 +1,10 @@
 "use client";
 import React from "react";
-import { Badge } from "@/components/ui";
-import { Calendar, MapPin, Users } from "lucide-react";
+import { Badge, Button } from "@/components/ui";
+import { Calendar, MapPin, Users, MessageSquare } from "lucide-react";
 import { OrderStatus } from "@/types/order";
 import { format } from "date-fns";
+
 
 interface Assignment {
   id: string;
@@ -13,7 +14,7 @@ interface Assignment {
   order: {
     id: string;
     orderNumber: string;
-    title: string;
+    description?: string;
     scheduledDate: string;
     status: string;
     priority: number;
@@ -23,6 +24,7 @@ interface Assignment {
 interface EmployeeOrderTableViewProps {
   assignments: Assignment[];
   loading: boolean;
+  onViewNotes: (order: any) => void;
 }
 
 const getStatusColor = (status: string) => {
@@ -35,6 +37,8 @@ const getStatusColor = (status: string) => {
       return "bg-green-100 text-green-800";
     case OrderStatus.IN_PROGRESS:
       return "bg-yellow-100 text-yellow-800";
+    case OrderStatus.IN_REVIEW:
+      return "bg-orange-100 text-orange-800";
     case OrderStatus.COMPLETED:
       return "bg-emerald-100 text-emerald-800";
     case OrderStatus.CANCELLED:
@@ -49,7 +53,9 @@ const getStatusColor = (status: string) => {
 const EmployeeOrderTableView: React.FC<EmployeeOrderTableViewProps> = ({
   assignments,
   loading,
+  onViewNotes,
 }) => {
+
   if (loading) {
     return (
       <div className="border rounded-lg">
@@ -70,28 +76,54 @@ const EmployeeOrderTableView: React.FC<EmployeeOrderTableViewProps> = ({
         <table className="w-full">
           <thead className="bg-muted/50">
             <tr>
-              <th className="text-left p-4 font-medium">Order</th>
+              <th className="text-left p-4 font-medium">Auftrag</th>
               <th className="text-left p-4 font-medium">Status</th>
-              <th className="text-left p-4 font-medium">Scheduled Date</th>
-              <th className="text-left p-4 font-medium">Priority</th>
-              <th className="text-left p-4 font-medium">Assigned Date</th>
+              <th className="text-left p-4 font-medium">Geplantes Datum</th>
+              <th className="text-left p-4 font-medium">Priorität</th>
+              <th className="text-left p-4 font-medium">Zuweisungsdatum</th>
+              <th className="text-right p-4 font-medium">Aktionen</th>
             </tr>
           </thead>
           <tbody>
             {assignments.map((assignment) => (
-              <tr key={assignment.id} className="border-t hover:bg-muted/25">
+              <tr 
+                key={assignment.id} 
+                className="border-t hover:bg-muted/25"
+              >
                 <td className="p-4">
                   <div>
-                    <div className="font-medium">{assignment.order.title}</div>
-                    <div className="text-sm text-muted-foreground">
+                    <div className="font-medium">{assignment.order.description || 'No description'}</div>
+                    <button
+                      onClick={() => window.location.href = `/dashboard-employee/orders/${assignment.order.id}`}
+                      className="text-sm text-primary hover:underline cursor-pointer"
+                    >
                       #{assignment.order.orderNumber}
-                    </div>
+                    </button>
                   </div>
                 </td>
                 <td className="p-4">
-                  <Badge className={getStatusColor(assignment.order.status)}>
-                    {assignment.order.status.replace("_", " ")}
-                  </Badge>
+                  <div className="flex items-center gap-2">
+                    <Badge className={getStatusColor(assignment.order.status)}>
+                      {(() => {
+                      const status = assignment.order.status.toLowerCase();
+                      switch(status) {
+                        case 'active': return 'Aktiv';
+                        case 'assigned': return 'Zugewiesen';
+                        case 'in_progress': return 'In Bearbeitung';
+                        case 'pending': return 'Ausstehend';
+                        case 'completed': return 'Abgeschlossen';
+                        case 'draft': return 'Entwurf';
+                        case 'open': return 'Offen';
+                        case 'cancelled': return 'Storniert';
+                        case 'expired': return 'Abgelaufen';
+                        default: return assignment.order.status.replace('_', ' ');
+                      }
+                    })()}
+                    </Badge>
+                    {assignment.order.status === "IN_REVIEW" && (
+                      <div className="h-2 w-2 bg-orange-500 rounded-full" />
+                    )}
+                  </div>
                 </td>
                 <td className="p-4">
                   <div className="flex items-center gap-2">
@@ -108,6 +140,21 @@ const EmployeeOrderTableView: React.FC<EmployeeOrderTableViewProps> = ({
                   <span className="text-sm">
                     {format(new Date(assignment.assignedDate), "MMM dd, yyyy")}
                   </span>
+                </td>
+                <td className="p-4">
+                  <div className="flex items-center justify-end gap-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => onViewNotes(assignment.order)}
+                      className="relative"
+                    >
+                      <MessageSquare className="h-4 w-4" />
+                      {assignment.order.status === "IN_REVIEW" && (
+                        <div className="absolute -top-1 -right-1 h-2 w-2 bg-orange-500 rounded-full" />
+                      )}
+                    </Button>
+                  </div>
                 </td>
               </tr>
             ))}

@@ -1,5 +1,7 @@
 // src/services/employeeStatusService.ts
 import { prisma } from "@repo/db";
+import { ensureEmployeeExists } from "../utils/employeeUtils";
+import { notifyEmployeeBlocked, notifyEmployeeUnblocked, notifyLeaveRequested, notifyLeaveApproved, notifyLeaveRejected } from "./notificationHelpers";
 
 /**
  * Creates an Absence record for a user (employee found by userId)
@@ -13,21 +15,20 @@ export const createAbsence = async (opts: {
   documentUrls?: string[];
   requestedBy?: string | null;
 }) => {
-  const employee = await prisma.employee.findUnique({
-    where: { userId: opts.employeeUserId },
-  });
-  if (!employee) throw new Error("Employee not found");
+  const employee = await ensureEmployeeExists(opts.employeeUserId);
 
-  // Check for overlapping absences
+  // Check for overlapping absences (exclude rejected ones)
   const overlapping = await prisma.absence.findFirst({
     where: {
       employeeId: employee.id,
       startDate: { lte: opts.endDate },
       endDate: { gte: opts.startDate },
+      status: { not: "REJECTED" },
     },
   });
-  if (overlapping)
-    throw new Error("Absence dates overlap with existing absence");
+  if (overlapping) {
+    throw new Error(`Leave request overlaps with existing ${overlapping.status.toLowerCase()} absence from ${overlapping.startDate.toDateString()} to ${overlapping.endDate.toDateString()}`);
+  }
 
   const absence = await prisma.absence.create({
     data: {
@@ -56,6 +57,9 @@ export const createAbsence = async (opts: {
       userId: opts.requestedBy || null,
     },
   });
+
+  // Send notification to admins about leave request
+  await notifyLeaveRequested(absence.id, employee.id, opts.type, opts.startDate, opts.endDate, opts.reason, opts.requestedBy || undefined);
 
   return absence;
 };
@@ -88,10 +92,7 @@ export const blockEmployee = async (
   reason: string,
   actedByUserId?: string | null
 ) => {
-  const employee = await prisma.employee.findUnique({
-    where: { userId },
-  });
-  if (!employee) return null;
+  const employee = await ensureEmployeeExists(userId);
   console.log("blockedReason = ", reason);
   const oldData = {
     id: employee.id,
@@ -127,6 +128,9 @@ export const blockEmployee = async (
     },
   });
 
+  // Send notification to employee
+  await notifyEmployeeBlocked(updated.id, reason, actedByUserId || undefined);
+
   return {
     id: updated.id,
     userId: updated.userId,
@@ -145,10 +149,7 @@ export const unblockEmployee = async (
   userId: string,
   actedByUserId?: string | null
 ) => {
-  const employee = await prisma.employee.findUnique({
-    where: { userId },
-  });
-  if (!employee) return null;
+  const employee = await ensureEmployeeExists(userId);
 
   const oldData = {
     id: employee.id,
@@ -183,6 +184,9 @@ export const unblockEmployee = async (
       userId: actedByUserId || null,
     },
   });
+
+  // Send notification to employee
+  await notifyEmployeeUnblocked(updated.id, actedByUserId || undefined);
 
   return {
     id: updated.id,
@@ -242,4 +246,69 @@ export const getEmployeeStatusById = async (employeeId: string) => {
     position: e.position?.title || null,
     updatedAt: e.updatedAt,
   };
+};
+
+export const approveAbsence = async (absenceId: string, approvedBy: string) => {
+  const absence = await prisma.absence.findUnique({
+    where: { id: absenceId },
+    include: { employee: { include: { user: true } } }
+  });
+
+  if (!absence) throw new Error("Absence not found");
+  if (absence.status !== "PENDING") throw new Error("Absence is not pending");
+
+  const updated = await prisma.absence.update({
+    where: { id: absenceId },
+    data: { status: "APPROVED" }
+  });
+
+  await prisma.auditLog.create({
+    data: {
+      tableName: "absences",
+      recordId: absenceId,
+      action: "APPROVE",
+      oldData: { status: "PENDING" },
+      newData: { status: "APPROVED" },
+      userId: approvedBy
+    }
+  });
+
+  // Send notification to employee
+  await notifyLeaveApproved(absenceId, absence.employee.userId, approvedBy);
+
+  return updated;
+};
+
+export const rejectAbsence = async (absenceId: string, reason: string, rejectedBy: string) => {
+  const absence = await prisma.absence.findUnique({
+    where: { id: absenceId },
+    include: { employee: { include: { user: true } } }
+  });
+
+  if (!absence) throw new Error("Absence not found");
+  if (absence.status !== "PENDING") throw new Error("Absence is not pending");
+
+  const updated = await prisma.absence.update({
+    where: { id: absenceId },
+    data: { 
+      status: "REJECTED",
+      reason: reason
+    }
+  });
+
+  await prisma.auditLog.create({
+    data: {
+      tableName: "absences",
+      recordId: absenceId,
+      action: "REJECT",
+      oldData: { status: "PENDING" },
+      newData: { status: "REJECTED", reason },
+      userId: rejectedBy
+    }
+  });
+
+  // Send notification to employee
+  await notifyLeaveRejected(absenceId, absence.employee.userId, reason, rejectedBy);
+
+  return updated;
 };

@@ -5,6 +5,13 @@ import {
   RatingStatus,
   Prisma,
 } from "@repo/db/src/generated/prisma";
+import {
+  notifyAssignmentCreated,
+  notifyAssignmentUpdated,
+  notifyAssignmentCancelled,
+  notifyOrderStatusChanged,
+  notifyOrderCompleted
+} from "./notificationHelpers";
 
 // Type definitions for better type safety
 type OrderCreateInput = Prisma.OrderCreateInput;
@@ -51,7 +58,7 @@ export const getOrderByIdService = async (id: string) => {
   });
 };
 
-export const createOrderService = async (data: OrderCreateInput & { assignedEmployeeIds?: string[] }) => {
+export const createOrderService = async (data: OrderCreateInput & { assignedEmployeeIds?: string[] }, createdBy?: string) => {
   const { assignedEmployeeIds, ...orderData } = data;
   
   // Clean empty strings to undefined for optional DateTime fields
@@ -94,7 +101,10 @@ export const createOrderService = async (data: OrderCreateInput & { assignedEmpl
   }
   
   const order = await prisma.order.create({
-    data: orderData,
+    data: {
+      ...orderData,
+      createdBy
+    },
   });
   
   // Auto-update status based on assignments
@@ -107,7 +117,7 @@ export const createOrderService = async (data: OrderCreateInput & { assignedEmpl
 
   // Create assignments if employees are specified
   if (assignedEmployeeIds && assignedEmployeeIds.length > 0) {
-    await Promise.all(
+    const assignments = await Promise.all(
       assignedEmployeeIds.map(employeeId =>
         prisma.assignment.create({
           data: {
@@ -120,6 +130,13 @@ export const createOrderService = async (data: OrderCreateInput & { assignedEmpl
             estimatedHours: order.duration ? order.duration / 60 : undefined,
           },
         })
+      )
+    );
+    
+    // Send notifications for new assignments (only if employees assigned)
+    await Promise.all(
+      assignments.map(assignment => 
+        notifyAssignmentCreated(assignment.id, createdBy)
       )
     );
   }
@@ -138,7 +155,8 @@ export const createOrderService = async (data: OrderCreateInput & { assignedEmpl
 
 export const updateOrderService = async (
   id: string,
-  data: OrderUpdateInput & { assignedEmployeeIds?: string[] }
+  data: OrderUpdateInput & { assignedEmployeeIds?: string[] },
+  updatedBy?: string
 ) => {
   const { assignedEmployeeIds, ...orderData } = data;
   
@@ -163,7 +181,7 @@ export const updateOrderService = async (
 
     // Create new assignments
     if (assignedEmployeeIds.length > 0) {
-      await Promise.all(
+      const assignments = await Promise.all(
         assignedEmployeeIds.map(employeeId =>
           prisma.assignment.create({
             data: {
@@ -176,6 +194,13 @@ export const updateOrderService = async (
               estimatedHours: order.duration ? order.duration / 60 : undefined,
             },
           })
+        )
+      );
+      
+      // Send notifications for new assignments
+      await Promise.all(
+        assignments.map(assignment => 
+          notifyAssignmentCreated(assignment.id, updatedBy)
         )
       );
     }
@@ -195,12 +220,23 @@ export const deleteOrderService = async (id: string) => {
 
 export const updateOrderStatusService = async (
   id: string,
-  status: OrderStatus
+  status: OrderStatus,
+  createdBy?: string
 ) => {
-  return prisma.order.update({
+  const order = await prisma.order.update({
     where: { id },
     data: { status },
   });
+  
+  // Send status change notification
+  await notifyOrderStatusChanged(id, status, createdBy);
+  
+  // Send completion notification to admins
+  if (status === 'COMPLETED') {
+    await notifyOrderCompleted(id, createdBy);
+  }
+  
+  return order;
 };
 
 export const getOrderSummaryService = async (id: string) => {
@@ -227,32 +263,90 @@ export const getOrderSummaryService = async (id: string) => {
 
 // -------------------- Assignments --------------------
 export const getAssignmentsService = async (orderId: string) => {
-  return prisma.assignment.findMany({ where: { orderId } });
+  return prisma.assignment.findMany({ 
+    where: { orderId },
+    include: {
+      employee: {
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          phoneNumber: true,
+          employeeCode: true,
+          department: {
+            select: {
+              name: true
+            }
+          },
+          position: {
+            select: {
+              title: true
+            }
+          },
+          user: {
+            select: {
+              email: true
+            }
+          }
+        }
+      }
+    }
+  });
 };
 
 export const createAssignmentService = async (
   orderId: string,
-  data: Omit<AssignmentCreateInput, "orderId">
+  data: Omit<AssignmentCreateInput, "orderId">,
+  createdBy?: string
 ) => {
-  return prisma.assignment.create({
+  const assignment = await prisma.assignment.create({
     data: { ...data, orderId },
   });
+  
+  // Send notification to assigned employee
+  await notifyAssignmentCreated(assignment.id, createdBy);
+  
+  return assignment;
 };
 
 export const updateAssignmentService = async (
   id: string,
-  data: AssignmentUpdateInput
+  data: AssignmentUpdateInput,
+  createdBy?: string
 ) => {
-  return prisma.assignment.update({
+  const assignment = await prisma.assignment.update({
     where: { id },
     data,
   });
+  
+  // Send notification to assigned employee
+  await notifyAssignmentUpdated(id, createdBy);
+  
+  return assignment;
 };
 
-export const deleteAssignmentService = async (id: string) => {
-  return prisma.assignment.delete({
+export const deleteAssignmentService = async (id: string, createdBy?: string) => {
+  // Get assignment details before deletion
+  const assignment = await prisma.assignment.findUnique({
+    where: { id },
+    include: { order: true }
+  });
+  
+  const result = await prisma.assignment.delete({
     where: { id },
   });
+  
+  // Send cancellation notification
+  if (assignment) {
+    await notifyAssignmentCancelled(
+      id, 
+      assignment.employeeId, 
+      assignment.order?.orderNumber || 'Unknown',
+      createdBy
+    );
+  }
+  
+  return result;
 };
 
 export const updateAssignmentStatusService = async (
@@ -304,6 +398,14 @@ const updateOrderStatusBasedOnAssignments = async (orderId: string) => {
       where: { id: orderId },
       data: { status: newStatus }
     });
+    
+    // Send status change notification
+    await notifyOrderStatusChanged(orderId, newStatus);
+    
+    // Send completion notification to admins
+    if (newStatus === 'COMPLETED') {
+      await notifyOrderCompleted(orderId);
+    }
   }
 };
 
@@ -323,7 +425,7 @@ export const autoAssignEmployeesService = async (
     },
   });
 
-  if (!order) throw new Error("Order not found");
+  if (!order) throw new Error("Auftrag nicht gefunden");
 
   // 2. Check if already has enough assignments
   const existingAssignments = order.employeeAssignments.length;
@@ -333,7 +435,7 @@ export const autoAssignEmployeesService = async (
   );
   if (needed <= 0) {
     return {
-      message: "Order already has sufficient employee assignments",
+      message: "Auftrag hat bereits ausreichend Mitarbeiterzuweisungen",
       assignments: [],
     };
   }
@@ -441,7 +543,7 @@ export const autoAssignEmployeesService = async (
     .slice(0, needed);
 
   if (topCandidates.length === 0) {
-    throw new Error("No qualified employees available for auto-assignment");
+    throw new Error("Keine qualifizierten Mitarbeiter für automatische Zuweisung verfügbar");
   }
 
   // 7. Create assignments
@@ -474,7 +576,7 @@ export const autoAssignEmployeesService = async (
   );
 
   return {
-    message: `Successfully auto-assigned ${assignments.length} employees`,
+    message: `${assignments.length} Mitarbeiter erfolgreich automatisch zugewiesen`,
     assignments,
     summary: {
       requested: needed,

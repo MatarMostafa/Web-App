@@ -25,10 +25,12 @@ export const getDepartmentByIdService = async (id: string) => {
   });
 };
 
-export const createDepartmentService = async (data: DepartmentCreateInput) => {
-  return prisma.department.create({
+export const createDepartmentService = async (data: DepartmentCreateInput, createdBy?: string) => {
+  const department = await prisma.department.create({
     data: { ...data, isActive: data.isActive ?? true },
   });
+  
+  return department;
 };
 
 export const updateDepartmentService = async (
