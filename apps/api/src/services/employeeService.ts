@@ -36,7 +36,7 @@ const transformUserToEmployee = (user: any): Employee => {
     userId: user.id,
     createdAt: user.createdAt.toISOString(),
     updatedAt: user.updatedAt.toISOString(),
-    createdBy: user.createdBy || undefined,
+    createdBy: user.createdByUser ? `${user.createdByUser.username}` : (user.createdBy ? 'Unknown Admin' : 'Self-registered'),
     updatedBy: user.updatedBy || undefined,
   };
 };
@@ -59,7 +59,29 @@ export const getAllEmployees = async (): Promise<Employee[]> => {
       },
     });
 
-    return users.map(transformUserToEmployee);
+    // Get unique creator IDs
+    const creatorIds = [...new Set(users.map(u => u.createdBy).filter(Boolean))];
+    
+    // Fetch creator information
+    const creators = await prisma.user.findMany({
+      where: {
+        id: { in: creatorIds },
+      },
+      select: {
+        id: true,
+        username: true,
+      },
+    });
+    
+    const creatorMap = new Map(creators.map(c => [c.id, c.username]));
+
+    return users.map(user => {
+      const userWithCreator = {
+        ...user,
+        createdByUser: user.createdBy ? { username: creatorMap.get(user.createdBy) } : null,
+      };
+      return transformUserToEmployee(userWithCreator);
+    });
   } catch (error) {
     console.error("Error:", error);
     throw new Error("Fehler beim Abrufen der Mitarbeiter");
@@ -113,9 +135,20 @@ export const getEmployeeById = async (id: string): Promise<Employee | null> => {
 
     if (!employee || employee.user.role !== "EMPLOYEE") return null;
 
+    // Fetch creator information if createdBy exists
+    let createdByUser = null;
+    if (employee.user.createdBy) {
+      const creator = await prisma.user.findUnique({
+        where: { id: employee.user.createdBy },
+        select: { username: true },
+      });
+      createdByUser = creator ? { username: creator.username } : null;
+    }
+
     // Transform to match the expected format
     const userWithEmployee = {
       ...employee.user,
+      createdByUser,
       employee: employee,
     };
 
@@ -126,7 +159,7 @@ export const getEmployeeById = async (id: string): Promise<Employee | null> => {
   }
 };
 
-export const createEmployee = async (data: any): Promise<Employee> => {
+export const createEmployee = async (data: any, createdBy?: string): Promise<Employee> => {
   try {
     const { email, username, password, ...employeeData } = data;
     
@@ -196,6 +229,7 @@ export const createEmployee = async (data: any): Promise<Employee> => {
         password: hashedPassword,
         role: "EMPLOYEE",
         isActive: true, // Admin-created employees are active by default
+        createdBy: createdBy || null,
         employee: {
           create: {
             ...employeeData,

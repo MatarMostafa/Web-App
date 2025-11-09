@@ -124,24 +124,25 @@ export const login = async (identifier: string, password: string) => {
     console.log('No user found with identifier:', identifier);
     throw new Error("Ungültige Anmeldedaten");
   }
+
+  // Check if employee is blocked before password validation
+  if (user.employee && !user.employee.isAvailable) {
+    throw new Error("Ihr Zugang zum System wurde gesperrt. Bitte wenden Sie sich an den Administrator.");
+  }
   
-  console.log('User found - isActive:', user.isActive, 'role:', user.role);
   
   if (!user.isActive) {
     console.log('User account not active');
     throw new Error("Konto nicht verifiziert");
   }
 
+  
+
   const isValidPassword = await bcrypt.compare(password, user.password);
   console.log('Password valid:', isValidPassword);
   
   if (!isValidPassword) {
     throw new Error("Ungültige Anmeldedaten");
-  }
-
-  // Check if employee is blocked after password validation
-  if (user.employee && !user.employee.isAvailable) {
-    throw new Error("Ihr Zugang zum System wurde gesperrt. Bitte wenden Sie sich an den Administrator.");
   }
 
   const { accessToken, refreshToken } = generateTokens(

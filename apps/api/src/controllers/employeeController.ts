@@ -38,8 +38,9 @@ export const getEmployeeById = async (req: Request, res: Response) => {
 };
 
 export const createEmployee = async (req: Request, res: Response) => {
+  const authReq = req as AuthRequest;
   try {
-    const employee = await employeeService.createEmployee(req.body);
+    const employee = await employeeService.createEmployee(req.body, authReq.user?.id);
     res.status(201).json(employee);
   } catch (error: any) {
     console.error("Error creating employee:", error);

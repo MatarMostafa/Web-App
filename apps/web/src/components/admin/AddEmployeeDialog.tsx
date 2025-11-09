@@ -177,50 +177,46 @@ export default function AddEmployeeDialog({
 
 
 
+    setLoading(true);
+    
+    const employeeData: CreateEmployeeData = {
+      email: formData.email || undefined,
+      username: formData.username,
+      password: formData.password,
+      firstName: formData.firstName || undefined,
+      lastName: formData.lastName || undefined,
+      phoneNumber: formData.phoneNumber || undefined,
+      dateOfBirth: formData.dateOfBirth?.toISOString(),
+      address: formData.address || undefined,
+      hireDate: formData.hireDate?.toISOString(),
+      departmentId: formData.departmentId || undefined,
+      positionId: formData.positionId || undefined,
+      managerId: formData.managerId || undefined,
+      scheduleType: formData.scheduleType,
+      hourlyRate: formData.hourlyRate,
+      salary: formData.salary,
+    };
+
     try {
-      setLoading(true);
-
-      const employeeData: CreateEmployeeData = {
-        email: formData.email || undefined,
-        username: formData.username,
-        password: formData.password,
-        firstName: formData.firstName || undefined,
-        lastName: formData.lastName || undefined,
-        phoneNumber: formData.phoneNumber || undefined,
-        dateOfBirth: formData.dateOfBirth?.toISOString(),
-        address: formData.address || undefined,
-        hireDate: formData.hireDate?.toISOString(),
-        departmentId: formData.departmentId || undefined,
-        positionId: formData.positionId || undefined,
-        managerId: formData.managerId || undefined,
-        scheduleType: formData.scheduleType,
-        hourlyRate: formData.hourlyRate,
-        salary: formData.salary,
-      };
-
+      // Store initial employee count to check if creation was successful
+      const initialEmployeeCount = useEmployeeStore.getState().employees.length;
+      
       await createEmployee(employeeData);
       
-      // Show credentials modal instead of toast
-      setCreatedCredentials({
-        username: formData.username,
-        password: formData.password,
-      });
-      setShowCredentialsModal(true);
-      setIsOpen(false);
-      resetForm();
-    } catch (error: any) {
-      console.error("Employee creation failed:", error);
+      // Check if employee was actually created by comparing count
+      const newEmployeeCount = useEmployeeStore.getState().employees.length;
+      const wasCreated = newEmployeeCount > initialEmployeeCount;
       
-      // Show specific error message from API
-      let errorMessage = "Failed to create employee";
-      
-      if (error?.response?.data?.message) {
-        errorMessage = error.response.data.message;
-      } else if (error?.message) {
-        errorMessage = error.message;
+      if (wasCreated) {
+        // Show credentials modal only if employee was successfully created
+        setCreatedCredentials({
+          username: formData.username,
+          password: formData.password,
+        });
+        setShowCredentialsModal(true);
+        setIsOpen(false);
+        resetForm();
       }
-      
-      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }

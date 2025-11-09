@@ -10,6 +10,7 @@ import { useEmployeeStore } from "@/store/employeeStore";
 import { useEmployeeBlockStore } from "@/store/employeeBlockStore";
 import { Employee } from "@/types/employee";
 import BlockEmployeeModal from "@/components/modals/BlockEmployeeModal";
+import { DeleteEmployeeDialog } from "@/components/admin/DeleteEmployeeDialog";
 import { useTranslation } from '@/hooks/useTranslation';
 
 const EmployeesPage = () => {
@@ -26,6 +27,10 @@ const EmployeesPage = () => {
     action: "block" | "unblock";
     employee: Employee | null;
   }>({ isOpen: false, action: "block", employee: null });
+  const [deleteModalState, setDeleteModalState] = useState<{
+    isOpen: boolean;
+    employee: Employee | null;
+  }>({ isOpen: false, employee: null });
 
   useEffect(() => {
     setMounted(true);
@@ -50,10 +55,22 @@ const EmployeesPage = () => {
     setEditDialogOpen(true);
   };
 
-  const handleDelete = async (id: string) => {
-    if (confirm(t('admin.employees.confirmDelete'))) {
-      await deleteEmployee(id);
+  const handleDelete = (id: string) => {
+    const employee = employees.find(emp => emp.id === id);
+    if (employee) {
+      setDeleteModalState({ isOpen: true, employee });
     }
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (deleteModalState.employee) {
+      await deleteEmployee(deleteModalState.employee.id);
+      setDeleteModalState({ isOpen: false, employee: null });
+    }
+  };
+
+  const handleDeleteModalClose = () => {
+    setDeleteModalState({ isOpen: false, employee: null });
   };
 
   const handleBlock = (employee: Employee) => {
@@ -151,6 +168,14 @@ const EmployeesPage = () => {
         action={blockModalState.action}
         employeeName={blockModalState.employee ? `${blockModalState.employee.firstName} ${blockModalState.employee.lastName}` : ""}
         loading={blockLoading}
+      />
+
+      <DeleteEmployeeDialog
+        isOpen={deleteModalState.isOpen}
+        onClose={handleDeleteModalClose}
+        onConfirm={handleDeleteConfirm}
+        employeeName={deleteModalState.employee ? `${deleteModalState.employee.firstName} ${deleteModalState.employee.lastName}` : ""}
+        loading={loading}
       />
 
       {!loading && employees.length === 0 && (
