@@ -246,6 +246,20 @@ router.post(
         return res.status(404).json({ message: "Employee not found" });
       }
 
+      // Check if qualification already exists
+      const existingQualification = await prisma.employeeQualification.findUnique({
+        where: {
+          employeeId_qualificationId: {
+            employeeId: employee.id,
+            qualificationId,
+          },
+        },
+      });
+
+      if (existingQualification) {
+        return res.status(400).json({ message: "Qualification already exists for this employee" });
+      }
+
       const employeeQualification = await prisma.employeeQualification.create({
         data: {
           employeeId: employee.id,
@@ -425,6 +439,20 @@ router.post(
     try {
       const { employeeId } = req.params;
       const { qualificationId, proficiencyLevel, expiryDate, certificateUrl } = req.body;
+
+      // Check if qualification already exists
+      const existingQualification = await prisma.employeeQualification.findUnique({
+        where: {
+          employeeId_qualificationId: {
+            employeeId,
+            qualificationId,
+          },
+        },
+      });
+
+      if (existingQualification) {
+        return res.status(400).json({ message: "Qualification already exists for this employee" });
+      }
 
       const employeeQualification = await prisma.employeeQualification.create({
         data: {

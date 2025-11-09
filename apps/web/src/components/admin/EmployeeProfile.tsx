@@ -408,7 +408,7 @@ const EmployeeProfile: React.FC<EmployeeProfileProps> = ({
                                   size="sm"
                                   variant="outline"
                                   onClick={async () => {
-                                    await removeEmployeeQualificationAsAdmin(employee.id, qual.qualificationId);
+                                    await removeEmployeeQualificationAsAdmin(employee.id, qual.qualification.id);
                                     refreshQualifications();
                                   }}
                                   className="bg-red-50 text-red-700 hover:bg-red-100 px-2 py-1 h-6 text-xs"
@@ -424,7 +424,7 @@ const EmployeeProfile: React.FC<EmployeeProfileProps> = ({
                                   size="sm"
                                   variant="outline"
                                   onClick={async () => {
-                                    await approveEmployeeQualification(employee.id, qual.qualificationId);
+                                    await approveEmployeeQualification(employee.id, qual.qualification.id);
                                     refreshQualifications();
                                   }}
                                   className="bg-green-50 text-green-700 hover:bg-green-100 px-2 py-1 h-6 text-xs"
@@ -436,7 +436,7 @@ const EmployeeProfile: React.FC<EmployeeProfileProps> = ({
                                   size="sm"
                                   variant="outline"
                                   onClick={async () => {
-                                    await rejectEmployeeQualification(employee.id, qual.qualificationId);
+                                    await rejectEmployeeQualification(employee.id, qual.qualification.id);
                                     refreshQualifications();
                                   }}
                                   className="bg-red-50 text-red-700 hover:bg-red-100 px-2 py-1 h-6 text-xs"

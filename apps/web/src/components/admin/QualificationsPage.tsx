@@ -44,7 +44,7 @@ const QualificationsPage: React.FC = () => {
     return matchesSearch && matchesCategory && matchesStatus;
   });
 
-  const uniqueCategories = [...new Set(allQualifications.map(q => q.category).filter(Boolean))];
+  const uniqueCategories = Array.from(new Set(allQualifications.map(q => q.category).filter(Boolean)));
 
   return (
     <div className="space-y-6">

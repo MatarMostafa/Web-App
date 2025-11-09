@@ -7,7 +7,6 @@ import { Badge } from "@/components/ui/badge";
 import { LoadingSpinnerWithText } from "@/components/ui";
 import { Award, Plus, Trash2, Edit, CheckCircle, XCircle, Clock } from "lucide-react";
 import { useSkillsStore } from "@/store/skillsStore";
-import { useAuthStore } from "@/store/authStore";
 import { useEmployeeStore } from "@/store/employeeStore";
 import AddSkillModal from "@/components/employee/AddSkillModal";
 import { format } from "date-fns";
@@ -16,7 +15,7 @@ import { useTranslation } from "@/hooks/useTranslation";
 
 const SkillsPage = () => {
   const { t } = useTranslation();
-  const { user } = useAuthStore();
+
   const { 
     employeeQualifications, 
     loading, 
