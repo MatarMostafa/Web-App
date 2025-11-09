@@ -21,7 +21,9 @@
     "privacySecurity": "Privacy & Security",
     "helpSupport": "Help & Support",
     "backToDashboard": "Back to Dashboard",
-    "logOut": "Log Out"
+    "logOut": "Log Out",
+    "skills": "Skills",
+    "qualifications": "Qualifications"
   },
   "language": {
     "english": "English",
@@ -246,7 +248,27 @@
     "employeeUpdated": "Employee updated successfully",
     "employeeDeleted": "Employee deleted successfully",
     "noEmployeesFound": "No employees found",
-    "searchEmployees": "Search employees"
+    "searchEmployees": "Search employees",
+    "basicInformation": "Basic Information",
+    "employmentInformation": "Employment Information",
+    "selectDepartment": "Select department",
+    "selectPosition": "Select position",
+    "selectManager": "Select manager (optional)",
+    "selectScheduleType": "Select schedule type",
+    "enterFirstName": "Enter first name",
+    "enterLastName": "Enter last name",
+    "enterUsername": "Enter username",
+    "enterPassword": "Enter password",
+    "enterAnnualSalary": "Enter annual salary",
+    "enterHourlyRate": "Enter hourly rate",
+    "usernameRequired": "Username is required",
+    "creating": "Creating...",
+    "updating": "Updating...",
+    "updateEmployee": "Update Employee",
+    "address": "Address",
+    "enterAddress": "Enter address",
+    "hireDate": "Hire Date"
+    
   },
   "order": {
     "order": "Order",
@@ -804,6 +826,47 @@
         "createError": "Failed to create position",
         "updateError": "Failed to update position"
       }
+    },
+    "qualifications": {
+      "title": "Qualifications Management",
+      "subtitle": "Manage available qualifications and skills in the system",
+      "manage": "Manage Qualifications",
+      "addNew": "Add New Qualification",
+      "edit": "Edit Qualification",
+      "searchPlaceholder": "Search qualifications by name or description...",
+      "allCategories": "All Categories",
+      "showInactive": "Show Inactive",
+      "hideInactive": "Hide Inactive",
+      "loading": "Loading qualifications...",
+      "noQualifications": "No qualifications found",
+      "active": "Active",
+      "inactive": "Inactive",
+      "created": "Created",
+      "form": {
+        "name": "Name",
+        "namePlaceholder": "Enter qualification name",
+        "category": "Category",
+        "selectCategory": "Select category",
+        "customCategory": "Custom Category",
+        "newCategory": "New Category",
+        "newCategoryPlaceholder": "Enter new category name",
+        "description": "Description",
+        "descriptionPlaceholder": "Enter qualification description (optional)",
+        "active": "Active",
+        "creating": "Creating...",
+        "create": "Create",
+        "updating": "Updating...",
+        "update": "Update"
+      },
+      "delete": {
+        "title": "Delete Qualification",
+        "warning": "Are you sure you want to delete this qualification?",
+        "qualificationName": "Qualification Name",
+        "category": "Category",
+        "note": "Note: If this qualification is currently assigned to employees, it will be deactivated instead of deleted to preserve data integrity.",
+        "deleting": "Deleting...",
+        "confirm": "Delete Qualification"
+      }
     }
   },
   "notificationUI": {
@@ -918,6 +981,42 @@
     }
   },
   "employee": {
+    "form": {
+      "addEmployee": "Add Employee",
+      "editEmployee": "Edit Employee",
+      "basicInformation": "Basic Information",
+      "employmentInformation": "Employment Information",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "enterFirstName": "Enter first name",
+      "enterLastName": "Enter last name",
+      "enterUsername": "Enter username",
+      "enterPassword": "Enter password",
+      "phoneNumber": "Phone Number",
+      "address": "Address",
+      "enterAddress": "Enter address",
+      "department": "Department",
+      "position": "Position",
+      "manager": "Manager",
+      "scheduleType": "Schedule Type",
+      "salary": "Salary",
+      "hourlyRate": "Hourly Rate",
+      "hireDate": "Hire Date",
+      "selectDepartment": "Select department",
+      "selectPosition": "Select position",
+      "selectManager": "Select manager (optional)",
+      "selectScheduleType": "Select schedule type",
+      "enterAnnualSalary": "Enter annual salary",
+      "enterHourlyRate": "Enter hourly rate",
+      "fullTime": "Full Time",
+      "partTime": "Part Time",
+      "contract": "Contract",
+      "temporary": "Temporary",
+      "intern": "Intern",
+      "creating": "Creating...",
+      "updating": "Updating...",
+      "updateEmployee": "Update Employee"
+    },
     "dashboard": {
       "title": "My Dashboard",
       "subtitle": "Overview of your current assignments and performance",
@@ -1016,6 +1115,31 @@
       "endDateRequired": "End date is required",
       "startDatePastError": "Start date cannot be in the past",
       "endDateBeforeStartError": "End date must be after start date"
+    },
+    "skills": {
+      "title": "My Skills",
+      "subtitle": "Manage your professional qualifications and skills",
+      "loading": "Loading skills...",
+      "addSkill": "Add Skill",
+      "qualification": "Qualification",
+      "selectQualification": "Select a qualification",
+      "proficiencyLevel": "Proficiency Level",
+      "level1": "Basic",
+      "level2": "Advanced Basics",
+      "level3": "Advanced",
+      "level4": "Expert",
+      "level5": "Master",
+      "certificateUrl": "Certificate URL",
+      "expiryDate": "Expiry Date",
+      "adding": "Adding...",
+      "noSkills": "No skills added",
+      "noSkillsDesc": "Add your first professional qualifications",
+      "addFirstSkill": "Add First Skill",
+      "verified": "Verified",
+      "pending": "Pending",
+      "proficiency": "Proficiency",
+      "acquired": "Acquired",
+      "expires": "Expires"
     }
   }
 }

@@ -611,6 +611,103 @@ export const notifyEmployeeUnblocked = async (employeeId: string, createdBy?: st
 };
 
 /**
+ * Skill Notifications
+ */
+export const notifySkillAdded = async (employeeId: string, qualificationName: string) => {
+  try {
+    const employee = await prisma.employee.findUnique({
+      where: { id: employeeId },
+      include: {
+        user: true,
+      },
+    });
+
+    if (!employee) return;
+
+    const employeeName = `${employee.firstName || ''} ${employee.lastName || ''}`.trim() || employee.user.username;
+
+    // Notify all admins about new skill added by employee
+    const admins = await prisma.user.findMany({
+      where: { role: 'ADMIN' },
+    });
+
+    for (const admin of admins) {
+      await createNotification({
+        templateKey: 'SKILL_ADDED',
+        title: 'Neue Fähigkeit hinzugefügt',
+        body: `${employeeName} hat die Fähigkeit "${qualificationName}" hinzugefügt und wartet auf Bestätigung.`,
+        data: {
+          category: 'skill',
+          employeeId,
+          employeeName,
+          qualificationName,
+        },
+        recipients: [{ userId: admin.id }],
+      });
+    }
+  } catch (error) {
+    console.error('Error sending skill added notification:', error);
+  }
+};
+
+export const notifySkillApproved = async (employeeId: string, qualificationName: string) => {
+  try {
+    const employee = await prisma.employee.findUnique({
+      where: { id: employeeId },
+      include: {
+        user: true,
+      },
+    });
+
+    if (!employee) return;
+
+    // Notify employee about skill approval
+    await createNotification({
+      templateKey: 'SKILL_APPROVED',
+      title: 'Fähigkeit bestätigt',
+      body: `Ihre Fähigkeit "${qualificationName}" wurde von einem Administrator bestätigt.`,
+      data: {
+        category: 'skill',
+        employeeId,
+        qualificationName,
+      },
+      recipients: [{ userId: employee.user.id }],
+    });
+  } catch (error) {
+    console.error('Error sending skill approved notification:', error);
+  }
+};
+
+export const notifySkillRejected = async (employeeId: string, qualificationName: string, reason?: string) => {
+  try {
+    const employee = await prisma.employee.findUnique({
+      where: { id: employeeId },
+      include: {
+        user: true,
+      },
+    });
+
+    if (!employee) return;
+
+    // Notify employee about skill rejection
+    await createNotification({
+      templateKey: 'SKILL_REJECTED',
+      title: 'Fähigkeit abgelehnt',
+      body: `Ihre Fähigkeit "${qualificationName}" wurde abgelehnt.${reason ? ` Grund: ${reason}` : ''}`,
+      data: {
+        category: 'skill',
+        employeeId,
+        qualificationName,
+        reason,
+      },
+      recipients: [{ userId: employee.user.id }],
+    });
+  } catch (error) {
+    console.error('Error sending skill rejected notification:', error);
+  }
+};
+
+/**
  * System Notifications
  */
 export const notifyWelcomeNewEmployee = async (employeeId: string) => {

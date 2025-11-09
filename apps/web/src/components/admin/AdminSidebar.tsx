@@ -16,6 +16,7 @@ import {
   Briefcase,
   UserCheck,
   CalendarCheck,
+  Award,
 } from "lucide-react";
 
 interface SidebarProps {
@@ -100,6 +101,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => {
       icon: Briefcase,
     },
     { name: "Positions", key: "navigation.positions", path: "/dashboard-admin/positions", icon: UserCheck },
+    { name: "Qualifications", key: "navigation.qualifications", path: "/dashboard-admin/qualifications", icon: Award },
   ];
 
   const settingsNavItems = [
@@ -175,7 +177,9 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => {
                   (item.path === "/dashboard-admin/customers" &&
                     pathname.startsWith("/dashboard-admin/customers/")) ||
                   (item.path === "/dashboard-admin/orders" &&
-                    pathname.startsWith("/dashboard-admin/orders/"));
+                    pathname.startsWith("/dashboard-admin/orders/")) ||
+                  (item.path === "/dashboard-admin/qualifications" &&
+                    pathname.startsWith("/dashboard-admin/qualifications"));
                 const Icon = item.icon;
 
                 return (
