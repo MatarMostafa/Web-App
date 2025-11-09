@@ -15,12 +15,14 @@ import { Badge } from "@/components/ui";
 import { Card, CardContent } from "@/components/ui";
 import { format } from "date-fns";
 import { Employee } from "@/types/employee";
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface EmployeeSummaryProps {
   employee: Employee;
 }
 
 const EmployeeSummary: React.FC<EmployeeSummaryProps> = ({ employee }) => {
+  const { t } = useTranslation();
   const getInitials = (firstName?: string, lastName?: string) => {
     return `${firstName?.[0] || ""}${lastName?.[0] || ""}`.toUpperCase();
   };
@@ -62,14 +64,14 @@ const EmployeeSummary: React.FC<EmployeeSummaryProps> = ({ employee }) => {
               {getFullName()}
             </h1>
             <p className="text-lg text-muted-foreground">
-              Employee Code: {employee.employeeCode}
+              {t('admin.employeeDetails.employeeCode')}: {employee.employeeCode}
             </p>
             <div className="flex items-center gap-2 mt-2">
               <Badge
                 variant={employee.isAvailable ? "default" : "destructive"}
                 className="text-xs"
               >
-                {employee.isAvailable ? "Available" : "Unavailable"}
+                {employee.isAvailable ? t('admin.employeeDetails.available') : t('admin.employeeDetails.unavailable')}
               </Badge>
               <Badge variant="outline" className="text-xs">
                 {employee.scheduleType.replace("_", " ")}
@@ -83,7 +85,7 @@ const EmployeeSummary: React.FC<EmployeeSummaryProps> = ({ employee }) => {
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-foreground mb-4 flex items-center gap-2">
               <User className="h-4 w-4" />
-              Personal Information
+              {t('admin.employeeDetails.summary.personalInfo')}
             </h3>
 
             <div className="space-y-3">
@@ -111,7 +113,7 @@ const EmployeeSummary: React.FC<EmployeeSummaryProps> = ({ employee }) => {
               {employee.dateOfBirth && (
                 <div className="flex items-center gap-2 text-sm">
                   <Calendar className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-muted-foreground">Date of Birth:</span>
+                  <span className="text-muted-foreground">{t('admin.employeeDetails.summary.dateOfBirth')}:</span>
                   <span className="font-medium text-foreground">
                     {formatDate(employee.dateOfBirth)}
                   </span>
@@ -124,13 +126,13 @@ const EmployeeSummary: React.FC<EmployeeSummaryProps> = ({ employee }) => {
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-foreground mb-4 flex items-center gap-2">
               <Building className="h-4 w-4" />
-              Employment Details
+              {t('admin.employeeDetails.summary.employmentDetails')}
             </h3>
 
             <div className="space-y-3">
               <div className="flex items-center gap-2 text-sm">
                 <Briefcase className="h-4 w-4 text-muted-foreground" />
-                <span className="text-muted-foreground">Department:</span>
+                <span className="text-muted-foreground">{t('admin.employeeDetails.summary.department')}:</span>
                 <span className="font-medium text-foreground">
                   {employee.departmentName || employee.departmentId || "N/A"}
                 </span>
@@ -138,7 +140,7 @@ const EmployeeSummary: React.FC<EmployeeSummaryProps> = ({ employee }) => {
 
               <div className="flex items-center gap-2 text-sm">
                 <User className="h-4 w-4 text-muted-foreground" />
-                <span className="text-muted-foreground">Position:</span>
+                <span className="text-muted-foreground">{t('admin.employeeDetails.summary.position')}:</span>
                 <span className="font-medium text-foreground">
                   {employee.positionTitle || employee.positionId || "N/A"}
                 </span>
@@ -146,7 +148,7 @@ const EmployeeSummary: React.FC<EmployeeSummaryProps> = ({ employee }) => {
 
               <div className="flex items-center gap-2 text-sm">
                 <Calendar className="h-4 w-4 text-muted-foreground" />
-                <span className="text-muted-foreground">Hire Date:</span>
+                <span className="text-muted-foreground">{t('admin.employeeDetails.summary.hireDate')}:</span>
                 <span className="font-medium text-foreground">
                   {formatDate(employee.hireDate)}
                 </span>
@@ -154,9 +156,17 @@ const EmployeeSummary: React.FC<EmployeeSummaryProps> = ({ employee }) => {
 
               <div className="flex items-center gap-2 text-sm">
                 <Clock className="h-4 w-4 text-muted-foreground" />
-                <span className="text-muted-foreground">Schedule:</span>
+                <span className="text-muted-foreground">{t('admin.employeeDetails.summary.schedule')}:</span>
                 <span className="font-medium text-foreground">
                   {employee.scheduleType.replace("_", " ")}
+                </span>
+              </div>
+
+              <div className="flex items-center gap-2 text-sm">
+                <User className="h-4 w-4 text-muted-foreground" />
+                <span className="text-muted-foreground">Created by:</span>
+                <span className="font-medium text-foreground">
+                  {employee.createdBy || 'Unknown'}
                 </span>
               </div>
             </div>
@@ -166,14 +176,14 @@ const EmployeeSummary: React.FC<EmployeeSummaryProps> = ({ employee }) => {
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-foreground mb-4 flex items-center gap-2">
               <DollarSign className="h-4 w-4" />
-              Compensation
+              {t('admin.employeeDetails.summary.compensation')}
             </h3>
 
             <div className="space-y-3">
               {employee.salary && (
                 <div className="flex items-center gap-2 text-sm">
                   <DollarSign className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-muted-foreground">Annual Salary:</span>
+                  <span className="text-muted-foreground">{t('admin.employeeDetails.summary.annualSalary')}:</span>
                   <span className="font-medium text-foreground">
                     {formatCurrency(employee.salary)}
                   </span>
@@ -183,7 +193,7 @@ const EmployeeSummary: React.FC<EmployeeSummaryProps> = ({ employee }) => {
               {employee.hourlyRate && (
                 <div className="flex items-center gap-2 text-sm">
                   <Clock className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-muted-foreground">Hourly Rate:</span>
+                  <span className="text-muted-foreground">{t('admin.employeeDetails.summary.hourlyRate')}:</span>
                   <span className="font-medium text-foreground">
                     {formatCurrency(employee.hourlyRate)}/hr
                   </span>
@@ -192,7 +202,7 @@ const EmployeeSummary: React.FC<EmployeeSummaryProps> = ({ employee }) => {
 
               <div className="flex items-center gap-2 text-sm">
                 <User className="h-4 w-4 text-muted-foreground" />
-                <span className="text-muted-foreground">Priority Level:</span>
+                <span className="text-muted-foreground">{t('admin.employeeDetails.summary.priorityLevel')}:</span>
                 <span className="font-medium text-foreground">
                   {employee.priority}
                 </span>

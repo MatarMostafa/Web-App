@@ -1,3 +1,4 @@
+"use client";
 import Link from "next/link";
 import Image from "next/image";
 import React from "react";
@@ -13,6 +14,9 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import { useTranslation } from "@/hooks/useTranslation";
+import { useLanguageDetection } from "@/hooks/useLanguageDetection";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { useSession, signOut } from "next-auth/react";
 
 interface NavigationItem {
@@ -22,12 +26,7 @@ interface NavigationItem {
   isButton?: boolean;
 }
 
-const navigation: NavigationItem[] = [
-  { name: "Products", href: "#products" },
-  { name: "Features", href: "#features" },
-  { name: "Pricing", href: "#pricing" },
-  { name: "About", href: "#about" },
-];
+
 
 const callsToAction: NavigationItem[] = [
   {
@@ -39,17 +38,12 @@ const callsToAction: NavigationItem[] = [
   { name: "Get Started", href: "/signup", isButton: true },
 ];
 
-const mobileMenuItems: NavigationItem[] = [
-  {
-    name: "Dashboard",
-    href: "/dashboard-employee",
-    icon: <LayoutDashboard className="w-5 h-5" />,
-  },
-];
+
 
 const Navbar = () => {
   const router = useRouter();
   const { data: session, status } = useSession();
+  const { t, ready } = useTranslation();
   const [isOpen, setIsOpen] = React.useState(false);
 
   const handleLogout = async () => {
@@ -60,6 +54,50 @@ const Navbar = () => {
   const getDashboardUrl = () => {
     return session?.user?.role === "ADMIN" ? "/dashboard-admin" : "/dashboard-employee";
   };
+  useLanguageDetection();
+
+  const navigation = [
+    { name: t('navigation.products'), href: "#products" },
+    { name: t('navigation.features'), href: "#features" },
+    { name: t('navigation.pricing'), href: "#pricing" },
+    { name: t('navigation.about'), href: "#about" },
+  ];
+
+  const mobileMenuItems = [
+    {
+      name: t('navigation.dashboard'),
+      href: "/dashboard-employee",
+      icon: <LayoutDashboard className="w-5 h-5" />,
+    },
+  ];
+
+  if (!ready) {
+    return (
+      <nav className="bg-white shadow-sm">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="flex h-16 justify-between items-center">
+            <div className="flex-shrink-0">
+              <Link href="/" className="flex items-center">
+                <Image
+                  src="/img/matar_Logo.png"
+                  alt="ERP Beta"
+                  width={120}
+                  height={40}
+                  className="h-8 w-auto"
+                />
+              </Link>
+            </div>
+            <div className="hidden md:flex md:items-center md:space-x-8">
+              <div className="w-32 h-6 bg-gray-200 animate-pulse rounded"></div>
+              <div className="w-32 h-6 bg-gray-200 animate-pulse rounded"></div>
+              <div className="w-32 h-6 bg-gray-200 animate-pulse rounded"></div>
+              <div className="w-32 h-6 bg-gray-200 animate-pulse rounded"></div>
+            </div>
+          </div>
+        </div>
+      </nav>
+    );
+  }
 
   return (
     <nav className="bg-white shadow-sm">
@@ -114,12 +152,13 @@ const Navbar = () => {
                 </>
               ) : (
                 <>
-                  <Link
+                  <LanguageSwitcher />
+              <Link
                     href="/login"
                     className="text-gray-600 hover:text-primary px-3 py-2 text-sm font-medium flex items-center gap-2"
                   >
                     <LogIn className="w-4 h-4" />
-                    Log In
+                    {t('navigation.login')}
                   </Link>
                   <Button
                     onClick={() => {
@@ -127,7 +166,7 @@ const Navbar = () => {
                     }}
                     className="bg-secondary hover:text-[#d4f3ff]"
                   >
-                    Get Started
+                    {t('navigation.getStarted')}
                   </Button>
                 </>
               )}
@@ -197,7 +236,10 @@ const Navbar = () => {
                 </>
               ) : (
                 <>
-                  <Button
+                  <div className="mb-2">
+                <LanguageSwitcher />
+              </div>
+              <Button
                     variant="outline"
                     className="w-full justify-start gap-2"
                     onClick={() => {
@@ -206,7 +248,7 @@ const Navbar = () => {
                     }}
                   >
                     <LogIn className="w-4 h-4" />
-                    Log In
+                    {t('navigation.login')}
                   </Button>
                   <Button
                     className="w-full bg-secondary hover:text-[#d4f3ff]"
@@ -215,7 +257,7 @@ const Navbar = () => {
                       router.push("/signup");
                     }}
                   >
-                    Get Started
+                    {t('navigation.getStarted')}
                   </Button>
                 </>
               )}

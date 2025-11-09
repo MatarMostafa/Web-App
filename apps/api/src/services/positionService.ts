@@ -38,11 +38,13 @@ export const getPositionByIdService = async (id: string) => {
   });
 };
 
-export const createPositionService = async (data: PositionCreateData) => {
-  return prisma.position.create({
+export const createPositionService = async (data: PositionCreateData, createdBy?: string) => {
+  const position = await prisma.position.create({
     data: { ...data, isActive: data.isActive ?? true },
     include: { department: { select: { name: true } } },
   });
+  
+  return position;
 };
 
 export const updatePositionService = async (

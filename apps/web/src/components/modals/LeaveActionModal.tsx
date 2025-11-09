@@ -13,6 +13,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { CheckCircle, XCircle } from "lucide-react";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface LeaveActionModalProps {
   isOpen: boolean;
@@ -33,6 +34,7 @@ const LeaveActionModal: React.FC<LeaveActionModalProps> = ({
   leaveType,
   loading = false,
 }) => {
+  const { t } = useTranslation();
   const [reason, setReason] = useState("");
 
   const handleConfirm = () => {
@@ -64,10 +66,13 @@ const LeaveActionModal: React.FC<LeaveActionModalProps> = ({
             ) : (
               <XCircle className="h-5 w-5 text-red-600" />
             )}
-            {isApprove ? "Approve" : "Reject"} Leave Request
+            {isApprove ? t("admin.leaveManagement.modal.approveTitle") : t("admin.leaveManagement.modal.rejectTitle")}
           </DialogTitle>
           <DialogDescription>
-            {isApprove ? "Approve" : "Reject"} {leaveType.toLowerCase().replace('_', ' ')} request for{" "}
+            {isApprove 
+              ? `Approve ${leaveType.toLowerCase().replace('_', ' ')} request for`
+              : `Reject ${leaveType.toLowerCase().replace('_', ' ')} request for`
+            }{" "}
             <span className="font-medium">{employeeName}</span>
           </DialogDescription>
         </DialogHeader>
@@ -75,15 +80,15 @@ const LeaveActionModal: React.FC<LeaveActionModalProps> = ({
         <div className="grid gap-4 py-4">
           <div className="grid gap-2">
             <Label htmlFor="reason">
-              {isApprove ? "Approval Note" : "Rejection Reason"}{" "}
-              <span className="text-muted-foreground">(Optional)</span>
+              {isApprove ? t("admin.leaveManagement.modal.approvalNote") : t("admin.leaveManagement.modal.rejectionReason")}{" "}
+              <span className="text-muted-foreground">{t("admin.leaveManagement.modal.optional")}</span>
             </Label>
             <Textarea
               id="reason"
               placeholder={
                 isApprove
-                  ? "Add a note for this approval..."
-                  : "Provide a reason for rejection..."
+                  ? t("admin.leaveManagement.modal.approvalNotePlaceholder")
+                  : t("admin.leaveManagement.modal.rejectionReasonPlaceholder")
               }
               value={reason}
               onChange={(e) => setReason(e.target.value)}
@@ -94,7 +99,7 @@ const LeaveActionModal: React.FC<LeaveActionModalProps> = ({
 
         <DialogFooter>
           <Button variant="outline" onClick={handleClose} disabled={loading}>
-            Cancel
+            {t("admin.leaveManagement.modal.cancel")}
           </Button>
           <Button
             onClick={handleConfirm}
@@ -105,7 +110,7 @@ const LeaveActionModal: React.FC<LeaveActionModalProps> = ({
                 : "bg-red-600 hover:bg-red-700"
             }
           >
-            {loading ? "Processing..." : isApprove ? "Approve" : "Reject"}
+            {loading ? t("admin.leaveManagement.modal.processing") : isApprove ? t("admin.leaveManagement.modal.approve") : t("admin.leaveManagement.modal.reject")}
           </Button>
         </DialogFooter>
       </DialogContent>

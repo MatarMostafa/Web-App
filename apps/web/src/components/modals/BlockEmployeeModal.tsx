@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Shield, ShieldOff } from "lucide-react";
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface BlockEmployeeModalProps {
   isOpen: boolean;
@@ -31,6 +32,7 @@ const BlockEmployeeModal: React.FC<BlockEmployeeModalProps> = ({
   employeeName,
   loading = false,
 }) => {
+  const { t } = useTranslation();
   const [reason, setReason] = useState("");
 
   const handleConfirm = () => {
@@ -59,16 +61,16 @@ const BlockEmployeeModal: React.FC<BlockEmployeeModalProps> = ({
             ) : (
               <ShieldOff className="h-5 w-5 text-green-600" />
             )}
-            {isBlock ? "Block" : "Unblock"} Employee
+            {isBlock ? t('admin.employees.blockModal.blockTitle') : t('admin.employees.blockModal.unblockTitle')}
           </DialogTitle>
           <DialogDescription>
             {isBlock ? (
               <>
-                Block <span className="font-medium">{employeeName}</span>? This will prevent them from accessing the system.
+                <span className="font-medium">{employeeName}</span> {t('admin.employees.blockModal.blockDescription')}
               </>
             ) : (
               <>
-                Unblocking <span className="font-medium">{employeeName}</span> will restore their system access and allow them to resume normal activities.
+                <span className="font-medium">{employeeName}</span> {t('admin.employees.blockModal.unblockDescription')}
               </>
             )}
           </DialogDescription>
@@ -78,11 +80,11 @@ const BlockEmployeeModal: React.FC<BlockEmployeeModalProps> = ({
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
               <Label htmlFor="reason">
-                Block Reason <span className="text-red-500">*</span>
+                {t('admin.employees.blockModal.blockReason')} <span className="text-red-500">*</span>
               </Label>
               <Textarea
                 id="reason"
-                placeholder="Provide a reason for blocking this employee..."
+                placeholder={t('admin.employees.blockModal.blockReasonPlaceholder')}
                 value={reason}
                 onChange={(e) => setReason(e.target.value)}
                 rows={3}
@@ -94,7 +96,7 @@ const BlockEmployeeModal: React.FC<BlockEmployeeModalProps> = ({
 
         <DialogFooter>
           <Button variant="outline" onClick={handleClose} disabled={loading}>
-            Cancel
+            {t('admin.employees.blockModal.cancel')}
           </Button>
           <Button
             onClick={handleConfirm}
@@ -105,7 +107,7 @@ const BlockEmployeeModal: React.FC<BlockEmployeeModalProps> = ({
                 : "bg-green-600 hover:bg-green-700"
             }
           >
-            {loading ? "Processing..." : isBlock ? "Block Employee" : "Unblock Employee"}
+            {loading ? t('admin.employees.blockModal.processing') : isBlock ? t('admin.employees.blockModal.blockEmployee') : t('admin.employees.blockModal.unblockEmployee')}
           </Button>
         </DialogFooter>
       </DialogContent>

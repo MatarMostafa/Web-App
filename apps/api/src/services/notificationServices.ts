@@ -3,22 +3,22 @@ import { prisma } from "@repo/db";
 import { Queue } from "bullmq";
 
 // BullMQ queue for processing notifications
-// const redisConnection = (() => {
-//   if (process.env.REDIS_URL) return { connection: process.env.REDIS_URL };
-//   return {
-//     host: process.env.REDIS_HOST ?? "127.0.0.1",
-//     port: Number(process.env.REDIS_PORT ?? 6379),
-//   };
-// })();
+let notificationQueue: Queue | null = null;
 
-// const connection = process.env.REDIS_URL
-//   ? { url: process.env.REDIS_URL } // correct way to use a URL
-//   : {
-//       host: process.env.REDIS_HOST ?? "127.0.0.1",
-//       port: Number(process.env.REDIS_PORT ?? 6379),
-//     };
-
-// const notificationQueue = new Queue("notifications", { connection });
+const getNotificationQueue = () => {
+  if (!notificationQueue) {
+    const connection = process.env.REDIS_URL
+      ? { url: process.env.REDIS_URL }
+      : {
+          host: process.env.REDIS_HOST ?? "127.0.0.1",
+          port: Number(process.env.REDIS_PORT ?? 6379),
+        };
+    
+    console.log("Initializing notification queue with connection:", connection);
+    notificationQueue = new Queue("notifications", { connection });
+  }
+  return notificationQueue;
+};
 
 /**
  * Types
@@ -71,7 +71,13 @@ export const getNotifications = async ({
           isArchived: i.isArchived,
           status: i.status,
           createdAt: i.createdAt,
-          notification: i.notification,
+          notification: {
+            id: i.notification.id,
+            title: i.notification.title,
+            body: i.notification.body,
+            templateKey: i.notification.templateKey,
+            data: i.notification.data,
+          },
         })),
         meta: { page, limit, total },
       },
@@ -79,7 +85,7 @@ export const getNotifications = async ({
   } catch (error) {
     return {
       success: false,
-      error: "Failed to fetch notifications",
+      error: "Fehler beim Abrufen der Benachrichtigungen",
       details: String(error),
     };
   }
@@ -104,7 +110,7 @@ export const getNotificationById = async (
   } catch (error) {
     return {
       success: false,
-      error: "Failed to fetch notification",
+      error: "Fehler beim Abrufen der Benachrichtigung",
       details: String(error),
     };
   }
@@ -131,7 +137,7 @@ export const createNotification = async (input: CreateNotificationInput) => {
     if (invalidUserIds.length > 0) {
       return {
         success: false,
-        error: `Invalid user IDs: ${invalidUserIds.join(", ")}`,
+        error: `Ungültige Benutzer-IDs: ${invalidUserIds.join(", ")}`,
       };
     }
 
@@ -156,15 +162,15 @@ export const createNotification = async (input: CreateNotificationInput) => {
 
       // try enqueueing
       try {
-        // await notificationQueue.add(
-        //   "processNotification",
-        //   { notificationId: notif.id },
-        //   {
-        //     removeOnComplete: true,
-        //     attempts: 5,
-        //     backoff: { type: "exponential", delay: 1000 },
-        //   }
-        // );
+        await getNotificationQueue().add(
+          "processNotification",
+          { notificationId: notif.id },
+          {
+            removeOnComplete: true,
+            attempts: 5,
+            backoff: { type: "exponential", delay: 1000 },
+          }
+        );
       } catch (queueErr) {
         console.error(
           "Failed to enqueue notification job; saving to outbox",
@@ -207,7 +213,7 @@ export const createNotification = async (input: CreateNotificationInput) => {
   } catch (error) {
     return {
       success: false,
-      error: "Failed to create notification",
+      error: "Fehler beim Erstellen der Benachrichtigung",
       details: String(error),
     };
   }
@@ -225,12 +231,39 @@ export const markAsRead = async (recipientId: string, userId: string) => {
     });
     return {
       success: true,
-      message: "Notification marked as read",
+      message: "Benachrichtigung als gelesen markiert",
     };
   } catch (error) {
     return {
       success: false,
-      error: "Failed to mark notification as read",
+      error: "Fehler beim Markieren der Benachrichtigung als gelesen",
+      details: String(error),
+    };
+  }
+};
+
+/**
+ * markAllAsRead: mark all unread notifications as read for a user
+ */
+export const markAllAsRead = async (userId: string) => {
+  try {
+    const result = await prisma.notificationRecipient.updateMany({
+      where: { 
+        userId, 
+        readAt: null, 
+        isArchived: false 
+      },
+      data: { readAt: new Date() },
+    });
+    return {
+      success: true,
+      data: { count: result.count },
+      message: `${result.count} Benachrichtigungen als gelesen markiert`,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: "Fehler beim Markieren aller Benachrichtigungen als gelesen",
       details: String(error),
     };
   }
@@ -250,12 +283,12 @@ export const archiveNotification = async (
     });
     return {
       success: true,
-      message: "Notification archived",
+      message: "Benachrichtigung archiviert",
     };
   } catch (error) {
     return {
       success: false,
-      error: "Failed to archive notification",
+      error: "Fehler beim Archivieren der Benachrichtigung",
       details: String(error),
     };
   }
@@ -276,7 +309,7 @@ export const getUnreadCount = async (userId: string) => {
   } catch (error) {
     return {
       success: false,
-      error: "Failed to get unread count",
+      error: "Fehler beim Abrufen der Anzahl ungelesener Nachrichten",
       details: String(error),
     };
   }
@@ -308,7 +341,7 @@ export const getPreferences = async (userId: string) => {
   } catch (error) {
     return {
       success: false,
-      error: "Failed to get preferences",
+      error: "Fehler beim Abrufen der Einstellungen",
       details: String(error),
     };
   }
@@ -351,7 +384,7 @@ export const updatePreferences = async (
   } catch (error) {
     return {
       success: false,
-      error: "Failed to update preferences",
+      error: "Fehler beim Aktualisieren der Einstellungen",
       details: String(error),
     };
   }
@@ -380,7 +413,7 @@ export const updateNotificationStatus = async (
   } catch (error) {
     return {
       success: false,
-      error: "Failed to update notification status",
+      error: "Fehler beim Aktualisieren des Benachrichtigungsstatus",
       details: String(error),
     };
   }
@@ -409,7 +442,7 @@ export const updateRecipientStatus = async (
   } catch (error) {
     return {
       success: false,
-      error: "Failed to update recipient status",
+      error: "Fehler beim Aktualisieren des Empfängerstatus",
       details: String(error),
     };
   }

@@ -440,6 +440,18 @@ exports.Prisma.NotificationPreferenceScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.OrderNoteScalarFieldEnum = {
+  id: 'id',
+  orderId: 'orderId',
+  authorId: 'authorId',
+  content: 'content',
+  triggersStatus: 'triggersStatus',
+  category: 'category',
+  isInternal: 'isInternal',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.FileScalarFieldEnum = {
   id: 'id',
   filename: 'filename',
@@ -540,6 +552,7 @@ exports.OrderStatus = exports.$Enums.OrderStatus = {
   OPEN: 'OPEN',
   ACTIVE: 'ACTIVE',
   IN_PROGRESS: 'IN_PROGRESS',
+  IN_REVIEW: 'IN_REVIEW',
   COMPLETED: 'COMPLETED',
   CANCELLED: 'CANCELLED',
   EXPIRED: 'EXPIRED'
@@ -583,6 +596,13 @@ exports.RatingStatus = exports.$Enums.RatingStatus = {
   NEEDS_IMPROVEMENT: 'NEEDS_IMPROVEMENT'
 };
 
+exports.NoteCategory = exports.$Enums.NoteCategory = {
+  COMPLETION_REQUEST: 'COMPLETION_REQUEST',
+  ADMIN_RESPONSE: 'ADMIN_RESPONSE',
+  GENERAL_UPDATE: 'GENERAL_UPDATE',
+  ISSUE_REPORT: 'ISSUE_REPORT'
+};
+
 exports.DocumentType = exports.$Enums.DocumentType = {
   RESUME: 'RESUME',
   ID_CARD: 'ID_CARD',
@@ -617,6 +637,7 @@ exports.Prisma.ModelName = {
   NotificationRecipient: 'NotificationRecipient',
   NotificationOutbox: 'NotificationOutbox',
   NotificationPreference: 'NotificationPreference',
+  OrderNote: 'OrderNote',
   File: 'File',
   SystemConfig: 'SystemConfig',
   AuditLog: 'AuditLog'

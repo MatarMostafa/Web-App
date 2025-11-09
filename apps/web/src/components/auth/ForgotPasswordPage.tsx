@@ -12,8 +12,10 @@ import {
 import { useRouter } from "next/navigation";
 import { api } from "@/lib/api";
 import toast from "react-hot-toast";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function ForgotPasswordPage() {
+  const { t, ready } = useTranslation();
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -51,9 +53,9 @@ export default function ForgotPasswordPage() {
       setIsSubmitted(true);
       setLastSentTime(Date.now());
       setCooldownTime(300); // 5 minutes
-      toast.success("Reset link sent to your email!");
+      toast.success(t("auth.resetLinkSentSuccess"));
     } catch (error: any) {
-      const errorMessage = error.message || "Failed to send reset email";
+      const errorMessage = error.message || t("auth.failedToSendResetEmail");
       toast.error(errorMessage);
 
       // If error mentions waiting time, set cooldown
@@ -71,6 +73,20 @@ export default function ForgotPasswordPage() {
   };
 
   const isResendDisabled = isLoading || cooldownTime > 0;
+
+  if (!ready) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent/10 flex items-center justify-center p-4">
+        <div className="w-full max-w-md space-y-8">
+          <Card className="border-0 shadow-xl bg-card/80 backdrop-blur-sm p-5">
+            <CardContent className="flex items-center justify-center py-8">
+              <Loader2 className="h-8 w-8 animate-spin" />
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
 
   if (isSubmitted) {
     return (
@@ -90,19 +106,17 @@ export default function ForgotPasswordPage() {
                 </div>
               </div>
               <h1 className="text-2xl font-bold text-foreground">
-                Reset Link Sent
+                {t("auth.resetLinkSent")}
               </h1>
               <p className="text-mforeground">
-                We've sent a password reset link to <strong>{email}</strong>.
-                Please check your inbox and follow the instructions.
+                {t("auth.resetLinkSentMessage")} <strong>{email}</strong>. {t("auth.checkInboxMessage")}
               </p>
             </CardHeader>
 
             <CardContent className="space-y-6">
               <div className="bg-accent/20 rounded-xl p-4 text-center">
                 <p className="text-sm text-foreground/80">
-                  Can't find the email? Check your spam folder or try resending
-                  it.
+                  {t("auth.cantFindEmail")}
                 </p>
               </div>
 
@@ -120,23 +134,22 @@ export default function ForgotPasswordPage() {
                   {isLoading ? (
                     <>
                       <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                      Sending...
+                      {t("auth.sending")}
                     </>
                   ) : cooldownTime > 0 ? (
                     <>
                       <Clock className="h-4 w-4 mr-2" />
-                      Resend in {formatTime(cooldownTime)}
+                      {t("auth.resendIn")} {formatTime(cooldownTime)}
                     </>
                   ) : (
-                    "Send Another Link"
+                    t("auth.sendAnotherLink")
                   )}
                 </Button>
 
                 {cooldownTime > 0 && (
                   <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-center">
                     <p className="text-sm text-blue-700">
-                      Please wait {formatTime(cooldownTime)} before requesting
-                      another reset email.
+                      {t("auth.pleaseWait")} {formatTime(cooldownTime)} {t("auth.beforeRequesting")}
                     </p>
                   </div>
                 )}
@@ -145,7 +158,7 @@ export default function ForgotPasswordPage() {
                   onClick={() => router.push("/login")}
                   className="w-full rounded-xl h-12 text-base font-medium bg-primary hover:bg-primary/90"
                 >
-                  Back to Sign In
+                  {t("auth.backToSignIn")}
                 </Button>
               </div>
             </CardContent>
@@ -172,11 +185,10 @@ export default function ForgotPasswordPage() {
               </div>
             </div>
             <h1 className="text-2xl font-bold text-foreground">
-              Forgot Password?
+              {t("auth.forgotPasswordTitle")}
             </h1>
             <p className="text-mforeground">
-              Enter your email address and we'll send you a link to reset your
-              password
+              {t("auth.forgotPasswordSubtitle")}
             </p>
           </CardHeader>
 
@@ -184,11 +196,11 @@ export default function ForgotPasswordPage() {
             {/* Reset Form */}
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="email">Email Address</Label>
+                <Label htmlFor="email">{t("auth.emailAddress")}</Label>
                 <Input
                   id="email"
                   type="email"
-                  placeholder="Enter your email"
+                  placeholder={t("auth.enterYourEmail")}
                   value={email}
                   onChange={(e: any) => setEmail(e.target.value)}
                   className="rounded-xl border-border/50 focus:border-primary"
@@ -204,10 +216,10 @@ export default function ForgotPasswordPage() {
                 {isLoading ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Sending...
+                    {t("auth.sending")}
                   </>
                 ) : (
-                  "Send Reset Link"
+                  t("auth.sendResetLink")
                 )}
               </Button>
             </form>
@@ -219,7 +231,7 @@ export default function ForgotPasswordPage() {
                 className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
               >
                 <ArrowLeft className="h-4 w-4" />
-                Back to Sign In
+                {t("auth.backToSignIn")}
               </button>
             </div>
           </CardContent>

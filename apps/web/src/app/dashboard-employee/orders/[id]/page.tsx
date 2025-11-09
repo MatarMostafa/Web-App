@@ -1,9 +1,11 @@
-import React from 'react'
+"use client";
 
-const Page = () => {
-  return (
-    <div>Page</div>
-  )
+import { useParams } from "next/navigation";
+import { OrderDetailPage } from "@/components/order-detail/OrderDetailPage";
+
+export default function EmployeeOrderDetailPage() {
+  const params = useParams();
+  const orderId = params.id as string;
+
+  return <OrderDetailPage orderId={orderId} userRole="EMPLOYEE" />;
 }
-
-export default Page

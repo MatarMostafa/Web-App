@@ -19,7 +19,7 @@ export const login = async (req: Request, res: Response) => {
     
     if (!identifier || !password) {
       console.log('Missing credentials - identifier:', !!identifier, 'password:', !!password);
-      return res.status(400).json({ message: 'Username/email and password are required' });
+      return res.status(400).json({ message: 'Benutzername/E-Mail und Passwort sind erforderlich' });
     }
     
     const result = await authService.login(identifier, password);

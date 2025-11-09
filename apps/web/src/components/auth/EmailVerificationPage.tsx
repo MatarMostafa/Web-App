@@ -5,8 +5,25 @@ import { Button, Card, CardContent, CardHeader } from "@/components/ui";
 import { useRouter, useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
 import { api } from "@/lib/api";
+import { useTranslation } from "@/hooks/useTranslation";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 export default function EmailVerificationPage() {
+  const { t, ready } = useTranslation();
+  
+  if (!ready) {
+    return (
+      <div className="min-h-screen bg-linear-to-br from-primary/5 via-background to-accent/10 flex items-center justify-center p-4">
+        <div className="w-full max-w-md">
+          <div className="border-0 shadow-xl bg-card/80 backdrop-blur-sm rounded-lg p-8">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
   const router = useRouter();
   const searchParams = useSearchParams();
   const email = searchParams.get("email") || "";
@@ -33,7 +50,7 @@ export default function EmailVerificationPage() {
 
   const handleResendEmail = async () => {
     if (!email) {
-      toast.error("Email not found. Please sign up again.");
+      toast.error(t("auth.emailNotFound"));
       return;
     }
 
@@ -73,6 +90,8 @@ export default function EmailVerificationPage() {
 
   return (
     <div className="min-h-screen bg-linear-to-br from-primary/5 via-background to-accent/10 flex items-center justify-center p-4">
+
+      
       <div className="w-full max-w-md space-y-8">
         {/* Logo */}
         <div className="text-center">
@@ -91,19 +110,17 @@ export default function EmailVerificationPage() {
               </div>
             </div>
             <h1 className="text-2xl font-bold text-foreground">
-              Check Your Inbox
+              {t("auth.checkYourInbox")}
             </h1>
             <p className="text-mforeground">
-              We've sent a verification link to your email address. Please check
-              your inbox and click the link to verify your account.
+              {t("auth.verificationEmailSent")}
             </p>
           </CardHeader>
 
           <CardContent className="space-y-6">
             <div className="bg-accent/20 rounded-xl p-4 text-center">
               <p className="text-sm text-foreground/80">
-                Can't find the email? Check your spam folder or try resending
-                it.
+                {t("auth.cantFindVerificationEmail")}
               </p>
             </div>
 
@@ -121,23 +138,22 @@ export default function EmailVerificationPage() {
                 {isResending ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Sending...
+                    {t("auth.sending")}
                   </>
                 ) : cooldownTime > 0 ? (
                   <>
                     <Clock className="h-4 w-4 mr-2" />
-                    Resend in {formatTime(cooldownTime)}
+                    {t("auth.resendIn")} {formatTime(cooldownTime)}
                   </>
                 ) : (
-                  "Resend Verification Email"
+                  t("auth.resendVerificationEmail")
                 )}
               </Button>
 
               {cooldownTime > 0 && (
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-center">
                   <p className="text-sm text-blue-700">
-                    Please wait {formatTime(cooldownTime)} before requesting
-                    another email to prevent spam.
+                    {`Please wait ${formatTime(cooldownTime)} before requesting another email to prevent spam.`}
                   </p>
                 </div>
               )}
@@ -150,7 +166,7 @@ export default function EmailVerificationPage() {
                 className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
               >
                 <ArrowLeft className="h-4 w-4" />
-                Back to Sign Up
+                {t("auth.backToSignUp")}
               </button>
             </div>
           </CardContent>

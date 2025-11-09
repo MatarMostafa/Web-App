@@ -2,6 +2,7 @@ import { prisma } from "@repo/db";
 import { Employee } from "../types/employee";
 import { WorkScheduleType } from "../types/enums";
 import bcrypt from "bcryptjs";
+import { notifyWelcomeNewEmployee, notifyProfileUpdated } from "./notificationHelpers";
 
 const transformUserToEmployee = (user: any): Employee => {
   const employee = user.employee;
@@ -35,7 +36,7 @@ const transformUserToEmployee = (user: any): Employee => {
     userId: user.id,
     createdAt: user.createdAt.toISOString(),
     updatedAt: user.updatedAt.toISOString(),
-    createdBy: user.createdBy || undefined,
+    createdBy: user.createdByUser ? `${user.createdByUser.username}` : (user.createdBy ? 'Unknown Admin' : 'Self-registered'),
     updatedBy: user.updatedBy || undefined,
   };
 };
@@ -58,10 +59,32 @@ export const getAllEmployees = async (): Promise<Employee[]> => {
       },
     });
 
-    return users.map(transformUserToEmployee);
+    // Get unique creator IDs
+    const creatorIds = [...new Set(users.map(u => u.createdBy).filter(Boolean))];
+    
+    // Fetch creator information
+    const creators = await prisma.user.findMany({
+      where: {
+        id: { in: creatorIds },
+      },
+      select: {
+        id: true,
+        username: true,
+      },
+    });
+    
+    const creatorMap = new Map(creators.map(c => [c.id, c.username]));
+
+    return users.map(user => {
+      const userWithCreator = {
+        ...user,
+        createdByUser: user.createdBy ? { username: creatorMap.get(user.createdBy) } : null,
+      };
+      return transformUserToEmployee(userWithCreator);
+    });
   } catch (error) {
     console.error("Error:", error);
-    throw new Error("Failed to fetch employees");
+    throw new Error("Fehler beim Abrufen der Mitarbeiter");
   }
 };
 
@@ -112,26 +135,37 @@ export const getEmployeeById = async (id: string): Promise<Employee | null> => {
 
     if (!employee || employee.user.role !== "EMPLOYEE") return null;
 
+    // Fetch creator information if createdBy exists
+    let createdByUser = null;
+    if (employee.user.createdBy) {
+      const creator = await prisma.user.findUnique({
+        where: { id: employee.user.createdBy },
+        select: { username: true },
+      });
+      createdByUser = creator ? { username: creator.username } : null;
+    }
+
     // Transform to match the expected format
     const userWithEmployee = {
       ...employee.user,
+      createdByUser,
       employee: employee,
     };
 
     return transformUserToEmployee(userWithEmployee);
   } catch (error) {
     console.error("Error:", error);
-    throw new Error("Failed to fetch employee");
+    throw new Error("Fehler beim Abrufen des Mitarbeiters");
   }
 };
 
-export const createEmployee = async (data: any): Promise<Employee> => {
+export const createEmployee = async (data: any, createdBy?: string): Promise<Employee> => {
   try {
     const { email, username, password, ...employeeData } = data;
     
     // Username is required, email is optional
     if (!username || !password) {
-      throw new Error('Username and password are required');
+      throw new Error('Benutzername und Passwort sind erforderlich');
     }
     
     // Check for existing username
@@ -139,7 +173,7 @@ export const createEmployee = async (data: any): Promise<Employee> => {
       where: { username },
     });
     if (existingUsername) {
-      throw new Error(`Username '${username}' is already taken`);
+      throw new Error(`Benutzername '${username}' ist bereits vergeben`);
     }
     
     // Check for existing email if provided
@@ -148,7 +182,7 @@ export const createEmployee = async (data: any): Promise<Employee> => {
         where: { email },
       });
       if (existingEmail) {
-        throw new Error(`Email '${email}' is already registered`);
+        throw new Error(`E-Mail '${email}' ist bereits registriert`);
       }
     }
 
@@ -159,7 +193,7 @@ export const createEmployee = async (data: any): Promise<Employee> => {
       });
       if (!department) {
         throw new Error(
-          `Department with ID ${employeeData.departmentId} not found`
+          `Abteilung mit ID ${employeeData.departmentId} nicht gefunden`
         );
       }
     }
@@ -171,7 +205,7 @@ export const createEmployee = async (data: any): Promise<Employee> => {
       });
       if (!position) {
         throw new Error(
-          `Position with ID ${employeeData.positionId} not found`
+          `Position mit ID ${employeeData.positionId} nicht gefunden`
         );
       }
     }
@@ -182,7 +216,7 @@ export const createEmployee = async (data: any): Promise<Employee> => {
         where: { id: employeeData.managerId },
       });
       if (!manager) {
-        throw new Error(`Manager with ID ${employeeData.managerId} not found`);
+        throw new Error(`Vorgesetzter mit ID ${employeeData.managerId} nicht gefunden`);
       }
     }
 
@@ -195,6 +229,7 @@ export const createEmployee = async (data: any): Promise<Employee> => {
         password: hashedPassword,
         role: "EMPLOYEE",
         isActive: true, // Admin-created employees are active by default
+        createdBy: createdBy || null,
         employee: {
           create: {
             ...employeeData,
@@ -221,7 +256,14 @@ export const createEmployee = async (data: any): Promise<Employee> => {
       },
     });
 
-    return transformUserToEmployee(user);
+    const employee = transformUserToEmployee(user);
+    
+    // Send welcome notification to new employee
+    if (user.employee) {
+      await notifyWelcomeNewEmployee(user.employee.id);
+    }
+    
+    return employee;
   } catch (error: any) {
     console.error("Error creating employee:", error);
     
@@ -229,11 +271,11 @@ export const createEmployee = async (data: any): Promise<Employee> => {
     if (error.code === 'P2002') {
       const field = error.meta?.target?.[0];
       if (field === 'username') {
-        throw new Error(`Username '${data.username}' is already taken`);
+        throw new Error(`Benutzername '${data.username}' ist bereits vergeben`);
       } else if (field === 'email') {
-        throw new Error(`Email '${data.email}' is already registered`);
+        throw new Error(`E-Mail '${data.email}' ist bereits registriert`);
       }
-      throw new Error('A user with this information already exists');
+      throw new Error('Ein Benutzer mit diesen Informationen existiert bereits');
     }
     
     throw error;
@@ -254,7 +296,7 @@ export const updateEmployee = async (
     });
 
     if (!employee) {
-      throw new Error(`Employee with ID ${id} not found`);
+      throw new Error(`Mitarbeiter mit ID ${id} nicht gefunden`);
     }
     
     // Check for existing email if provided and different from current
@@ -263,7 +305,7 @@ export const updateEmployee = async (
         where: { email },
       });
       if (existingEmail && existingEmail.id !== employee.userId) {
-        throw new Error(`Email '${email}' is already registered`);
+        throw new Error(`E-Mail '${email}' ist bereits registriert`);
       }
     }
 
@@ -299,7 +341,12 @@ export const updateEmployee = async (
       },
     });
 
-    return transformUserToEmployee(user);
+    const updatedEmployee = transformUserToEmployee(user);
+    
+    // Send profile update notification
+    await notifyProfileUpdated(id);
+    
+    return updatedEmployee;
   } catch (error: any) {
     console.error("Error updating employee:", error);
     
@@ -307,11 +354,11 @@ export const updateEmployee = async (
     if (error.code === 'P2002') {
       const field = error.meta?.target?.[0];
       if (field === 'username') {
-        throw new Error(`Username '${username}' is already taken`);
+        throw new Error(`Benutzername '${username}' ist bereits vergeben`);
       } else if (field === 'email') {
-        throw new Error(`Email '${email}' is already registered`);
+        throw new Error(`E-Mail '${email}' ist bereits registriert`);
       }
-      throw new Error('A user with this information already exists');
+      throw new Error('Ein Benutzer mit diesen Informationen existiert bereits');
     }
     
     throw error;

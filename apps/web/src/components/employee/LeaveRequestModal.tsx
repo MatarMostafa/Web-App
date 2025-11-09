@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/select";
 import { useEmployeeLeaveStore } from "@/store/employeeLeaveStore";
 import { formatDate } from "@/lib/utils";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface LeaveRequestModalProps {
   isOpen: boolean;
@@ -27,20 +28,14 @@ interface LeaveRequestModalProps {
   onSuccess: () => void;
 }
 
-const LEAVE_TYPES = [
-  { value: "VACATION", label: "Vacation" },
-  { value: "SICK_LEAVE", label: "Sick Leave" },
-  { value: "PERSONAL", label: "Personal Leave" },
-  { value: "EMERGENCY", label: "Emergency Leave" },
-  { value: "MATERNITY", label: "Maternity Leave" },
-  { value: "PATERNITY", label: "Paternity Leave" },
-];
+
 
 export const LeaveRequestModal: React.FC<LeaveRequestModalProps> = ({
   isOpen,
   onClose,
   onSuccess,
 }) => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     type: "",
     startDate: "",
@@ -51,19 +46,27 @@ export const LeaveRequestModal: React.FC<LeaveRequestModalProps> = ({
   
   const { createLeaveRequest, loading } = useEmployeeLeaveStore();
 
+  const LEAVE_TYPES = [
+    { value: "VACATION", label: t('employee.leaveTypes.VACATION') },
+    { value: "SICK_LEAVE", label: t('employee.leaveTypes.SICK_LEAVE') },
+    { value: "PERSONAL_LEAVE", label: t('employee.leaveTypes.PERSONAL_LEAVE') },
+    { value: "MATERNITY_LEAVE", label: t('employee.leaveTypes.MATERNITY_LEAVE') },
+    { value: "PATERNITY_LEAVE", label: t('employee.leaveTypes.PATERNITY_LEAVE') },
+  ];
+
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
 
     if (!formData.type) {
-      newErrors.type = "Leave type is required";
+      newErrors.type = t('employee.leaveModal.typeRequired');
     }
 
     if (!formData.startDate) {
-      newErrors.startDate = "Start date is required";
+      newErrors.startDate = t('employee.leaveModal.startDateRequired');
     }
 
     if (!formData.endDate) {
-      newErrors.endDate = "End date is required";
+      newErrors.endDate = t('employee.leaveModal.endDateRequired');
     }
 
     if (formData.startDate && formData.endDate) {
@@ -73,11 +76,11 @@ export const LeaveRequestModal: React.FC<LeaveRequestModalProps> = ({
       today.setHours(0, 0, 0, 0);
 
       if (startDate < today) {
-        newErrors.startDate = "Start date cannot be in the past";
+        newErrors.startDate = t('employee.leaveModal.startDatePastError');
       }
 
       if (endDate < startDate) {
-        newErrors.endDate = "End date must be after start date";
+        newErrors.endDate = t('employee.leaveModal.endDateBeforeStartError');
       }
     }
 
@@ -126,18 +129,18 @@ export const LeaveRequestModal: React.FC<LeaveRequestModalProps> = ({
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Request Leave</DialogTitle>
+          <DialogTitle>{t('employee.leaveModal.title')}</DialogTitle>
         </DialogHeader>
         
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="type">Leave Type</Label>
+            <Label htmlFor="type">{t('employee.leaveModal.leaveType')}</Label>
             <Select
               value={formData.type}
               onValueChange={(value) => setFormData({ ...formData, type: value })}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Select leave type" />
+                <SelectValue placeholder={t('employee.leaveModal.selectLeaveType')} />
               </SelectTrigger>
               <SelectContent>
                 {LEAVE_TYPES.map((type) => (
@@ -152,7 +155,7 @@ export const LeaveRequestModal: React.FC<LeaveRequestModalProps> = ({
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="startDate">Start Date</Label>
+              <Label htmlFor="startDate">{t('employee.leaveModal.startDate')}</Label>
               <Input
                 id="startDate"
                 type="date"
@@ -164,7 +167,7 @@ export const LeaveRequestModal: React.FC<LeaveRequestModalProps> = ({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="endDate">End Date</Label>
+              <Label htmlFor="endDate">{t('employee.leaveModal.endDate')}</Label>
               <Input
                 id="endDate"
                 type="date"
@@ -179,16 +182,16 @@ export const LeaveRequestModal: React.FC<LeaveRequestModalProps> = ({
           {formData.startDate && formData.endDate && (
             <div className="bg-blue-50 p-3 rounded-lg">
               <p className="text-sm text-blue-800">
-                <strong>Duration:</strong> {calculateDays()} day{calculateDays() !== 1 ? 's' : ''}
+                <strong>{t('employee.leaveDuration')}:</strong> {calculateDays()} {calculateDays() === 1 ? t('employee.day') : t('employee.days')}
               </p>
             </div>
           )}
 
           <div className="space-y-2">
-            <Label htmlFor="reason">Reason (Optional)</Label>
+            <Label htmlFor="reason">{t('employee.leaveModal.reason')}</Label>
             <Textarea
               id="reason"
-              placeholder="Provide additional details about your leave request..."
+              placeholder={t('employee.leaveModal.reasonPlaceholder')}
               value={formData.reason}
               onChange={(e) => setFormData({ ...formData, reason: e.target.value })}
               rows={3}
@@ -197,10 +200,10 @@ export const LeaveRequestModal: React.FC<LeaveRequestModalProps> = ({
 
           <div className="flex justify-end gap-2 pt-4">
             <Button type="button" variant="outline" onClick={handleClose}>
-              Cancel
+              {t('common.cancel')}
             </Button>
             <Button type="submit" disabled={loading}>
-              {loading ? "Submitting..." : "Submit Request"}
+              {loading ? t('employee.leaveModal.submitting') : t('employee.leaveModal.submitRequest')}
             </Button>
           </div>
         </form>

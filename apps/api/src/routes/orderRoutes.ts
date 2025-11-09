@@ -20,6 +20,15 @@ import {
   updateOrderRatingSchema,
   autoAssignEmployeesSchema,
 } from "../validation/orderSchemas";
+import {
+  createOrderNoteRequestSchema,
+  updateOrderNoteRequestSchema,
+  getOrderNotesRequestSchema,
+  getOrderNoteByIdRequestSchema,
+  deleteOrderNoteRequestSchema,
+  getOrderNotesCountRequestSchema,
+} from "../validation/orderNotesSchemas";
+import { OrderAnalyticsService } from "../services/orderAnalyticsService";
 import { z } from "zod";
 import { prisma } from "@repo/db";
 import {
@@ -47,6 +56,14 @@ import {
   updateOrderRating,
   deleteOrderRating,
 } from "../controllers/orderController";
+import {
+  getOrderNotes,
+  createOrderNote,
+  getOrderNoteById,
+  updateOrderNote,
+  deleteOrderNote,
+  getOrderNotesCount,
+} from "../controllers/orderNotesController";
 
 const router = express.Router();
 
@@ -112,7 +129,7 @@ router.get(
 router.get(
   "/:orderId/assignments",
   authMiddleware,
-  roleMiddleware(["ADMIN", "TEAM_LEADER"]),
+  roleMiddleware(["ADMIN", "TEAM_LEADER", "EMPLOYEE"]),
   getAssignments
 );
 
@@ -282,6 +299,106 @@ router.delete(
   roleMiddleware(["ADMIN", "TEAM_LEADER"]),
   validateRequest(deleteOrderRatingSchema),
   deleteOrderRating
+);
+
+/**
+ * @section Order Notes
+ */
+router.get(
+  "/:orderId/notes",
+  authMiddleware,
+  validateRequest(getOrderNotesRequestSchema),
+  getOrderNotes
+);
+
+router.post(
+  "/:orderId/notes",
+  authMiddleware,
+  validateRequest(createOrderNoteRequestSchema),
+  createOrderNote
+);
+
+router.get(
+  "/:orderId/notes/count",
+  authMiddleware,
+  validateRequest(getOrderNotesCountRequestSchema),
+  getOrderNotesCount
+);
+
+router.get(
+  "/:orderId/notes/:noteId",
+  authMiddleware,
+  validateRequest(getOrderNoteByIdRequestSchema),
+  getOrderNoteById
+);
+
+router.put(
+  "/:orderId/notes/:noteId",
+  authMiddleware,
+  validateRequest(updateOrderNoteRequestSchema),
+  updateOrderNote
+);
+
+router.delete(
+  "/:orderId/notes/:noteId",
+  authMiddleware,
+  validateRequest(deleteOrderNoteRequestSchema),
+  deleteOrderNote
+);
+
+/**
+ * @section Analytics
+ */
+router.get(
+  "/analytics/start-methods",
+  authMiddleware,
+  roleMiddleware(["ADMIN", "TEAM_LEADER"]),
+  async (req: Request, res: Response) => {
+    try {
+      const { startDate, endDate } = req.query;
+      
+      const dateRange = startDate && endDate ? {
+        start: new Date(startDate as string),
+        end: new Date(endDate as string)
+      } : undefined;
+      
+      const analytics = await OrderAnalyticsService.getStartMethodAnalytics(dateRange);
+      res.json({ success: true, data: analytics });
+    } catch (error) {
+      console.error("Start method analytics error:", error);
+      res.status(500).json({ 
+        success: false,
+        message: "Failed to get start method analytics",
+        error: String(error)
+      });
+    }
+  }
+);
+
+router.get(
+  "/analytics/completion",
+  authMiddleware,
+  roleMiddleware(["ADMIN", "TEAM_LEADER"]),
+  async (req: Request, res: Response) => {
+    try {
+      const { startDate, endDate } = req.query;
+      
+      const dateRange = startDate && endDate ? {
+        start: new Date(startDate as string),
+        end: new Date(endDate as string)
+      } : undefined;
+      
+      const analytics = await OrderAnalyticsService.getCompletionAnalytics(dateRange);
+      res.json({ success: true, data: analytics });
+    } catch (error) {
+      console.error("Completion analytics error:", error);
+      res.status(500).json({ 
+        success: false,
+        message: "Failed to get completion analytics",
+        error: String(error)
+      });
+    }
+  }
 );
 
 export default router;

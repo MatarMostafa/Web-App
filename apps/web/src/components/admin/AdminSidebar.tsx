@@ -2,19 +2,12 @@ import React, { useEffect, useState } from "react";
 import {
   LayoutGrid,
   Users,
-  Calendar,
-  MessageSquare,
-  Search,
-  Settings,
   HelpCircle,
   LogOut,
   ChevronLeft,
   ChevronRight,
   X,
-  FolderOpen,
-  Database,
   User,
-  CreditCard,
   Bell,
   Shield,
   ArrowLeft,
@@ -22,7 +15,6 @@ import {
   Contact,
   Briefcase,
   UserCheck,
-  ClipboardList,
   CalendarCheck,
 } from "lucide-react";
 
@@ -42,41 +34,22 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/authStore";
+import { useTranslation } from "@/hooks/useTranslation";
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => {
+  const { t, ready } = useTranslation();
   const isMobile = useIsMobile();
   const [collapsed, setCollapsed] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
+  const { logout } = useAuthStore();
 
   const isSettingsPath = pathname.startsWith("/settings");
 
-  const dashboardNavItems = [
-    { name: "Dashboard", path: "/dashboard-admin", icon: LayoutGrid },
-    { name: "Employees", path: "/dashboard-admin/employees", icon: Users },
-    {
-      name: "Leave Management",
-      path: "/dashboard-admin/leave-management",
-      icon: CalendarCheck,
-    },
-    { name: "Customers", path: "/dashboard-admin/customers", icon: Contact },
-    { name: "Orders", path: "/dashboard-admin/orders", icon: FileBox },
-    {
-      name: "Departments",
-      path: "/dashboard-admin/departments",
-      icon: Briefcase,
-    },
-    { name: "Positions", path: "/dashboard-admin/positions", icon: UserCheck },
-  ];
-
-  const settingsNavItems = [
-    { name: "Profile", path: "/settings", icon: User },
-    { name: "Notifications", path: "/settings/notifications", icon: Bell },
-    { name: "Privacy & Security", path: "/settings/privacy", icon: Shield },
-    { name: "Help & Support", path: "/settings/help", icon: HelpCircle },
-  ];
-
-  const navItems = isSettingsPath ? settingsNavItems : dashboardNavItems;
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleNavClick = () => {
     if (isMobile && onClose) {
@@ -84,11 +57,61 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => {
     }
   };
 
-  const { logout } = useAuthStore();
-
   const handleLogout = async () => {
     await logout();
   };
+
+  if (!mounted || !ready) {
+    return (
+      <div className={cn(
+        "overflow-y-auto border-r border-white/20 bg-linear-to-b from-[#222222] via-[#444444] to-[#222222] backdrop-blur-xl shadow-2xl transition-all duration-300 fixed z-50",
+        isMobile
+          ? cn(
+              "h-screen w-64 left-0 top-0",
+              isOpen ? "translate-x-0" : "-translate-x-full"
+            )
+          : cn(
+              "h-[calc(100vh-65px)] max-h-[calc(100vh-65px)] top-[65px] left-0",
+              collapsed ? "w-[70px]" : "w-64"
+            )
+      )}>
+        <div className="flex items-center justify-center h-full">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+        </div>
+      </div>
+    );
+  }
+
+  const dashboardNavItems = [
+    { name: "Dashboard", key: "navigation.dashboard", path: "/dashboard-admin", icon: LayoutGrid },
+    { name: "Employees", key: "navigation.employees", path: "/dashboard-admin/employees", icon: Users },
+    {
+      name: "Leave Management",
+      key: "navigation.leaveManagement",
+      path: "/dashboard-admin/leave-management",
+      icon: CalendarCheck,
+    },
+    { name: "Customers", key: "navigation.customers", path: "/dashboard-admin/customers", icon: Contact },
+    { name: "Orders", key: "navigation.orders", path: "/dashboard-admin/orders", icon: FileBox },
+    {
+      name: "Departments",
+      key: "navigation.departments",
+      path: "/dashboard-admin/departments",
+      icon: Briefcase,
+    },
+    { name: "Positions", key: "navigation.positions", path: "/dashboard-admin/positions", icon: UserCheck },
+  ];
+
+  const settingsNavItems = [
+    { name: "Profile", key: "navigation.profile", path: "/settings", icon: User },
+    { name: "Notifications", key: "navigation.notifications", path: "/settings/notifications", icon: Bell },
+    { name: "Privacy & Security", key: "navigation.privacySecurity", path: "/settings/privacy", icon: Shield },
+    { name: "Help & Support", key: "navigation.helpSupport", path: "/settings/help", icon: HelpCircle },
+  ];
+
+  const navItems = isSettingsPath ? settingsNavItems : dashboardNavItems;
+
+
 
   if (isMobile && !isOpen) return null;
 
@@ -181,7 +204,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => {
                               )}
                             />
                             {(!collapsed || isMobile) && (
-                              <span>{item.name}</span>
+                              <span>{t(item.key, item.name)}</span>
                             )}
                           </Link>
                         </Button>
@@ -221,14 +244,14 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => {
                               )}
                             />
                             {(!collapsed || isMobile) && (
-                              <span>Back to Dashboard</span>
+                              <span>{t("navigation.backToDashboard")}</span>
                             )}
                           </Link>
                         </Button>
                       </TooltipTrigger>
                       {collapsed && !isMobile && (
                         <TooltipContent side="right">
-                          Back to Dashboard
+                          {t("navigation.backToDashboard")}
                         </TooltipContent>
                       )}
                     </Tooltip>
@@ -249,11 +272,11 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => {
                               collapsed && !isMobile ? "mr-0" : "mr-2"
                             )}
                           />
-                          {(!collapsed || isMobile) && <span>Log Out</span>}
+                          {(!collapsed || isMobile) && <span>{t("navigation.logOut")}</span>}
                         </Button>
                       </TooltipTrigger>
                       {collapsed && !isMobile && (
-                        <TooltipContent side="right">Log Out</TooltipContent>
+                        <TooltipContent side="right">{t("navigation.logOut")}</TooltipContent>
                       )}
                     </Tooltip>
                   </>
@@ -301,11 +324,11 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => {
                               collapsed && !isMobile ? "mr-0" : "mr-2"
                             )}
                           />
-                          {(!collapsed || isMobile) && <span>Log Out</span>}
+                          {(!collapsed || isMobile) && <span>{t("navigation.logOut")}</span>}
                         </Button>
                       </TooltipTrigger>
                       {collapsed && !isMobile && (
-                        <TooltipContent side="right">Log Out</TooltipContent>
+                        <TooltipContent side="right">{t("navigation.logOut")}</TooltipContent>
                       )}
                     </Tooltip>
                   </>

@@ -16,7 +16,7 @@ export const getOrderById = async (req: Request, res: Response) => {
 export const createOrder = async (req: Request, res: Response) => {
   try {
     console.log("Creating order with data:", req.body);
-    const order = await orderService.createOrderService(req.body);
+    const order = await orderService.createOrderService(req.body, (req as any).user?.id);
     res.status(201).json(order);
   } catch (error) {
     console.error("Create order error:", error);
@@ -30,7 +30,7 @@ export const createOrder = async (req: Request, res: Response) => {
 
 export const updateOrder = async (req: Request, res: Response) => {
   try {
-    const order = await orderService.updateOrderService(req.params.id, req.body);
+    const order = await orderService.updateOrderService(req.params.id, req.body, (req as any).user?.id);
     res.json(order);
   } catch (error) {
     console.error("Update order error:", error);
@@ -58,7 +58,8 @@ export const updateOrderStatus = async (req: Request, res: Response) => {
   try {
     const order = await orderService.updateOrderStatusService(
       req.params.id,
-      req.body.status
+      req.body.status,
+      (req as any).user?.id
     );
     res.json(order);
   } catch (error) {
@@ -78,15 +79,25 @@ export const getOrderSummary = async (req: Request, res: Response) => {
 
 // -------------------- Assignments --------------------
 export const getAssignments = async (req: Request, res: Response) => {
-  const assignments = await orderService.getAssignmentsService(req.params.orderId);
-  res.json(assignments);
+  try {
+    const assignments = await orderService.getAssignmentsService(req.params.orderId);
+    res.json({ success: true, data: assignments });
+  } catch (error) {
+    console.error("Get assignments error:", error);
+    res.status(500).json({ 
+      success: false,
+      message: "Failed to get assignments", 
+      error: error instanceof Error ? error.message : String(error)
+    });
+  }
 };
 
 export const createAssignment = async (req: Request, res: Response) => {
   try {
     const assignment = await orderService.createAssignmentService(
       req.params.orderId,
-      req.body
+      req.body,
+      (req as any).user?.id
     );
     res.status(201).json(assignment);
   } catch (error) {
@@ -102,7 +113,8 @@ export const updateAssignment = async (req: Request, res: Response) => {
   try {
     const assignment = await orderService.updateAssignmentService(
       req.params.id,
-      req.body
+      req.body,
+      (req as any).user?.id
     );
     res.json(assignment);
   } catch (error) {
@@ -116,11 +128,12 @@ export const updateAssignment = async (req: Request, res: Response) => {
 
 export const deleteAssignment = async (req: Request, res: Response) => {
   try {
-    await orderService.deleteAssignmentService(req.params.id);
-    res.status(204).send();
+    await orderService.deleteAssignmentService(req.params.id, (req as any).user?.id);
+    res.json({ success: true, message: "Assignment deleted successfully" });
   } catch (error) {
     console.error("Delete assignment error:", error);
     res.status(400).json({ 
+      success: false,
       message: "Failed to delete assignment", 
       error: error instanceof Error ? error.message : String(error)
     });

@@ -62,7 +62,7 @@ export const deleteFileService = async (id: string) => {
   });
 
   if (!file) {
-    throw new Error("File not found");
+    throw new Error("Datei nicht gefunden");
   }
 
   // Delete file from disk

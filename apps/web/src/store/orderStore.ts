@@ -15,8 +15,10 @@ interface OrderState {
   fetchOrder: (id: string) => Promise<void>;
   getOrderById: (id: string) => Promise<Order | null>;
   getOrderAssignments: (orderId: string) => Promise<string[]>;
+  getOrderEmployeeNames: (orderId: string) => Promise<string>;
   createOrder: (data: CreateOrderData) => Promise<Order>;
   updateOrder: (id: string, data: UpdateOrderData) => Promise<void>;
+  updateOrderStatus: (id: string, status: string) => void;
   deleteOrder: (id: string) => Promise<void>;
   clearError: () => void;
 }
@@ -64,11 +66,28 @@ export const useOrderStore = create<OrderState>((set, get) => ({
 
   getOrderAssignments: async (orderId: string) => {
     try {
-      const assignments = await apiClient.get<Array<{ employeeId: string }>>(`/api/orders/${orderId}/assignments`);
-      return assignments.map(a => a.employeeId);
+      const response = await apiClient.get<any>(`/api/orders/${orderId}/assignments`);
+      const assignments = Array.isArray(response) ? response : (response?.data || response?.assignments || []);
+      if (!Array.isArray(assignments)) {
+        console.warn('Assignments response is not an array:', assignments);
+        return [];
+      }
+      return assignments.map((a: any) => a.employeeId || a.id).filter(Boolean);
     } catch (error) {
       console.error('Failed to fetch order assignments:', error);
       return [];
+    }
+  },
+
+  getOrderEmployeeNames: async (orderId: string) => {
+    try {
+      const response = await apiClient.get<any>(`/api/orders/${orderId}/assignments`);
+      const assignments = Array.isArray(response) ? response : response.data || [];
+      const names = assignments.map((a: any) => `${a.employee.firstName} ${a.employee.lastName}`);
+      return names.length > 0 ? names.join(', ') : 'No employees assigned';
+    } catch (error) {
+      console.error('Failed to fetch employee names:', error);
+      return 'Unknown';
     }
   },
 
@@ -101,6 +120,17 @@ export const useOrderStore = create<OrderState>((set, get) => ({
       set({ error: error instanceof Error ? error.message : "Failed to update order", loading: false });
       throw error;
     }
+  },
+
+  updateOrderStatus: (id: string, status: string) => {
+    set(state => ({
+      orders: state.orders.map(order => 
+        order.id === id ? { ...order, status: status as any } : order
+      ),
+      currentOrder: state.currentOrder?.id === id 
+        ? { ...state.currentOrder, status: status as any }
+        : state.currentOrder
+    }));
   },
 
   deleteOrder: async (id: string) => {

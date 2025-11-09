@@ -183,7 +183,7 @@ export const useEmployeeStore = create<EmployeeState>((set, get) => ({
       }
       
       set({ error: errorMessage, loading: false });
-      throw new Error(errorMessage);
+      toast.error(errorMessage);
     }
   },
 
@@ -205,7 +205,7 @@ export const useEmployeeStore = create<EmployeeState>((set, get) => ({
       }
       
       set({ error: errorMessage, loading: false });
-      throw new Error(errorMessage);
+      toast.error(errorMessage);
     }
   },
 

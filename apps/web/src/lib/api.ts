@@ -60,7 +60,13 @@ export const api = {
 
   verifyEmail: async (token: string) => {
     const response = await fetch(`${API_URL}/api/auth/verify-email/${token}`);
-    return response.json();
+    const result = await response.json();
+    
+    if (!response.ok) {
+      throw new Error(result.message || "Email verification failed");
+    }
+    
+    return result;
   },
 
   resendVerificationEmail: async (email: string) => {
@@ -69,6 +75,12 @@ export const api = {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email }),
     });
-    return response.json();
+    const result = await response.json();
+    
+    if (!response.ok) {
+      throw new Error(result.message || "Failed to resend verification email");
+    }
+    
+    return result;
   },
 };
