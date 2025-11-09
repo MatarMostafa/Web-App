@@ -37,11 +37,20 @@ export const authMiddleware = async (
         username: true,
         role: true,
         isActive: true,
+        employee: {
+          select: {
+            isAvailable: true,
+          },
+        },
       },
     });
 
     if (!user || !user.isActive) {
       return res.status(401).json({ message: "User not found or inactive" });
+    }
+
+    if (user.employee && !user.employee.isAvailable) {
+      return res.status(403).json({ message: "Ihr Zugang zum System wurde gesperrt. Bitte wenden Sie sich an den Administrator." });
     }
 
     authReq.user = user;

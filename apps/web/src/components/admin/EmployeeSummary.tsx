@@ -161,6 +161,14 @@ const EmployeeSummary: React.FC<EmployeeSummaryProps> = ({ employee }) => {
                   {employee.scheduleType.replace("_", " ")}
                 </span>
               </div>
+
+              <div className="flex items-center gap-2 text-sm">
+                <User className="h-4 w-4 text-muted-foreground" />
+                <span className="text-muted-foreground">Created by:</span>
+                <span className="font-medium text-foreground">
+                  {employee.createdBy || 'Unknown'}
+                </span>
+              </div>
             </div>
           </div>
 

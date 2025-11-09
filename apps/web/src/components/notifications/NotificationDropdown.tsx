@@ -53,10 +53,15 @@ export function NotificationDropdown() {
       } else {
         setNotifications([]);
       }
-    } catch (error) {
+    } catch (error: any) {
+      // Handle blocked user silently - don't spam console
+      if (error.message && error.message.includes('gesperrt')) {
+        return false; // Signal that user is blocked
+      }
       console.error("Failed to fetch notifications:", error);
       setNotifications([]);
     }
+    return true; // Signal success or non-blocking error
   };
 
   const fetchUnreadCount = async () => {
@@ -67,10 +72,15 @@ export function NotificationDropdown() {
       } else {
         setUnreadCount(0);
       }
-    } catch (error) {
+    } catch (error: any) {
+      // Handle blocked user silently - don't spam console
+      if (error.message && error.message.includes('gesperrt')) {
+        return false; // Signal that user is blocked
+      }
       console.error("Failed to fetch unread count:", error);
       setUnreadCount(0);
     }
+    return true; // Signal success or non-blocking error
   };
 
   const handleMarkAllAsRead = async () => {
@@ -179,13 +189,28 @@ export function NotificationDropdown() {
   };
 
   useEffect(() => {
-    fetchNotifications();
-    fetchUnreadCount();
+    const pollNotifications = async () => {
+      const [notificationsResult, unreadResult] = await Promise.all([
+        fetchNotifications(),
+        fetchUnreadCount()
+      ]);
+      
+      // If either request indicates user is blocked, stop polling
+      if (notificationsResult === false || unreadResult === false) {
+        return false;
+      }
+      return true;
+    };
+    
+    // Initial fetch
+    pollNotifications();
     
     // Poll for updates every 10 seconds
-    const interval = setInterval(() => {
-      fetchNotifications();
-      fetchUnreadCount();
+    const interval = setInterval(async () => {
+      const shouldContinue = await pollNotifications();
+      if (!shouldContinue) {
+        clearInterval(interval);
+      }
     }, 10000);
     
     return () => clearInterval(interval);
