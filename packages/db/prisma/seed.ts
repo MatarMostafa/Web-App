@@ -267,6 +267,43 @@ async function main() {
         category: "Technical",
       },
     }),
+    prisma.qualification.create({
+      data: {
+        name: "React Development",
+        description: "Frontend development with React framework",
+        category: "Technical",
+      },
+    }),
+    prisma.qualification.create({
+      data: {
+        name: "Database Management",
+        description: "SQL and database administration",
+        category: "Technical",
+      },
+    }),
+    prisma.qualification.create({
+      data: {
+        name: "Team Leadership",
+        description: "Leading and managing teams",
+        category: "Management",
+      },
+    }),
+    prisma.qualification.create({
+      data: {
+        name: "Customer Service",
+        description: "Customer relationship management",
+        category: "Soft Skills",
+      },
+    }),
+    prisma.qualification.create({
+      data: {
+        name: "German Language",
+        description: "German language proficiency",
+        category: "Language",
+        requiresCertificate: true,
+        expiryMonths: 24,
+      },
+    }),
   ]);
 
   // Create employee qualifications

@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useEffect } from "react";
-import { useParams } from "next/navigation";
+import React, { useEffect, useState } from "react";
+import { useParams, useSearchParams } from "next/navigation";
 import EmployeeSummary from "@/components/admin/EmployeeSummary";
 import EmployeeProfile from "@/components/admin/EmployeeProfile";
 import { useEmployeeStore } from "@/store/employeeStore";
@@ -11,7 +11,10 @@ import { useTranslation } from '@/hooks/useTranslation';
 const EmployeeDetailPage = () => {
   const { t } = useTranslation();
   const params = useParams();
+  const searchParams = useSearchParams();
   const id = params?.id as string;
+  const initialTab = searchParams?.get('tab') || 'assignments';
+  const [activeTab, setActiveTab] = useState(initialTab);
   const { currentEmployee, isLoadingEmployee, fetchEmployee } =
     useEmployeeStore();
 
@@ -47,6 +50,8 @@ const EmployeeDetailPage = () => {
               ...currentEmployee,
               name: currentEmployee.firstName + " " + currentEmployee.lastName,
             }}
+            initialTab={activeTab}
+            onTabChange={setActiveTab}
           />
         </div>
       </div>
