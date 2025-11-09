@@ -17,7 +17,7 @@ interface SkillsState {
   createQualification: (data: CreateQualificationData) => Promise<void>;
   updateQualification: (id: string, data: UpdateQualificationData) => Promise<void>;
   deleteQualification: (id: string) => Promise<void>;
-  fetchEmployeeQualifications: (employeeId: string) => Promise<void>;
+  fetchEmployeeQualifications: () => Promise<void>;
   addEmployeeQualification: (data: CreateEmployeeQualificationData) => Promise<void>;
   updateEmployeeQualification: (employeeId: string, qualificationId: string, data: UpdateEmployeeQualificationData) => Promise<void>;
   removeEmployeeQualification: (qualificationId: string) => Promise<void>;
@@ -55,6 +55,22 @@ export const useSkillsStore = create<SkillsState>((set, get) => ({
       set({ employeeQualifications, loading: false });
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Failed to fetch employee qualifications";
+      set({ error: errorMessage, loading: false });
+      toast.error(errorMessage);
+    }
+  },
+
+  addEmployeeQualification: async (data: CreateEmployeeQualificationData) => {
+    set({ loading: true, error: null });
+    try {
+      const response = await apiClient.post<{ qualification: EmployeeQualification }>(`/api/qualifications/my-qualifications`, data);
+      set(state => ({ 
+        employeeQualifications: [...state.employeeQualifications, response.qualification], 
+        loading: false 
+      }));
+      toast.success("Skill added successfully");
+    } catch (error: any) {
+      const errorMessage = error?.message || "Failed to add qualification";
       set({ error: errorMessage, loading: false });
       toast.error(errorMessage);
     }
@@ -121,22 +137,6 @@ export const useSkillsStore = create<SkillsState>((set, get) => ({
       toast.success("Skill updated successfully");
     } catch (error: any) {
       const errorMessage = error?.message || "Failed to update qualification";
-      set({ error: errorMessage, loading: false });
-      toast.error(errorMessage);
-    }
-  },
-
-  removeEmployeeQualification: async (qualificationId: string) => {
-    set({ loading: true, error: null });
-    try {
-      await apiClient.delete(`/api/qualifications/my-qualifications/${qualificationId}`);
-      set(state => ({
-        employeeQualifications: state.employeeQualifications.filter(eq => eq.qualificationId !== qualificationId),
-        loading: false
-      }));
-      toast.success("Skill removed successfully");
-    } catch (error: any) {
-      const errorMessage = error?.message || "Failed to remove qualification";
       set({ error: errorMessage, loading: false });
       toast.error(errorMessage);
     }
