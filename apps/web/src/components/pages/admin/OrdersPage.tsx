@@ -17,18 +17,7 @@ import { useTranslation } from "@/hooks/useTranslation";
 
 const OrdersPage = () => {
   const { t, ready } = useTranslation();
-  
-  if (!ready) {
-    return (
-      <div className="p-6">
-        <div className="animate-pulse">
-          <div className="h-8 bg-gray-200 rounded w-1/4 mb-2"></div>
-          <div className="h-4 bg-gray-200 rounded w-1/2 mb-6"></div>
-          <div className="h-64 bg-gray-200 rounded"></div>
-        </div>
-      </div>
-    );
-  }
+  const [mounted, setMounted] = useState(false);
   const { orders, loading, fetchOrders, deleteOrder, getOrderEmployeeNames } = useOrderStore();
   const [assignedEmployees, setAssignedEmployees] = useState<Record<string, string>>({});
   const [searchQuery, setSearchQuery] = useState("");
@@ -37,10 +26,16 @@ const OrdersPage = () => {
   const [notesOrder, setNotesOrder] = useState<Order | null>(null);
   const [notesDialogOpen, setNotesDialogOpen] = useState(false);
   const router = useRouter();
+  
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
-    fetchOrders();
-  }, [fetchOrders]);
+    if (mounted && ready) {
+      fetchOrders();
+    }
+  }, [mounted, ready, fetchOrders]);
 
   useEffect(() => {
     // Check for stored notification data
@@ -112,13 +107,25 @@ const OrdersPage = () => {
     }
   };
 
+  if (!mounted || !ready) {
+    return (
+      <div className="p-6">
+        <div className="animate-pulse">
+          <div className="h-8 bg-gray-200 rounded w-1/4 mb-2"></div>
+          <div className="h-4 bg-gray-200 rounded w-1/2 mb-6"></div>
+          <div className="h-64 bg-gray-200 rounded"></div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="p-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-foreground mb-1">{t("admin.orders.title")}</h1>
+          <h1 className="text-3xl font-bold text-foreground mb-1">{t("admin.orders.title", "Orders")}</h1>
           <p className="text-muted-foreground">
-            {t("admin.orders.subtitle")}
+            {t("admin.orders.subtitle", "Manage your organization's orders")}
           </p>
         </div>
         <div className="flex gap-2">

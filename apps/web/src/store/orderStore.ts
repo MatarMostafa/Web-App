@@ -66,8 +66,13 @@ export const useOrderStore = create<OrderState>((set, get) => ({
 
   getOrderAssignments: async (orderId: string) => {
     try {
-      const assignments = await apiClient.get<Array<{ employeeId: string }>>(`/api/orders/${orderId}/assignments`);
-      return assignments.map(a => a.employeeId);
+      const response = await apiClient.get<any>(`/api/orders/${orderId}/assignments`);
+      const assignments = Array.isArray(response) ? response : (response?.data || response?.assignments || []);
+      if (!Array.isArray(assignments)) {
+        console.warn('Assignments response is not an array:', assignments);
+        return [];
+      }
+      return assignments.map((a: any) => a.employeeId || a.id).filter(Boolean);
     } catch (error) {
       console.error('Failed to fetch order assignments:', error);
       return [];
