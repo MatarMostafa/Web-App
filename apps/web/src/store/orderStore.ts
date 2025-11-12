@@ -66,16 +66,22 @@ export const useOrderStore = create<OrderState>((set, get) => ({
 
   getOrderAssignments: async (orderId: string) => {
     try {
-      const response = await apiClient.get<any>(`/api/orders/${orderId}/assignments`);
-      const assignments = Array.isArray(response) ? response : (response?.data || response?.assignments || []);
-      if (!Array.isArray(assignments)) {
-        console.warn('Assignments response is not an array:', assignments);
-        return [];
-      }
-      return assignments.map((a: any) => a.employeeId || a.id).filter(Boolean);
+      const employeeIds = await apiClient.get<string[]>(`/api/orders/${orderId}/assigned-employees`);
+      return Array.isArray(employeeIds) ? employeeIds : [];
     } catch (error) {
       console.error('Failed to fetch order assignments:', error);
-      return [];
+      // Fallback to old method
+      try {
+        const response = await apiClient.get<any>(`/api/orders/${orderId}/assignments`);
+        const assignments = Array.isArray(response) ? response : (response?.data || response?.assignments || []);
+        if (!Array.isArray(assignments)) {
+          return [];
+        }
+        return assignments.map((a: any) => a.employeeId || a.id).filter(Boolean);
+      } catch (fallbackError) {
+        console.error('Fallback method also failed:', fallbackError);
+        return [];
+      }
     }
   },
 

@@ -42,6 +42,7 @@ export * from "./switch";
 export * from "./table";
 export * from "./tabs";
 export * from "./textarea";
+export { default as TimeInput } from "./TimeInput";
 export * from "./toast";
 export * from "./toggle-group";
 export * from "./toggle";
