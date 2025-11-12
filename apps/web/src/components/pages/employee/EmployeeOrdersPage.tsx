@@ -71,8 +71,20 @@ const EmployeeOrdersPage = () => {
       }
     };
 
+    // Event listener for refreshing orders data
+    const handleRefreshOrders = () => {
+      if (session?.user?.id) {
+        fetchEmployeeAssignments(session.user.id);
+      }
+    };
+
     window.addEventListener('openOrderNotes', handleOpenOrderNotes as EventListener);
-    return () => window.removeEventListener('openOrderNotes', handleOpenOrderNotes as EventListener);
+    window.addEventListener('refreshEmployeeOrders', handleRefreshOrders);
+    
+    return () => {
+      window.removeEventListener('openOrderNotes', handleOpenOrderNotes as EventListener);
+      window.removeEventListener('refreshEmployeeOrders', handleRefreshOrders);
+    };
   }, [employeeAssignments]);
 
   const handleViewNotes = (order: any) => {
