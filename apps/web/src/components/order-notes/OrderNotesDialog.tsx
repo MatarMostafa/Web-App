@@ -231,7 +231,7 @@ export const OrderNotesDialog: React.FC<OrderNotesDialogProps> = ({
                     : orderStatus.replace("_", " ")}
               </Badge>
             </div>
-            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-xs sm:text-sm text-muted-foreground">
+            <div className="flex flex-col sm:flex-row sm:items-start gap-2 sm:gap-4 text-xs sm:text-sm text-muted-foreground flex-wrap">
               {orderDetails?.scheduledDate && (
                 <div className="flex items-center gap-1">
                   <Calendar className="h-3 w-3 sm:h-4 sm:w-4" />
@@ -247,9 +247,9 @@ export const OrderNotesDialog: React.FC<OrderNotesDialogProps> = ({
                 </div>
               )}
               {orderDetails?.assignedEmployee && (
-                <div className="flex items-center gap-1">
-                  <User className="h-3 w-3 sm:h-4 sm:w-4" />
-                  <span className="truncate">
+                <div className="flex items-start gap-1">
+                  <User className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0 mt-0.5" />
+                  <span className="break-words flex-1">
                     {orderDetails.assignedEmployee}
                   </span>
                 </div>
