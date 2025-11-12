@@ -9,7 +9,7 @@ export const getAllOrders = async (_req: Request, res: Response) => {
 
 export const getOrderById = async (req: Request, res: Response) => {
   const order = await orderService.getOrderByIdService(req.params.id);
-  if (!order) return res.status(404).json({ message: "Order not found" });
+  if (!order) return res.status(404).json({ message: "Auftrag nicht gefunden" });
   res.json(order);
 };
 
@@ -21,7 +21,7 @@ export const createOrder = async (req: Request, res: Response) => {
     console.error("Create order error:", error);
     console.error("Request body:", req.body);
     res.status(400).json({ 
-      message: "Failed to create order", 
+      message: "Fehler beim Erstellen des Auftrags", 
       error: error instanceof Error ? error.message : String(error)
     });
   }
@@ -34,7 +34,7 @@ export const updateOrder = async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Update order error:", error);
     res.status(400).json({ 
-      message: "Failed to update order", 
+      message: "Fehler beim Aktualisieren des Auftrags", 
       error: error instanceof Error ? error.message : String(error)
     });
   }
@@ -47,7 +47,7 @@ export const deleteOrder = async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Delete order error:", error);
     res.status(400).json({ 
-      message: "Failed to delete order", 
+      message: "Fehler beim Löschen des Auftrags", 
       error: error instanceof Error ? error.message : String(error)
     });
   }
@@ -64,7 +64,7 @@ export const updateOrderStatus = async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Update order status error:", error);
     res.status(400).json({ 
-      message: "Failed to update order status", 
+      message: "Fehler beim Aktualisieren des Auftragsstatus", 
       error: error instanceof Error ? error.message : String(error)
     });
   }
@@ -72,7 +72,7 @@ export const updateOrderStatus = async (req: Request, res: Response) => {
 
 export const getOrderSummary = async (req: Request, res: Response) => {
   const summary = await orderService.getOrderSummaryService(req.params.id);
-  if (!summary) return res.status(404).json({ message: "Order not found" });
+  if (!summary) return res.status(404).json({ message: "Auftrag nicht gefunden" });
   res.json(summary);
 };
 
@@ -85,7 +85,21 @@ export const getAssignments = async (req: Request, res: Response) => {
     console.error("Get assignments error:", error);
     res.status(500).json({ 
       success: false,
-      message: "Failed to get assignments", 
+      message: "Fehler beim Abrufen der Zuweisungen", 
+      error: error instanceof Error ? error.message : String(error)
+    });
+  }
+};
+
+export const getAssignedEmployeeIds = async (req: Request, res: Response) => {
+  try {
+    const assignments = await orderService.getAssignmentsService(req.params.orderId);
+    const employeeIds = assignments.map(assignment => assignment.employeeId);
+    res.json(employeeIds);
+  } catch (error) {
+    console.error("Get assigned employee IDs error:", error);
+    res.status(500).json({ 
+      message: "Fehler beim Abrufen der zugewiesenen Mitarbeiter-IDs", 
       error: error instanceof Error ? error.message : String(error)
     });
   }
@@ -102,7 +116,7 @@ export const createAssignment = async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Create assignment error:", error);
     res.status(400).json({ 
-      message: "Failed to create assignment", 
+      message: "Fehler beim Erstellen der Zuweisung", 
       error: error instanceof Error ? error.message : String(error)
     });
   }
@@ -119,7 +133,7 @@ export const updateAssignment = async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Update assignment error:", error);
     res.status(400).json({ 
-      message: "Failed to update assignment", 
+      message: "Fehler beim Aktualisieren der Zuweisung", 
       error: error instanceof Error ? error.message : String(error)
     });
   }
@@ -128,12 +142,12 @@ export const updateAssignment = async (req: Request, res: Response) => {
 export const deleteAssignment = async (req: Request, res: Response) => {
   try {
     await orderService.deleteAssignmentService(req.params.id, (req as any).user?.id);
-    res.json({ success: true, message: "Assignment deleted successfully" });
+    res.json({ success: true, message: "Zuweisung erfolgreich gelöscht" });
   } catch (error) {
     console.error("Delete assignment error:", error);
     res.status(400).json({ 
       success: false,
-      message: "Failed to delete assignment", 
+      message: "Fehler beim Löschen der Zuweisung", 
       error: error instanceof Error ? error.message : String(error)
     });
   }
@@ -149,7 +163,7 @@ export const updateAssignmentStatus = async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Update assignment status error:", error);
     res.status(400).json({ 
-      message: "Failed to update assignment status", 
+      message: "Fehler beim Aktualisieren des Zuweisungsstatus", 
       error: error instanceof Error ? error.message : String(error)
     });
   }
@@ -165,7 +179,7 @@ export const autoAssignEmployees = async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Auto-assignment error:", error);
     res.status(400).json({ 
-      message: "Auto-assignment failed", 
+      message: "Automatische Zuweisung fehlgeschlagen", 
       error: error instanceof Error ? error.message : String(error)
     });
   }
@@ -189,7 +203,7 @@ export const createOrderAssignment = async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Create order assignment error:", error);
     res.status(400).json({ 
-      message: "Failed to create order assignment", 
+      message: "Fehler beim Erstellen der Auftragszuweisung", 
       error: error instanceof Error ? error.message : String(error)
     });
   }
@@ -202,7 +216,7 @@ export const deleteOrderAssignment = async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Delete order assignment error:", error);
     res.status(400).json({ 
-      message: "Failed to delete order assignment", 
+      message: "Fehler beim Löschen der Auftragszuweisung", 
       error: error instanceof Error ? error.message : String(error)
     });
   }
@@ -226,7 +240,7 @@ export const createOrderQualification = async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Create order qualification error:", error);
     res.status(400).json({ 
-      message: "Failed to create order qualification", 
+      message: "Fehler beim Erstellen der Auftragsqualifikation", 
       error: error instanceof Error ? error.message : String(error)
     });
   }
@@ -239,7 +253,7 @@ export const deleteOrderQualification = async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Delete order qualification error:", error);
     res.status(400).json({ 
-      message: "Failed to delete order qualification", 
+      message: "Fehler beim Löschen der Auftragsqualifikation", 
       error: error instanceof Error ? error.message : String(error)
     });
   }
@@ -268,7 +282,7 @@ export const createOrderRating = async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Create order rating error:", error);
     res.status(400).json({ 
-      message: "Failed to create order rating", 
+      message: "Fehler beim Erstellen der Auftragsbewertung", 
       error: error instanceof Error ? error.message : String(error)
     });
   }
@@ -282,7 +296,7 @@ export const updateOrderRating = async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Update order rating error:", error);
     res.status(400).json({ 
-      message: "Failed to update order rating", 
+      message: "Fehler beim Aktualisieren der Auftragsbewertung", 
       error: error instanceof Error ? error.message : String(error)
     });
   }
@@ -296,7 +310,7 @@ export const deleteOrderRating = async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Delete order rating error:", error);
     res.status(400).json({ 
-      message: "Failed to delete order rating", 
+      message: "Fehler beim Löschen der Auftragsbewertung", 
       error: error instanceof Error ? error.message : String(error)
     });
   }
