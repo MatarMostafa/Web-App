@@ -42,7 +42,7 @@ interface AssignEmployeeModalProps {
   orderId: string;
   currentAssignments: string[];
   onAssignmentComplete: () => void;
-  maxEmployees: number;
+  maxEmployees?: number;
 }
 
 export const AssignEmployeeModal: React.FC<AssignEmployeeModalProps> = ({
@@ -109,12 +109,6 @@ export const AssignEmployeeModal: React.FC<AssignEmployeeModalProps> = ({
         return prev.filter((id) => id !== employeeId);
       }
       
-      const availableSlots = maxEmployees - currentAssignments.length;
-      if (prev.length >= availableSlots) {
-        toast.error(`Cannot select more than ${availableSlots} employees. This order has ${availableSlots} available slots.`);
-        return prev;
-      }
-      
       return [...prev, employeeId];
     });
   };
@@ -171,9 +165,9 @@ export const AssignEmployeeModal: React.FC<AssignEmployeeModalProps> = ({
             />
           </div>
 
-          {/* Selected count and limit info */}
+          {/* Selected count info */}
           <div className="text-sm text-muted-foreground">
-            {selectedEmployees.length} of {maxEmployees - currentAssignments.length} available slots selected
+            {selectedEmployees.length} employee{selectedEmployees.length !== 1 ? 's' : ''} selected
           </div>
 
           {/* Employee list */}
@@ -206,20 +200,13 @@ export const AssignEmployeeModal: React.FC<AssignEmployeeModalProps> = ({
                   className={`flex items-center gap-3 p-3 border rounded-lg transition-colors ${
                     selectedEmployees.includes(employee.id)
                       ? "border-primary bg-primary/5"
-                      : !selectedEmployees.includes(employee.id) && selectedEmployees.length >= (maxEmployees - currentAssignments.length)
-                      ? "opacity-50 cursor-not-allowed"
                       : "hover:bg-gray-50 cursor-pointer"
                   }`}
-                  onClick={() => {
-                    if (selectedEmployees.includes(employee.id) || selectedEmployees.length < (maxEmployees - currentAssignments.length)) {
-                      handleEmployeeToggle(employee.id);
-                    }
-                  }}
+                  onClick={() => handleEmployeeToggle(employee.id)}
                 >
                   <Checkbox
                     checked={selectedEmployees.includes(employee.id)}
                     onCheckedChange={() => handleEmployeeToggle(employee.id)}
-                    disabled={!selectedEmployees.includes(employee.id) && selectedEmployees.length >= (maxEmployees - currentAssignments.length)}
                   />
                   
                   <Avatar className="w-10 h-10">
