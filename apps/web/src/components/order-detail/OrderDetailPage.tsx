@@ -53,6 +53,7 @@ export const OrderDetailPage: React.FC<OrderDetailPageProps> = ({
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [assignedStaffCount, setAssignedStaffCount] = useState<number>(0);
 
   const { orders, fetchOrders, getOrderEmployeeNames } = useOrderStore();
   const { employeeAssignments, fetchEmployeeAssignments } = useEmployeeOrderStore();
@@ -184,9 +185,11 @@ export const OrderDetailPage: React.FC<OrderDetailPageProps> = ({
             <div className="flex items-center gap-2">
               <Users className="h-4 w-4 text-muted-foreground" />
               <div>
-                <p className="text-sm font-medium">Required Staff</p>
+                <p className="text-sm font-medium">Assigned Staff</p>
                 <p className="text-sm text-muted-foreground">
-                  {order.requiredEmployees} {order.requiredEmployees === 1 ? 'person' : 'people'}
+                  {assignedStaffCount === 0 ? 'No staff assigned' : 
+                   assignedStaffCount === 1 ? '1 person assigned' : 
+                   `${assignedStaffCount} people assigned`}
                 </p>
               </div>
             </div>
@@ -229,7 +232,12 @@ export const OrderDetailPage: React.FC<OrderDetailPageProps> = ({
 
         {/* Right Column - Assignments */}
         <div>
-          <OrderAssignments orderId={orderId} order={order} userRole={userRole} />
+          <OrderAssignments 
+            orderId={orderId} 
+            order={order} 
+            userRole={userRole} 
+            onAssignmentCountChange={setAssignedStaffCount}
+          />
         </div>
       </div>
     </div>
