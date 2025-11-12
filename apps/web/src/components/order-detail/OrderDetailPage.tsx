@@ -13,6 +13,7 @@ import { useEmployeeOrderStore } from "@/store/employee/employeeOrderStore";
 import { OrderTimeline } from "./OrderTimeline";
 import { OrderActions } from "./OrderActions";
 import { OrderAssignments } from "./OrderAssignments";
+import { OrderDetailSkeleton } from "./OrderDetailSkeleton";
 import { useTranslation } from "@/hooks/useTranslation";
 import { format } from "date-fns";
 
@@ -54,6 +55,7 @@ export const OrderDetailPage: React.FC<OrderDetailPageProps> = ({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [assignedStaffCount, setAssignedStaffCount] = useState<number>(0);
+  const [dataFetched, setDataFetched] = useState(false);
 
   const { orders, fetchOrders, getOrderEmployeeNames } = useOrderStore();
   const { employeeAssignments, fetchEmployeeAssignments } = useEmployeeOrderStore();
@@ -74,23 +76,30 @@ export const OrderDetailPage: React.FC<OrderDetailPageProps> = ({
   // Update order when stores change
   useEffect(() => {
     if (userRole === "ADMIN") {
-      const foundOrder = orders.find(o => o.id === orderId);
-      if (foundOrder) {
-        setOrder(foundOrder);
-        setError(null);
-      } else if (orders.length > 0) {
-        setError("Order not found");
+      if (orders.length > 0) {
+        setDataFetched(true);
+        const foundOrder = orders.find(o => o.id === orderId);
+        if (foundOrder) {
+          setOrder(foundOrder);
+          setError(null);
+        } else {
+          setError("Order not found");
+        }
+        setLoading(false);
       }
     } else {
-      const assignment = employeeAssignments.find(a => a.order.id === orderId);
-      if (assignment) {
-        setOrder(assignment.order as Order);
-        setError(null);
-      } else if (employeeAssignments.length > 0) {
-        setError("Order not found or not assigned to you");
+      if (employeeAssignments.length > 0) {
+        setDataFetched(true);
+        const assignment = employeeAssignments.find(a => a.order.id === orderId);
+        if (assignment) {
+          setOrder(assignment.order as Order);
+          setError(null);
+        } else {
+          setError("Order not found or not assigned to you");
+        }
+        setLoading(false);
       }
     }
-    setLoading(false);
   }, [orders, employeeAssignments, orderId, userRole]);
 
   const handleBack = () => {
@@ -99,11 +108,7 @@ export const OrderDetailPage: React.FC<OrderDetailPageProps> = ({
   };
 
   if (loading) {
-    return (
-      <div className="p-6">
-        <LoadingSpinnerWithText text="Loading order details..." />
-      </div>
-    );
+    return <OrderDetailSkeleton />;
   }
 
   if (error || !order) {
