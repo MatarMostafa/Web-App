@@ -47,7 +47,7 @@ const EmployeeOrdersPage = () => {
 
   useEffect(() => {
     // Check for stored notification data
-    const storedData = sessionStorage.getItem('openOrderNotes');
+    const storedData = sessionStorage.getItem('open Order Notes');
     if (storedData && employeeAssignments.length > 0) {
       try {
         const { orderId } = JSON.parse(storedData);
