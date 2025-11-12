@@ -44,12 +44,14 @@ interface OrderAssignmentsProps {
   orderId: string;
   order: any;
   userRole: "ADMIN" | "EMPLOYEE";
+  onAssignmentCountChange?: (count: number) => void;
 }
 
 export const OrderAssignments: React.FC<OrderAssignmentsProps> = ({
   orderId,
   order,
   userRole,
+  onAssignmentCountChange,
 }) => {
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [loading, setLoading] = useState(true);
@@ -63,12 +65,16 @@ export const OrderAssignments: React.FC<OrderAssignmentsProps> = ({
         const response = await apiClient.get<any>(`/api/orders/${orderId}/assignments`);
         console.log('Assignments API response:', response);
         if (response && typeof response === 'object' && 'success' in response && response.success) {
-          setAssignments(response.data || []);
+          const assignmentData = response.data || [];
+          setAssignments(assignmentData);
+          onAssignmentCountChange?.(assignmentData.length);
         } else if (Array.isArray(response)) {
           // Handle case where response is directly an array
           setAssignments(response);
+          onAssignmentCountChange?.(response.length);
         } else {
           setAssignments([]);
+          onAssignmentCountChange?.(0);
         }
       } catch (error) {
         console.error("Failed to load assignments:", error);
@@ -89,7 +95,9 @@ export const OrderAssignments: React.FC<OrderAssignmentsProps> = ({
         // Reload assignments
         const updatedResponse = await apiClient.get<any>(`/api/orders/${orderId}/assignments`);
         if (updatedResponse && typeof updatedResponse === 'object' && 'success' in updatedResponse && updatedResponse.success) {
-          setAssignments(updatedResponse.data || []);
+          const assignmentData = updatedResponse.data || [];
+          setAssignments(assignmentData);
+          onAssignmentCountChange?.(assignmentData.length);
         }
         toast.success('Staff member removed successfully');
       }
@@ -102,14 +110,6 @@ export const OrderAssignments: React.FC<OrderAssignmentsProps> = ({
   };
 
   const handleAssignStaff = () => {
-    const requiredStaff = order?.requiredEmployees || 0;
-    const currentStaff = assignments.length;
-    
-    if (currentStaff >= requiredStaff) {
-      toast.error(`Cannot assign more staff. This order requires ${requiredStaff} staff and already has ${currentStaff} assigned. Please remove a staff member first.`);
-      return;
-    }
-    
     setShowAssignModal(true);
   };
 
@@ -118,9 +118,12 @@ export const OrderAssignments: React.FC<OrderAssignmentsProps> = ({
     try {
       const response = await apiClient.get<any>(`/api/orders/${orderId}/assignments`);
       if (response && typeof response === 'object' && 'success' in response && response.success) {
-        setAssignments(response.data || []);
+        const assignmentData = response.data || [];
+        setAssignments(assignmentData);
+        onAssignmentCountChange?.(assignmentData.length);
       } else if (Array.isArray(response)) {
         setAssignments(response);
+        onAssignmentCountChange?.(response.length);
       }
     } catch (error) {
       console.error("Failed to reload assignments:", error);
@@ -163,12 +166,9 @@ export const OrderAssignments: React.FC<OrderAssignmentsProps> = ({
           <div>
             <CardTitle>Assigned Staff</CardTitle>
             <p className="text-sm text-muted-foreground mt-1">
-              {assignments.length} of {order?.requiredEmployees || 0} required staff assigned
-              {assignments.length < (order?.requiredEmployees || 0) && (
-                <span className="text-orange-600 ml-1">
-                  ({(order?.requiredEmployees || 0) - assignments.length} more needed)
-                </span>
-              )}
+              {assignments.length === 0 ? 'No staff assigned' : 
+               assignments.length === 1 ? '1 person assigned' : 
+               `${assignments.length} people assigned`}
             </p>
           </div>
           {userRole === "ADMIN" && (
@@ -277,7 +277,7 @@ export const OrderAssignments: React.FC<OrderAssignmentsProps> = ({
         orderId={orderId}
         currentAssignments={assignments.map(a => a.employeeId)}
         onAssignmentComplete={handleAssignmentComplete}
-        maxEmployees={order?.requiredEmployees || 0}
+        maxEmployees={undefined}
       />
     </Card>
   );

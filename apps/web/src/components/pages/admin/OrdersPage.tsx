@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui";
-import { Input } from "@/components/ui";
+import { Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui";
 import { Search, Plus, Package, LogOut } from "lucide-react";
 import OrderTableView from "@/components/admin/OrderTableView";
 import AddOrderDialog from "@/components/admin/AddOrderDialog";
@@ -21,6 +21,7 @@ const OrdersPage = () => {
   const { orders, loading, fetchOrders, deleteOrder, getOrderEmployeeNames } = useOrderStore();
   const [assignedEmployees, setAssignedEmployees] = useState<Record<string, string>>({});
   const [searchQuery, setSearchQuery] = useState("");
+  const [sortBy, setSortBy] = useState("date");
   const [editingOrder, setEditingOrder] = useState<Order | null>(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [notesOrder, setNotesOrder] = useState<Order | null>(null);
@@ -67,14 +68,24 @@ const OrdersPage = () => {
     return () => window.removeEventListener('openOrderNotes', handleOpenOrderNotes as EventListener);
   }, [orders]);
 
-  const filteredOrders = orders.filter(
-    (order) =>
-      order.orderNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (order.location &&
-        order.location.toLowerCase().includes(searchQuery.toLowerCase())) ||
-      (order.description &&
-        order.description.toLowerCase().includes(searchQuery.toLowerCase()))
-  );
+  const filteredOrders = orders
+    .filter(
+      (order) =>
+        order.orderNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (order.location &&
+          order.location.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (order.description &&
+          order.description.toLowerCase().includes(searchQuery.toLowerCase()))
+    )
+    .sort((a, b) => {
+      if (sortBy === "name") {
+        return a.orderNumber.localeCompare(b.orderNumber);
+      } else {
+        const dateA = new Date(a.updatedAt || a.scheduledDate);
+        const dateB = new Date(b.updatedAt || b.scheduledDate);
+        return dateB.getTime() - dateA.getTime();
+      }
+    });
 
   const handleEdit = (order: Order) => {
     setEditingOrder(order);

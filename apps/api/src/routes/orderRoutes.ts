@@ -40,6 +40,7 @@ import {
   updateOrderStatus,
   getOrderSummary,
   getAssignments,
+  getAssignedEmployeeIds,
   createAssignment,
   updateAssignment,
   deleteAssignment,
@@ -133,6 +134,13 @@ router.get(
   getAssignments
 );
 
+router.get(
+  "/:orderId/assigned-employees",
+  authMiddleware,
+  roleMiddleware(["ADMIN", "TEAM_LEADER"]),
+  getAssignedEmployeeIds
+);
+
 router.post(
   "/:orderId/assignments",
   authMiddleware,
@@ -189,6 +197,12 @@ router.post(
       // Remove existing assignments
       await prisma.assignment.deleteMany({ where: { orderId } });
       
+      // Update order's requiredEmployees count
+      await prisma.order.update({
+        where: { id: orderId },
+        data: { requiredEmployees: employeeIds.length || 1 }
+      });
+      
       // Create new assignments
       const assignments = await Promise.all(
         employeeIds.map((employeeId: string) =>
@@ -203,11 +217,11 @@ router.post(
         )
       );
       
-      res.json({ message: "Employees assigned successfully", assignments });
+      res.json({ message: "Mitarbeiter erfolgreich zugewiesen", assignments });
     } catch (error) {
       console.error("Bulk assignment error:", error);
       res.status(400).json({ 
-        message: "Failed to assign employees", 
+        message: "Fehler beim Zuweisen der Mitarbeiter", 
         error: error instanceof Error ? error.message : String(error)
       });
     }

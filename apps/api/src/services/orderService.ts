@@ -59,7 +59,7 @@ export const getOrderByIdService = async (id: string) => {
 };
 
 export const createOrderService = async (data: OrderCreateInput & { assignedEmployeeIds?: string[] }, createdBy?: string) => {
-  const { assignedEmployeeIds, ...orderData } = data;
+  let { assignedEmployeeIds, ...orderData } = data;
   
   // Clean empty strings to undefined for optional DateTime fields
   if (orderData.startTime === '') orderData.startTime = undefined;
@@ -67,6 +67,11 @@ export const createOrderService = async (data: OrderCreateInput & { assignedEmpl
   if (orderData.location === '') orderData.location = undefined;
   if (orderData.specialInstructions === '') orderData.specialInstructions = undefined;
   if (orderData.description === '') orderData.description = undefined;
+  
+  // Auto-set startTime to scheduledDate if not provided
+  if (!orderData.startTime && orderData.scheduledDate) {
+    orderData.startTime = orderData.scheduledDate;
+  }
   
   // Auto-generate order number if not provided
   if (!orderData.orderNumber) {
@@ -103,10 +108,11 @@ export const createOrderService = async (data: OrderCreateInput & { assignedEmpl
   const order = await prisma.order.create({
     data: {
       ...orderData,
+      requiredEmployees: assignedEmployeeIds?.length || orderData.requiredEmployees || 1,
       createdBy
     },
   });
-  
+  console.log("order = ", order)
   // Auto-update status based on assignments
   let newStatus = order.status;
   if (assignedEmployeeIds && assignedEmployeeIds.length > 0) {
@@ -117,6 +123,25 @@ export const createOrderService = async (data: OrderCreateInput & { assignedEmpl
 
   // Create assignments if employees are specified
   if (assignedEmployeeIds && assignedEmployeeIds.length > 0) {
+    // Validate employee IDs exist
+    const existingEmployees = await prisma.employee.findMany({
+      where: { id: { in: assignedEmployeeIds } },
+      select: { id: true }
+    });
+    
+    const existingIds = existingEmployees.map(e => e.id);
+    const invalidIds = assignedEmployeeIds.filter(id => !existingIds.includes(id));
+    
+    if (invalidIds.length > 0) {
+      // Filter out invalid IDs and continue with valid ones
+      const validIds = assignedEmployeeIds.filter(id => existingIds.includes(id));
+      if (validIds.length === 0) {
+        throw new Error(`Keine gültigen Mitarbeiter-IDs gefunden`);
+      }
+      console.warn(`Ungültige Mitarbeiter-IDs ignoriert: ${invalidIds.join(', ')}`);
+      assignedEmployeeIds = validIds;
+    }
+    
     const assignments = await Promise.all(
       assignedEmployeeIds.map(employeeId =>
         prisma.assignment.create({
@@ -158,7 +183,7 @@ export const updateOrderService = async (
   data: OrderUpdateInput & { assignedEmployeeIds?: string[] },
   updatedBy?: string
 ) => {
-  const { assignedEmployeeIds, ...orderData } = data;
+  let { assignedEmployeeIds, ...orderData } = data;
   
   // Clean empty strings to undefined for optional DateTime fields
   if (orderData.startTime === '') orderData.startTime = undefined;
@@ -167,9 +192,19 @@ export const updateOrderService = async (
   if (orderData.specialInstructions === '') orderData.specialInstructions = undefined;
   if (orderData.description === '') orderData.description = undefined;
   
+  // Auto-set startTime to scheduledDate if scheduledDate is updated but startTime is not provided
+  if (orderData.scheduledDate && !orderData.startTime) {
+    orderData.startTime = orderData.scheduledDate;
+  }
+  
   const order = await prisma.order.update({
     where: { id },
-    data: orderData,
+    data: {
+      ...orderData,
+      ...(assignedEmployeeIds !== undefined && {
+        requiredEmployees: assignedEmployeeIds.length || 1
+      })
+    },
   });
 
   // Handle employee assignments if specified
@@ -181,6 +216,27 @@ export const updateOrderService = async (
 
     // Create new assignments
     if (assignedEmployeeIds.length > 0) {
+      // Validate employee IDs exist
+      const existingEmployees = await prisma.employee.findMany({
+        where: { id: { in: assignedEmployeeIds } },
+        select: { id: true }
+      });
+      
+      const existingIds = existingEmployees.map(e => e.id);
+      const invalidIds = assignedEmployeeIds.filter(id => !existingIds.includes(id));
+      
+      if (invalidIds.length > 0) {
+        // Filter out invalid IDs and continue with valid ones
+        const validIds = assignedEmployeeIds.filter(id => existingIds.includes(id));
+        if (validIds.length === 0) {
+          // If no valid IDs, just skip assignment creation
+          assignedEmployeeIds = [];
+        } else {
+          console.warn(`Ungültige Mitarbeiter-IDs ignoriert: ${invalidIds.join(', ')}`);
+          assignedEmployeeIds = validIds;
+        }
+      }
+      
       const assignments = await Promise.all(
         assignedEmployeeIds.map(employeeId =>
           prisma.assignment.create({
