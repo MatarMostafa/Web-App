@@ -24,6 +24,7 @@ import { useCustomerStore } from "@/store/customerStore";
 import { Order, UpdateOrderData, OrderStatus } from "@/types/order";
 import toast from "react-hot-toast";
 import { useTranslation } from "@/hooks/useTranslation";
+import TimeOnlyInput from "@/components/ui/TimeOnlyInput";
 
 interface EditOrderDialogProps {
   order: Order;
@@ -47,12 +48,17 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState<UpdateOrderData>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [startTimeOnly, setStartTimeOnly] = useState("");
+  const [endTimeOnly, setEndTimeOnly] = useState("");
 
   useEffect(() => {
     if (order && open) {
       fetchEmployees();
       fetchCustomers();
       getOrderAssignments(order.id).then((assignedEmployeeIds) => {
+        const startTime = order.startTime ? new Date(order.startTime) : null;
+        const endTime = order.endTime ? new Date(order.endTime) : null;
+        
         setFormData({
           orderNumber: order.orderNumber,
           description: order.description || "",
@@ -68,6 +74,9 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
           customerId: order.customerId,
           assignedEmployeeIds,
         });
+        
+        setStartTimeOnly(startTime ? `${startTime.getHours().toString().padStart(2, '0')}:${startTime.getMinutes().toString().padStart(2, '0')}` : "09:00");
+        setEndTimeOnly(endTime ? `${endTime.getHours().toString().padStart(2, '0')}:${endTime.getMinutes().toString().padStart(2, '0')}` : "");
       });
     }
   }, [order, open, fetchEmployees, fetchCustomers, getOrderAssignments]);
@@ -84,6 +93,21 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
       }
     }
   }, [formData.customerId, customers]);
+
+  // Combine date and time when either changes
+  useEffect(() => {
+    if (formData.scheduledDate && startTimeOnly) {
+      setFormData(prev => ({ ...prev, startTime: `${formData.scheduledDate}T${startTimeOnly}` }));
+    }
+  }, [formData.scheduledDate, startTimeOnly]);
+
+  useEffect(() => {
+    if (formData.scheduledDate && endTimeOnly) {
+      setFormData(prev => ({ ...prev, endTime: `${formData.scheduledDate}T${endTimeOnly}` }));
+    } else if (!endTimeOnly) {
+      setFormData(prev => ({ ...prev, endTime: "" }));
+    }
+  }, [formData.scheduledDate, endTimeOnly]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -109,13 +133,18 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
 
       // Convert date and datetime-local to ISO format
       if (submitData.scheduledDate) {
-        submitData.scheduledDate = new Date(submitData.scheduledDate + 'T00:00:00Z').toISOString();
+        const dateStr = submitData.scheduledDate.includes('T') 
+          ? submitData.scheduledDate 
+          : submitData.scheduledDate + 'T00:00:00';
+        submitData.scheduledDate = new Date(dateStr).toISOString();
       }
       if (submitData.startTime) {
         submitData.startTime = new Date(submitData.startTime).toISOString();
       }
-      if (submitData.endTime) {
+      if (submitData.endTime && submitData.endTime.trim()) {
         submitData.endTime = new Date(submitData.endTime).toISOString();
+      } else {
+        submitData.endTime = undefined;
       }
 
       await updateOrder(order.id, submitData);
@@ -134,12 +163,12 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
   const handleEmployeeToggle = (employeeId: string, checked: boolean) => {
     setFormData((prev) => {
       const currentAssigned = prev.assignedEmployeeIds || [];
-      const requiredCount = prev.requiredEmployees || 1;
       
       if (checked) {
-        // Check if we can add more employees
-        if (currentAssigned.length >= requiredCount) {
-          toast.error(`Maximum ${requiredCount} employee(s) can be assigned`);
+        // Check if employee still exists
+        const employeeExists = employees.some(emp => emp.id === employeeId);
+        if (!employeeExists) {
+          toast.error("Mitarbeiter nicht mehr verfügbar");
           return prev;
         }
         return {
@@ -157,12 +186,12 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="w-[95vw] max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{t("admin.orders.form.editOrder")}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <Label>{t("admin.orders.form.orderNumber")}</Label>
               <div className="px-3 py-2 bg-muted rounded-md text-sm">
@@ -210,7 +239,7 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <Label htmlFor="scheduledDate">{t("admin.orders.form.scheduledDate")} *</Label>
               <Input
@@ -218,7 +247,12 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
                 type="date"
                 value={formData.scheduledDate || ""}
                 onChange={(e) => {
-                  handleInputChange("scheduledDate", e.target.value);
+                  const newDate = e.target.value;
+                  handleInputChange("scheduledDate", newDate);
+                  // Auto-set startTime if not already set
+                  if (newDate && !formData.startTime) {
+                    handleInputChange("startTime", newDate + "T09:00");
+                  }
                   if (errors.scheduledDate) setErrors(prev => ({ ...prev, scheduledDate: "" }));
                 }}
                 className={errors.scheduledDate ? "border-red-500" : ""}
@@ -236,28 +270,26 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <Label htmlFor="startTime">{t("admin.orders.form.startDateTime")}</Label>
-              <Input
-                id="startTime"
-                type="datetime-local"
-                value={formData.startTime || ""}
-                onChange={(e) => handleInputChange("startTime", e.target.value)}
+              <TimeOnlyInput
+                value={startTimeOnly}
+                onChange={setStartTimeOnly}
               />
+              <p className="text-xs text-muted-foreground mt-1">Auto-set from scheduled date</p>
             </div>
             <div>
-              <Label htmlFor="endTime">{t("admin.orders.form.endDateTime")}</Label>
-              <Input
-                id="endTime"
-                type="datetime-local"
-                value={formData.endTime || ""}
-                onChange={(e) => handleInputChange("endTime", e.target.value)}
+              <Label htmlFor="endTime">{t("admin.orders.form.endDateTime")} (Optional)</Label>
+              <TimeOnlyInput
+                value={endTimeOnly}
+                onChange={setEndTimeOnly}
               />
+              <p className="text-xs text-muted-foreground mt-1">Leave empty if not needed</p>
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* <div>
               <Label htmlFor="requiredEmployees">{t("admin.orders.form.requiredEmployees")} *</Label>
               <Input
@@ -279,7 +311,6 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
                 id="priority"
                 type="number"
                 min="1"
-                max="1"
                 value={formData.priority || 1}
                 onChange={(e) => {
                   handleInputChange("priority", Number(e.target.value));
@@ -322,7 +353,7 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
           <div>
             <Label>{t("admin.orders.form.assignEmployeesEdit")}</Label>
             <div className="text-sm text-muted-foreground mb-2">
-              {`${(formData.assignedEmployeeIds || []).length} of ${formData.requiredEmployees || 1} employees selected`}
+              {`${(formData.assignedEmployeeIds || []).length} employees selected`}
             </div>
             <div className="max-h-40 overflow-y-auto border rounded-md p-3 space-y-2">
               {employees.map((employee) => (
@@ -332,10 +363,6 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
                     checked={(formData.assignedEmployeeIds || []).includes(
                       employee.id
                     )}
-                    disabled={
-                      !(formData.assignedEmployeeIds || []).includes(employee.id) &&
-                      (formData.assignedEmployeeIds || []).length >= (formData.requiredEmployees || 1)
-                    }
                     onCheckedChange={(checked) =>
                       handleEmployeeToggle(employee.id, checked as boolean)
                     }
@@ -355,7 +382,7 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
             </div>
           </div>
 
-          <div className="flex justify-end gap-2 pt-4">
+          <div className="flex flex-col sm:flex-row justify-end gap-2 pt-4">
             <Button
               type="button"
               variant="outline"

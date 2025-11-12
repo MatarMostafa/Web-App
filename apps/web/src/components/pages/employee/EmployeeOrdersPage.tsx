@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Input } from "@/components/ui";
+import { Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui";
 import { Search, Package } from "lucide-react";
 import EmployeeOrderTableView from "@/components/employee/EmployeeOrderTableView";
 import { OrderNotesDialog } from "@/components/order-notes";
@@ -22,6 +22,7 @@ interface Assignment {
     scheduledDate: string;
     status: string;
     priority: number;
+    updatedAt: string;
   };
 }
 
@@ -33,6 +34,7 @@ const EmployeeOrdersPage = () => {
     fetchEmployeeAssignments,
   } = useEmployeeOrderStore();
   const [searchQuery, setSearchQuery] = useState("");
+  const [sortBy, setSortBy] = useState("date");
   const [notesOrder, setNotesOrder] = useState<any>(null);
   const [notesDialogOpen, setNotesDialogOpen] = useState(false);
   const { data: session } = useSession();
@@ -78,15 +80,25 @@ const EmployeeOrdersPage = () => {
     setNotesDialogOpen(true);
   };
 
-  const filteredAssignments = employeeAssignments.filter(
-    (assignment: Assignment) =>
-      (assignment.order.description || "")
-        .toLowerCase()
-        .includes(searchQuery.toLowerCase()) ||
-      assignment.order.orderNumber
-        .toLowerCase()
-        .includes(searchQuery.toLowerCase())
-  );
+  const filteredAssignments = employeeAssignments
+    .filter(
+      (assignment: Assignment) =>
+        (assignment.order.description || "")
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase()) ||
+        assignment.order.orderNumber
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase())
+    )
+    .sort((a, b) => {
+      if (sortBy === "name") {
+        return a.order.orderNumber.localeCompare(b.order.orderNumber);
+      } else {
+        const dateA = new Date(a.order.updatedAt);
+        const dateB = new Date(b.order.updatedAt);
+        return dateB.getTime() - dateA.getTime();
+      }
+    });
 
   return (
     <div className="p-6">
@@ -97,15 +109,26 @@ const EmployeeOrdersPage = () => {
         </div>
       </div>
 
-      <div className="mb-6">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-          <Input
-            placeholder="Aufträge nach Beschreibung oder Nummer suchen..."
-            className="pl-10 bg-background"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
+      <div className="mb-6 space-y-4">
+        <div className="flex gap-4">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+            <Input
+              placeholder="Aufträge nach Beschreibung oder Nummer suchen..."
+              className="pl-10 bg-background"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+          <Select value={sortBy} onValueChange={setSortBy}>
+            <SelectTrigger className="w-48">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="date">Nach Datum sortieren</SelectItem>
+              <SelectItem value="name">Nach Name sortieren</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </div>
 
