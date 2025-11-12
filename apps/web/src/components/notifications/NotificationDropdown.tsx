@@ -131,6 +131,10 @@ export function NotificationDropdown() {
       // Check if it's an assignment notification (employee should go to employee orders)
       if (templateKey === "ASSIGNMENT_CREATED" || templateKey === "ASSIGNMENT_UPDATED") {
         targetPath = "/dashboard-employee/orders";
+        // Trigger refresh of employee orders data
+        setTimeout(() => {
+          window.dispatchEvent(new CustomEvent('refreshEmployeeOrders'));
+        }, 100);
       } else {
         // For other order notifications, check current path to determine target
         const currentPath = window.location.pathname;
@@ -175,6 +179,10 @@ export function NotificationDropdown() {
     } else if (data?.category === "assignment") {
       // For assignment notifications, navigate to employee orders page
       router.push("/dashboard-employee/orders");
+      // Trigger refresh of employee orders data
+      setTimeout(() => {
+        window.dispatchEvent(new CustomEvent('refreshEmployeeOrders'));
+      }, 100);
     } else if (data?.category === "leave") {
       // Handle leave notifications
       const templateKey = notification.notification.templateKey;
