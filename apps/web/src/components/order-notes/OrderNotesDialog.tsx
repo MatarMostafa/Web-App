@@ -87,13 +87,6 @@ export const OrderNotesDialog: React.FC<OrderNotesDialogProps> = ({
     }
   }, [currentOrder?.status, currentStatus]);
   
-  console.log("📋 Order status debug:", {
-    orderId,
-    currentOrderStatus: currentOrder?.status,
-    currentStatus,
-    initialOrderStatus,
-    finalOrderStatus: orderStatus
-  });
 
   // Fetch notes and refresh order status when dialog opens
   useEffect(() => {
@@ -117,7 +110,6 @@ export const OrderNotesDialog: React.FC<OrderNotesDialogProps> = ({
   useEffect(() => {
     const handleNotificationRefresh = () => {
       if (open && orderId) {
-        console.log('🔔 Notification triggered refresh for order:', orderId);
         fetchNotes();
         refreshOrderData();
         setTimeout(() => refreshOrderStatus(), 500);
@@ -135,13 +127,11 @@ export const OrderNotesDialog: React.FC<OrderNotesDialogProps> = ({
     if (userRole === "ADMIN") {
       const currentOrder = useOrderStore.getState().orders.find(order => order.id === orderId);
       if (currentOrder && currentOrder.status !== currentStatus) {
-        console.log('🔄 Admin: Updating status from', currentStatus, 'to', currentOrder.status);
-        setCurrentStatus(currentOrder.status);
+       setCurrentStatus(currentOrder.status);
       }
     } else {
       const assignment = useEmployeeOrderStore.getState().employeeAssignments.find(a => a.order.id === orderId);
       if (assignment?.order && assignment.order.status !== currentStatus) {
-        console.log('🔄 Employee: Updating status from', currentStatus, 'to', assignment.order.status);
         setCurrentStatus(assignment.order.status as OrderStatus);
       }
     }
@@ -156,7 +146,6 @@ export const OrderNotesDialog: React.FC<OrderNotesDialogProps> = ({
       } else {
         // Refresh employee assignments
         if (session?.user?.id) {
-          console.log('🔄 Employee: Refreshing assignments data for user:', session.user.id);
           await fetchEmployeeAssignments(session.user.id);
         }
       }
@@ -183,7 +172,6 @@ export const OrderNotesDialog: React.FC<OrderNotesDialogProps> = ({
   };
 
   const handleStatusChange = (newStatus: OrderStatus) => {
-    console.log("🔄 handleStatusChange called with:", newStatus);
     // Update local state immediately for real-time UI updates
     setCurrentStatus(newStatus);
     
@@ -205,7 +193,6 @@ export const OrderNotesDialog: React.FC<OrderNotesDialogProps> = ({
       useEmployeeOrderStore.setState({ employeeAssignments: updatedAssignments });
     }
     
-    console.log("✅ Store and state updated with status:", newStatus);
     // Refresh notes to get updated status
     fetchNotes();
     // Force a refresh of the order status
@@ -242,14 +229,14 @@ export const OrderNotesDialog: React.FC<OrderNotesDialogProps> = ({
               )}
               {orderDetails?.location && (
                 <div className="flex items-center gap-1 min-w-0">
-                  <MapPin className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
+                  <MapPin className="h-3 w-3 sm:h-4 sm:w-4 shrink-0" />
                   <span className="truncate">{orderDetails.location}</span>
                 </div>
               )}
               {orderDetails?.assignedEmployee && (
                 <div className="flex items-start gap-1">
-                  <User className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0 mt-0.5" />
-                  <span className="break-words flex-1">
+                  <User className="h-3 w-3 sm:h-4 sm:w-4 shrink-0 mt-0.5" />
+                  <span className="wrap-break-words flex-1">
                     {orderDetails.assignedEmployee}
                   </span>
                 </div>

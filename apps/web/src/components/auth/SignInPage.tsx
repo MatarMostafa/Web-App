@@ -35,8 +35,6 @@ export default function SignInPage() {
         redirect: false,
       });
 
-      console.log("NextAuth result:", result);
-
       if (result?.ok) {
         setLoadingMessage("Logging in to dashboard...");
         toast.success("Erfolgreich angemeldet!");
@@ -53,7 +51,6 @@ export default function SignInPage() {
         return;
       } else {
         // Handle different error cases
-        console.log("Login failed. Error:", result?.error);
 
         // Handle specific error types
         if (result?.error === "RATE_LIMIT") {
@@ -73,7 +70,6 @@ export default function SignInPage() {
         setLoadingMessage("");
       }
     } catch (error) {
-      console.log("Catch error:", error);
       toast.error("Ein unerwarteter Fehler ist aufgetreten");
     } finally {
       setIsLoading(false);
@@ -87,7 +83,7 @@ export default function SignInPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent/10 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-linear-to-br from-primary/5 via-background to-accent/10 flex items-center justify-center p-4">
       <div className="w-full max-w-md space-y-8">
         {/* Logo */}
         <div className="text-center">
