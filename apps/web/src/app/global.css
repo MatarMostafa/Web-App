@@ -1,0 +1,243 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --background: 0 0% 98%;
+    --foreground: 0 0% 15%;
+
+    --card: 0 0% 100%;
+    --cforeground: 0 0% 15%;
+
+    --popover: 0 0% 100%;
+    --pforeground: 0 0% 15%;
+
+    --primary: 0 0% 25%; /* Dark gray for branding */
+    --pforeground: 0 0% 100%;
+
+    --secondary: 0 0% 45%; /* Mid-gray */
+    --sforeground: 0 0% 100%;
+
+    --tertiary: 0 0% 30%;
+
+    --muted: 0 0% 90%;
+    --mforeground: 0 0% 40%;
+
+    --accent: 0 0% 60%;
+    --aforeground: 0 0% 10%;
+
+    --destructive: 0 70% 50%;
+    --dforeground: 0 0% 100%;
+
+    --border: 0 0% 85%;
+    --input: 0 0% 85%;
+    --ring: 0 0% 35%;
+
+    --radius: 0.75rem;
+
+    --sidebar-background: 0 0% 10%;
+    --sidebar-foreground: 0 0% 95%;
+    --sidebar-primary: 0 0% 25%;
+    --sidebar-pforeground: 0 0% 100%;
+    --sidebar-accent: 0 0% 35%;
+    --sidebar-aforeground: 0 0% 98%;
+    --sidebar-border: 0 0% 20%;
+    --sidebar-ring: 0 0% 25%;
+
+    /* Theme Tones (Monochrome) */
+    --theme-primary: 0 0% 25%;
+    --theme-secondary: 0 0% 40%;
+    --theme-tertiary: 0 0% 60%;
+    --theme-accent: 0 0% 50%;
+    --theme-light: 0 0% 95%;
+    --theme-dark: 0 0% 10%;
+    --theme-success: 120 5% 35%;
+    --theme-warning: 40 5% 45%;
+    --theme-error: 0 30% 40%;
+  }
+
+  .dark {
+    --background: 0 0% 8%;
+    --foreground: 0 0% 92%;
+
+    --card: 0 0% 10%;
+    --cforeground: 0 0% 92%;
+
+    --popover: 0 0% 12%;
+    --pforeground: 0 0% 92%;
+
+    --primary: 0 0% 90%;
+    --pforeground: 0 0% 10%;
+
+    --secondary: 0 0% 70%;
+    --sforeground: 0 0% 10%;
+
+    --muted: 0 0% 20%;
+    --mforeground: 0 0% 75%;
+
+    --accent: 0 0% 30%;
+    --aforeground: 0 0% 90%;
+
+    --border: 0 0% 20%;
+    --input: 0 0% 20%;
+    --ring: 0 0% 45%;
+
+    --sidebar-background: 0 0% 5%;
+    --sidebar-foreground: 0 0% 92%;
+    --sidebar-primary: 0 0% 25%;
+    --sidebar-pforeground: 0 0% 98%;
+    --sidebar-accent: 0 0% 30%;
+    --sidebar-aforeground: 0 0% 98%;
+    --sidebar-border: 0 0% 15%;
+    --sidebar-ring: 0 0% 35%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-sans;
+  }
+}
+
+@layer components {
+  .contact-card {
+    @apply relative overflow-hidden transition-all duration-300 bg-card hover:shadow-md;
+  }
+
+  .contact-card:hover {
+    @apply -translate-y-1;
+  }
+
+  .health-indicator {
+    @apply inline-block w-2 h-2 rounded-full;
+  }
+
+  .health-strong {
+    @apply [background-color:hsl(var(--theme-success))];
+  }
+
+  .health-medium {
+    @apply [background-color:hsl(var(--theme-warning))];
+  }
+
+  .health-weak {
+    @apply [background-color:hsl(var(--theme-error))];
+  }
+
+  .feature-illustration-card {
+    @apply bg-white rounded-lg shadow-md border [border-color:hsl(var(--theme-primary))/30] hover:shadow-lg transition-all;
+  }
+
+  .feature-illustration-header {
+    @apply [background-color:hsl(var(--theme-tertiary))]/40 rounded-t-lg p-2;
+  }
+
+  .network-dot {
+    @apply absolute [background-color:hsl(var(--theme-primary))] rounded-full transform -translate-x-1/2 -translate-y-1/2 opacity-80 hover:scale-150 transition-transform cursor-pointer z-10;
+  }
+
+  .network-pulse {
+    @apply absolute rounded-full [background-color:hsl(var(--theme-primary))] opacity-30;
+    transform: translate(-50%, -50%);
+    animation: pulse-soft 3s infinite;
+  }
+
+  @keyframes pulse-soft {
+    0%, 100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    50% { opacity: 0.5; transform: translate(-50%, -50%) scale(1.5); }
+  }
+
+  .animate-pulse-soft {
+    animation: pulse-soft 3s infinite;
+  }
+}
+
+@theme {
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+
+  --color-card: hsl(var(--card));
+  --color-cforeground: hsl(var(--cforeground));
+
+  --color-popover: hsl(var(--popover));
+  --color-pforeground: hsl(var(--pforeground));
+
+  --color-primary: hsl(var(--primary));
+  --color-pforeground: hsl(var(--pforeground));
+
+  --color-secondary: hsl(var(--secondary));
+  --color-sforeground: hsl(var(--sforeground));
+
+  --color-muted: hsl(var(--muted));
+  --color-mforeground: hsl(var(--mforeground));
+
+  --color-accent: hsl(var(--accent));
+  --color-aforeground: hsl(var(--aforeground));
+
+  --color-destructive: hsl(var(--destructive));
+  --color-dforeground: hsl(var(--dforeground));
+
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+
+  --color-sidebar-background: hsl(var(--sidebar-background));
+  --color-sidebar-foreground: hsl(var(--sidebar-foreground));
+  --color-sidebar-primary: hsl(var(--sidebar-primary));
+  --color-sidebar-pforeground: hsl(var(--sidebar-pforeground));
+  --color-sidebar-accent: hsl(var(--sidebar-accent));
+  --color-sidebar-aforeground: hsl(var(--sidebar-aforeground));
+  --color-sidebar-border: hsl(var(--sidebar-border));
+  --color-sidebar-ring: hsl(var(--sidebar-ring));
+
+  --theme-primary: hsl(210 80% 55%);
+  --theme-secondary: hsl(215 70% 60%);
+  --theme-tertiary: hsl(215 100% 93%);
+  --theme-accent: hsl(210 60% 74%);
+  --theme-light: hsl(210 100% 98%);
+  --theme-dark: hsl(220 27% 21%);
+  --theme-success: hsl(152 48% 54%);
+  --theme-warning: hsl(42 89% 61%);
+  --theme-error: hsl(0 68% 69%);
+
+  --color-theme-primary: hsl(var(--theme-primary));
+  --color-theme-secondary: hsl(var(--theme-secondary));
+  --color-theme-tertiary: hsl(var(--theme-tertiary));
+  --color-theme-accent: hsl(var(--theme-accent));
+  --color-theme-light: hsl(var(--theme-light));
+  --color-theme-dark: hsl(var(--theme-dark));
+  --color-theme-success: hsl(var(--theme-success));
+  --color-theme-warning: hsl(var(--theme-warning));
+  --color-theme-error: hsl(var(--theme-error));
+
+  --container-xl: 1280px;
+}
+
+/* Scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 2px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: hsl(210 25% 85%);
+  border-radius: 2px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: hsl(210 25% 80%);
+}
+
+/* For Firefox */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(210 25% 85%) transparent;
+}

@@ -1,0 +1,213 @@
+"use client";
+
+import React, { useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useEmployeeLeaveStore } from "@/store/employeeLeaveStore";
+import { formatDate } from "@/lib/utils";
+import { useTranslation } from "@/hooks/useTranslation";
+
+interface LeaveRequestModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSuccess: () => void;
+}
+
+
+
+export const LeaveRequestModal: React.FC<LeaveRequestModalProps> = ({
+  isOpen,
+  onClose,
+  onSuccess,
+}) => {
+  const { t } = useTranslation();
+  const [formData, setFormData] = useState({
+    type: "",
+    startDate: "",
+    endDate: "",
+    reason: "",
+  });
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  
+  const { createLeaveRequest, loading } = useEmployeeLeaveStore();
+
+  const LEAVE_TYPES = [
+    { value: "VACATION", label: t('employee.leaveTypes.VACATION') },
+    { value: "SICK_LEAVE", label: t('employee.leaveTypes.SICK_LEAVE') },
+    { value: "PERSONAL_LEAVE", label: t('employee.leaveTypes.PERSONAL_LEAVE') },
+    { value: "MATERNITY_LEAVE", label: t('employee.leaveTypes.MATERNITY_LEAVE') },
+    { value: "PATERNITY_LEAVE", label: t('employee.leaveTypes.PATERNITY_LEAVE') },
+  ];
+
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {};
+
+    if (!formData.type) {
+      newErrors.type = t('employee.leaveModal.typeRequired');
+    }
+
+    if (!formData.startDate) {
+      newErrors.startDate = t('employee.leaveModal.startDateRequired');
+    }
+
+    if (!formData.endDate) {
+      newErrors.endDate = t('employee.leaveModal.endDateRequired');
+    }
+
+    if (formData.startDate && formData.endDate) {
+      const startDate = new Date(formData.startDate);
+      const endDate = new Date(formData.endDate);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      if (startDate < today) {
+        newErrors.startDate = t('employee.leaveModal.startDatePastError');
+      }
+
+      if (endDate < startDate) {
+        newErrors.endDate = t('employee.leaveModal.endDateBeforeStartError');
+      }
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!validateForm()) {
+      return;
+    }
+
+    try {
+      await createLeaveRequest(formData);
+      onSuccess();
+      handleClose();
+    } catch (error) {
+      // Error is handled in the store
+    }
+  };
+
+  const handleClose = () => {
+    setFormData({
+      type: "",
+      startDate: "",
+      endDate: "",
+      reason: "",
+    });
+    setErrors({});
+    onClose();
+  };
+
+  const calculateDays = () => {
+    if (formData.startDate && formData.endDate) {
+      const start = new Date(formData.startDate);
+      const end = new Date(formData.endDate);
+      const days = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+      return days > 0 ? days : 0;
+    }
+    return 0;
+  };
+
+  return (
+    <Dialog open={isOpen} onOpenChange={handleClose}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>{t('employee.leaveModal.title')}</DialogTitle>
+        </DialogHeader>
+        
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="type">{t('employee.leaveModal.leaveType')}</Label>
+            <Select
+              value={formData.type}
+              onValueChange={(value) => setFormData({ ...formData, type: value })}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder={t('employee.leaveModal.selectLeaveType')} />
+              </SelectTrigger>
+              <SelectContent>
+                {LEAVE_TYPES.map((type) => (
+                  <SelectItem key={type.value} value={type.value}>
+                    {type.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {errors.type && <p className="text-sm text-red-600">{errors.type}</p>}
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="startDate">{t('employee.leaveModal.startDate')}</Label>
+              <Input
+                id="startDate"
+                type="date"
+                value={formData.startDate}
+                onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
+                min={new Date().toISOString().split('T')[0]}
+              />
+              {errors.startDate && <p className="text-sm text-red-600">{errors.startDate}</p>}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="endDate">{t('employee.leaveModal.endDate')}</Label>
+              <Input
+                id="endDate"
+                type="date"
+                value={formData.endDate}
+                onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
+                min={formData.startDate || new Date().toISOString().split('T')[0]}
+              />
+              {errors.endDate && <p className="text-sm text-red-600">{errors.endDate}</p>}
+            </div>
+          </div>
+
+          {formData.startDate && formData.endDate && (
+            <div className="bg-blue-50 p-3 rounded-lg">
+              <p className="text-sm text-blue-800">
+                <strong>{t('employee.leaveDuration')}:</strong> {calculateDays()} {calculateDays() === 1 ? t('employee.day') : t('employee.days')}
+              </p>
+            </div>
+          )}
+
+          <div className="space-y-2">
+            <Label htmlFor="reason">{t('employee.leaveModal.reason')}</Label>
+            <Textarea
+              id="reason"
+              placeholder={t('employee.leaveModal.reasonPlaceholder')}
+              value={formData.reason}
+              onChange={(e) => setFormData({ ...formData, reason: e.target.value })}
+              rows={3}
+            />
+          </div>
+
+          <div className="flex justify-end gap-2 pt-4">
+            <Button type="button" variant="outline" onClick={handleClose}>
+              {t('common.cancel')}
+            </Button>
+            <Button type="submit" disabled={loading}>
+              {loading ? t('employee.leaveModal.submitting') : t('employee.leaveModal.submitRequest')}
+            </Button>
+          </div>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+};

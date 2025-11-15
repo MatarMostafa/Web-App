@@ -1,0 +1,319 @@
+openapi: 3.0.3
+info:
+  title: Employee Management - Admin API
+  description: Admin-only endpoints for system management and statistics
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000/api/admin
+    description: Local development server
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    EmployeeBlock:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "emp_123"
+        firstName:
+          type: string
+          example: "John"
+        lastName:
+          type: string
+          example: "Doe"
+        employeeCode:
+          type: string
+          example: "EMP001"
+        blockedAt:
+          type: string
+          format: date-time
+          example: "2025-01-15T10:30:00Z"
+        blockedReason:
+          type: string
+          example: "Performance issues"
+
+    CustomerStatistics:
+      type: object
+      properties:
+        totalCustomers:
+          type: integer
+          example: 150
+        activeCustomers:
+          type: integer
+          example: 120
+        avgOrdersPerCustomer:
+          type: number
+          example: 3.25
+
+    AverageValues:
+      type: object
+      properties:
+        avgOrderDuration:
+          type: number
+          example: 8.5
+        avgEmployeeHourlyRate:
+          type: number
+          example: 25.75
+        avgEstimatedHours:
+          type: number
+          example: 6.2
+        avgActualHours:
+          type: number
+          example: 6.8
+
+    EmployeeHours:
+      type: object
+      properties:
+        employeeId:
+          type: string
+          example: "emp_456"
+        employeeName:
+          type: string
+          example: "Jane Smith"
+        employeeCode:
+          type: string
+          example: "EMP002"
+        totalActualHours:
+          type: number
+          example: 160.5
+        totalEstimatedHours:
+          type: number
+          example: 150.0
+        assignmentCount:
+          type: integer
+          example: 12
+
+    DashboardStatistics:
+      type: object
+      properties:
+        ordersLast30Days:
+          type: integer
+          example: 45
+        newCustomersLast30Days:
+          type: integer
+          example: 8
+        newEmployeesLast30Days:
+          type: integer
+          example: 3
+        employeesOnLeave:
+          type: integer
+          example: 5
+        unassignedOrders:
+          type: integer
+          example: 12
+        completedOrders:
+          type: integer
+          example: 234
+
+security:
+  - bearerAuth: []
+
+paths:
+  /blocks:
+    get:
+      tags:
+        - Admin
+      summary: Get all blocked employees
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: List of blocked employees
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/EmployeeBlock"
+              example:
+                - id: "emp_123"
+                  firstName: "John"
+                  lastName: "Doe"
+                  employeeCode: "EMP001"
+                  blockedAt: "2025-01-15T10:30:00Z"
+                  blockedReason: "Performance issues"
+                - id: "emp_789"
+                  firstName: "Mike"
+                  lastName: "Johnson"
+                  employeeCode: "EMP003"
+                  blockedAt: "2025-01-10T14:20:00Z"
+                  blockedReason: "Policy violation"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden - Admin access required
+
+  /unblock:
+    post:
+      tags:
+        - Admin
+      summary: Unblock an employee
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                employeeId:
+                  type: string
+                  example: "emp_123"
+              required:
+                - employeeId
+      responses:
+        "200":
+          description: Employee unblocked successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Employee unblocked successfully"
+                  employee:
+                    type: object
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden - Admin access required
+        "500":
+          description: Failed to unblock employee
+
+  /customerStatistics:
+    get:
+      tags:
+        - Admin
+      summary: Get customer statistics
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Customer statistics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CustomerStatistics"
+              example:
+                totalCustomers: 150
+                activeCustomers: 120
+                avgOrdersPerCustomer: 3.25
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden - Admin access required
+
+  /averageValues:
+    get:
+      tags:
+        - Admin
+      summary: Get average values across the system
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Average values
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AverageValues"
+              example:
+                avgOrderDuration: 8.5
+                avgEmployeeHourlyRate: 25.75
+                avgEstimatedHours: 6.2
+                avgActualHours: 6.8
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden - Admin access required
+
+  /hours:
+    get:
+      tags:
+        - Admin
+      summary: Get hours worked per employee
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Hours per employee
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/EmployeeHours"
+              example:
+                - employeeId: "emp_456"
+                  employeeName: "Jane Smith"
+                  employeeCode: "EMP002"
+                  totalActualHours: 160.5
+                  totalEstimatedHours: 150.0
+                  assignmentCount: 12
+                - employeeId: "emp_789"
+                  employeeName: "Bob Wilson"
+                  employeeCode: "EMP004"
+                  totalActualHours: 140.0
+                  totalEstimatedHours: 135.5
+                  assignmentCount: 10
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden - Admin access required
+
+  /export/csv:
+    get:
+      tags:
+        - Admin
+      summary: Export orders as CSV
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: CSV file with orders data
+          content:
+            text/csv:
+              schema:
+                type: string
+              example: |
+                orderNumber,title,status,customerName,contactEmail,scheduledDate,location,duration,assignedEmployees,createdAt
+                ORD-001,Website Maintenance,COMPLETED,Tech Corp,contact@techcorp.com,2025-01-20,Office A,8,2,2025-01-15
+                ORD-002,Server Setup,IN_PROGRESS,Data Systems,info@datasys.com,2025-01-25,Data Center,12,3,2025-01-18
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden - Admin access required
+
+  /dashboard:
+    get:
+      tags:
+        - Admin
+      summary: Get dashboard statistics
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Dashboard statistics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardStatistics"
+              example:
+                ordersLast30Days: 45
+                newCustomersLast30Days: 8
+                newEmployeesLast30Days: 3
+                employeesOnLeave: 5
+                unassignedOrders: 12
+                completedOrders: 234
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden - Admin access required
