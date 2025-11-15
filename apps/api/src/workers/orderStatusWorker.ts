@@ -14,7 +14,6 @@ export class OrderStatusWorker {
    */
   static async autoStartOverdueOrders(): Promise<void> {
     try {
-      console.log("🔄 Starting auto-start check for overdue orders...");
       
       const now = new Date();
       
@@ -42,12 +41,8 @@ export class OrderStatusWorker {
       });
 
       if (overdueOrders.length === 0) {
-        console.log("✅ No overdue orders found");
         return;
       }
-
-      console.log(`📋 Found ${overdueOrders.length} overdue orders to auto-start`);
-
       // Process each overdue order
       for (const order of overdueOrders) {
         await prisma.$transaction(async (tx) => {
@@ -90,12 +85,8 @@ export class OrderStatusWorker {
             });
           }
 
-          console.log(`✅ Auto-started order ${order.orderNumber} for ${order.customer.companyName}`);
         });
-      }
-
-      console.log(`🎉 Successfully auto-started ${overdueOrders.length} orders`);
-      
+      }     
     } catch (error) {
       console.error("❌ Error in auto-start worker:", error);
       throw error;
@@ -109,7 +100,6 @@ export class OrderStatusWorker {
    */
   static async expireStaleOrders(): Promise<void> {
     try {
-      console.log("🔄 Starting expiration check for stale orders...");
       
       const now = new Date();
       const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
@@ -138,11 +128,8 @@ export class OrderStatusWorker {
       });
 
       if (ordersToExpire.length === 0) {
-        console.log("✅ No orders to expire");
         return;
       }
-
-      console.log(`📋 Found ${ordersToExpire.length} orders to expire`);
 
       // Process each order
       for (const order of ordersToExpire) {
@@ -177,12 +164,8 @@ export class OrderStatusWorker {
               }
             });
           }
-
-          console.log(`⏰ Expired order ${order.orderNumber} (${daysOverdue} days overdue)`);
         });
       }
-
-      console.log(`🎉 Successfully expired ${ordersToExpire.length} orders`);
       
     } catch (error) {
       console.error("❌ Error in expiration worker:", error);
@@ -194,14 +177,12 @@ export class OrderStatusWorker {
    * Main worker function - runs all order status checks
    */
   static async runDailyStatusCheck(): Promise<void> {
-    console.log("🚀 Starting daily order status check...");
     
     try {
       await this.autoStartOverdueOrders();
       await this.expireStaleOrders();
       await OrderReminderService.runAllReminderChecks();
       
-      console.log("✅ Daily order status check completed successfully");
     } catch (error) {
       console.error("❌ Daily order status check failed:", error);
       throw error;

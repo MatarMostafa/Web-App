@@ -30,7 +30,6 @@ export const useLanguageStore = create<LanguageState>()(
             i18n.changeLanguage(newLang);
           }
         } catch (error) {
-          console.log('Could not detect location, using default language');
         }
       },
     }),

@@ -5,20 +5,12 @@ import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-console.log("Worker Redis connection check:", {
-  REDIS_URL: process.env.REDIS_URL ? "[SET]" : "[NOT SET]",
-  REDIS_HOST: process.env.REDIS_HOST,
-  REDIS_PORT: process.env.REDIS_PORT
-});
-
 const connection = process.env.REDIS_URL
   ? { url: process.env.REDIS_URL }
   : {
       host: process.env.REDIS_HOST ?? "127.0.0.1",
       port: Number(process.env.REDIS_PORT ?? 6379),
     };
-
-console.log("Worker using Redis connection:", connection);
 
 const notificationWorker = new Worker(
   "notifications",

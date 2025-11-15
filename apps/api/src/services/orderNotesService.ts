@@ -158,13 +158,10 @@ export const createOrderNoteService = async (data: CreateOrderNoteInput) => {
       if (triggersStatus === 'IN_PROGRESS' && !isAdmin && order.status === 'ACTIVE' && user.employee?.id) {
         await notifyWorkStarted(orderId, user.employee.id);
       } else if (triggersStatus === 'IN_REVIEW' && !isAdmin && user.employee?.id) {
-        console.log("🔔 Employee requesting order completion review:", { orderId, employeeId: user.employee.id });
         await notifyOrderReview(orderId, user.employee.id);
       } else if (triggersStatus === 'COMPLETED' && isAdmin) {
-        console.log("🔔 Admin approving order completion:", { orderId });
         await notifyOrderApproved(orderId, authorId);
       } else if (triggersStatus === 'IN_PROGRESS' && isAdmin) {
-        console.log("🔔 Admin rejecting order:", { orderId });
         await notifyOrderRejected(orderId, authorId, content);
       }
     } catch (error) {
