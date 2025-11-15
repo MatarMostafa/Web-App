@@ -74,7 +74,6 @@ The order notes system facilitates communication between admins and assigned emp
 
 - **Real-time Communication**: Instant messaging within order context
 - **Status Updates**: Automatic notifications when order status changes
-- **File Attachments**: Share documents and images related to orders
 - **History Tracking**: Complete audit trail of all order communications
 - **Multi-participant**: All assigned employees and admins can participate
 - **Notification Integration**: Automatic notifications for new notes and updates
@@ -223,4 +222,4 @@ yarn workspace @repo/db prisma studio
 
 ---
 
-**Built with modern web technologies**
+**Built with modern web technologies - 2025**
