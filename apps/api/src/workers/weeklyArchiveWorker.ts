@@ -11,33 +11,9 @@ export const startWeeklyArchiveWorker = () => {
   // day-of-week: 0 = Sunday, 1 = Monday, etc.
   const cronExpression = "1 0 * * 1"; // Every Monday at 00:01
   
-  console.log("Starting weekly archive worker...");
-  
   cron.schedule(cronExpression, async () => {
     try {
-      console.log("Weekly archive worker triggered - checking if should run...");
       
-      if (shouldRunArchiveProcess()) {
-        console.log("Running weekly archive process...");
-        const result = await archivePreviousWeekOrders();
-        
-        console.log(`Weekly archive completed successfully:`, {
-          archivedCount: result.archivedCount,
-          timestamp: new Date().toISOString(),
-        });
-        
-        // Log details of archived orders
-        if (result.orders.length > 0) {
-          console.log("Archived orders:", result.orders.map(order => ({
-            orderNumber: order.orderNumber,
-            title: order.title,
-            scheduledDate: order.scheduledDate,
-            status: order.status,
-          })));
-        }
-      } else {
-        console.log("Archive process skipped - not the right time");
-      }
     } catch (error) {
       console.error("Weekly archive worker error:", error);
       
@@ -50,8 +26,6 @@ export const startWeeklyArchiveWorker = () => {
     timezone: "UTC" // Use UTC to avoid timezone issues
   });
   
-  console.log("Weekly archive worker scheduled successfully");
-  console.log("Next run: Every Monday at 00:01 UTC");
 };
 
 /**
@@ -61,7 +35,6 @@ export const stopWeeklyArchiveWorker = () => {
   cron.getTasks().forEach((task) => {
     task.stop();
   });
-  console.log("Weekly archive worker stopped");
 };
 
 /**

@@ -121,7 +121,6 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Form submitted with data:", formData);
 
     // Validate required fields
     const newErrors: Record<string, string> = {};
@@ -131,14 +130,11 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
     if (!formData.priority || formData.priority < 1) newErrors.priority = t("admin.orders.form.priorityRequired");
     
     setErrors(newErrors);
-    console.log("Validation errors:", newErrors);
     
     if (Object.keys(newErrors).length > 0) {
       toast.error(t("admin.orders.form.validationError"));
       return;
     }
-
-    console.log("Starting order creation...");
     setLoading(true);
 
     try {
@@ -160,9 +156,7 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
         submitData.endTime = undefined;
       }
 
-      console.log("Calling createOrder with:", submitData);
       const newOrder = await createOrder(submitData);
-      console.log("Order created successfully:", newOrder);
       setOpen(false);
       resetFormData();
     } catch (error) {

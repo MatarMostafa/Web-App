@@ -63,7 +63,6 @@ export const OrderAssignments: React.FC<OrderAssignmentsProps> = ({
       setLoading(true);
       try {
         const response = await apiClient.get<any>(`/api/orders/${orderId}/assignments`);
-        console.log('Assignments API response:', response);
         if (response && typeof response === 'object' && 'success' in response && response.success) {
           const assignmentData = response.data || [];
           setAssignments(assignmentData);
