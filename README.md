@@ -1,161 +1,226 @@
-# ERP Beta — Monorepo
+# ERP Beta — Enterprise Resource Planning System
 
-This repository contains the codebase for the ERP Beta project. It's organized as a Turborepo monorepo with backend and frontend applications, shared packages, and Docker tooling to run the system locally or in containers.
+A comprehensive ERP system built as a Turborepo monorepo with Next.js frontend and Express.js backend. This system manages employees, orders, leave requests, qualifications, and provides real-time notifications with multi-language support (English/German).
 
-## What's inside?
+## 🎯 System Overview
 
-This Turborepo includes the following:
+The ERP Beta system is designed to streamline business operations through role-based access control, featuring separate dashboards for administrators and employees. The system provides comprehensive employee management, order tracking, leave management, and qualification tracking with real-time notifications.
 
-### Apps and Packages
+### Key Features:
+- **Role-based Access Control**: Admin and Employee dashboards with specific permissions
+- **Multi-language Support**: English and German localization
+- **Real-time Notifications**: Live updates for orders, leave requests, and system events
+- **Order Management**: Complete order lifecycle from creation to completion
+- **Employee Management**: Comprehensive employee profiles and assignment tracking
+- **Leave Management**: Request, approval, and tracking system
+- **Qualification System**: Employee skill tracking with admin approval workflow
 
-- `web`: a [Next.js](https://nextjs.org/) app
-- `api`: an [Express](https://expressjs.com/) server
-- `@repo/logger`: Isomorphic logger (a small wrapper around console.log)
-- `@repo/eslint-config`: ESLint presets
-- `@repo/typescript-config`: tsconfig.json's used throughout the monorepo
-- `@repo/jest-presets`: Jest configurations
+## 🔧 Admin Functionalities
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
+### Employee Management
+- **Employee Creation**: Add new employees with complete profile information
+- **Employee Editing**: Update employee details, departments, and positions
+- **Employee Blocking/Unblocking**: Control system access for employees
+- **Employee Assignment**: Assign employees to orders and track workload
 
-### Docker
+### Order Management
+- **Order Creation**: Create new orders with customer details and requirements
+- **Order Assignment**: Assign multiple employees to orders (unlimited assignments)
+- **Order Tracking**: Monitor order status and progress
+- **Order Deletion**: Remove orders when necessary
+- **Status Management**: Update order status throughout lifecycle
 
-This repo is configured to be built with Docker, and Docker compose. To build all apps in this repo:
+### Leave Management
+- **Leave Request Review**: View and manage employee leave requests
+- **Leave Approval/Rejection**: Approve or reject requests with reasons
+- **Leave Calendar**: Overview of team availability and scheduled leaves
 
-````
-# Install dependencies
+### System Administration
+- **Department Management**: Create and manage organizational departments
+- **Position Management**: Define and assign employee positions
+- **Qualification Management**: Create system-wide qualifications and categories
+- **Qualification Approval**: Review and approve employee-submitted qualifications
+
+### Reporting & Analytics
+- **Employee Performance**: Track employee assignments and completion rates
+- **Order Analytics**: Monitor order completion and status distribution
+- **System Usage**: Overview of system activity and user engagement
+
+## 👤 Employee Functionalities
+
+### Order Management
+- **Order Viewing**: Access assigned orders with detailed information
+- **Status Updates**: Update order status (In Progress, Completed, etc.)
+- **Order Notes**: Add notes and communicate with admin/team
+- **Work Tracking**: Track time and progress on assigned orders
+
+### Leave Management
+- **Leave Requests**: Submit leave requests with dates and reasons
+- **Leave History**: View past and pending leave requests
+- **Leave Balance**: Track available leave days and usage
+
+### Profile Management
+- **Personal Information**: Update contact details and personal information
+- **Qualification Management**: Add personal qualifications and certifications
+- **Skill Tracking**: Maintain professional skill portfolio
+
+### Communication
+- **Order Notes**: Participate in order-related discussions
+- **Notifications**: Receive real-time updates on assignments and approvals
+
+## 💬 Order Notes System
+
+The order notes system facilitates communication between admins and assigned employees:
+
+- **Real-time Communication**: Instant messaging within order context
+- **Status Updates**: Automatic notifications when order status changes
+- **File Attachments**: Share documents and images related to orders
+- **History Tracking**: Complete audit trail of all order communications
+- **Multi-participant**: All assigned employees and admins can participate
+- **Notification Integration**: Automatic notifications for new notes and updates
+
+## 🔔 Notification System
+
+Comprehensive real-time notification system covering:
+
+### Order Notifications
+- **New Assignments**: Employees notified of new order assignments
+- **Status Changes**: Updates when order status is modified
+- **Note Additions**: Alerts when new notes are added to orders
+- **Completion Requests**: Notifications for order completion and review
+
+### Leave Notifications
+- **Request Submissions**: Admins notified of new leave requests
+- **Approval/Rejection**: Employees notified of leave request decisions
+- **Upcoming Leaves**: Reminders for scheduled leave periods
+
+### System Notifications
+- **Qualification Updates**: Notifications for skill approvals/rejections
+- **Profile Changes**: Updates for important profile modifications
+- **System Announcements**: Administrative messages and updates
+
+### Notification Features
+- **Real-time Delivery**: Instant notifications without page refresh
+- **Multi-language**: Notifications in user's preferred language
+- **Action Integration**: Click notifications to navigate to relevant pages
+- **Read/Unread Tracking**: Visual indicators for notification status
+- **Batch Operations**: Mark all notifications as read
+
+## 🏗️ Repository Structure
+
+This is a **Turborepo monorepo** with the following structure:
+
+```
+erp-beta/
+├── apps/
+│   ├── web/          # Next.js frontend application
+│   └── api/          # Express.js backend API
+├── packages/
+│   ├── db/           # Prisma database schema and migrations
+│   ├── eslint-config/# Shared ESLint configuration
+│   ├── typescript-config/ # Shared TypeScript configuration
+│   ├── jest-presets/ # Jest testing configuration
+│   └── logger/       # Shared logging utilities
+├── docker-compose.yml # Docker container orchestration
+└── turbo.json        # Turborepo pipeline configuration
+```
+
+### Technology Stack
+- **Frontend**: Next.js 14, React, TypeScript, Tailwind CSS
+- **Backend**: Express.js, TypeScript, Prisma ORM
+- **Database**: PostgreSQL (configurable)
+- **Authentication**: NextAuth.js with JWT
+- **Internationalization**: react-i18next
+- **State Management**: Zustand
+- **UI Components**: Custom components with Radix UI primitives
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Node.js 18+ 
+- Yarn or npm
+- PostgreSQL database
+- Docker (optional)
+
+### Installation
+
+1. **Clone the repository**:
+```bash
+git clone <repository-url>
+cd erp-beta
+```
+
+2. **Install dependencies**:
+```bash
 yarn install
-
-# Create a network, which allows containers to communicate
-# with each other, by using their container name as a hostname
-docker network create app_network
-
-# Build prod using new BuildKit engine
-COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker-compose -f docker-compose.yml build
-
-# ERP Beta — Monorepo
-
-This repository contains the codebase for the ERP Beta project. It's organized as a Turborepo monorepo with backend and frontend applications, shared packages, and Docker tooling to run the system locally or in containers.
-
-This README gives a short overview, how to run the apps (Docker and local), testing, and where to find important projects inside the workspace.
-
-## Quick overview
-
-- Apps:
-	- `apps/web` — Next.js frontend
-	- `apps/api` — Express API server
-- Packages:
-	- `packages/*` — shared utilities, Prisma schema, and tooling
-- Tooling:
-	- Turborepo for task orchestration
-	- Docker + docker-compose for containerized dev/prod
-	- TypeScript, ESLint, Jest, Prettier
-
-## Repo structure (top-level)
-
-- `apps/` — production apps (web, api)
-- `packages/` — shared libraries and Prisma migration/seed
-- `docker-compose.yml` — compose setup for running services together
-- `turbo.json` — turborepo pipeline configuration
-
-## Local development (recommended)
-
-Prereqs: Node.js (18+ recommended), pnpm or npm/yarn, Docker (optional for containers).
-
-1. Install dependencies from the repo root:
-
-```powershell
-pnpm install
-````
-
-2. Start API and web apps in development mode (run in separate terminals or use turborepo):
-
-```powershell
-# API (from repo root)
-pnpm --filter api dev
-
-# Web (from repo root)
-pnpm --filter web dev
+# or
+npm install
 ```
 
-By default:
+3. **Environment Setup**:
+Create `.env` files in both `apps/web` and `apps/api` directories:
 
-- Frontend: http://localhost:3000
-- API: http://localhost:3001 (check `apps/api/src/server.ts` for exact port)
-
-## Docker quickstart (containers)
-
-Use Docker when you want an environment similar to production or to run the full stack together.
-
-1. Build images and start services (from repo root):
-
-```powershell
-# create a network (one-time)
-Docker network create app_network;
-
-# build and bring up services
-$env:COMPOSE_DOCKER_CLI_BUILD=1; $env:DOCKER_BUILDKIT=1; docker-compose -f docker-compose.yml up --build -d
+**apps/api/.env**:
+```env
+DATABASE_URL="postgresql://username:password@localhost:5432/erp_beta"
+JWT_SECRET="your-jwt-secret"
+NODE_ENV="development"
+PORT=3001
 ```
 
-2. View logs or stop containers:
-
-```powershell
-# View logs
-docker-compose -f docker-compose.yml logs -f
-
-# Stop and remove containers
-docker-compose -f docker-compose.yml down
+**apps/web/.env.local**:
+```env
+NEXTAUTH_URL="http://localhost:3000"
+NEXTAUTH_SECRET="your-nextauth-secret"
+NEXT_PUBLIC_API_URL="http://localhost:3001"
 ```
 
-## Database and Prisma
+4. **Database Setup**:
+```bash
+# Run database migrations
+yarn workspace @repo/db prisma migrate dev
 
-Database schema and migrations live under `packages/db/prisma`. To apply migrations locally (when running the API against a local DB), use Prisma CLI from that package. Example (run from repo root):
-
-```powershell
-pnpm --filter @repo/db prisma migrate dev --schema=packages/db/prisma/schema.prisma
+# Seed initial data (optional)
+yarn workspace @repo/db prisma db seed
 ```
 
-Seeds are in `packages/db/prisma/seed.ts`.
+5. **Start Development Servers**:
 
-## Tests and linting
-
-Run all tests with:
-
-```powershell
-pnpm test
+**Option A: Start all services**:
+```bash
+yarn dev
 ```
 
-Run linting and type checks:
+**Option B: Start individually**:
+```bash
+# Terminal 1 - API Server
+yarn workspace api dev
 
-```powershell
-pnpm lint
-pnpm typecheck
+# Terminal 2 - Web Application
+yarn workspace web dev
 ```
 
-## Environment variables
+### Access Points
+- **Frontend**: http://localhost:3000
+- **API**: http://localhost:3001
+- **Database Studio**: `yarn workspace @repo/db prisma studio`
 
-Each app reads environment variables from its own `.env` file (not committed). Example files or required variables are documented at the top of each app's `README` and in `apps/*/Dockerfile` where relevant.
+## 📝 Database Management
 
-Common envs (examples):
+```bash
+# Create new migration
+yarn workspace @repo/db prisma migrate dev --name migration_name
 
-- DATABASE_URL — Prisma connection string
-- NODE_ENV — development|production
-- PORT — service port
+# Reset database
+yarn workspace @repo/db prisma migrate reset
 
-## Contributing
+# Generate Prisma client
+yarn workspace @repo/db prisma generate
 
-1. Create a branch off `dev`.
-2. Follow existing code style (TypeScript, ESLint, Prettier).
-3. Add tests for new behavior.
-4. Open a PR targeting `dev` with a clear description.
+# Open Prisma Studio
+yarn workspace @repo/db prisma studio
+```
 
-## Notes and pointers
+---
 
-- Frontend source: `apps/web/src`
-- API source: `apps/api/src`
-- Prisma schema and migrations: `packages/db/prisma`
-- Shared utilities and configs: `packages/*`
-
-If you want, I can also:
-
-- Add a short `CONTRIBUTING.md` and per-app READMEs
-- Add npm scripts to simplify common tasks (start:api, start:web, etc.)
+**Built with modern web technologies**
