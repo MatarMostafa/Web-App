@@ -45,8 +45,8 @@ export const getAllEmployees = async (): Promise<Employee[]> => {
   try {
     const users = await prisma.user.findMany({
       where: {
-        NOT: {
-          role: "ADMIN",
+        role: {
+          in: ["EMPLOYEE", "HR_MANAGER", "TEAM_LEADER"],
         },
       },
       include: {

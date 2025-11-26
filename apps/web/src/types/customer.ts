@@ -32,6 +32,9 @@ export interface CreateCustomerData {
   industry?: string;
   taxNumber?: string;
   isActive?: boolean;
+  // Login credentials (optional)
+  username?: string;
+  password?: string;
 }
 
 export interface UpdateCustomerData {
