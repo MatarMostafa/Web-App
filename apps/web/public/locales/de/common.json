@@ -962,8 +962,24 @@
     },
     "customer": {
       "created": {
-        "title": "Neuer Kunde hinzugefügt",
-        "body": "Neuer Kunde \"{{customerName}}\" wurde zum System hinzugefügt."
+        "title": "Neuer Auftrag erstellt",
+        "body": "Ihr Auftrag \"{{orderNumber}}\" wurde erstellt und für {{scheduledDate}} geplant."
+      },
+      "orderStatusChanged": {
+        "title": "Auftragsstatus aktualisiert",
+        "body": "Der Status Ihres Auftrags \"{{orderNumber}}\" wurde auf {{status}} aktualisiert."
+      },
+      "orderCompleted": {
+        "title": "Auftrag abgeschlossen",
+        "body": "Ihr Auftrag \"{{orderNumber}}\" wurde erfolgreich abgeschlossen."
+      },
+      "orderCancelled": {
+        "title": "Auftrag storniert",
+        "body": "Ihr Auftrag \"{{orderNumber}}\" wurde storniert.{{reason}}"
+      },
+      "orderScheduleChanged": {
+        "title": "Auftragstermin aktualisiert",
+        "body": "Der geplante Termin für Ihren Auftrag \"{{orderNumber}}\" wurde auf {{newDate}} aktualisiert."
       }
     },
     "statusMessages": {
@@ -978,6 +994,79 @@
       "minutesAgo": "vor {{count}} Minuten",
       "hoursAgo": "vor {{count}} Stunden",
       "daysAgo": "vor {{count}} Tagen"
+    }
+  },
+  "customerPortal": {
+    "dashboard": {
+      "title": "Kundenportal",
+      "welcome": "Willkommen zurück",
+      "overview": "Hier ist eine Übersicht über Ihre Aufträge und Ihr Konto",
+      "totalOrders": "Gesamtaufträge",
+      "completed": "Abgeschlossen",
+      "inProgress": "In Bearbeitung",
+      "planned": "Geplant",
+      "recentOrders": "Aktuelle Aufträge",
+      "noOrders": "Keine Aufträge gefunden",
+      "viewAllOrders": "Alle Aufträge anzeigen"
+    },
+    "orders": {
+      "title": "Meine Aufträge",
+      "subtitle": "Verfolgen und verwalten Sie Ihre Aufträge",
+      "searchPlaceholder": "Aufträge nach Nummer, Titel oder Beschreibung suchen...",
+      "noOrdersFound": "Keine Aufträge gefunden",
+      "noOrdersMessage": "Ihre Aufträge werden hier angezeigt, sobald sie erstellt wurden",
+      "tryAdjustingSearch": "Versuchen Sie, Ihre Suchbegriffe anzupassen",
+      "orderNumber": "Auftragsnummer",
+      "scheduled": "Geplant",
+      "location": "Standort",
+      "created": "Erstellt",
+      "viewDetails": "Details anzeigen",
+      "status": {
+        "planned": "Geplant",
+        "inprogress": "In Bearbeitung",
+        "completed": "Abgeschlossen",
+        "cancelled": "Storniert",
+        "unknown": "Unbekannt"
+      }
+    },
+    "profile": {
+      "title": "Firmenprofil",
+      "subtitle": "Verwalten Sie Ihre Firmeninformationen",
+      "companyName": "Firmenname",
+      "contactEmail": "Kontakt-E-Mail",
+      "contactPhone": "Kontakttelefon",
+      "address": "Adresse",
+      "industry": "Branche",
+      "updateProfile": "Profil aktualisieren",
+      "updating": "Wird aktualisiert...",
+      "profileUpdated": "Profil erfolgreich aktualisiert"
+    },
+    "navigation": {
+      "dashboard": "Dashboard",
+      "orders": "Meine Aufträge",
+      "profile": "Profil"
+    },
+    "orderDetail": {
+      "orderNotFound": "Auftrag nicht gefunden",
+      "orderNotFoundMessage": "Der gesuchte Auftrag existiert nicht oder Sie haben keinen Zugriff darauf.",
+      "backToOrders": "Zurück zu Aufträgen",
+      "orderInformation": "Auftragsinformationen",
+      "scheduledDate": "Geplantes Datum",
+      "location": "Standort",
+      "created": "Erstellt",
+      "statusInformation": "Statusinformationen",
+      "lastUpdated": "Zuletzt aktualisiert",
+      "description": "Beschreibung",
+      "needHelp": "Benötigen Sie Hilfe?",
+      "needHelpMessage": "Wenn Sie Fragen zu diesem Auftrag haben, wenden Sie sich bitte an unser Support-Team.",
+      "contactSupport": "Support kontaktieren",
+      "viewFaq": "FAQ anzeigen",
+      "statusDescription": {
+        "planned": "Ihr Auftrag wurde geplant und wartet auf die Ausführung.",
+        "inprogress": "Ihr Auftrag wird derzeit von unserem Team bearbeitet.",
+        "completed": "Ihr Auftrag wurde erfolgreich abgeschlossen.",
+        "cancelled": "Dieser Auftrag wurde storniert."
+      }
     }
   },
   "employee": {

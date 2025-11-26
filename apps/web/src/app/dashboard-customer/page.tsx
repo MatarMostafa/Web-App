@@ -6,8 +6,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Package, Calendar, Clock, Building } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function CustomerDashboard() {
+  const { t } = useTranslation();
   const { orders, profile, loading, fetchOrders, fetchProfile } = useCustomerStore();
   const [recentOrders, setRecentOrders] = useState<any[]>([]);
 
@@ -39,6 +41,11 @@ export default function CustomerDashboard() {
     }
   };
 
+  const getTranslatedStatus = (status: string) => {
+    const statusKey = status.toLowerCase().replace(' ', '');
+    return t(`customerPortal.orders.status.${statusKey}`) || status;
+  };
+
   const orderStats = {
     total: orders.length,
     completed: orders.filter(o => o.status.toLowerCase() === 'completed').length,
@@ -66,10 +73,10 @@ export default function CustomerDashboard() {
       {/* Welcome Header */}
       <div>
         <h1 className="text-3xl font-bold text-foreground">
-          Welcome back{profile ? `, ${profile.companyName}` : ''}!
+          {t('customerPortal.dashboard.welcome')}{profile ? `, ${profile.companyName}` : ''}!
         </h1>
         <p className="text-muted-foreground mt-1">
-          Here's an overview of your orders and account
+          {t('customerPortal.dashboard.overview')}
         </p>
       </div>
 
@@ -77,7 +84,7 @@ export default function CustomerDashboard() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Orders</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('customerPortal.dashboard.totalOrders')}</CardTitle>
             <Package className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -87,7 +94,7 @@ export default function CustomerDashboard() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Completed</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('customerPortal.dashboard.completed')}</CardTitle>
             <Calendar className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -97,7 +104,7 @@ export default function CustomerDashboard() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">In Progress</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('customerPortal.dashboard.inProgress')}</CardTitle>
             <Clock className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -107,7 +114,7 @@ export default function CustomerDashboard() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Planned</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('customerPortal.dashboard.planned')}</CardTitle>
             <Building className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -119,13 +126,13 @@ export default function CustomerDashboard() {
       {/* Recent Orders */}
       <Card>
         <CardHeader>
-          <CardTitle>Recent Orders</CardTitle>
+          <CardTitle>{t('customerPortal.dashboard.recentOrders')}</CardTitle>
         </CardHeader>
         <CardContent>
           {recentOrders.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
               <Package className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p>No orders found</p>
+              <p>{t('customerPortal.dashboard.noOrders')}</p>
             </div>
           ) : (
             <div className="space-y-4">
@@ -135,7 +142,7 @@ export default function CustomerDashboard() {
                     <div className="flex items-center gap-2 mb-1">
                       <h4 className="font-medium">{order.orderNumber}</h4>
                       <Badge className={getStatusColor(order.status)}>
-                        {order.status}
+                        {getTranslatedStatus(order.status)}
                       </Badge>
                     </div>
                     {order.title && (

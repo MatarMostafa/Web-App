@@ -1,6 +1,6 @@
 import { prisma } from "@repo/db";
 import { OrderStatus, NoteCategory } from "@repo/db/src/generated/prisma";
-import { notifyOrderNoteAdded, notifyWorkStarted, notifyOrderReview, notifyOrderApproved, notifyOrderRejected } from "./notificationHelpers";
+import { notifyOrderNoteAdded, notifyWorkStarted, notifyOrderReview, notifyOrderApproved, notifyOrderRejected, notifyOrderStatusChanged, notifyCustomerOrderStatusChanged, notifyCustomerOrderCompleted } from "./notificationHelpers";
 
 // Type definitions
 type CreateOrderNoteInput = {
@@ -163,10 +163,15 @@ export const createOrderNoteService = async (data: CreateOrderNoteInput) => {
       } else if (triggersStatus === 'COMPLETED' && isAdmin) {
         console.log("🔔 Admin approving order completion:", { orderId });
         await notifyOrderApproved(orderId, authorId);
+        await notifyCustomerOrderCompleted(orderId, authorId);
       } else if (triggersStatus === 'IN_PROGRESS' && isAdmin) {
         console.log("🔔 Admin rejecting order:", { orderId });
         await notifyOrderRejected(orderId, authorId, content);
       }
+      
+      // Send general status change notifications for any status change
+      await notifyOrderStatusChanged(orderId, triggersStatus, authorId);
+      await notifyCustomerOrderStatusChanged(orderId, triggersStatus, authorId);
     } catch (error) {
       console.error('Failed to send status notification:', error);
     }

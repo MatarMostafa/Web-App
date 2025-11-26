@@ -135,11 +135,19 @@ export function NotificationDropdown() {
         setTimeout(() => {
           window.dispatchEvent(new CustomEvent('refreshEmployeeOrders'));
         }, 100);
+      } else if (templateKey?.startsWith("CUSTOMER_")) {
+        // Customer notifications should go to customer portal
+        targetPath = "/dashboard-customer/orders";
+        setTimeout(() => {
+          window.dispatchEvent(new CustomEvent('refreshCustomerOrders'));
+        }, 100);
       } else {
         // For other order notifications, check current path to determine target
         const currentPath = window.location.pathname;
         if (currentPath.includes("/dashboard-employee")) {
           targetPath = "/dashboard-employee/orders";
+        } else if (currentPath.includes("/dashboard-customer")) {
+          targetPath = "/dashboard-customer/orders";
         } else {
           targetPath = "/dashboard-admin/orders";
         }

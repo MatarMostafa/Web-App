@@ -20,36 +20,40 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuthStore } from "@/store/authStore";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface SidebarProps {
   isOpen?: boolean;
   onClose?: () => void;
 }
 
-const navigation = [
-  {
-    name: "Dashboard",
-    href: "/dashboard-customer",
-    icon: LayoutGrid,
-  },
-  {
-    name: "My Orders",
-    href: "/dashboard-customer/orders",
-    icon: Package,
-  },
-  {
-    name: "Profile",
-    href: "/dashboard-customer/profile",
-    icon: User,
-  },
-];
+
 
 export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
+  const { t } = useTranslation();
   const isMobile = useIsMobile();
   const [collapsed, setCollapsed] = useState(false);
   const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
   const { logout } = useAuthStore();
+
+  const navigation = [
+    {
+      name: t('customerPortal.navigation.dashboard'),
+      href: "/dashboard-customer",
+      icon: LayoutGrid,
+    },
+    {
+      name: t('customerPortal.navigation.orders'),
+      href: "/dashboard-customer/orders",
+      icon: Package,
+    },
+    {
+      name: t('customerPortal.navigation.profile'),
+      href: "/dashboard-customer/profile",
+      icon: User,
+    },
+  ];
 
   useEffect(() => {
     setMounted(true);
@@ -205,11 +209,11 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
                         collapsed && !isMobile ? "mr-0" : "mr-2"
                       )}
                     />
-                    {(!collapsed || isMobile) && <span>Log Out</span>}
+                    {(!collapsed || isMobile) && <span>{t('navigation.logOut')}</span>}
                   </Button>
                 </TooltipTrigger>
                 {collapsed && !isMobile && (
-                  <TooltipContent side="right">Log Out</TooltipContent>
+                  <TooltipContent side="right">{t('navigation.logOut')}</TooltipContent>
                 )}
               </Tooltip>
             </TooltipProvider>
