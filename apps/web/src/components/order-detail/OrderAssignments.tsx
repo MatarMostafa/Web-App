@@ -131,7 +131,9 @@ export const OrderAssignments: React.FC<OrderAssignmentsProps> = ({
   };
 
   const getInitials = (firstName: string, lastName: string) => {
-    return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
+    const first = firstName?.charAt(0) || '';
+    const last = lastName?.charAt(0) || '';
+    return `${first}${last}`.toUpperCase() || '??';
   };
 
   if (loading) {

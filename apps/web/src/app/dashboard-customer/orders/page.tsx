@@ -8,8 +8,10 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Package, Search, Calendar, MapPin, Eye } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function CustomerOrdersPage() {
+  const { t } = useTranslation();
   const { orders, loading, fetchOrders } = useCustomerStore();
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredOrders, setFilteredOrders] = useState<any[]>([]);
@@ -43,6 +45,11 @@ export default function CustomerOrdersPage() {
     }
   };
 
+  const getTranslatedStatus = (status: string) => {
+    const statusKey = status.toLowerCase().replace(' ', '');
+    return t(`customerPortal.orders.status.${statusKey}`) || status;
+  };
+
   const handleViewOrder = (orderId: string) => {
     router.push(`/dashboard-customer/orders/${orderId}`);
   };
@@ -67,9 +74,9 @@ export default function CustomerOrdersPage() {
     <div className="p-6 space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-foreground">My Orders</h1>
+        <h1 className="text-3xl font-bold text-foreground">{t('customerPortal.orders.title')}</h1>
         <p className="text-muted-foreground mt-1">
-          Track and manage your orders
+          {t('customerPortal.orders.subtitle')}
         </p>
       </div>
 
@@ -77,7 +84,7 @@ export default function CustomerOrdersPage() {
       <div className="relative">
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
         <Input
-          placeholder="Search orders by number, title, or description..."
+          placeholder={t('customerPortal.orders.searchPlaceholder')}
           className="pl-10"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
@@ -90,12 +97,12 @@ export default function CustomerOrdersPage() {
           <CardContent className="flex flex-col items-center justify-center py-12">
             <Package className="h-12 w-12 text-muted-foreground mb-4" />
             <h3 className="text-lg font-medium mb-2">
-              {searchQuery ? "No orders found" : "No orders yet"}
+              {searchQuery ? t('customerPortal.orders.noOrdersFound') : t('customerPortal.orders.noOrdersFound')}
             </h3>
             <p className="text-muted-foreground text-center">
               {searchQuery 
-                ? "Try adjusting your search terms" 
-                : "Your orders will appear here once they are created"}
+                ? t('customerPortal.orders.tryAdjustingSearch')
+                : t('customerPortal.orders.noOrdersMessage')}
             </p>
           </CardContent>
         </Card>
@@ -103,59 +110,62 @@ export default function CustomerOrdersPage() {
         <div className="space-y-4">
           {filteredOrders.map((order) => (
             <Card key={order.id} className="hover:shadow-md transition-shadow">
-              <CardContent className="p-6">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2">
-                      <h3 className="text-lg font-semibold">{order.orderNumber}</h3>
-                      <Badge className={getStatusColor(order.status)}>
-                        {order.status}
-                      </Badge>
-                    </div>
-                    
-                    {order.title && (
-                      <h4 className="text-md font-medium text-muted-foreground mb-2">
-                        {order.title}
-                      </h4>
-                    )}
-                    
-                    {order.description && (
-                      <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
-                        {order.description}
-                      </p>
-                    )}
-                    
-                    <div className="flex items-center gap-6 text-sm text-muted-foreground">
-                      <div className="flex items-center gap-1">
-                        <Calendar className="h-4 w-4" />
-                        <span>
-                          Scheduled: {new Date(order.scheduledDate).toLocaleDateString()}
-                        </span>
-                      </div>
-                      
-                      {order.location && (
-                        <div className="flex items-center gap-1">
-                          <MapPin className="h-4 w-4" />
-                          <span>{order.location}</span>
-                        </div>
-                      )}
-                    </div>
+              <CardContent className="p-4 sm:p-6">
+                <div className="space-y-3">
+                  {/* Header with order number and status */}
+                  <div className="flex items-center justify-between gap-2">
+                    <h3 className="text-lg font-semibold truncate">{order.orderNumber}</h3>
+                    <Badge className={getStatusColor(order.status)}>
+                      {getTranslatedStatus(order.status)}
+                    </Badge>
                   </div>
                   
-                  <div className="flex flex-col items-end gap-2">
+                  {/* Title */}
+                  {order.title && (
+                    <h4 className="text-md font-medium text-muted-foreground">
+                      {order.title}
+                    </h4>
+                  )}
+                  
+                  {/* Description */}
+                  {order.description && (
+                    <p className="text-sm text-muted-foreground line-clamp-2">
+                      {order.description}
+                    </p>
+                  )}
+                  
+                  {/* Details - responsive layout */}
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6 text-sm text-muted-foreground">
+                    <div className="flex items-center gap-1">
+                      <Calendar className="h-4 w-4 flex-shrink-0" />
+                      <span className="truncate">
+                        {t('customerPortal.orders.scheduled')}: {new Date(order.scheduledDate).toLocaleDateString()}
+                      </span>
+                    </div>
+                    
+                    {order.location && (
+                      <div className="flex items-center gap-1">
+                        <MapPin className="h-4 w-4 flex-shrink-0" />
+                        <span className="truncate">{order.location}</span>
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Actions and created date - mobile friendly */}
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pt-2 border-t">
+                    <div className="text-xs text-muted-foreground order-2 sm:order-1">
+                      {t('customerPortal.orders.created')}: {new Date(order.createdAt).toLocaleDateString()}
+                    </div>
+                    
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={() => handleViewOrder(order.id)}
-                      className="flex items-center gap-2"
+                      className="flex items-center gap-2 w-full sm:w-auto order-1 sm:order-2"
                     >
                       <Eye className="h-4 w-4" />
-                      View Details
+                      {t('customerPortal.orders.viewDetails')}
                     </Button>
-                    
-                    <div className="text-xs text-muted-foreground">
-                      Created: {new Date(order.createdAt).toLocaleDateString()}
-                    </div>
                   </div>
                 </div>
               </CardContent>

@@ -24,6 +24,7 @@ router.get("/preferences", authMiddleware, getPreferences);
 router.get("/:id", authMiddleware, getNotificationById);
 router.post("/", authMiddleware, roleMiddleware(["ADMIN", "TEAM_LEADER", "HR_MANAGER", "SUPER_ADMIN"]), createNotification);
 router.post("/mark-all-read", authMiddleware, markAllNotificationsRead);
+router.post("/mark-all-read", authMiddleware, markAllNotificationsRead);
 router.post("/:id/read", authMiddleware, markNotificationRead);
 router.post("/:id/archive", authMiddleware, archiveNotification);
 router.put("/preferences", authMiddleware, updatePreferences);
