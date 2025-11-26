@@ -962,8 +962,24 @@
     },
     "customer": {
       "created": {
-        "title": "New Customer Added",
-        "body": "New customer \"{{customerName}}\" has been added to the system."
+        "title": "New Order Created",
+        "body": "Your order \"{{orderNumber}}\" has been created and scheduled for {{scheduledDate}}."
+      },
+      "orderStatusChanged": {
+        "title": "Order Status Update",
+        "body": "Your order \"{{orderNumber}}\" status has been updated to {{status}}."
+      },
+      "orderCompleted": {
+        "title": "Order Completed",
+        "body": "Your order \"{{orderNumber}}\" has been completed successfully."
+      },
+      "orderCancelled": {
+        "title": "Order Cancelled",
+        "body": "Your order \"{{orderNumber}}\" has been cancelled.{{reason}}"
+      },
+      "orderScheduleChanged": {
+        "title": "Order Schedule Updated",
+        "body": "The scheduled date for your order \"{{orderNumber}}\" has been updated to {{newDate}}."
       }
     },
     "statusMessages": {
@@ -978,6 +994,79 @@
       "minutesAgo": "{{count}} minutes ago",
       "hoursAgo": "{{count}} hours ago",
       "daysAgo": "{{count}} days ago"
+    }
+  },
+  "customerPortal": {
+    "dashboard": {
+      "title": "Customer Portal",
+      "welcome": "Welcome back",
+      "overview": "Here's an overview of your orders and account",
+      "totalOrders": "Total Orders",
+      "completed": "Completed",
+      "inProgress": "In Progress",
+      "planned": "Planned",
+      "recentOrders": "Recent Orders",
+      "noOrders": "No orders found",
+      "viewAllOrders": "View All Orders"
+    },
+    "orders": {
+      "title": "My Orders",
+      "subtitle": "Track and manage your orders",
+      "searchPlaceholder": "Search orders by number, title, or description...",
+      "noOrdersFound": "No orders found",
+      "noOrdersMessage": "Your orders will appear here once they are created",
+      "tryAdjustingSearch": "Try adjusting your search terms",
+      "orderNumber": "Order Number",
+      "scheduled": "Scheduled",
+      "location": "Location",
+      "created": "Created",
+      "viewDetails": "View Details",
+      "status": {
+        "planned": "Planned",
+        "inprogress": "In Progress",
+        "completed": "Completed",
+        "cancelled": "Cancelled",
+        "unknown": "Unknown"
+      }
+    },
+    "profile": {
+      "title": "Company Profile",
+      "subtitle": "Manage your company information",
+      "companyName": "Company Name",
+      "contactEmail": "Contact Email",
+      "contactPhone": "Contact Phone",
+      "address": "Address",
+      "industry": "Industry",
+      "updateProfile": "Update Profile",
+      "updating": "Updating...",
+      "profileUpdated": "Profile updated successfully"
+    },
+    "navigation": {
+      "dashboard": "Dashboard",
+      "orders": "My Orders",
+      "profile": "Profile"
+    },
+    "orderDetail": {
+      "orderNotFound": "Order not found",
+      "orderNotFoundMessage": "The order you're looking for doesn't exist or you don't have access to it.",
+      "backToOrders": "Back to Orders",
+      "orderInformation": "Order Information",
+      "scheduledDate": "Scheduled Date",
+      "location": "Location",
+      "created": "Created",
+      "statusInformation": "Status Information",
+      "lastUpdated": "Last updated",
+      "description": "Description",
+      "needHelp": "Need Help?",
+      "needHelpMessage": "If you have any questions about this order, please contact our support team.",
+      "contactSupport": "Contact Support",
+      "viewFaq": "View FAQ",
+      "statusDescription": {
+        "planned": "Your order has been scheduled and is awaiting execution.",
+        "inprogress": "Your order is currently being worked on by our team.",
+        "completed": "Your order has been successfully completed.",
+        "cancelled": "This order has been cancelled."
+      }
     }
   },
   "employee": {

@@ -7,8 +7,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Calendar, MapPin, Clock, Package } from "lucide-react";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function CustomerOrderDetailPage() {
+  const { t } = useTranslation();
   const params = useParams();
   const router = useRouter();
   const { fetchOrderById, loading } = useCustomerStore();
@@ -41,19 +43,14 @@ export default function CustomerOrderDetailPage() {
     }
   };
 
+  const getTranslatedStatus = (status: string) => {
+    const statusKey = status.toLowerCase().replace(' ', '');
+    return t(`customerPortal.orders.status.${statusKey}`) || status;
+  };
+
   const getStatusDescription = (status: string) => {
-    switch (status.toLowerCase()) {
-      case 'planned':
-        return 'Your order has been scheduled and is awaiting execution.';
-      case 'in progress':
-        return 'Your order is currently being worked on by our team.';
-      case 'completed':
-        return 'Your order has been successfully completed.';
-      case 'cancelled':
-        return 'This order has been cancelled.';
-      default:
-        return 'Order status information.';
-    }
+    const statusKey = status.toLowerCase().replace(' ', '');
+    return t(`customerPortal.orderDetail.statusDescription.${statusKey}`) || 'Order status information.';
   };
 
   if (loading) {
@@ -73,12 +70,12 @@ export default function CustomerOrderDetailPage() {
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12">
             <Package className="h-12 w-12 text-muted-foreground mb-4" />
-            <h3 className="text-lg font-medium mb-2">Order not found</h3>
+            <h3 className="text-lg font-medium mb-2">{t('customerPortal.orderDetail.orderNotFound')}</h3>
             <p className="text-muted-foreground text-center mb-4">
-              The order you're looking for doesn't exist or you don't have access to it.
+              {t('customerPortal.orderDetail.orderNotFoundMessage')}
             </p>
             <Button onClick={() => router.push('/dashboard-customer/orders')}>
-              Back to Orders
+              {t('customerPortal.orderDetail.backToOrders')}
             </Button>
           </CardContent>
         </Card>
@@ -97,7 +94,7 @@ export default function CustomerOrderDetailPage() {
           className="flex items-center gap-2"
         >
           <ArrowLeft className="h-4 w-4" />
-          Back to Orders
+          {t('customerPortal.orderDetail.backToOrders')}
         </Button>
       </div>
 
@@ -105,7 +102,7 @@ export default function CustomerOrderDetailPage() {
         <div className="flex items-center gap-3 mb-2">
           <h1 className="text-3xl font-bold text-foreground">{order.orderNumber}</h1>
           <Badge className={getStatusColor(order.status)} variant="secondary">
-            {order.status}
+            {getTranslatedStatus(order.status)}
           </Badge>
         </div>
         {order.title && (
@@ -118,13 +115,13 @@ export default function CustomerOrderDetailPage() {
         {/* Basic Information */}
         <Card>
           <CardHeader>
-            <CardTitle>Order Information</CardTitle>
+            <CardTitle>{t('customerPortal.orderDetail.orderInformation')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center gap-3">
               <Calendar className="h-5 w-5 text-muted-foreground" />
               <div>
-                <p className="font-medium">Scheduled Date</p>
+                <p className="font-medium">{t('customerPortal.orderDetail.scheduledDate')}</p>
                 <p className="text-sm text-muted-foreground">
                   {new Date(order.scheduledDate).toLocaleDateString('en-US', {
                     weekday: 'long',
@@ -140,7 +137,7 @@ export default function CustomerOrderDetailPage() {
               <div className="flex items-center gap-3">
                 <MapPin className="h-5 w-5 text-muted-foreground" />
                 <div>
-                  <p className="font-medium">Location</p>
+                  <p className="font-medium">{t('customerPortal.orderDetail.location')}</p>
                   <p className="text-sm text-muted-foreground">{order.location}</p>
                 </div>
               </div>
@@ -149,7 +146,7 @@ export default function CustomerOrderDetailPage() {
             <div className="flex items-center gap-3">
               <Clock className="h-5 w-5 text-muted-foreground" />
               <div>
-                <p className="font-medium">Created</p>
+                <p className="font-medium">{t('customerPortal.orderDetail.created')}</p>
                 <p className="text-sm text-muted-foreground">
                   {new Date(order.createdAt).toLocaleDateString('en-US', {
                     year: 'numeric',
@@ -165,7 +162,7 @@ export default function CustomerOrderDetailPage() {
         {/* Status Information */}
         <Card>
           <CardHeader>
-            <CardTitle>Status Information</CardTitle>
+            <CardTitle>{t('customerPortal.orderDetail.statusInformation')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -177,7 +174,7 @@ export default function CustomerOrderDetailPage() {
                   'bg-gray-500'
                 }`}></div>
                 <div>
-                  <p className="font-medium">{order.status}</p>
+                  <p className="font-medium">{getTranslatedStatus(order.status)}</p>
                   <p className="text-sm text-muted-foreground">
                     {getStatusDescription(order.status)}
                   </p>
@@ -186,7 +183,7 @@ export default function CustomerOrderDetailPage() {
 
               <div className="pt-4 border-t">
                 <p className="text-sm text-muted-foreground">
-                  Last updated: {new Date(order.updatedAt).toLocaleDateString('en-US', {
+                  {t('customerPortal.orderDetail.lastUpdated')}: {new Date(order.updatedAt).toLocaleDateString('en-US', {
                     year: 'numeric',
                     month: 'long',
                     day: 'numeric',
@@ -204,7 +201,7 @@ export default function CustomerOrderDetailPage() {
       {order.description && (
         <Card>
           <CardHeader>
-            <CardTitle>Description</CardTitle>
+            <CardTitle>{t('customerPortal.orderDetail.description')}</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-muted-foreground whitespace-pre-wrap">
@@ -217,18 +214,18 @@ export default function CustomerOrderDetailPage() {
       {/* Contact Information */}
       <Card>
         <CardHeader>
-          <CardTitle>Need Help?</CardTitle>
+          <CardTitle>{t('customerPortal.orderDetail.needHelp')}</CardTitle>
         </CardHeader>
         <CardContent>
           <p className="text-muted-foreground mb-4">
-            If you have any questions about this order, please contact our support team.
+            {t('customerPortal.orderDetail.needHelpMessage')}
           </p>
           <div className="flex gap-4">
             <Button variant="outline">
-              Contact Support
+              {t('customerPortal.orderDetail.contactSupport')}
             </Button>
             <Button variant="outline">
-              View FAQ
+              {t('customerPortal.orderDetail.viewFaq')}
             </Button>
           </div>
         </CardContent>

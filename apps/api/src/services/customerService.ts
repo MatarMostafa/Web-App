@@ -22,18 +22,18 @@ export const mapOrderStatusForCustomer = (status: OrderStatus): string => {
   switch (status) {
     case 'DRAFT':
     case 'OPEN':
-      return 'Planned';
+      return 'planned';
     case 'ACTIVE':
     case 'IN_PROGRESS':
     case 'IN_REVIEW':
-      return 'In Progress';
+      return 'inprogress';
     case 'COMPLETED':
-      return 'Completed';
+      return 'completed';
     case 'CANCELLED':
     case 'EXPIRED':
-      return 'Cancelled';
+      return 'cancelled';
     default:
-      return 'Unknown';
+      return 'unknown';
   }
 };
 

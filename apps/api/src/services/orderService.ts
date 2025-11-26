@@ -10,7 +10,11 @@ import {
   notifyAssignmentUpdated,
   notifyAssignmentCancelled,
   notifyOrderStatusChanged,
-  notifyOrderCompleted
+  notifyOrderCompleted,
+  notifyCustomerOrderStatusChanged,
+  notifyCustomerOrderCompleted,
+  notifyCustomerOrderCancelled,
+  notifyCustomerOrderCreated
 } from "./notificationHelpers";
 
 // Type definitions for better type safety
@@ -175,6 +179,9 @@ export const createOrderService = async (data: OrderCreateInput & { assignedEmpl
     order.status = newStatus;
   }
 
+  // Send customer notification for order creation
+  await notifyCustomerOrderCreated(order.id, createdBy);
+
   return order;
 };
 
@@ -284,12 +291,21 @@ export const updateOrderStatusService = async (
     data: { status },
   });
   
-  // Send status change notification
+  // Send status change notification to employees/admins
   await notifyOrderStatusChanged(id, status, createdBy);
   
-  // Send completion notification to admins
+  // Send status change notification to customer
+  await notifyCustomerOrderStatusChanged(id, status, createdBy);
+  
+  // Send completion notifications
   if (status === 'COMPLETED') {
     await notifyOrderCompleted(id, createdBy);
+    await notifyCustomerOrderCompleted(id, createdBy);
+  }
+  
+  // Send cancellation notification to customer
+  if (status === 'CANCELLED') {
+    await notifyCustomerOrderCancelled(id, undefined, createdBy);
   }
   
   return order;
@@ -455,12 +471,14 @@ const updateOrderStatusBasedOnAssignments = async (orderId: string) => {
       data: { status: newStatus }
     });
     
-    // Send status change notification
+    // Send status change notifications
     await notifyOrderStatusChanged(orderId, newStatus);
+    await notifyCustomerOrderStatusChanged(orderId, newStatus);
     
-    // Send completion notification to admins
+    // Send completion notifications
     if (newStatus === 'COMPLETED') {
       await notifyOrderCompleted(orderId);
+      await notifyCustomerOrderCompleted(orderId);
     }
   }
 };

@@ -92,6 +92,26 @@ const translations = {
       created: {
         title: "New Customer Added",
         body: "New customer \"{{customerName}}\" has been added to the system."
+      },
+      orderStatusChanged: {
+        title: "Order Status Update",
+        body: "Your order \"{{orderNumber}}\" status has been updated to {{status}}."
+      },
+      orderCompleted: {
+        title: "Order Completed",
+        body: "Your order \"{{orderNumber}}\" has been completed successfully."
+      },
+      orderCancelled: {
+        title: "Order Cancelled",
+        body: "Your order \"{{orderNumber}}\" has been cancelled.{{reason}}"
+      },
+      orderScheduleChanged: {
+        title: "Order Schedule Updated",
+        body: "The scheduled date for your order \"{{orderNumber}}\" has been updated to {{newDate}}."
+      },
+      orderCreated: {
+        title: "New Order Created",
+        body: "Your order \"{{orderNumber}}\" has been created and scheduled for {{scheduledDate}}."
       }
     },
     statusMessages: {
@@ -191,6 +211,26 @@ const translations = {
       created: {
         title: "Neuer Kunde hinzugefügt",
         body: "Neuer Kunde \"{{customerName}}\" wurde zum System hinzugefügt."
+      },
+      orderStatusChanged: {
+        title: "Auftragsstatus aktualisiert",
+        body: "Der Status Ihres Auftrags \"{{orderNumber}}\" wurde auf {{status}} aktualisiert."
+      },
+      orderCompleted: {
+        title: "Auftrag abgeschlossen",
+        body: "Ihr Auftrag \"{{orderNumber}}\" wurde erfolgreich abgeschlossen."
+      },
+      orderCancelled: {
+        title: "Auftrag storniert",
+        body: "Ihr Auftrag \"{{orderNumber}}\" wurde storniert.{{reason}}"
+      },
+      orderScheduleChanged: {
+        title: "Auftragstermin aktualisiert",
+        body: "Der geplante Termin für Ihren Auftrag \"{{orderNumber}}\" wurde auf {{newDate}} aktualisiert."
+      },
+      orderCreated: {
+        title: "Neuer Auftrag erstellt",
+        body: "Ihr Auftrag \"{{orderNumber}}\" wurde erstellt und für {{scheduledDate}} geplant."
       }
     },
     statusMessages: {
@@ -206,10 +246,23 @@ const translations = {
 // Get user's preferred language (default to English)
 export const getUserLanguage = async (userId: string): Promise<'en' | 'de'> => {
   try {
-    // Try to get user's language preference from database or settings
-    // For now, default to English - can be enhanced later
+    // Get user's language preference from user settings or profile
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { 
+        language: true,
+        employee: { select: { id: true } },
+        customer: { select: { id: true } }
+      }
+    });
+    
+    // Return user's preferred language if set, otherwise default to English
+    if (user?.language === 'de' || user?.language === 'german') {
+      return 'de';
+    }
     return 'en';
   } catch (error) {
+    console.error('Error getting user language:', error);
     return 'en';
   }
 };
