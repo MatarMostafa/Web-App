@@ -134,6 +134,14 @@ export const authOptions: NextAuthOptions = {
       session.error = token.error as string;
       return session;
     },
+    async redirect({ url, baseUrl }) {
+      // Handle role-based redirects after login
+      if (url.startsWith(baseUrl)) {
+        return url;
+      }
+      // Default redirects based on role will be handled in middleware
+      return baseUrl;
+    },
   },
   pages: {
     signIn: "/login",

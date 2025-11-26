@@ -153,7 +153,8 @@ export namespace $Enums {
   TEAM_LEADER: 'TEAM_LEADER',
   EMPLOYEE: 'EMPLOYEE',
   HR_MANAGER: 'HR_MANAGER',
-  SUPER_ADMIN: 'SUPER_ADMIN'
+  SUPER_ADMIN: 'SUPER_ADMIN',
+  CUSTOMER: 'CUSTOMER'
 };
 
 export type UserRole = (typeof UserRole)[keyof typeof UserRole]
@@ -4051,6 +4052,7 @@ export namespace Prisma {
     createdBy?: boolean
     updatedBy?: boolean
     employee?: boolean | User$employeeArgs<ExtArgs>
+    customer?: boolean | User$customerArgs<ExtArgs>
     manualOverrides?: boolean | User$manualOverridesArgs<ExtArgs>
     subordinates?: boolean | User$subordinatesArgs<ExtArgs>
     notificationRecipients?: boolean | User$notificationRecipientsArgs<ExtArgs>
@@ -4128,6 +4130,7 @@ export namespace Prisma {
   export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "username" | "password" | "role" | "isActive" | "lastLogin" | "refreshToken" | "emailVerificationToken" | "emailVerificationExpires" | "passwordResetToken" | "passwordResetExpires" | "emailVerified" | "twoFactorEnabled" | "twoFactorSecret" | "createdAt" | "updatedAt" | "createdBy" | "updatedBy", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     employee?: boolean | User$employeeArgs<ExtArgs>
+    customer?: boolean | User$customerArgs<ExtArgs>
     manualOverrides?: boolean | User$manualOverridesArgs<ExtArgs>
     subordinates?: boolean | User$subordinatesArgs<ExtArgs>
     notificationRecipients?: boolean | User$notificationRecipientsArgs<ExtArgs>
@@ -4142,6 +4145,7 @@ export namespace Prisma {
     name: "User"
     objects: {
       employee: Prisma.$EmployeePayload<ExtArgs> | null
+      customer: Prisma.$CustomerPayload<ExtArgs> | null
       manualOverrides: Prisma.$EmployeePerformancePayload<ExtArgs>[]
       subordinates: Prisma.$EmployeePayload<ExtArgs>[]
       notificationRecipients: Prisma.$NotificationRecipientPayload<ExtArgs>[]
@@ -4563,6 +4567,7 @@ export namespace Prisma {
   export interface Prisma__UserClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     employee<T extends User$employeeArgs<ExtArgs> = {}>(args?: Subset<T, User$employeeArgs<ExtArgs>>): Prisma__EmployeeClient<$Result.GetResult<Prisma.$EmployeePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    customer<T extends User$customerArgs<ExtArgs> = {}>(args?: Subset<T, User$customerArgs<ExtArgs>>): Prisma__CustomerClient<$Result.GetResult<Prisma.$CustomerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     manualOverrides<T extends User$manualOverridesArgs<ExtArgs> = {}>(args?: Subset<T, User$manualOverridesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EmployeePerformancePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     subordinates<T extends User$subordinatesArgs<ExtArgs> = {}>(args?: Subset<T, User$subordinatesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EmployeePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     notificationRecipients<T extends User$notificationRecipientsArgs<ExtArgs> = {}>(args?: Subset<T, User$notificationRecipientsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationRecipientPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -5020,6 +5025,25 @@ export namespace Prisma {
      */
     include?: EmployeeInclude<ExtArgs> | null
     where?: EmployeeWhereInput
+  }
+
+  /**
+   * User.customer
+   */
+  export type User$customerArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Customer
+     */
+    select?: CustomerSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Customer
+     */
+    omit?: CustomerOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CustomerInclude<ExtArgs> | null
+    where?: CustomerWhereInput
   }
 
   /**
@@ -11670,6 +11694,7 @@ export namespace Prisma {
     isActive: boolean | null
     industry: string | null
     taxNumber: string | null
+    userId: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -11682,6 +11707,7 @@ export namespace Prisma {
     isActive: boolean | null
     industry: string | null
     taxNumber: string | null
+    userId: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -11695,6 +11721,7 @@ export namespace Prisma {
     isActive: number
     industry: number
     taxNumber: number
+    userId: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -11709,6 +11736,7 @@ export namespace Prisma {
     isActive?: true
     industry?: true
     taxNumber?: true
+    userId?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -11721,6 +11749,7 @@ export namespace Prisma {
     isActive?: true
     industry?: true
     taxNumber?: true
+    userId?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -11734,6 +11763,7 @@ export namespace Prisma {
     isActive?: true
     industry?: true
     taxNumber?: true
+    userId?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -11820,6 +11850,7 @@ export namespace Prisma {
     isActive: boolean
     industry: string | null
     taxNumber: string | null
+    userId: string | null
     createdAt: Date
     updatedAt: Date
     _count: CustomerCountAggregateOutputType | null
@@ -11850,8 +11881,10 @@ export namespace Prisma {
     isActive?: boolean
     industry?: boolean
     taxNumber?: boolean
+    userId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    user?: boolean | Customer$userArgs<ExtArgs>
     subAccounts?: boolean | Customer$subAccountsArgs<ExtArgs>
     orders?: boolean | Customer$ordersArgs<ExtArgs>
     ratings?: boolean | Customer$ratingsArgs<ExtArgs>
@@ -11867,8 +11900,10 @@ export namespace Prisma {
     isActive?: boolean
     industry?: boolean
     taxNumber?: boolean
+    userId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    user?: boolean | Customer$userArgs<ExtArgs>
   }, ExtArgs["result"]["customer"]>
 
   export type CustomerSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -11880,8 +11915,10 @@ export namespace Prisma {
     isActive?: boolean
     industry?: boolean
     taxNumber?: boolean
+    userId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    user?: boolean | Customer$userArgs<ExtArgs>
   }, ExtArgs["result"]["customer"]>
 
   export type CustomerSelectScalar = {
@@ -11893,23 +11930,30 @@ export namespace Prisma {
     isActive?: boolean
     industry?: boolean
     taxNumber?: boolean
+    userId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type CustomerOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "companyName" | "contactEmail" | "contactPhone" | "address" | "isActive" | "industry" | "taxNumber" | "createdAt" | "updatedAt", ExtArgs["result"]["customer"]>
+  export type CustomerOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "companyName" | "contactEmail" | "contactPhone" | "address" | "isActive" | "industry" | "taxNumber" | "userId" | "createdAt" | "updatedAt", ExtArgs["result"]["customer"]>
   export type CustomerInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | Customer$userArgs<ExtArgs>
     subAccounts?: boolean | Customer$subAccountsArgs<ExtArgs>
     orders?: boolean | Customer$ordersArgs<ExtArgs>
     ratings?: boolean | Customer$ratingsArgs<ExtArgs>
     _count?: boolean | CustomerCountOutputTypeDefaultArgs<ExtArgs>
   }
-  export type CustomerIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
-  export type CustomerIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+  export type CustomerIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | Customer$userArgs<ExtArgs>
+  }
+  export type CustomerIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | Customer$userArgs<ExtArgs>
+  }
 
   export type $CustomerPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Customer"
     objects: {
+      user: Prisma.$UserPayload<ExtArgs> | null
       subAccounts: Prisma.$SubAccountPayload<ExtArgs>[]
       orders: Prisma.$OrderPayload<ExtArgs>[]
       ratings: Prisma.$RatingPayload<ExtArgs>[]
@@ -11923,6 +11967,7 @@ export namespace Prisma {
       isActive: boolean
       industry: string | null
       taxNumber: string | null
+      userId: string | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["customer"]>
@@ -12319,6 +12364,7 @@ export namespace Prisma {
    */
   export interface Prisma__CustomerClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends Customer$userArgs<ExtArgs> = {}>(args?: Subset<T, Customer$userArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     subAccounts<T extends Customer$subAccountsArgs<ExtArgs> = {}>(args?: Subset<T, Customer$subAccountsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SubAccountPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     orders<T extends Customer$ordersArgs<ExtArgs> = {}>(args?: Subset<T, Customer$ordersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     ratings<T extends Customer$ratingsArgs<ExtArgs> = {}>(args?: Subset<T, Customer$ratingsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RatingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -12359,6 +12405,7 @@ export namespace Prisma {
     readonly isActive: FieldRef<"Customer", 'Boolean'>
     readonly industry: FieldRef<"Customer", 'String'>
     readonly taxNumber: FieldRef<"Customer", 'String'>
+    readonly userId: FieldRef<"Customer", 'String'>
     readonly createdAt: FieldRef<"Customer", 'DateTime'>
     readonly updatedAt: FieldRef<"Customer", 'DateTime'>
   }
@@ -12610,6 +12657,10 @@ export namespace Prisma {
      */
     data: CustomerCreateManyInput | CustomerCreateManyInput[]
     skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CustomerIncludeCreateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -12680,6 +12731,10 @@ export namespace Prisma {
      * Limit how many Customers to update.
      */
     limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CustomerIncludeUpdateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -12746,6 +12801,25 @@ export namespace Prisma {
      * Limit how many Customers to delete.
      */
     limit?: number
+  }
+
+  /**
+   * Customer.user
+   */
+  export type Customer$userArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the User
+     */
+    omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
   }
 
   /**
@@ -35193,6 +35267,7 @@ export namespace Prisma {
     isActive: 'isActive',
     industry: 'industry',
     taxNumber: 'taxNumber',
+    userId: 'userId',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -35841,6 +35916,7 @@ export namespace Prisma {
     createdBy?: StringNullableFilter<"User"> | string | null
     updatedBy?: StringNullableFilter<"User"> | string | null
     employee?: XOR<EmployeeNullableScalarRelationFilter, EmployeeWhereInput> | null
+    customer?: XOR<CustomerNullableScalarRelationFilter, CustomerWhereInput> | null
     manualOverrides?: EmployeePerformanceListRelationFilter
     subordinates?: EmployeeListRelationFilter
     notificationRecipients?: NotificationRecipientListRelationFilter
@@ -35869,6 +35945,7 @@ export namespace Prisma {
     createdBy?: SortOrderInput | SortOrder
     updatedBy?: SortOrderInput | SortOrder
     employee?: EmployeeOrderByWithRelationInput
+    customer?: CustomerOrderByWithRelationInput
     manualOverrides?: EmployeePerformanceOrderByRelationAggregateInput
     subordinates?: EmployeeOrderByRelationAggregateInput
     notificationRecipients?: NotificationRecipientOrderByRelationAggregateInput
@@ -35900,6 +35977,7 @@ export namespace Prisma {
     createdBy?: StringNullableFilter<"User"> | string | null
     updatedBy?: StringNullableFilter<"User"> | string | null
     employee?: XOR<EmployeeNullableScalarRelationFilter, EmployeeWhereInput> | null
+    customer?: XOR<CustomerNullableScalarRelationFilter, CustomerWhereInput> | null
     manualOverrides?: EmployeePerformanceListRelationFilter
     subordinates?: EmployeeListRelationFilter
     notificationRecipients?: NotificationRecipientListRelationFilter
@@ -36514,8 +36592,10 @@ export namespace Prisma {
     isActive?: BoolFilter<"Customer"> | boolean
     industry?: StringNullableFilter<"Customer"> | string | null
     taxNumber?: StringNullableFilter<"Customer"> | string | null
+    userId?: StringNullableFilter<"Customer"> | string | null
     createdAt?: DateTimeFilter<"Customer"> | Date | string
     updatedAt?: DateTimeFilter<"Customer"> | Date | string
+    user?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     subAccounts?: SubAccountListRelationFilter
     orders?: OrderListRelationFilter
     ratings?: RatingListRelationFilter
@@ -36530,8 +36610,10 @@ export namespace Prisma {
     isActive?: SortOrder
     industry?: SortOrderInput | SortOrder
     taxNumber?: SortOrderInput | SortOrder
+    userId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    user?: UserOrderByWithRelationInput
     subAccounts?: SubAccountOrderByRelationAggregateInput
     orders?: OrderOrderByRelationAggregateInput
     ratings?: RatingOrderByRelationAggregateInput
@@ -36540,6 +36622,7 @@ export namespace Prisma {
   export type CustomerWhereUniqueInput = Prisma.AtLeast<{
     id?: string
     taxNumber?: string
+    userId?: string
     AND?: CustomerWhereInput | CustomerWhereInput[]
     OR?: CustomerWhereInput[]
     NOT?: CustomerWhereInput | CustomerWhereInput[]
@@ -36551,10 +36634,11 @@ export namespace Prisma {
     industry?: StringNullableFilter<"Customer"> | string | null
     createdAt?: DateTimeFilter<"Customer"> | Date | string
     updatedAt?: DateTimeFilter<"Customer"> | Date | string
+    user?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     subAccounts?: SubAccountListRelationFilter
     orders?: OrderListRelationFilter
     ratings?: RatingListRelationFilter
-  }, "id" | "taxNumber">
+  }, "id" | "taxNumber" | "userId">
 
   export type CustomerOrderByWithAggregationInput = {
     id?: SortOrder
@@ -36565,6 +36649,7 @@ export namespace Prisma {
     isActive?: SortOrder
     industry?: SortOrderInput | SortOrder
     taxNumber?: SortOrderInput | SortOrder
+    userId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: CustomerCountOrderByAggregateInput
@@ -36584,6 +36669,7 @@ export namespace Prisma {
     isActive?: BoolWithAggregatesFilter<"Customer"> | boolean
     industry?: StringNullableWithAggregatesFilter<"Customer"> | string | null
     taxNumber?: StringNullableWithAggregatesFilter<"Customer"> | string | null
+    userId?: StringNullableWithAggregatesFilter<"Customer"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Customer"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Customer"> | Date | string
   }
@@ -38264,6 +38350,7 @@ export namespace Prisma {
     createdBy?: string | null
     updatedBy?: string | null
     employee?: EmployeeCreateNestedOneWithoutUserInput
+    customer?: CustomerCreateNestedOneWithoutUserInput
     manualOverrides?: EmployeePerformanceCreateNestedManyWithoutManualOverrideByInput
     subordinates?: EmployeeCreateNestedManyWithoutManagerInput
     notificationRecipients?: NotificationRecipientCreateNestedManyWithoutUserInput
@@ -38292,6 +38379,7 @@ export namespace Prisma {
     createdBy?: string | null
     updatedBy?: string | null
     employee?: EmployeeUncheckedCreateNestedOneWithoutUserInput
+    customer?: CustomerUncheckedCreateNestedOneWithoutUserInput
     manualOverrides?: EmployeePerformanceUncheckedCreateNestedManyWithoutManualOverrideByInput
     subordinates?: EmployeeUncheckedCreateNestedManyWithoutManagerInput
     notificationRecipients?: NotificationRecipientUncheckedCreateNestedManyWithoutUserInput
@@ -38320,6 +38408,7 @@ export namespace Prisma {
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
     employee?: EmployeeUpdateOneWithoutUserNestedInput
+    customer?: CustomerUpdateOneWithoutUserNestedInput
     manualOverrides?: EmployeePerformanceUpdateManyWithoutManualOverrideByNestedInput
     subordinates?: EmployeeUpdateManyWithoutManagerNestedInput
     notificationRecipients?: NotificationRecipientUpdateManyWithoutUserNestedInput
@@ -38348,6 +38437,7 @@ export namespace Prisma {
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
     employee?: EmployeeUncheckedUpdateOneWithoutUserNestedInput
+    customer?: CustomerUncheckedUpdateOneWithoutUserNestedInput
     manualOverrides?: EmployeePerformanceUncheckedUpdateManyWithoutManualOverrideByNestedInput
     subordinates?: EmployeeUncheckedUpdateManyWithoutManagerNestedInput
     notificationRecipients?: NotificationRecipientUncheckedUpdateManyWithoutUserNestedInput
@@ -39049,6 +39139,7 @@ export namespace Prisma {
     taxNumber?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    user?: UserCreateNestedOneWithoutCustomerInput
     subAccounts?: SubAccountCreateNestedManyWithoutCustomerInput
     orders?: OrderCreateNestedManyWithoutCustomerInput
     ratings?: RatingCreateNestedManyWithoutCustomerInput
@@ -39063,6 +39154,7 @@ export namespace Prisma {
     isActive?: boolean
     industry?: string | null
     taxNumber?: string | null
+    userId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     subAccounts?: SubAccountUncheckedCreateNestedManyWithoutCustomerInput
@@ -39081,6 +39173,7 @@ export namespace Prisma {
     taxNumber?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneWithoutCustomerNestedInput
     subAccounts?: SubAccountUpdateManyWithoutCustomerNestedInput
     orders?: OrderUpdateManyWithoutCustomerNestedInput
     ratings?: RatingUpdateManyWithoutCustomerNestedInput
@@ -39095,6 +39188,7 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     taxNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     subAccounts?: SubAccountUncheckedUpdateManyWithoutCustomerNestedInput
@@ -39111,6 +39205,7 @@ export namespace Prisma {
     isActive?: boolean
     industry?: string | null
     taxNumber?: string | null
+    userId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -39137,6 +39232,7 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     taxNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -41043,6 +41139,11 @@ export namespace Prisma {
     isNot?: EmployeeWhereInput | null
   }
 
+  export type CustomerNullableScalarRelationFilter = {
+    is?: CustomerWhereInput | null
+    isNot?: CustomerWhereInput | null
+  }
+
   export type EmployeePerformanceListRelationFilter = {
     every?: EmployeePerformanceWhereInput
     some?: EmployeePerformanceWhereInput
@@ -41875,6 +41976,7 @@ export namespace Prisma {
     isActive?: SortOrder
     industry?: SortOrder
     taxNumber?: SortOrder
+    userId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -41887,6 +41989,7 @@ export namespace Prisma {
     isActive?: SortOrder
     industry?: SortOrder
     taxNumber?: SortOrder
+    userId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -41899,6 +42002,7 @@ export namespace Prisma {
     isActive?: SortOrder
     industry?: SortOrder
     taxNumber?: SortOrder
+    userId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -42476,11 +42580,6 @@ export namespace Prisma {
     in?: $Enums.RatingStatus[] | ListEnumRatingStatusFieldRefInput<$PrismaModel>
     notIn?: $Enums.RatingStatus[] | ListEnumRatingStatusFieldRefInput<$PrismaModel>
     not?: NestedEnumRatingStatusFilter<$PrismaModel> | $Enums.RatingStatus
-  }
-
-  export type CustomerNullableScalarRelationFilter = {
-    is?: CustomerWhereInput | null
-    isNot?: CustomerWhereInput | null
   }
 
   export type RatingCountOrderByAggregateInput = {
@@ -43096,6 +43195,12 @@ export namespace Prisma {
     connect?: EmployeeWhereUniqueInput
   }
 
+  export type CustomerCreateNestedOneWithoutUserInput = {
+    create?: XOR<CustomerCreateWithoutUserInput, CustomerUncheckedCreateWithoutUserInput>
+    connectOrCreate?: CustomerCreateOrConnectWithoutUserInput
+    connect?: CustomerWhereUniqueInput
+  }
+
   export type EmployeePerformanceCreateNestedManyWithoutManualOverrideByInput = {
     create?: XOR<EmployeePerformanceCreateWithoutManualOverrideByInput, EmployeePerformanceUncheckedCreateWithoutManualOverrideByInput> | EmployeePerformanceCreateWithoutManualOverrideByInput[] | EmployeePerformanceUncheckedCreateWithoutManualOverrideByInput[]
     connectOrCreate?: EmployeePerformanceCreateOrConnectWithoutManualOverrideByInput | EmployeePerformanceCreateOrConnectWithoutManualOverrideByInput[]
@@ -43134,6 +43239,12 @@ export namespace Prisma {
     create?: XOR<EmployeeCreateWithoutUserInput, EmployeeUncheckedCreateWithoutUserInput>
     connectOrCreate?: EmployeeCreateOrConnectWithoutUserInput
     connect?: EmployeeWhereUniqueInput
+  }
+
+  export type CustomerUncheckedCreateNestedOneWithoutUserInput = {
+    create?: XOR<CustomerCreateWithoutUserInput, CustomerUncheckedCreateWithoutUserInput>
+    connectOrCreate?: CustomerCreateOrConnectWithoutUserInput
+    connect?: CustomerWhereUniqueInput
   }
 
   export type EmployeePerformanceUncheckedCreateNestedManyWithoutManualOverrideByInput = {
@@ -43202,6 +43313,16 @@ export namespace Prisma {
     delete?: EmployeeWhereInput | boolean
     connect?: EmployeeWhereUniqueInput
     update?: XOR<XOR<EmployeeUpdateToOneWithWhereWithoutUserInput, EmployeeUpdateWithoutUserInput>, EmployeeUncheckedUpdateWithoutUserInput>
+  }
+
+  export type CustomerUpdateOneWithoutUserNestedInput = {
+    create?: XOR<CustomerCreateWithoutUserInput, CustomerUncheckedCreateWithoutUserInput>
+    connectOrCreate?: CustomerCreateOrConnectWithoutUserInput
+    upsert?: CustomerUpsertWithoutUserInput
+    disconnect?: CustomerWhereInput | boolean
+    delete?: CustomerWhereInput | boolean
+    connect?: CustomerWhereUniqueInput
+    update?: XOR<XOR<CustomerUpdateToOneWithWhereWithoutUserInput, CustomerUpdateWithoutUserInput>, CustomerUncheckedUpdateWithoutUserInput>
   }
 
   export type EmployeePerformanceUpdateManyWithoutManualOverrideByNestedInput = {
@@ -43278,6 +43399,16 @@ export namespace Prisma {
     delete?: EmployeeWhereInput | boolean
     connect?: EmployeeWhereUniqueInput
     update?: XOR<XOR<EmployeeUpdateToOneWithWhereWithoutUserInput, EmployeeUpdateWithoutUserInput>, EmployeeUncheckedUpdateWithoutUserInput>
+  }
+
+  export type CustomerUncheckedUpdateOneWithoutUserNestedInput = {
+    create?: XOR<CustomerCreateWithoutUserInput, CustomerUncheckedCreateWithoutUserInput>
+    connectOrCreate?: CustomerCreateOrConnectWithoutUserInput
+    upsert?: CustomerUpsertWithoutUserInput
+    disconnect?: CustomerWhereInput | boolean
+    delete?: CustomerWhereInput | boolean
+    connect?: CustomerWhereUniqueInput
+    update?: XOR<XOR<CustomerUpdateToOneWithWhereWithoutUserInput, CustomerUpdateWithoutUserInput>, CustomerUncheckedUpdateWithoutUserInput>
   }
 
   export type EmployeePerformanceUncheckedUpdateManyWithoutManualOverrideByNestedInput = {
@@ -44054,6 +44185,12 @@ export namespace Prisma {
     deleteMany?: EmployeeScalarWhereInput | EmployeeScalarWhereInput[]
   }
 
+  export type UserCreateNestedOneWithoutCustomerInput = {
+    create?: XOR<UserCreateWithoutCustomerInput, UserUncheckedCreateWithoutCustomerInput>
+    connectOrCreate?: UserCreateOrConnectWithoutCustomerInput
+    connect?: UserWhereUniqueInput
+  }
+
   export type SubAccountCreateNestedManyWithoutCustomerInput = {
     create?: XOR<SubAccountCreateWithoutCustomerInput, SubAccountUncheckedCreateWithoutCustomerInput> | SubAccountCreateWithoutCustomerInput[] | SubAccountUncheckedCreateWithoutCustomerInput[]
     connectOrCreate?: SubAccountCreateOrConnectWithoutCustomerInput | SubAccountCreateOrConnectWithoutCustomerInput[]
@@ -44094,6 +44231,16 @@ export namespace Prisma {
     connectOrCreate?: RatingCreateOrConnectWithoutCustomerInput | RatingCreateOrConnectWithoutCustomerInput[]
     createMany?: RatingCreateManyCustomerInputEnvelope
     connect?: RatingWhereUniqueInput | RatingWhereUniqueInput[]
+  }
+
+  export type UserUpdateOneWithoutCustomerNestedInput = {
+    create?: XOR<UserCreateWithoutCustomerInput, UserUncheckedCreateWithoutCustomerInput>
+    connectOrCreate?: UserCreateOrConnectWithoutCustomerInput
+    upsert?: UserUpsertWithoutCustomerInput
+    disconnect?: UserWhereInput | boolean
+    delete?: UserWhereInput | boolean
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutCustomerInput, UserUpdateWithoutCustomerInput>, UserUncheckedUpdateWithoutCustomerInput>
   }
 
   export type SubAccountUpdateManyWithoutCustomerNestedInput = {
@@ -45686,6 +45833,43 @@ export namespace Prisma {
     create: XOR<EmployeeCreateWithoutUserInput, EmployeeUncheckedCreateWithoutUserInput>
   }
 
+  export type CustomerCreateWithoutUserInput = {
+    id?: string
+    companyName: string
+    contactEmail?: string | null
+    contactPhone?: string | null
+    address?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: boolean
+    industry?: string | null
+    taxNumber?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    subAccounts?: SubAccountCreateNestedManyWithoutCustomerInput
+    orders?: OrderCreateNestedManyWithoutCustomerInput
+    ratings?: RatingCreateNestedManyWithoutCustomerInput
+  }
+
+  export type CustomerUncheckedCreateWithoutUserInput = {
+    id?: string
+    companyName: string
+    contactEmail?: string | null
+    contactPhone?: string | null
+    address?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: boolean
+    industry?: string | null
+    taxNumber?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    subAccounts?: SubAccountUncheckedCreateNestedManyWithoutCustomerInput
+    orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
+    ratings?: RatingUncheckedCreateNestedManyWithoutCustomerInput
+  }
+
+  export type CustomerCreateOrConnectWithoutUserInput = {
+    where: CustomerWhereUniqueInput
+    create: XOR<CustomerCreateWithoutUserInput, CustomerUncheckedCreateWithoutUserInput>
+  }
+
   export type EmployeePerformanceCreateWithoutManualOverrideByInput = {
     id?: string
     periodStart: Date | string
@@ -45984,6 +46168,49 @@ export namespace Prisma {
     files?: FileUncheckedUpdateManyWithoutEmployeeNestedInput
   }
 
+  export type CustomerUpsertWithoutUserInput = {
+    update: XOR<CustomerUpdateWithoutUserInput, CustomerUncheckedUpdateWithoutUserInput>
+    create: XOR<CustomerCreateWithoutUserInput, CustomerUncheckedCreateWithoutUserInput>
+    where?: CustomerWhereInput
+  }
+
+  export type CustomerUpdateToOneWithWhereWithoutUserInput = {
+    where?: CustomerWhereInput
+    data: XOR<CustomerUpdateWithoutUserInput, CustomerUncheckedUpdateWithoutUserInput>
+  }
+
+  export type CustomerUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    companyName?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    contactPhone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    industry?: NullableStringFieldUpdateOperationsInput | string | null
+    taxNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    subAccounts?: SubAccountUpdateManyWithoutCustomerNestedInput
+    orders?: OrderUpdateManyWithoutCustomerNestedInput
+    ratings?: RatingUpdateManyWithoutCustomerNestedInput
+  }
+
+  export type CustomerUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    companyName?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    contactPhone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    industry?: NullableStringFieldUpdateOperationsInput | string | null
+    taxNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    subAccounts?: SubAccountUncheckedUpdateManyWithoutCustomerNestedInput
+    orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
+    ratings?: RatingUncheckedUpdateManyWithoutCustomerNestedInput
+  }
+
   export type EmployeePerformanceUpsertWithWhereUniqueWithoutManualOverrideByInput = {
     where: EmployeePerformanceWhereUniqueInput
     update: XOR<EmployeePerformanceUpdateWithoutManualOverrideByInput, EmployeePerformanceUncheckedUpdateWithoutManualOverrideByInput>
@@ -46246,6 +46473,7 @@ export namespace Prisma {
     createdBy?: string | null
     updatedBy?: string | null
     employee?: EmployeeCreateNestedOneWithoutUserInput
+    customer?: CustomerCreateNestedOneWithoutUserInput
     manualOverrides?: EmployeePerformanceCreateNestedManyWithoutManualOverrideByInput
     notificationRecipients?: NotificationRecipientCreateNestedManyWithoutUserInput
     notificationPreferences?: NotificationPreferenceCreateNestedOneWithoutUserInput
@@ -46273,6 +46501,7 @@ export namespace Prisma {
     createdBy?: string | null
     updatedBy?: string | null
     employee?: EmployeeUncheckedCreateNestedOneWithoutUserInput
+    customer?: CustomerUncheckedCreateNestedOneWithoutUserInput
     manualOverrides?: EmployeePerformanceUncheckedCreateNestedManyWithoutManualOverrideByInput
     notificationRecipients?: NotificationRecipientUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: NotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
@@ -46342,6 +46571,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     createdBy?: string | null
     updatedBy?: string | null
+    customer?: CustomerCreateNestedOneWithoutUserInput
     manualOverrides?: EmployeePerformanceCreateNestedManyWithoutManualOverrideByInput
     subordinates?: EmployeeCreateNestedManyWithoutManagerInput
     notificationRecipients?: NotificationRecipientCreateNestedManyWithoutUserInput
@@ -46369,6 +46599,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     createdBy?: string | null
     updatedBy?: string | null
+    customer?: CustomerUncheckedCreateNestedOneWithoutUserInput
     manualOverrides?: EmployeePerformanceUncheckedCreateNestedManyWithoutManualOverrideByInput
     subordinates?: EmployeeUncheckedCreateNestedManyWithoutManagerInput
     notificationRecipients?: NotificationRecipientUncheckedCreateNestedManyWithoutUserInput
@@ -46763,6 +46994,7 @@ export namespace Prisma {
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
     employee?: EmployeeUpdateOneWithoutUserNestedInput
+    customer?: CustomerUpdateOneWithoutUserNestedInput
     manualOverrides?: EmployeePerformanceUpdateManyWithoutManualOverrideByNestedInput
     notificationRecipients?: NotificationRecipientUpdateManyWithoutUserNestedInput
     notificationPreferences?: NotificationPreferenceUpdateOneWithoutUserNestedInput
@@ -46790,6 +47022,7 @@ export namespace Prisma {
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
     employee?: EmployeeUncheckedUpdateOneWithoutUserNestedInput
+    customer?: CustomerUncheckedUpdateOneWithoutUserNestedInput
     manualOverrides?: EmployeePerformanceUncheckedUpdateManyWithoutManualOverrideByNestedInput
     notificationRecipients?: NotificationRecipientUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: NotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
@@ -46843,6 +47076,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    customer?: CustomerUpdateOneWithoutUserNestedInput
     manualOverrides?: EmployeePerformanceUpdateManyWithoutManualOverrideByNestedInput
     subordinates?: EmployeeUpdateManyWithoutManagerNestedInput
     notificationRecipients?: NotificationRecipientUpdateManyWithoutUserNestedInput
@@ -46870,6 +47104,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    customer?: CustomerUncheckedUpdateOneWithoutUserNestedInput
     manualOverrides?: EmployeePerformanceUncheckedUpdateManyWithoutManualOverrideByNestedInput
     subordinates?: EmployeeUncheckedUpdateManyWithoutManagerNestedInput
     notificationRecipients?: NotificationRecipientUncheckedUpdateManyWithoutUserNestedInput
@@ -47218,6 +47453,7 @@ export namespace Prisma {
     createdBy?: string | null
     updatedBy?: string | null
     employee?: EmployeeCreateNestedOneWithoutUserInput
+    customer?: CustomerCreateNestedOneWithoutUserInput
     subordinates?: EmployeeCreateNestedManyWithoutManagerInput
     notificationRecipients?: NotificationRecipientCreateNestedManyWithoutUserInput
     notificationPreferences?: NotificationPreferenceCreateNestedOneWithoutUserInput
@@ -47245,6 +47481,7 @@ export namespace Prisma {
     createdBy?: string | null
     updatedBy?: string | null
     employee?: EmployeeUncheckedCreateNestedOneWithoutUserInput
+    customer?: CustomerUncheckedCreateNestedOneWithoutUserInput
     subordinates?: EmployeeUncheckedCreateNestedManyWithoutManagerInput
     notificationRecipients?: NotificationRecipientUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: NotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
@@ -47373,6 +47610,7 @@ export namespace Prisma {
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
     employee?: EmployeeUpdateOneWithoutUserNestedInput
+    customer?: CustomerUpdateOneWithoutUserNestedInput
     subordinates?: EmployeeUpdateManyWithoutManagerNestedInput
     notificationRecipients?: NotificationRecipientUpdateManyWithoutUserNestedInput
     notificationPreferences?: NotificationPreferenceUpdateOneWithoutUserNestedInput
@@ -47400,6 +47638,7 @@ export namespace Prisma {
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
     employee?: EmployeeUncheckedUpdateOneWithoutUserNestedInput
+    customer?: CustomerUncheckedUpdateOneWithoutUserNestedInput
     subordinates?: EmployeeUncheckedUpdateManyWithoutManagerNestedInput
     notificationRecipients?: NotificationRecipientUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: NotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
@@ -48022,6 +48261,67 @@ export namespace Prisma {
     data: XOR<EmployeeUpdateManyMutationInput, EmployeeUncheckedUpdateManyWithoutPositionInput>
   }
 
+  export type UserCreateWithoutCustomerInput = {
+    id?: string
+    email?: string | null
+    username: string
+    password: string
+    role?: $Enums.UserRole
+    isActive?: boolean
+    lastLogin?: Date | string | null
+    refreshToken?: string | null
+    emailVerificationToken?: string | null
+    emailVerificationExpires?: Date | string | null
+    passwordResetToken?: string | null
+    passwordResetExpires?: Date | string | null
+    emailVerified?: boolean
+    twoFactorEnabled?: boolean
+    twoFactorSecret?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    createdBy?: string | null
+    updatedBy?: string | null
+    employee?: EmployeeCreateNestedOneWithoutUserInput
+    manualOverrides?: EmployeePerformanceCreateNestedManyWithoutManualOverrideByInput
+    subordinates?: EmployeeCreateNestedManyWithoutManagerInput
+    notificationRecipients?: NotificationRecipientCreateNestedManyWithoutUserInput
+    notificationPreferences?: NotificationPreferenceCreateNestedOneWithoutUserInput
+    orderNotes?: OrderNoteCreateNestedManyWithoutAuthorInput
+  }
+
+  export type UserUncheckedCreateWithoutCustomerInput = {
+    id?: string
+    email?: string | null
+    username: string
+    password: string
+    role?: $Enums.UserRole
+    isActive?: boolean
+    lastLogin?: Date | string | null
+    refreshToken?: string | null
+    emailVerificationToken?: string | null
+    emailVerificationExpires?: Date | string | null
+    passwordResetToken?: string | null
+    passwordResetExpires?: Date | string | null
+    emailVerified?: boolean
+    twoFactorEnabled?: boolean
+    twoFactorSecret?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    createdBy?: string | null
+    updatedBy?: string | null
+    employee?: EmployeeUncheckedCreateNestedOneWithoutUserInput
+    manualOverrides?: EmployeePerformanceUncheckedCreateNestedManyWithoutManualOverrideByInput
+    subordinates?: EmployeeUncheckedCreateNestedManyWithoutManagerInput
+    notificationRecipients?: NotificationRecipientUncheckedCreateNestedManyWithoutUserInput
+    notificationPreferences?: NotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
+    orderNotes?: OrderNoteUncheckedCreateNestedManyWithoutAuthorInput
+  }
+
+  export type UserCreateOrConnectWithoutCustomerInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutCustomerInput, UserUncheckedCreateWithoutCustomerInput>
+  }
+
   export type SubAccountCreateWithoutCustomerInput = {
     id?: string
     name: string
@@ -48158,6 +48458,73 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type UserUpsertWithoutCustomerInput = {
+    update: XOR<UserUpdateWithoutCustomerInput, UserUncheckedUpdateWithoutCustomerInput>
+    create: XOR<UserCreateWithoutCustomerInput, UserUncheckedCreateWithoutCustomerInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutCustomerInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutCustomerInput, UserUncheckedUpdateWithoutCustomerInput>
+  }
+
+  export type UserUpdateWithoutCustomerInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    username?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    lastLogin?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    passwordResetToken?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordResetExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    twoFactorEnabled?: BoolFieldUpdateOperationsInput | boolean
+    twoFactorSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    employee?: EmployeeUpdateOneWithoutUserNestedInput
+    manualOverrides?: EmployeePerformanceUpdateManyWithoutManualOverrideByNestedInput
+    subordinates?: EmployeeUpdateManyWithoutManagerNestedInput
+    notificationRecipients?: NotificationRecipientUpdateManyWithoutUserNestedInput
+    notificationPreferences?: NotificationPreferenceUpdateOneWithoutUserNestedInput
+    orderNotes?: OrderNoteUpdateManyWithoutAuthorNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutCustomerInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    username?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    lastLogin?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    passwordResetToken?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordResetExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    twoFactorEnabled?: BoolFieldUpdateOperationsInput | boolean
+    twoFactorSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    employee?: EmployeeUncheckedUpdateOneWithoutUserNestedInput
+    manualOverrides?: EmployeePerformanceUncheckedUpdateManyWithoutManualOverrideByNestedInput
+    subordinates?: EmployeeUncheckedUpdateManyWithoutManagerNestedInput
+    notificationRecipients?: NotificationRecipientUncheckedUpdateManyWithoutUserNestedInput
+    notificationPreferences?: NotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
+    orderNotes?: OrderNoteUncheckedUpdateManyWithoutAuthorNestedInput
+  }
+
   export type SubAccountUpsertWithWhereUniqueWithoutCustomerInput = {
     where: SubAccountWhereUniqueInput
     update: XOR<SubAccountUpdateWithoutCustomerInput, SubAccountUncheckedUpdateWithoutCustomerInput>
@@ -48258,6 +48625,7 @@ export namespace Prisma {
     taxNumber?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    user?: UserCreateNestedOneWithoutCustomerInput
     orders?: OrderCreateNestedManyWithoutCustomerInput
     ratings?: RatingCreateNestedManyWithoutCustomerInput
   }
@@ -48271,6 +48639,7 @@ export namespace Prisma {
     isActive?: boolean
     industry?: string | null
     taxNumber?: string | null
+    userId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
@@ -48304,6 +48673,7 @@ export namespace Prisma {
     taxNumber?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneWithoutCustomerNestedInput
     orders?: OrderUpdateManyWithoutCustomerNestedInput
     ratings?: RatingUpdateManyWithoutCustomerNestedInput
   }
@@ -48317,6 +48687,7 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     taxNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
@@ -48334,6 +48705,7 @@ export namespace Prisma {
     taxNumber?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    user?: UserCreateNestedOneWithoutCustomerInput
     subAccounts?: SubAccountCreateNestedManyWithoutCustomerInput
     ratings?: RatingCreateNestedManyWithoutCustomerInput
   }
@@ -48347,6 +48719,7 @@ export namespace Prisma {
     isActive?: boolean
     industry?: string | null
     taxNumber?: string | null
+    userId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     subAccounts?: SubAccountUncheckedCreateNestedManyWithoutCustomerInput
@@ -48596,6 +48969,7 @@ export namespace Prisma {
     taxNumber?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneWithoutCustomerNestedInput
     subAccounts?: SubAccountUpdateManyWithoutCustomerNestedInput
     ratings?: RatingUpdateManyWithoutCustomerNestedInput
   }
@@ -48609,6 +48983,7 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     taxNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     subAccounts?: SubAccountUncheckedUpdateManyWithoutCustomerNestedInput
@@ -50231,6 +50606,7 @@ export namespace Prisma {
     taxNumber?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    user?: UserCreateNestedOneWithoutCustomerInput
     subAccounts?: SubAccountCreateNestedManyWithoutCustomerInput
     orders?: OrderCreateNestedManyWithoutCustomerInput
   }
@@ -50244,6 +50620,7 @@ export namespace Prisma {
     isActive?: boolean
     industry?: string | null
     taxNumber?: string | null
+    userId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     subAccounts?: SubAccountUncheckedCreateNestedManyWithoutCustomerInput
@@ -50433,6 +50810,7 @@ export namespace Prisma {
     taxNumber?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneWithoutCustomerNestedInput
     subAccounts?: SubAccountUpdateManyWithoutCustomerNestedInput
     orders?: OrderUpdateManyWithoutCustomerNestedInput
   }
@@ -50446,6 +50824,7 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     taxNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     subAccounts?: SubAccountUncheckedUpdateManyWithoutCustomerNestedInput
@@ -50783,6 +51162,7 @@ export namespace Prisma {
     createdBy?: string | null
     updatedBy?: string | null
     employee?: EmployeeCreateNestedOneWithoutUserInput
+    customer?: CustomerCreateNestedOneWithoutUserInput
     manualOverrides?: EmployeePerformanceCreateNestedManyWithoutManualOverrideByInput
     subordinates?: EmployeeCreateNestedManyWithoutManagerInput
     notificationPreferences?: NotificationPreferenceCreateNestedOneWithoutUserInput
@@ -50810,6 +51190,7 @@ export namespace Prisma {
     createdBy?: string | null
     updatedBy?: string | null
     employee?: EmployeeUncheckedCreateNestedOneWithoutUserInput
+    customer?: CustomerUncheckedCreateNestedOneWithoutUserInput
     manualOverrides?: EmployeePerformanceUncheckedCreateNestedManyWithoutManualOverrideByInput
     subordinates?: EmployeeUncheckedCreateNestedManyWithoutManagerInput
     notificationPreferences?: NotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
@@ -50892,6 +51273,7 @@ export namespace Prisma {
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
     employee?: EmployeeUpdateOneWithoutUserNestedInput
+    customer?: CustomerUpdateOneWithoutUserNestedInput
     manualOverrides?: EmployeePerformanceUpdateManyWithoutManualOverrideByNestedInput
     subordinates?: EmployeeUpdateManyWithoutManagerNestedInput
     notificationPreferences?: NotificationPreferenceUpdateOneWithoutUserNestedInput
@@ -50919,6 +51301,7 @@ export namespace Prisma {
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
     employee?: EmployeeUncheckedUpdateOneWithoutUserNestedInput
+    customer?: CustomerUncheckedUpdateOneWithoutUserNestedInput
     manualOverrides?: EmployeePerformanceUncheckedUpdateManyWithoutManualOverrideByNestedInput
     subordinates?: EmployeeUncheckedUpdateManyWithoutManagerNestedInput
     notificationPreferences?: NotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
@@ -51018,6 +51401,7 @@ export namespace Prisma {
     createdBy?: string | null
     updatedBy?: string | null
     employee?: EmployeeCreateNestedOneWithoutUserInput
+    customer?: CustomerCreateNestedOneWithoutUserInput
     manualOverrides?: EmployeePerformanceCreateNestedManyWithoutManualOverrideByInput
     subordinates?: EmployeeCreateNestedManyWithoutManagerInput
     notificationRecipients?: NotificationRecipientCreateNestedManyWithoutUserInput
@@ -51045,6 +51429,7 @@ export namespace Prisma {
     createdBy?: string | null
     updatedBy?: string | null
     employee?: EmployeeUncheckedCreateNestedOneWithoutUserInput
+    customer?: CustomerUncheckedCreateNestedOneWithoutUserInput
     manualOverrides?: EmployeePerformanceUncheckedCreateNestedManyWithoutManualOverrideByInput
     subordinates?: EmployeeUncheckedCreateNestedManyWithoutManagerInput
     notificationRecipients?: NotificationRecipientUncheckedCreateNestedManyWithoutUserInput
@@ -51088,6 +51473,7 @@ export namespace Prisma {
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
     employee?: EmployeeUpdateOneWithoutUserNestedInput
+    customer?: CustomerUpdateOneWithoutUserNestedInput
     manualOverrides?: EmployeePerformanceUpdateManyWithoutManualOverrideByNestedInput
     subordinates?: EmployeeUpdateManyWithoutManagerNestedInput
     notificationRecipients?: NotificationRecipientUpdateManyWithoutUserNestedInput
@@ -51115,6 +51501,7 @@ export namespace Prisma {
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
     employee?: EmployeeUncheckedUpdateOneWithoutUserNestedInput
+    customer?: CustomerUncheckedUpdateOneWithoutUserNestedInput
     manualOverrides?: EmployeePerformanceUncheckedUpdateManyWithoutManualOverrideByNestedInput
     subordinates?: EmployeeUncheckedUpdateManyWithoutManagerNestedInput
     notificationRecipients?: NotificationRecipientUncheckedUpdateManyWithoutUserNestedInput
@@ -51207,6 +51594,7 @@ export namespace Prisma {
     createdBy?: string | null
     updatedBy?: string | null
     employee?: EmployeeCreateNestedOneWithoutUserInput
+    customer?: CustomerCreateNestedOneWithoutUserInput
     manualOverrides?: EmployeePerformanceCreateNestedManyWithoutManualOverrideByInput
     subordinates?: EmployeeCreateNestedManyWithoutManagerInput
     notificationRecipients?: NotificationRecipientCreateNestedManyWithoutUserInput
@@ -51234,6 +51622,7 @@ export namespace Prisma {
     createdBy?: string | null
     updatedBy?: string | null
     employee?: EmployeeUncheckedCreateNestedOneWithoutUserInput
+    customer?: CustomerUncheckedCreateNestedOneWithoutUserInput
     manualOverrides?: EmployeePerformanceUncheckedCreateNestedManyWithoutManualOverrideByInput
     subordinates?: EmployeeUncheckedCreateNestedManyWithoutManagerInput
     notificationRecipients?: NotificationRecipientUncheckedCreateNestedManyWithoutUserInput
@@ -51348,6 +51737,7 @@ export namespace Prisma {
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
     employee?: EmployeeUpdateOneWithoutUserNestedInput
+    customer?: CustomerUpdateOneWithoutUserNestedInput
     manualOverrides?: EmployeePerformanceUpdateManyWithoutManualOverrideByNestedInput
     subordinates?: EmployeeUpdateManyWithoutManagerNestedInput
     notificationRecipients?: NotificationRecipientUpdateManyWithoutUserNestedInput
@@ -51375,6 +51765,7 @@ export namespace Prisma {
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
     employee?: EmployeeUncheckedUpdateOneWithoutUserNestedInput
+    customer?: CustomerUncheckedUpdateOneWithoutUserNestedInput
     manualOverrides?: EmployeePerformanceUncheckedUpdateManyWithoutManualOverrideByNestedInput
     subordinates?: EmployeeUncheckedUpdateManyWithoutManagerNestedInput
     notificationRecipients?: NotificationRecipientUncheckedUpdateManyWithoutUserNestedInput

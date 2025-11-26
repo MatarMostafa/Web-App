@@ -3,6 +3,7 @@ import toast from "react-hot-toast";
 import { useCustomerStore } from "@/store/customerStore";
 import { CreateCustomerData } from "@/types/customer";
 import { useTranslation } from "@/hooks/useTranslation";
+import CustomerCredentialsModal from "./CustomerCredentialsModal";
 
 import {
   Dialog,
@@ -33,6 +34,10 @@ interface CustomerFormData {
   industry: string;
   taxNumber: string;
   isActive: boolean;
+  // Login credentials
+  username: string;
+  password: string;
+  createLoginAccount: boolean;
 }
 
 export default function AddCustomerDialog({
@@ -55,8 +60,16 @@ export default function AddCustomerDialog({
     industry: "",
     taxNumber: "",
     isActive: true,
+    username: "",
+    password: "",
+    createLoginAccount: false,
   });
   const [loading, setLoading] = useState(false);
+  const [showCredentialsModal, setShowCredentialsModal] = useState(false);
+  const [createdCredentials, setCreatedCredentials] = useState<{
+    username: string;
+    password: string;
+  } | null>(null);
 
   const handleInputChange = (field: keyof CustomerFormData, value: any) => {
     setFormData((prev) => ({
@@ -74,6 +87,9 @@ export default function AddCustomerDialog({
       industry: "",
       taxNumber: "",
       isActive: true,
+      username: "",
+      password: "",
+      createLoginAccount: false,
     });
   };
 
@@ -85,6 +101,13 @@ export default function AddCustomerDialog({
       return;
     }
 
+    if (formData.createLoginAccount) {
+      if (!formData.username.trim() || !formData.password.trim()) {
+        toast.error("Username and password are required for login account");
+        return;
+      }
+    }
+
     try {
       setLoading(true);
 
@@ -92,14 +115,33 @@ export default function AddCustomerDialog({
         companyName: formData.companyName,
         contactEmail: formData.contactEmail || undefined,
         contactPhone: formData.contactPhone || undefined,
-        address: formData.address ? { street: formData.address } : undefined,
+        address: formData.address ? {
+          street: formData.address,
+          city: "",
+          state: "",
+          zip: ""
+        } : undefined,
         industry: formData.industry || undefined,
         taxNumber: formData.taxNumber || undefined,
         isActive: formData.isActive,
+        // Login credentials if creating account
+        ...(formData.createLoginAccount && {
+          username: formData.username,
+          password: formData.password,
+        }),
       };
 
       await createCustomer(customerData);
-      toast.success(`Customer ${formData.companyName} created successfully!`);
+      
+      // Show credentials modal if login account was created
+      if (formData.createLoginAccount) {
+        setCreatedCredentials({
+          username: formData.username,
+          password: formData.password,
+        });
+        setShowCredentialsModal(true);
+      }
+      
       setIsOpen(false);
       resetForm();
     } catch (error) {
@@ -113,6 +155,7 @@ export default function AddCustomerDialog({
   };
 
   return (
+    <>
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         {trigger || (
@@ -227,15 +270,61 @@ export default function AddCustomerDialog({
               </div>
             </div>
 
-            <div className="flex items-center space-x-2">
-              <Switch
-                id="isActive"
-                checked={formData.isActive}
-                onCheckedChange={(checked) =>
-                  handleInputChange("isActive", checked)
-                }
-              />
-              <Label htmlFor="isActive">{t("admin.customers.form.activeCustomer")}</Label>
+            <div className="space-y-4">
+              <div className="flex items-center space-x-2">
+                <Switch
+                  id="createLoginAccount"
+                  checked={formData.createLoginAccount}
+                  onCheckedChange={(checked) =>
+                    handleInputChange("createLoginAccount", checked)
+                  }
+                />
+                <Label htmlFor="createLoginAccount">Create Customer Portal Account</Label>
+              </div>
+
+              {formData.createLoginAccount && (
+                <div className="space-y-4 p-4 border rounded-lg bg-muted/50">
+                  <h4 className="text-sm font-medium">Login Credentials</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="username">Username *</Label>
+                      <Input
+                        id="username"
+                        value={formData.username}
+                        onChange={(e) =>
+                          handleInputChange("username", e.target.value)
+                        }
+                        placeholder="Enter username"
+                        className="rounded-lg"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="password">Password *</Label>
+                      <Input
+                        id="password"
+                        type="password"
+                        value={formData.password}
+                        onChange={(e) =>
+                          handleInputChange("password", e.target.value)
+                        }
+                        placeholder="Enter password"
+                        className="rounded-lg"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <div className="flex items-center space-x-2">
+                <Switch
+                  id="isActive"
+                  checked={formData.isActive}
+                  onCheckedChange={(checked) =>
+                    handleInputChange("isActive", checked)
+                  }
+                />
+                <Label htmlFor="isActive">{t("admin.customers.form.activeCustomer")}</Label>
+              </div>
             </div>
           </div>
 
@@ -268,5 +357,16 @@ export default function AddCustomerDialog({
         </form>
       </DialogContent>
     </Dialog>
+    
+    {/* Credentials Modal */}
+    {createdCredentials && (
+      <CustomerCredentialsModal
+        open={showCredentialsModal}
+        onOpenChange={setShowCredentialsModal}
+        username={createdCredentials.username}
+        password={createdCredentials.password}
+      />
+    )}
+    </>
   );
 }

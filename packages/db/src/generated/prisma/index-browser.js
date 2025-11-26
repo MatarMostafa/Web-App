@@ -233,6 +233,7 @@ exports.Prisma.CustomerScalarFieldEnum = {
   isActive: 'isActive',
   industry: 'industry',
   taxNumber: 'taxNumber',
+  userId: 'userId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -530,7 +531,8 @@ exports.UserRole = exports.$Enums.UserRole = {
   TEAM_LEADER: 'TEAM_LEADER',
   EMPLOYEE: 'EMPLOYEE',
   HR_MANAGER: 'HR_MANAGER',
-  SUPER_ADMIN: 'SUPER_ADMIN'
+  SUPER_ADMIN: 'SUPER_ADMIN',
+  CUSTOMER: 'CUSTOMER'
 };
 
 exports.WorkScheduleType = exports.$Enums.WorkScheduleType = {
