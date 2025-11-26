@@ -46,6 +46,8 @@ export default function SignInPage() {
 
         if (session?.user?.role === "ADMIN") {
           router.push("/dashboard-admin");
+        } else if (session?.user?.role === "CUSTOMER") {
+          router.push("/dashboard-customer");
         } else {
           router.push("/dashboard-employee");
         }
@@ -178,8 +180,8 @@ export default function SignInPage() {
               </Button>
             </form>
 
-            {/* Sign Up Link */}
-            <div className="text-center pt-4 border-t border-border/50">
+            {/* Sign Up Links */}
+            <div className="text-center pt-4 border-t border-border/50 space-y-2">
               <p className="text-sm text-mforeground">
                 Noch kein Konto?{" "}
                 <button
@@ -189,6 +191,15 @@ export default function SignInPage() {
                   Registrieren
                 </button>
               </p>
+              {/* <p className="text-sm text-mforeground">
+                Sind Sie ein Kunde?{" "}
+                <button
+                  onClick={() => router.push("/customer-register")}
+                  className="text-primary hover:underline font-medium"
+                >
+                  Kunden Registrierung
+                </button>
+              </p> */}
             </div>
           </CardContent>
         </Card>

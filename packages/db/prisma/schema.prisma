@@ -22,6 +22,7 @@ enum UserRole {
   EMPLOYEE
   HR_MANAGER
   SUPER_ADMIN
+  CUSTOMER
 }
 
 enum RatingStatus {
@@ -123,6 +124,7 @@ model User {
 
   // Cascade delete Employee
   employee        Employee?
+  customer        Customer?
   manualOverrides EmployeePerformance[] @relation("ManualOverrideByUser")
 
   // Manager relationships
@@ -299,6 +301,9 @@ model Customer {
 
   industry  String?
   taxNumber String? @unique
+
+  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String? @unique
 
   subAccounts SubAccount[]
   orders      Order[]
