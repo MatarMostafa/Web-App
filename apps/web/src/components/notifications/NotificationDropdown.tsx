@@ -225,6 +225,15 @@ export function NotificationDropdown() {
           window.dispatchEvent(new CustomEvent('refreshSkillsData'));
         }, 100);
       }
+    } else if (data?.category === "settings" || templateKey?.startsWith("SETTINGS_")) {
+      // Handle settings change notifications
+      if (templateKey === "SETTINGS_CHANGE_REQUESTED") {
+        // Admin received settings change request - go to settings requests page
+        router.push("/dashboard-admin/settings-requests");
+      } else if (templateKey === "SETTINGS_CHANGE_APPROVED" || templateKey === "SETTINGS_CHANGE_REJECTED") {
+        // Employee received approval/rejection - go to settings page
+        router.push("/dashboard-employee/settings");
+      }
     }
   };
 

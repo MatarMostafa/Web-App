@@ -639,6 +639,34 @@ async function main() {
     }),
   ]);
 
+  // Create notification templates for settings changes
+  await Promise.all([
+    prisma.notificationTemplate.create({
+      data: {
+        key: "SETTINGS_CHANGE_REQUESTED",
+        title: "Settings Change Request",
+        body: "{{employeeName}} has requested to change their {{changeType}} from '{{currentValue}}' to '{{requestedValue}}'. Reason: {{reason}}",
+        defaultChannels: ["in_app", "email"],
+      },
+    }),
+    prisma.notificationTemplate.create({
+      data: {
+        key: "SETTINGS_CHANGE_APPROVED",
+        title: "Settings Change Approved",
+        body: "Your request to change {{changeType}} has been approved by {{reviewerName}}.",
+        defaultChannels: ["in_app", "email"],
+      },
+    }),
+    prisma.notificationTemplate.create({
+      data: {
+        key: "SETTINGS_CHANGE_REJECTED",
+        title: "Settings Change Rejected",
+        body: "Your request to change {{changeType}} has been rejected. Reason: {{reviewNotes}}",
+        defaultChannels: ["in_app", "email"],
+      },
+    }),
+  ]);
+
   // Create system config
   await Promise.all([
     prisma.systemConfig.create({
