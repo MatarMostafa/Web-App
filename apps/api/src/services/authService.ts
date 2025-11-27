@@ -393,7 +393,7 @@ export const verifyEmail = async (token: string) => {
     // Verify JWT token
     const decoded = jwt.verify(token, JWT_SECRET) as any;
     
-    if (decoded.type !== "email-verification") {
+    if (decoded.type !== "email-verification" && decoded.type !== "email-change-verification") {
       throw new Error("Ungültiger Token-Typ");
     }
 
@@ -411,6 +411,31 @@ export const verifyEmail = async (token: string) => {
       throw new Error("Ungültiger oder abgelaufener Verifizierungstoken");
     }
 
+    // Handle email change verification
+    if (decoded.type === "email-change-verification") {
+      // Update user email and mark as verified
+      await prisma.user.update({
+        where: { id: user.id },
+        data: {
+          email: decoded.email,
+          emailVerified: true,
+          emailVerificationToken: null,
+          emailVerificationExpires: null,
+        },
+      });
+      
+      // Mark the settings change request as completed
+      if (decoded.requestId) {
+        await prisma.settingsChangeRequest.update({
+          where: { id: decoded.requestId },
+          data: { status: "APPROVED" },
+        });
+      }
+      
+      return { message: "E-Mail erfolgreich geändert" };
+    }
+    
+    // Handle regular email verification
     if (user.isActive) {
       throw new Error("E-Mail bereits verifiziert");
     }

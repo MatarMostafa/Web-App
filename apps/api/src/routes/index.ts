@@ -15,6 +15,7 @@ import managerRoutes from "./managerRoutes";
 import fileRoutes from "./fileRoutes";
 import qualificationRoutes from "./qualificationRoutes";
 import absenceRoutes from "./absenceRoutes";
+import settingsRoutes from "./settingsRoutes";
 
 const router = express.Router();
 
@@ -56,5 +57,8 @@ router.use("/qualifications", qualificationRoutes);
 
 // Absence approval routes
 router.use("/absences", absenceRoutes);
+
+// Settings routes
+router.use("/settings", settingsRoutes);
 
 export default router;

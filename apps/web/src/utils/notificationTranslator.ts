@@ -30,15 +30,7 @@ export const translateNotification = (
   }
 
   try {
-    // Debug customer notifications
-    if (templateKey?.startsWith('CUSTOMER_')) {
-      console.log('🔍 Customer notification debug:', {
-        templateKey,
-        data,
-        title,
-        body
-      });
-    }
+    
 
     // Map template keys to translation keys
     const translationKey = getTranslationKey(templateKey);
@@ -94,10 +86,11 @@ export const translateNotification = (
       endDate: extractValue('endDate'),
       scheduledDate: extractValue('scheduledDate'),
       status: extractValue('status'),
-      newDate: extractValue('newDate')
+      newDate: extractValue('newDate'),
+      changeType: extractValue('changeType'),
+      currentValue: extractValue('currentValue'),
+      requestedValue: extractValue('requestedValue')
     };
-
-    console.log('🔍 Translation data:', translationData);
 
     // Get translated title and body with interpolation
     const translatedTitle = t(`${translationKey}.title`, translationData);
@@ -136,7 +129,10 @@ const getTranslationKey = (templateKey: string): string | null => {
     'CUSTOMER_ORDER_STATUS_CHANGED': 'notifications.customer.orderStatusChanged',
     'CUSTOMER_ORDER_COMPLETED': 'notifications.customer.orderCompleted',
     'CUSTOMER_ORDER_CANCELLED': 'notifications.customer.orderCancelled',
-    'CUSTOMER_ORDER_SCHEDULE_CHANGED': 'notifications.customer.orderScheduleChanged'
+    'CUSTOMER_ORDER_SCHEDULE_CHANGED': 'notifications.customer.orderScheduleChanged',
+    'SETTINGS_CHANGE_REQUESTED': 'notifications.settings.changeRequested',
+    'SETTINGS_CHANGE_APPROVED': 'notifications.settings.changeApproved',
+    'SETTINGS_CHANGE_REJECTED': 'notifications.settings.changeRejected'
   };
 
   return keyMap[templateKey] || null;

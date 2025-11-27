@@ -473,6 +473,21 @@ exports.Prisma.FileScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.SettingsChangeRequestScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  requestType: 'requestType',
+  currentValue: 'currentValue',
+  requestedValue: 'requestedValue',
+  reason: 'reason',
+  status: 'status',
+  reviewedBy: 'reviewedBy',
+  reviewedAt: 'reviewedAt',
+  reviewNotes: 'reviewNotes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SystemConfigScalarFieldEnum = {
   id: 'id',
   key: 'key',
@@ -616,6 +631,14 @@ exports.DocumentType = exports.$Enums.DocumentType = {
   OTHER: 'OTHER'
 };
 
+exports.SettingsChangeType = exports.$Enums.SettingsChangeType = {
+  FIRST_NAME: 'FIRST_NAME',
+  LAST_NAME: 'LAST_NAME',
+  EMAIL_ADDRESS: 'EMAIL_ADDRESS',
+  COMPANY_NAME: 'COMPANY_NAME',
+  TAX_NUMBER: 'TAX_NUMBER'
+};
+
 exports.Prisma.ModelName = {
   User: 'User',
   Employee: 'Employee',
@@ -641,6 +664,7 @@ exports.Prisma.ModelName = {
   NotificationPreference: 'NotificationPreference',
   OrderNote: 'OrderNote',
   File: 'File',
+  SettingsChangeRequest: 'SettingsChangeRequest',
   SystemConfig: 'SystemConfig',
   AuditLog: 'AuditLog'
 };

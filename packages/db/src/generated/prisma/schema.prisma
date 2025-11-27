@@ -49,6 +49,14 @@ enum RequestStatus {
   CANCELLED
 }
 
+enum SettingsChangeType {
+  FIRST_NAME
+  LAST_NAME
+  EMAIL_ADDRESS
+  COMPANY_NAME
+  TAX_NUMBER
+}
+
 enum AssignmentStatus {
   ASSIGNED
   ACTIVE
@@ -139,6 +147,7 @@ model User {
   notificationRecipients  NotificationRecipient[]
   notificationPreferences NotificationPreference?
   orderNotes              OrderNote[]
+  settingsChangeRequests  SettingsChangeRequest[]
 
   @@map("users")
 }
@@ -712,6 +721,32 @@ model File {
   updatedAt DateTime @updatedAt
 
   @@map("files")
+}
+
+// ===============================
+// SETTINGS CHANGE REQUESTS
+// ===============================
+
+model SettingsChangeRequest {
+  id             String             @id @default(cuid())
+  userId         String
+  requestType    SettingsChangeType
+  currentValue   String?
+  requestedValue String
+  reason         String?
+  status         RequestStatus      @default(PENDING)
+  reviewedBy     String?
+  reviewedAt     DateTime?
+  reviewNotes    String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId, status])
+  @@index([status, createdAt])
+  @@map("settings_change_requests")
 }
 
 // ===============================

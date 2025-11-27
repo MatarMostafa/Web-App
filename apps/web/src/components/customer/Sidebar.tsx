@@ -7,6 +7,7 @@ import {
   ChevronLeft,
   ChevronRight,
   X,
+  Settings,
 } from "lucide-react";
 import { cn } from "@/lib/utils/helpers";
 import { Button } from "@/components/ui";
@@ -47,11 +48,6 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
       name: t('customerPortal.navigation.orders'),
       href: "/dashboard-customer/orders",
       icon: Package,
-    },
-    {
-      name: t('customerPortal.navigation.profile'),
-      href: "/dashboard-customer/profile",
-      icon: User,
     },
   ];
 
@@ -192,6 +188,39 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
           </div>
 
           <div className="mt-auto pt-4 border-t border-[#eeeeee]">
+            <div className="space-y-1 mb-2">
+              <TooltipProvider delayDuration={collapsed ? 100 : 1000}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant={pathname === "/dashboard-customer/settings" ? "secondary" : "ghost"}
+                      className={cn(
+                        "w-full justify-start",
+                        pathname === "/dashboard-customer/settings"
+                          ? "bg-primary hover:bg-[#111111] text-white font-medium"
+                          : "text-[#ffffff] hover:text-white hover:bg-[#ffffff]/10",
+                        collapsed && !isMobile ? "px-2" : "px-3"
+                      )}
+                      asChild
+                    >
+                      <Link href="/dashboard-customer/settings" onClick={handleNavClick}>
+                        <Settings
+                          className={cn(
+                            "h-5 w-5",
+                            collapsed && !isMobile ? "mr-0" : "mr-2"
+                          )}
+                        />
+                        {(!collapsed || isMobile) && <span>{t('navigation.settings')}</span>}
+                      </Link>
+                    </Button>
+                  </TooltipTrigger>
+                  {collapsed && !isMobile && (
+                    <TooltipContent side="right">{t('navigation.settings')}</TooltipContent>
+                  )}
+                </Tooltip>
+              </TooltipProvider>
+            </div>
+            
             <TooltipProvider delayDuration={collapsed ? 100 : 1000}>
               <Tooltip>
                 <TooltipTrigger asChild>

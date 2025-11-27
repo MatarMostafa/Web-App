@@ -41,13 +41,25 @@ class ApiClient {
         // If JSON parsing fails, try to get text
         try {
           const errorText = await response.text();
-          if (errorText) {
+          if (errorText && !errorText.includes('<!DOCTYPE html>')) {
             errorMessage = errorText;
           }
         } catch {
           // Keep the default HTTP error message
         }
       }
+      
+      // Handle specific status codes with user-friendly messages
+      if (response.status === 404) {
+        errorMessage = "Resource not found";
+      } else if (response.status === 401) {
+        errorMessage = "Unauthorized access";
+      } else if (response.status === 403) {
+        errorMessage = "Access denied";
+      } else if (response.status === 500) {
+        errorMessage = "Server error occurred";
+      }
+      
       console.log('Throwing error with message:', errorMessage);
       throw new Error(errorMessage);
     }

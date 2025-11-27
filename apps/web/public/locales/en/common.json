@@ -982,6 +982,20 @@
         "body": "The scheduled date for your order \"{{orderNumber}}\" has been updated to {{newDate}}."
       }
     },
+    "settings": {
+      "changeRequested": {
+        "title": "Settings Change Request",
+        "body": "{{employeeName}} has requested to change their {{changeType}} from '{{currentValue}}' to '{{requestedValue}}'."
+      },
+      "changeApproved": {
+        "title": "Settings Change Approved",
+        "body": "Your request to change {{changeType}} has been approved."
+      },
+      "changeRejected": {
+        "title": "Settings Change Rejected",
+        "body": "Your request to change {{changeType}} has been rejected. Reason: {{reviewNotes}}"
+      }
+    },
     "statusMessages": {
       "ACTIVE": "has been activated",
       "IN_PROGRESS": "is in progress",
@@ -994,6 +1008,125 @@
       "minutesAgo": "{{count}} minutes ago",
       "hoursAgo": "{{count}} hours ago",
       "daysAgo": "{{count}} days ago"
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Manage your account settings and preferences",
+    "accountSecurity": "Account Security",
+    "personalInformation": "Personal Information",
+    "contactInformation": "Contact Information",
+    "businessInformation": "Business Information",
+    "password": {
+      "title": "Password",
+      "lastChanged": "Last changed",
+      "changePassword": "Change Password",
+      "currentPassword": "Current Password",
+      "newPassword": "New Password",
+      "confirmNewPassword": "Confirm New Password",
+      "enterCurrentPassword": "Enter current password",
+      "enterNewPassword": "Enter new password",
+      "confirmNewPassword": "Confirm new password",
+      "requirements": "Password requirements:",
+      "atLeast8Characters": "At least 8 characters long",
+      "containsNumber": "Contains at least one number",
+      "changing": "Changing...",
+      "cancel": "Cancel",
+      "passwordsDoNotMatch": "New passwords do not match",
+      "passwordTooShort": "Password must be at least 8 characters long",
+      "passwordChangedSuccess": "Password changed successfully",
+      "passwordChangeFailed": "Failed to change password"
+    },
+    "personal": {
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "username": "Username",
+      "firstNameDescription": "Your legal first name",
+      "lastNameDescription": "Your legal last name",
+      "usernameDescription": "Your system username (cannot be changed)",
+      "requiresApproval": "Requires Approval",
+      "notSet": "Not set",
+      "nameChangeRequest": "Name changes require admin approval. This feature will be available soon."
+    },
+    "contact": {
+      "phoneNumber": "Phone Number",
+      "emailAddress": "Email Address",
+      "phoneDescription": "Your contact phone number",
+      "emailDescription": "Your account email address",
+      "enterPhoneNumber": "Enter phone number",
+      "noPhoneSet": "No phone number set",
+      "noEmailSet": "No email set",
+      "requiresApproval": "Requires Approval",
+      "phoneUpdatedSuccess": "Phone number updated successfully",
+      "phoneUpdateFailed": "Failed to update phone number",
+      "emailChangeRequest": "Email changes require admin approval. This feature will be available soon."
+    },
+    "business": {
+      "companyName": "Company Name",
+      "businessAddress": "Business Address",
+      "industry": "Industry",
+      "taxNumber": "Tax Number",
+      "companyNameDescription": "Your legal company name",
+      "addressDescription": "Your company's business address",
+      "industryDescription": "Your business industry or sector",
+      "taxNumberDescription": "Your company's tax identification number",
+      "enterBusinessAddress": "Enter business address",
+      "industryPlaceholder": "e.g., Technology, Healthcare, Manufacturing",
+      "notSet": "Not set",
+      "noAddressSet": "No address set",
+      "notSpecified": "Not specified",
+      "requiresApproval": "Requires Approval",
+      "addressUpdatedSuccess": "Business address updated successfully",
+      "addressUpdateFailed": "Failed to update address",
+      "industryUpdatedSuccess": "Industry updated successfully",
+      "industryUpdateFailed": "Failed to update industry",
+      "companyNameChangeRequest": "Company name changes require admin approval. This feature will be available soon.",
+      "taxNumberChangeRequest": "Tax number changes require admin approval. This feature will be available soon."
+    },
+    "requests": {
+      "title": "Settings Requests",
+      "subtitle": "Manage pending settings change requests",
+      "myRequests": "My Requests",
+      "pendingRequests": "Pending Requests",
+      "requestChange": "Request Change",
+      "requestReason": "Reason for Change",
+      "reasonPlaceholder": "Please provide a reason for this change...",
+      "submitRequest": "Submit Request",
+      "submitting": "Submitting...",
+      "requestSubmitted": "Change request submitted successfully",
+      "requestSubmittedMessage": "Request submitted successfully. Changes will be applied after admin approval.",
+      "requestFailed": "Failed to submit change request",
+      "noRequests": "No requests found",
+      "requestType": "Request Type",
+      "currentValue": "Current Value",
+      "requestedValue": "Requested Value",
+      "requestDate": "Request Date",
+      "reviewDate": "Review Date",
+      "reviewer": "Reviewer",
+      "reviewNotes": "Review Notes",
+      "approve": "Approve",
+      "reject": "Reject",
+      "approving": "Approving...",
+      "rejecting": "Rejecting...",
+      "approvalNotes": "Approval Notes (Optional)",
+      "rejectionReason": "Rejection Reason",
+      "rejectionReasonRequired": "Rejection reason is required",
+      "requestApproved": "Request approved successfully",
+      "requestRejected": "Request rejected successfully",
+      "approveFailed": "Failed to approve request",
+      "rejectFailed": "Failed to reject request",
+      "status": {
+        "PENDING": "Pending",
+        "APPROVED": "Approved",
+        "REJECTED": "Rejected"
+      },
+      "types": {
+        "FIRST_NAME": "First Name",
+        "LAST_NAME": "Last Name",
+        "EMAIL_ADDRESS": "Email Address",
+        "COMPANY_NAME": "Company Name",
+        "TAX_NUMBER": "Tax Number"
+      }
     }
   },
   "customerPortal": {
