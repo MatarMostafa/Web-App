@@ -982,6 +982,20 @@
         "body": "Der geplante Termin für Ihren Auftrag \"{{orderNumber}}\" wurde auf {{newDate}} aktualisiert."
       }
     },
+    "settings": {
+      "changeRequested": {
+        "title": "Einstellungsänderungsantrag",
+        "body": "{{employeeName}} hat beantragt, {{changeType}} von '{{currentValue}}' zu '{{requestedValue}}' zu ändern."
+      },
+      "changeApproved": {
+        "title": "Einstellungsänderung genehmigt",
+        "body": "Ihr Antrag zur Änderung von {{changeType}} wurde genehmigt."
+      },
+      "changeRejected": {
+        "title": "Einstellungsänderung abgelehnt",
+        "body": "Ihr Antrag zur Änderung von {{changeType}} wurde abgelehnt. Grund: {{reviewNotes}}"
+      }
+    },
     "statusMessages": {
       "ACTIVE": "wurde aktiviert",
       "IN_PROGRESS": "ist in Bearbeitung",
@@ -994,6 +1008,125 @@
       "minutesAgo": "vor {{count}} Minuten",
       "hoursAgo": "vor {{count}} Stunden",
       "daysAgo": "vor {{count}} Tagen"
+    }
+  },
+  "settings": {
+    "title": "Einstellungen",
+    "subtitle": "Verwalten Sie Ihre Kontoeinstellungen und Präferenzen",
+    "accountSecurity": "Kontosicherheit",
+    "personalInformation": "Persönliche Informationen",
+    "contactInformation": "Kontaktinformationen",
+    "businessInformation": "Geschäftsinformationen",
+    "password": {
+      "title": "Passwort",
+      "lastChanged": "Zuletzt geändert",
+      "changePassword": "Passwort ändern",
+      "currentPassword": "Aktuelles Passwort",
+      "newPassword": "Neues Passwort",
+      "confirmNewPassword": "Neues Passwort bestätigen",
+      "enterCurrentPassword": "Aktuelles Passwort eingeben",
+      "enterNewPassword": "Neues Passwort eingeben",
+      "confirmNewPassword": "Neues Passwort bestätigen",
+      "requirements": "Passwort-Anforderungen:",
+      "atLeast8Characters": "Mindestens 8 Zeichen lang",
+      "containsNumber": "Enthält mindestens eine Zahl",
+      "changing": "Wird geändert...",
+      "cancel": "Abbrechen",
+      "passwordsDoNotMatch": "Neue Passwörter stimmen nicht überein",
+      "passwordTooShort": "Passwort muss mindestens 8 Zeichen lang sein",
+      "passwordChangedSuccess": "Passwort erfolgreich geändert",
+      "passwordChangeFailed": "Passwort konnte nicht geändert werden"
+    },
+    "personal": {
+      "firstName": "Vorname",
+      "lastName": "Nachname",
+      "username": "Benutzername",
+      "firstNameDescription": "Ihr rechtlicher Vorname",
+      "lastNameDescription": "Ihr rechtlicher Nachname",
+      "usernameDescription": "Ihr System-Benutzername (kann nicht geändert werden)",
+      "requiresApproval": "Genehmigung erforderlich",
+      "notSet": "Nicht festgelegt",
+      "nameChangeRequest": "Namensänderungen erfordern eine Admin-Genehmigung. Diese Funktion wird bald verfügbar sein."
+    },
+    "contact": {
+      "phoneNumber": "Telefonnummer",
+      "emailAddress": "E-Mail-Adresse",
+      "phoneDescription": "Ihre Kontakt-Telefonnummer",
+      "emailDescription": "Ihre Konto-E-Mail-Adresse",
+      "enterPhoneNumber": "Telefonnummer eingeben",
+      "noPhoneSet": "Keine Telefonnummer festgelegt",
+      "noEmailSet": "Keine E-Mail festgelegt",
+      "requiresApproval": "Genehmigung erforderlich",
+      "phoneUpdatedSuccess": "Telefonnummer erfolgreich aktualisiert",
+      "phoneUpdateFailed": "Telefonnummer konnte nicht aktualisiert werden",
+      "emailChangeRequest": "E-Mail-Änderungen erfordern eine Admin-Genehmigung. Diese Funktion wird bald verfügbar sein."
+    },
+    "business": {
+      "companyName": "Firmenname",
+      "businessAddress": "Geschäftsadresse",
+      "industry": "Branche",
+      "taxNumber": "Steuernummer",
+      "companyNameDescription": "Ihr rechtlicher Firmenname",
+      "addressDescription": "Die Geschäftsadresse Ihres Unternehmens",
+      "industryDescription": "Ihre Geschäftsbranche oder Ihr Sektor",
+      "taxNumberDescription": "Die Steueridentifikationsnummer Ihres Unternehmens",
+      "enterBusinessAddress": "Geschäftsadresse eingeben",
+      "industryPlaceholder": "z.B. Technologie, Gesundheitswesen, Fertigung",
+      "notSet": "Nicht festgelegt",
+      "noAddressSet": "Keine Adresse festgelegt",
+      "notSpecified": "Nicht angegeben",
+      "requiresApproval": "Genehmigung erforderlich",
+      "addressUpdatedSuccess": "Geschäftsadresse erfolgreich aktualisiert",
+      "addressUpdateFailed": "Geschäftsadresse konnte nicht aktualisiert werden",
+      "industryUpdatedSuccess": "Branche erfolgreich aktualisiert",
+      "industryUpdateFailed": "Branche konnte nicht aktualisiert werden",
+      "companyNameChangeRequest": "Firmennamen-Änderungen erfordern eine Admin-Genehmigung. Diese Funktion wird bald verfügbar sein.",
+      "taxNumberChangeRequest": "Steuernummer-Änderungen erfordern eine Admin-Genehmigung. Diese Funktion wird bald verfügbar sein."
+    },
+    "requests": {
+      "title": "Einstellungsanträge",
+      "subtitle": "Ausstehende Einstellungsänderungsanträge verwalten",
+      "myRequests": "Meine Anträge",
+      "pendingRequests": "Ausstehende Anträge",
+      "requestChange": "Änderung beantragen",
+      "requestReason": "Grund für Änderung",
+      "reasonPlaceholder": "Bitte geben Sie einen Grund für diese Änderung an...",
+      "submitRequest": "Antrag einreichen",
+      "submitting": "Wird eingereicht...",
+      "requestSubmitted": "Änderungsantrag erfolgreich eingereicht",
+      "requestSubmittedMessage": "Antrag erfolgreich eingereicht. Änderungen werden nach Admin-Genehmigung angewendet.",
+      "requestFailed": "Änderungsantrag konnte nicht eingereicht werden",
+      "noRequests": "Keine Anträge gefunden",
+      "requestType": "Antragstyp",
+      "currentValue": "Aktueller Wert",
+      "requestedValue": "Angefragter Wert",
+      "requestDate": "Antragsdatum",
+      "reviewDate": "Prüfungsdatum",
+      "reviewer": "Prüfer",
+      "reviewNotes": "Prüfungsnotizen",
+      "approve": "Genehmigen",
+      "reject": "Ablehnen",
+      "approving": "Wird genehmigt...",
+      "rejecting": "Wird abgelehnt...",
+      "approvalNotes": "Genehmigungsnotizen (Optional)",
+      "rejectionReason": "Ablehnungsgrund",
+      "rejectionReasonRequired": "Ablehnungsgrund ist erforderlich",
+      "requestApproved": "Antrag erfolgreich genehmigt",
+      "requestRejected": "Antrag erfolgreich abgelehnt",
+      "approveFailed": "Antrag konnte nicht genehmigt werden",
+      "rejectFailed": "Antrag konnte nicht abgelehnt werden",
+      "status": {
+        "PENDING": "Ausstehend",
+        "APPROVED": "Genehmigt",
+        "REJECTED": "Abgelehnt"
+      },
+      "types": {
+        "FIRST_NAME": "Vorname",
+        "LAST_NAME": "Nachname",
+        "EMAIL_ADDRESS": "E-Mail-Adresse",
+        "COMPANY_NAME": "Firmenname",
+        "TAX_NUMBER": "Steuernummer"
+      }
     }
   },
   "customerPortal": {

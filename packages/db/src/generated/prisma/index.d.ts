@@ -134,6 +134,11 @@ export type OrderNote = $Result.DefaultSelection<Prisma.$OrderNotePayload>
  */
 export type File = $Result.DefaultSelection<Prisma.$FilePayload>
 /**
+ * Model SettingsChangeRequest
+ * 
+ */
+export type SettingsChangeRequest = $Result.DefaultSelection<Prisma.$SettingsChangeRequestPayload>
+/**
  * Model SystemConfig
  * 
  */
@@ -191,6 +196,17 @@ export const RequestStatus: {
 };
 
 export type RequestStatus = (typeof RequestStatus)[keyof typeof RequestStatus]
+
+
+export const SettingsChangeType: {
+  FIRST_NAME: 'FIRST_NAME',
+  LAST_NAME: 'LAST_NAME',
+  EMAIL_ADDRESS: 'EMAIL_ADDRESS',
+  COMPANY_NAME: 'COMPANY_NAME',
+  TAX_NUMBER: 'TAX_NUMBER'
+};
+
+export type SettingsChangeType = (typeof SettingsChangeType)[keyof typeof SettingsChangeType]
 
 
 export const AssignmentStatus: {
@@ -287,6 +303,10 @@ export const OrderStatus: typeof $Enums.OrderStatus
 export type RequestStatus = $Enums.RequestStatus
 
 export const RequestStatus: typeof $Enums.RequestStatus
+
+export type SettingsChangeType = $Enums.SettingsChangeType
+
+export const SettingsChangeType: typeof $Enums.SettingsChangeType
 
 export type AssignmentStatus = $Enums.AssignmentStatus
 
@@ -673,6 +693,16 @@ export class PrismaClient<
     * ```
     */
   get file(): Prisma.FileDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.settingsChangeRequest`: Exposes CRUD operations for the **SettingsChangeRequest** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more SettingsChangeRequests
+    * const settingsChangeRequests = await prisma.settingsChangeRequest.findMany()
+    * ```
+    */
+  get settingsChangeRequest(): Prisma.SettingsChangeRequestDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.systemConfig`: Exposes CRUD operations for the **SystemConfig** model.
@@ -1158,6 +1188,7 @@ export namespace Prisma {
     NotificationPreference: 'NotificationPreference',
     OrderNote: 'OrderNote',
     File: 'File',
+    SettingsChangeRequest: 'SettingsChangeRequest',
     SystemConfig: 'SystemConfig',
     AuditLog: 'AuditLog'
   };
@@ -1178,7 +1209,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "employee" | "employeePerformance" | "performanceThreshold" | "department" | "position" | "customer" | "subAccount" | "order" | "qualification" | "employeeQualification" | "orderQualification" | "assignment" | "orderAssignment" | "absence" | "rating" | "workStatistic" | "notificationTemplate" | "notification" | "notificationRecipient" | "notificationOutbox" | "notificationPreference" | "orderNote" | "file" | "systemConfig" | "auditLog"
+      modelProps: "user" | "employee" | "employeePerformance" | "performanceThreshold" | "department" | "position" | "customer" | "subAccount" | "order" | "qualification" | "employeeQualification" | "orderQualification" | "assignment" | "orderAssignment" | "absence" | "rating" | "workStatistic" | "notificationTemplate" | "notification" | "notificationRecipient" | "notificationOutbox" | "notificationPreference" | "orderNote" | "file" | "settingsChangeRequest" | "systemConfig" | "auditLog"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -2958,6 +2989,80 @@ export namespace Prisma {
           }
         }
       }
+      SettingsChangeRequest: {
+        payload: Prisma.$SettingsChangeRequestPayload<ExtArgs>
+        fields: Prisma.SettingsChangeRequestFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.SettingsChangeRequestFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SettingsChangeRequestPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.SettingsChangeRequestFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SettingsChangeRequestPayload>
+          }
+          findFirst: {
+            args: Prisma.SettingsChangeRequestFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SettingsChangeRequestPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.SettingsChangeRequestFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SettingsChangeRequestPayload>
+          }
+          findMany: {
+            args: Prisma.SettingsChangeRequestFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SettingsChangeRequestPayload>[]
+          }
+          create: {
+            args: Prisma.SettingsChangeRequestCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SettingsChangeRequestPayload>
+          }
+          createMany: {
+            args: Prisma.SettingsChangeRequestCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.SettingsChangeRequestCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SettingsChangeRequestPayload>[]
+          }
+          delete: {
+            args: Prisma.SettingsChangeRequestDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SettingsChangeRequestPayload>
+          }
+          update: {
+            args: Prisma.SettingsChangeRequestUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SettingsChangeRequestPayload>
+          }
+          deleteMany: {
+            args: Prisma.SettingsChangeRequestDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.SettingsChangeRequestUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.SettingsChangeRequestUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SettingsChangeRequestPayload>[]
+          }
+          upsert: {
+            args: Prisma.SettingsChangeRequestUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SettingsChangeRequestPayload>
+          }
+          aggregate: {
+            args: Prisma.SettingsChangeRequestAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateSettingsChangeRequest>
+          }
+          groupBy: {
+            args: Prisma.SettingsChangeRequestGroupByArgs<ExtArgs>
+            result: $Utils.Optional<SettingsChangeRequestGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.SettingsChangeRequestCountArgs<ExtArgs>
+            result: $Utils.Optional<SettingsChangeRequestCountAggregateOutputType> | number
+          }
+        }
+      }
       SystemConfig: {
         payload: Prisma.$SystemConfigPayload<ExtArgs>
         fields: Prisma.SystemConfigFieldRefs
@@ -3226,6 +3331,7 @@ export namespace Prisma {
     notificationPreference?: NotificationPreferenceOmit
     orderNote?: OrderNoteOmit
     file?: FileOmit
+    settingsChangeRequest?: SettingsChangeRequestOmit
     systemConfig?: SystemConfigOmit
     auditLog?: AuditLogOmit
   }
@@ -3312,6 +3418,7 @@ export namespace Prisma {
     subordinates: number
     notificationRecipients: number
     orderNotes: number
+    settingsChangeRequests: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -3319,6 +3426,7 @@ export namespace Prisma {
     subordinates?: boolean | UserCountOutputTypeCountSubordinatesArgs
     notificationRecipients?: boolean | UserCountOutputTypeCountNotificationRecipientsArgs
     orderNotes?: boolean | UserCountOutputTypeCountOrderNotesArgs
+    settingsChangeRequests?: boolean | UserCountOutputTypeCountSettingsChangeRequestsArgs
   }
 
   // Custom InputTypes
@@ -3358,6 +3466,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountOrderNotesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: OrderNoteWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountSettingsChangeRequestsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SettingsChangeRequestWhereInput
   }
 
 
@@ -4058,6 +4173,7 @@ export namespace Prisma {
     notificationRecipients?: boolean | User$notificationRecipientsArgs<ExtArgs>
     notificationPreferences?: boolean | User$notificationPreferencesArgs<ExtArgs>
     orderNotes?: boolean | User$orderNotesArgs<ExtArgs>
+    settingsChangeRequests?: boolean | User$settingsChangeRequestsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -4136,6 +4252,7 @@ export namespace Prisma {
     notificationRecipients?: boolean | User$notificationRecipientsArgs<ExtArgs>
     notificationPreferences?: boolean | User$notificationPreferencesArgs<ExtArgs>
     orderNotes?: boolean | User$orderNotesArgs<ExtArgs>
+    settingsChangeRequests?: boolean | User$settingsChangeRequestsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -4151,6 +4268,7 @@ export namespace Prisma {
       notificationRecipients: Prisma.$NotificationRecipientPayload<ExtArgs>[]
       notificationPreferences: Prisma.$NotificationPreferencePayload<ExtArgs> | null
       orderNotes: Prisma.$OrderNotePayload<ExtArgs>[]
+      settingsChangeRequests: Prisma.$SettingsChangeRequestPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -4573,6 +4691,7 @@ export namespace Prisma {
     notificationRecipients<T extends User$notificationRecipientsArgs<ExtArgs> = {}>(args?: Subset<T, User$notificationRecipientsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationRecipientPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     notificationPreferences<T extends User$notificationPreferencesArgs<ExtArgs> = {}>(args?: Subset<T, User$notificationPreferencesArgs<ExtArgs>>): Prisma__NotificationPreferenceClient<$Result.GetResult<Prisma.$NotificationPreferencePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     orderNotes<T extends User$orderNotesArgs<ExtArgs> = {}>(args?: Subset<T, User$orderNotesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderNotePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    settingsChangeRequests<T extends User$settingsChangeRequestsArgs<ExtArgs> = {}>(args?: Subset<T, User$settingsChangeRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SettingsChangeRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -5159,6 +5278,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: OrderNoteScalarFieldEnum | OrderNoteScalarFieldEnum[]
+  }
+
+  /**
+   * User.settingsChangeRequests
+   */
+  export type User$settingsChangeRequestsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SettingsChangeRequest
+     */
+    select?: SettingsChangeRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SettingsChangeRequest
+     */
+    omit?: SettingsChangeRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SettingsChangeRequestInclude<ExtArgs> | null
+    where?: SettingsChangeRequestWhereInput
+    orderBy?: SettingsChangeRequestOrderByWithRelationInput | SettingsChangeRequestOrderByWithRelationInput[]
+    cursor?: SettingsChangeRequestWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: SettingsChangeRequestScalarFieldEnum | SettingsChangeRequestScalarFieldEnum[]
   }
 
   /**
@@ -33041,6 +33184,1155 @@ export namespace Prisma {
 
 
   /**
+   * Model SettingsChangeRequest
+   */
+
+  export type AggregateSettingsChangeRequest = {
+    _count: SettingsChangeRequestCountAggregateOutputType | null
+    _min: SettingsChangeRequestMinAggregateOutputType | null
+    _max: SettingsChangeRequestMaxAggregateOutputType | null
+  }
+
+  export type SettingsChangeRequestMinAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    requestType: $Enums.SettingsChangeType | null
+    currentValue: string | null
+    requestedValue: string | null
+    reason: string | null
+    status: $Enums.RequestStatus | null
+    reviewedBy: string | null
+    reviewedAt: Date | null
+    reviewNotes: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type SettingsChangeRequestMaxAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    requestType: $Enums.SettingsChangeType | null
+    currentValue: string | null
+    requestedValue: string | null
+    reason: string | null
+    status: $Enums.RequestStatus | null
+    reviewedBy: string | null
+    reviewedAt: Date | null
+    reviewNotes: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type SettingsChangeRequestCountAggregateOutputType = {
+    id: number
+    userId: number
+    requestType: number
+    currentValue: number
+    requestedValue: number
+    reason: number
+    status: number
+    reviewedBy: number
+    reviewedAt: number
+    reviewNotes: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type SettingsChangeRequestMinAggregateInputType = {
+    id?: true
+    userId?: true
+    requestType?: true
+    currentValue?: true
+    requestedValue?: true
+    reason?: true
+    status?: true
+    reviewedBy?: true
+    reviewedAt?: true
+    reviewNotes?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type SettingsChangeRequestMaxAggregateInputType = {
+    id?: true
+    userId?: true
+    requestType?: true
+    currentValue?: true
+    requestedValue?: true
+    reason?: true
+    status?: true
+    reviewedBy?: true
+    reviewedAt?: true
+    reviewNotes?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type SettingsChangeRequestCountAggregateInputType = {
+    id?: true
+    userId?: true
+    requestType?: true
+    currentValue?: true
+    requestedValue?: true
+    reason?: true
+    status?: true
+    reviewedBy?: true
+    reviewedAt?: true
+    reviewNotes?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type SettingsChangeRequestAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which SettingsChangeRequest to aggregate.
+     */
+    where?: SettingsChangeRequestWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SettingsChangeRequests to fetch.
+     */
+    orderBy?: SettingsChangeRequestOrderByWithRelationInput | SettingsChangeRequestOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: SettingsChangeRequestWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SettingsChangeRequests from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SettingsChangeRequests.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned SettingsChangeRequests
+    **/
+    _count?: true | SettingsChangeRequestCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: SettingsChangeRequestMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: SettingsChangeRequestMaxAggregateInputType
+  }
+
+  export type GetSettingsChangeRequestAggregateType<T extends SettingsChangeRequestAggregateArgs> = {
+        [P in keyof T & keyof AggregateSettingsChangeRequest]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateSettingsChangeRequest[P]>
+      : GetScalarType<T[P], AggregateSettingsChangeRequest[P]>
+  }
+
+
+
+
+  export type SettingsChangeRequestGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SettingsChangeRequestWhereInput
+    orderBy?: SettingsChangeRequestOrderByWithAggregationInput | SettingsChangeRequestOrderByWithAggregationInput[]
+    by: SettingsChangeRequestScalarFieldEnum[] | SettingsChangeRequestScalarFieldEnum
+    having?: SettingsChangeRequestScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: SettingsChangeRequestCountAggregateInputType | true
+    _min?: SettingsChangeRequestMinAggregateInputType
+    _max?: SettingsChangeRequestMaxAggregateInputType
+  }
+
+  export type SettingsChangeRequestGroupByOutputType = {
+    id: string
+    userId: string
+    requestType: $Enums.SettingsChangeType
+    currentValue: string | null
+    requestedValue: string
+    reason: string | null
+    status: $Enums.RequestStatus
+    reviewedBy: string | null
+    reviewedAt: Date | null
+    reviewNotes: string | null
+    createdAt: Date
+    updatedAt: Date
+    _count: SettingsChangeRequestCountAggregateOutputType | null
+    _min: SettingsChangeRequestMinAggregateOutputType | null
+    _max: SettingsChangeRequestMaxAggregateOutputType | null
+  }
+
+  type GetSettingsChangeRequestGroupByPayload<T extends SettingsChangeRequestGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<SettingsChangeRequestGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof SettingsChangeRequestGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], SettingsChangeRequestGroupByOutputType[P]>
+            : GetScalarType<T[P], SettingsChangeRequestGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type SettingsChangeRequestSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    requestType?: boolean
+    currentValue?: boolean
+    requestedValue?: boolean
+    reason?: boolean
+    status?: boolean
+    reviewedBy?: boolean
+    reviewedAt?: boolean
+    reviewNotes?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["settingsChangeRequest"]>
+
+  export type SettingsChangeRequestSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    requestType?: boolean
+    currentValue?: boolean
+    requestedValue?: boolean
+    reason?: boolean
+    status?: boolean
+    reviewedBy?: boolean
+    reviewedAt?: boolean
+    reviewNotes?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["settingsChangeRequest"]>
+
+  export type SettingsChangeRequestSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    requestType?: boolean
+    currentValue?: boolean
+    requestedValue?: boolean
+    reason?: boolean
+    status?: boolean
+    reviewedBy?: boolean
+    reviewedAt?: boolean
+    reviewNotes?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["settingsChangeRequest"]>
+
+  export type SettingsChangeRequestSelectScalar = {
+    id?: boolean
+    userId?: boolean
+    requestType?: boolean
+    currentValue?: boolean
+    requestedValue?: boolean
+    reason?: boolean
+    status?: boolean
+    reviewedBy?: boolean
+    reviewedAt?: boolean
+    reviewNotes?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type SettingsChangeRequestOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "requestType" | "currentValue" | "requestedValue" | "reason" | "status" | "reviewedBy" | "reviewedAt" | "reviewNotes" | "createdAt" | "updatedAt", ExtArgs["result"]["settingsChangeRequest"]>
+  export type SettingsChangeRequestInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type SettingsChangeRequestIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type SettingsChangeRequestIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $SettingsChangeRequestPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "SettingsChangeRequest"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      userId: string
+      requestType: $Enums.SettingsChangeType
+      currentValue: string | null
+      requestedValue: string
+      reason: string | null
+      status: $Enums.RequestStatus
+      reviewedBy: string | null
+      reviewedAt: Date | null
+      reviewNotes: string | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["settingsChangeRequest"]>
+    composites: {}
+  }
+
+  type SettingsChangeRequestGetPayload<S extends boolean | null | undefined | SettingsChangeRequestDefaultArgs> = $Result.GetResult<Prisma.$SettingsChangeRequestPayload, S>
+
+  type SettingsChangeRequestCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<SettingsChangeRequestFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: SettingsChangeRequestCountAggregateInputType | true
+    }
+
+  export interface SettingsChangeRequestDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['SettingsChangeRequest'], meta: { name: 'SettingsChangeRequest' } }
+    /**
+     * Find zero or one SettingsChangeRequest that matches the filter.
+     * @param {SettingsChangeRequestFindUniqueArgs} args - Arguments to find a SettingsChangeRequest
+     * @example
+     * // Get one SettingsChangeRequest
+     * const settingsChangeRequest = await prisma.settingsChangeRequest.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends SettingsChangeRequestFindUniqueArgs>(args: SelectSubset<T, SettingsChangeRequestFindUniqueArgs<ExtArgs>>): Prisma__SettingsChangeRequestClient<$Result.GetResult<Prisma.$SettingsChangeRequestPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one SettingsChangeRequest that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {SettingsChangeRequestFindUniqueOrThrowArgs} args - Arguments to find a SettingsChangeRequest
+     * @example
+     * // Get one SettingsChangeRequest
+     * const settingsChangeRequest = await prisma.settingsChangeRequest.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends SettingsChangeRequestFindUniqueOrThrowArgs>(args: SelectSubset<T, SettingsChangeRequestFindUniqueOrThrowArgs<ExtArgs>>): Prisma__SettingsChangeRequestClient<$Result.GetResult<Prisma.$SettingsChangeRequestPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first SettingsChangeRequest that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SettingsChangeRequestFindFirstArgs} args - Arguments to find a SettingsChangeRequest
+     * @example
+     * // Get one SettingsChangeRequest
+     * const settingsChangeRequest = await prisma.settingsChangeRequest.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends SettingsChangeRequestFindFirstArgs>(args?: SelectSubset<T, SettingsChangeRequestFindFirstArgs<ExtArgs>>): Prisma__SettingsChangeRequestClient<$Result.GetResult<Prisma.$SettingsChangeRequestPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first SettingsChangeRequest that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SettingsChangeRequestFindFirstOrThrowArgs} args - Arguments to find a SettingsChangeRequest
+     * @example
+     * // Get one SettingsChangeRequest
+     * const settingsChangeRequest = await prisma.settingsChangeRequest.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends SettingsChangeRequestFindFirstOrThrowArgs>(args?: SelectSubset<T, SettingsChangeRequestFindFirstOrThrowArgs<ExtArgs>>): Prisma__SettingsChangeRequestClient<$Result.GetResult<Prisma.$SettingsChangeRequestPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more SettingsChangeRequests that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SettingsChangeRequestFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all SettingsChangeRequests
+     * const settingsChangeRequests = await prisma.settingsChangeRequest.findMany()
+     * 
+     * // Get first 10 SettingsChangeRequests
+     * const settingsChangeRequests = await prisma.settingsChangeRequest.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const settingsChangeRequestWithIdOnly = await prisma.settingsChangeRequest.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends SettingsChangeRequestFindManyArgs>(args?: SelectSubset<T, SettingsChangeRequestFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SettingsChangeRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a SettingsChangeRequest.
+     * @param {SettingsChangeRequestCreateArgs} args - Arguments to create a SettingsChangeRequest.
+     * @example
+     * // Create one SettingsChangeRequest
+     * const SettingsChangeRequest = await prisma.settingsChangeRequest.create({
+     *   data: {
+     *     // ... data to create a SettingsChangeRequest
+     *   }
+     * })
+     * 
+     */
+    create<T extends SettingsChangeRequestCreateArgs>(args: SelectSubset<T, SettingsChangeRequestCreateArgs<ExtArgs>>): Prisma__SettingsChangeRequestClient<$Result.GetResult<Prisma.$SettingsChangeRequestPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many SettingsChangeRequests.
+     * @param {SettingsChangeRequestCreateManyArgs} args - Arguments to create many SettingsChangeRequests.
+     * @example
+     * // Create many SettingsChangeRequests
+     * const settingsChangeRequest = await prisma.settingsChangeRequest.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends SettingsChangeRequestCreateManyArgs>(args?: SelectSubset<T, SettingsChangeRequestCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many SettingsChangeRequests and returns the data saved in the database.
+     * @param {SettingsChangeRequestCreateManyAndReturnArgs} args - Arguments to create many SettingsChangeRequests.
+     * @example
+     * // Create many SettingsChangeRequests
+     * const settingsChangeRequest = await prisma.settingsChangeRequest.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many SettingsChangeRequests and only return the `id`
+     * const settingsChangeRequestWithIdOnly = await prisma.settingsChangeRequest.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends SettingsChangeRequestCreateManyAndReturnArgs>(args?: SelectSubset<T, SettingsChangeRequestCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SettingsChangeRequestPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a SettingsChangeRequest.
+     * @param {SettingsChangeRequestDeleteArgs} args - Arguments to delete one SettingsChangeRequest.
+     * @example
+     * // Delete one SettingsChangeRequest
+     * const SettingsChangeRequest = await prisma.settingsChangeRequest.delete({
+     *   where: {
+     *     // ... filter to delete one SettingsChangeRequest
+     *   }
+     * })
+     * 
+     */
+    delete<T extends SettingsChangeRequestDeleteArgs>(args: SelectSubset<T, SettingsChangeRequestDeleteArgs<ExtArgs>>): Prisma__SettingsChangeRequestClient<$Result.GetResult<Prisma.$SettingsChangeRequestPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one SettingsChangeRequest.
+     * @param {SettingsChangeRequestUpdateArgs} args - Arguments to update one SettingsChangeRequest.
+     * @example
+     * // Update one SettingsChangeRequest
+     * const settingsChangeRequest = await prisma.settingsChangeRequest.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends SettingsChangeRequestUpdateArgs>(args: SelectSubset<T, SettingsChangeRequestUpdateArgs<ExtArgs>>): Prisma__SettingsChangeRequestClient<$Result.GetResult<Prisma.$SettingsChangeRequestPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more SettingsChangeRequests.
+     * @param {SettingsChangeRequestDeleteManyArgs} args - Arguments to filter SettingsChangeRequests to delete.
+     * @example
+     * // Delete a few SettingsChangeRequests
+     * const { count } = await prisma.settingsChangeRequest.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends SettingsChangeRequestDeleteManyArgs>(args?: SelectSubset<T, SettingsChangeRequestDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more SettingsChangeRequests.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SettingsChangeRequestUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many SettingsChangeRequests
+     * const settingsChangeRequest = await prisma.settingsChangeRequest.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends SettingsChangeRequestUpdateManyArgs>(args: SelectSubset<T, SettingsChangeRequestUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more SettingsChangeRequests and returns the data updated in the database.
+     * @param {SettingsChangeRequestUpdateManyAndReturnArgs} args - Arguments to update many SettingsChangeRequests.
+     * @example
+     * // Update many SettingsChangeRequests
+     * const settingsChangeRequest = await prisma.settingsChangeRequest.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more SettingsChangeRequests and only return the `id`
+     * const settingsChangeRequestWithIdOnly = await prisma.settingsChangeRequest.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends SettingsChangeRequestUpdateManyAndReturnArgs>(args: SelectSubset<T, SettingsChangeRequestUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SettingsChangeRequestPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one SettingsChangeRequest.
+     * @param {SettingsChangeRequestUpsertArgs} args - Arguments to update or create a SettingsChangeRequest.
+     * @example
+     * // Update or create a SettingsChangeRequest
+     * const settingsChangeRequest = await prisma.settingsChangeRequest.upsert({
+     *   create: {
+     *     // ... data to create a SettingsChangeRequest
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the SettingsChangeRequest we want to update
+     *   }
+     * })
+     */
+    upsert<T extends SettingsChangeRequestUpsertArgs>(args: SelectSubset<T, SettingsChangeRequestUpsertArgs<ExtArgs>>): Prisma__SettingsChangeRequestClient<$Result.GetResult<Prisma.$SettingsChangeRequestPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of SettingsChangeRequests.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SettingsChangeRequestCountArgs} args - Arguments to filter SettingsChangeRequests to count.
+     * @example
+     * // Count the number of SettingsChangeRequests
+     * const count = await prisma.settingsChangeRequest.count({
+     *   where: {
+     *     // ... the filter for the SettingsChangeRequests we want to count
+     *   }
+     * })
+    **/
+    count<T extends SettingsChangeRequestCountArgs>(
+      args?: Subset<T, SettingsChangeRequestCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], SettingsChangeRequestCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a SettingsChangeRequest.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SettingsChangeRequestAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends SettingsChangeRequestAggregateArgs>(args: Subset<T, SettingsChangeRequestAggregateArgs>): Prisma.PrismaPromise<GetSettingsChangeRequestAggregateType<T>>
+
+    /**
+     * Group by SettingsChangeRequest.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SettingsChangeRequestGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends SettingsChangeRequestGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: SettingsChangeRequestGroupByArgs['orderBy'] }
+        : { orderBy?: SettingsChangeRequestGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, SettingsChangeRequestGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetSettingsChangeRequestGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the SettingsChangeRequest model
+   */
+  readonly fields: SettingsChangeRequestFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for SettingsChangeRequest.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__SettingsChangeRequestClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the SettingsChangeRequest model
+   */
+  interface SettingsChangeRequestFieldRefs {
+    readonly id: FieldRef<"SettingsChangeRequest", 'String'>
+    readonly userId: FieldRef<"SettingsChangeRequest", 'String'>
+    readonly requestType: FieldRef<"SettingsChangeRequest", 'SettingsChangeType'>
+    readonly currentValue: FieldRef<"SettingsChangeRequest", 'String'>
+    readonly requestedValue: FieldRef<"SettingsChangeRequest", 'String'>
+    readonly reason: FieldRef<"SettingsChangeRequest", 'String'>
+    readonly status: FieldRef<"SettingsChangeRequest", 'RequestStatus'>
+    readonly reviewedBy: FieldRef<"SettingsChangeRequest", 'String'>
+    readonly reviewedAt: FieldRef<"SettingsChangeRequest", 'DateTime'>
+    readonly reviewNotes: FieldRef<"SettingsChangeRequest", 'String'>
+    readonly createdAt: FieldRef<"SettingsChangeRequest", 'DateTime'>
+    readonly updatedAt: FieldRef<"SettingsChangeRequest", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * SettingsChangeRequest findUnique
+   */
+  export type SettingsChangeRequestFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SettingsChangeRequest
+     */
+    select?: SettingsChangeRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SettingsChangeRequest
+     */
+    omit?: SettingsChangeRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SettingsChangeRequestInclude<ExtArgs> | null
+    /**
+     * Filter, which SettingsChangeRequest to fetch.
+     */
+    where: SettingsChangeRequestWhereUniqueInput
+  }
+
+  /**
+   * SettingsChangeRequest findUniqueOrThrow
+   */
+  export type SettingsChangeRequestFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SettingsChangeRequest
+     */
+    select?: SettingsChangeRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SettingsChangeRequest
+     */
+    omit?: SettingsChangeRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SettingsChangeRequestInclude<ExtArgs> | null
+    /**
+     * Filter, which SettingsChangeRequest to fetch.
+     */
+    where: SettingsChangeRequestWhereUniqueInput
+  }
+
+  /**
+   * SettingsChangeRequest findFirst
+   */
+  export type SettingsChangeRequestFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SettingsChangeRequest
+     */
+    select?: SettingsChangeRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SettingsChangeRequest
+     */
+    omit?: SettingsChangeRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SettingsChangeRequestInclude<ExtArgs> | null
+    /**
+     * Filter, which SettingsChangeRequest to fetch.
+     */
+    where?: SettingsChangeRequestWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SettingsChangeRequests to fetch.
+     */
+    orderBy?: SettingsChangeRequestOrderByWithRelationInput | SettingsChangeRequestOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for SettingsChangeRequests.
+     */
+    cursor?: SettingsChangeRequestWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SettingsChangeRequests from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SettingsChangeRequests.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of SettingsChangeRequests.
+     */
+    distinct?: SettingsChangeRequestScalarFieldEnum | SettingsChangeRequestScalarFieldEnum[]
+  }
+
+  /**
+   * SettingsChangeRequest findFirstOrThrow
+   */
+  export type SettingsChangeRequestFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SettingsChangeRequest
+     */
+    select?: SettingsChangeRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SettingsChangeRequest
+     */
+    omit?: SettingsChangeRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SettingsChangeRequestInclude<ExtArgs> | null
+    /**
+     * Filter, which SettingsChangeRequest to fetch.
+     */
+    where?: SettingsChangeRequestWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SettingsChangeRequests to fetch.
+     */
+    orderBy?: SettingsChangeRequestOrderByWithRelationInput | SettingsChangeRequestOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for SettingsChangeRequests.
+     */
+    cursor?: SettingsChangeRequestWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SettingsChangeRequests from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SettingsChangeRequests.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of SettingsChangeRequests.
+     */
+    distinct?: SettingsChangeRequestScalarFieldEnum | SettingsChangeRequestScalarFieldEnum[]
+  }
+
+  /**
+   * SettingsChangeRequest findMany
+   */
+  export type SettingsChangeRequestFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SettingsChangeRequest
+     */
+    select?: SettingsChangeRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SettingsChangeRequest
+     */
+    omit?: SettingsChangeRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SettingsChangeRequestInclude<ExtArgs> | null
+    /**
+     * Filter, which SettingsChangeRequests to fetch.
+     */
+    where?: SettingsChangeRequestWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SettingsChangeRequests to fetch.
+     */
+    orderBy?: SettingsChangeRequestOrderByWithRelationInput | SettingsChangeRequestOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing SettingsChangeRequests.
+     */
+    cursor?: SettingsChangeRequestWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SettingsChangeRequests from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SettingsChangeRequests.
+     */
+    skip?: number
+    distinct?: SettingsChangeRequestScalarFieldEnum | SettingsChangeRequestScalarFieldEnum[]
+  }
+
+  /**
+   * SettingsChangeRequest create
+   */
+  export type SettingsChangeRequestCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SettingsChangeRequest
+     */
+    select?: SettingsChangeRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SettingsChangeRequest
+     */
+    omit?: SettingsChangeRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SettingsChangeRequestInclude<ExtArgs> | null
+    /**
+     * The data needed to create a SettingsChangeRequest.
+     */
+    data: XOR<SettingsChangeRequestCreateInput, SettingsChangeRequestUncheckedCreateInput>
+  }
+
+  /**
+   * SettingsChangeRequest createMany
+   */
+  export type SettingsChangeRequestCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many SettingsChangeRequests.
+     */
+    data: SettingsChangeRequestCreateManyInput | SettingsChangeRequestCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * SettingsChangeRequest createManyAndReturn
+   */
+  export type SettingsChangeRequestCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SettingsChangeRequest
+     */
+    select?: SettingsChangeRequestSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the SettingsChangeRequest
+     */
+    omit?: SettingsChangeRequestOmit<ExtArgs> | null
+    /**
+     * The data used to create many SettingsChangeRequests.
+     */
+    data: SettingsChangeRequestCreateManyInput | SettingsChangeRequestCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SettingsChangeRequestIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * SettingsChangeRequest update
+   */
+  export type SettingsChangeRequestUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SettingsChangeRequest
+     */
+    select?: SettingsChangeRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SettingsChangeRequest
+     */
+    omit?: SettingsChangeRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SettingsChangeRequestInclude<ExtArgs> | null
+    /**
+     * The data needed to update a SettingsChangeRequest.
+     */
+    data: XOR<SettingsChangeRequestUpdateInput, SettingsChangeRequestUncheckedUpdateInput>
+    /**
+     * Choose, which SettingsChangeRequest to update.
+     */
+    where: SettingsChangeRequestWhereUniqueInput
+  }
+
+  /**
+   * SettingsChangeRequest updateMany
+   */
+  export type SettingsChangeRequestUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update SettingsChangeRequests.
+     */
+    data: XOR<SettingsChangeRequestUpdateManyMutationInput, SettingsChangeRequestUncheckedUpdateManyInput>
+    /**
+     * Filter which SettingsChangeRequests to update
+     */
+    where?: SettingsChangeRequestWhereInput
+    /**
+     * Limit how many SettingsChangeRequests to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * SettingsChangeRequest updateManyAndReturn
+   */
+  export type SettingsChangeRequestUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SettingsChangeRequest
+     */
+    select?: SettingsChangeRequestSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the SettingsChangeRequest
+     */
+    omit?: SettingsChangeRequestOmit<ExtArgs> | null
+    /**
+     * The data used to update SettingsChangeRequests.
+     */
+    data: XOR<SettingsChangeRequestUpdateManyMutationInput, SettingsChangeRequestUncheckedUpdateManyInput>
+    /**
+     * Filter which SettingsChangeRequests to update
+     */
+    where?: SettingsChangeRequestWhereInput
+    /**
+     * Limit how many SettingsChangeRequests to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SettingsChangeRequestIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * SettingsChangeRequest upsert
+   */
+  export type SettingsChangeRequestUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SettingsChangeRequest
+     */
+    select?: SettingsChangeRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SettingsChangeRequest
+     */
+    omit?: SettingsChangeRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SettingsChangeRequestInclude<ExtArgs> | null
+    /**
+     * The filter to search for the SettingsChangeRequest to update in case it exists.
+     */
+    where: SettingsChangeRequestWhereUniqueInput
+    /**
+     * In case the SettingsChangeRequest found by the `where` argument doesn't exist, create a new SettingsChangeRequest with this data.
+     */
+    create: XOR<SettingsChangeRequestCreateInput, SettingsChangeRequestUncheckedCreateInput>
+    /**
+     * In case the SettingsChangeRequest was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<SettingsChangeRequestUpdateInput, SettingsChangeRequestUncheckedUpdateInput>
+  }
+
+  /**
+   * SettingsChangeRequest delete
+   */
+  export type SettingsChangeRequestDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SettingsChangeRequest
+     */
+    select?: SettingsChangeRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SettingsChangeRequest
+     */
+    omit?: SettingsChangeRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SettingsChangeRequestInclude<ExtArgs> | null
+    /**
+     * Filter which SettingsChangeRequest to delete.
+     */
+    where: SettingsChangeRequestWhereUniqueInput
+  }
+
+  /**
+   * SettingsChangeRequest deleteMany
+   */
+  export type SettingsChangeRequestDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which SettingsChangeRequests to delete
+     */
+    where?: SettingsChangeRequestWhereInput
+    /**
+     * Limit how many SettingsChangeRequests to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * SettingsChangeRequest without action
+   */
+  export type SettingsChangeRequestDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SettingsChangeRequest
+     */
+    select?: SettingsChangeRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SettingsChangeRequest
+     */
+    omit?: SettingsChangeRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SettingsChangeRequestInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Model SystemConfig
    */
 
@@ -35561,6 +36853,24 @@ export namespace Prisma {
   export type FileScalarFieldEnum = (typeof FileScalarFieldEnum)[keyof typeof FileScalarFieldEnum]
 
 
+  export const SettingsChangeRequestScalarFieldEnum: {
+    id: 'id',
+    userId: 'userId',
+    requestType: 'requestType',
+    currentValue: 'currentValue',
+    requestedValue: 'requestedValue',
+    reason: 'reason',
+    status: 'status',
+    reviewedBy: 'reviewedBy',
+    reviewedAt: 'reviewedAt',
+    reviewNotes: 'reviewNotes',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type SettingsChangeRequestScalarFieldEnum = (typeof SettingsChangeRequestScalarFieldEnum)[keyof typeof SettingsChangeRequestScalarFieldEnum]
+
+
   export const SystemConfigScalarFieldEnum: {
     id: 'id',
     key: 'key',
@@ -35876,6 +37186,20 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'SettingsChangeType'
+   */
+  export type EnumSettingsChangeTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SettingsChangeType'>
+    
+
+
+  /**
+   * Reference to a field of type 'SettingsChangeType[]'
+   */
+  export type ListEnumSettingsChangeTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SettingsChangeType[]'>
+    
+
+
+  /**
    * Reference to a field of type 'Float'
    */
   export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
@@ -35922,6 +37246,7 @@ export namespace Prisma {
     notificationRecipients?: NotificationRecipientListRelationFilter
     notificationPreferences?: XOR<NotificationPreferenceNullableScalarRelationFilter, NotificationPreferenceWhereInput> | null
     orderNotes?: OrderNoteListRelationFilter
+    settingsChangeRequests?: SettingsChangeRequestListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -35951,6 +37276,7 @@ export namespace Prisma {
     notificationRecipients?: NotificationRecipientOrderByRelationAggregateInput
     notificationPreferences?: NotificationPreferenceOrderByWithRelationInput
     orderNotes?: OrderNoteOrderByRelationAggregateInput
+    settingsChangeRequests?: SettingsChangeRequestOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -35983,6 +37309,7 @@ export namespace Prisma {
     notificationRecipients?: NotificationRecipientListRelationFilter
     notificationPreferences?: XOR<NotificationPreferenceNullableScalarRelationFilter, NotificationPreferenceWhereInput> | null
     orderNotes?: OrderNoteListRelationFilter
+    settingsChangeRequests?: SettingsChangeRequestListRelationFilter
   }, "id" | "email" | "username">
 
   export type UserOrderByWithAggregationInput = {
@@ -38185,6 +39512,96 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"File"> | Date | string
   }
 
+  export type SettingsChangeRequestWhereInput = {
+    AND?: SettingsChangeRequestWhereInput | SettingsChangeRequestWhereInput[]
+    OR?: SettingsChangeRequestWhereInput[]
+    NOT?: SettingsChangeRequestWhereInput | SettingsChangeRequestWhereInput[]
+    id?: StringFilter<"SettingsChangeRequest"> | string
+    userId?: StringFilter<"SettingsChangeRequest"> | string
+    requestType?: EnumSettingsChangeTypeFilter<"SettingsChangeRequest"> | $Enums.SettingsChangeType
+    currentValue?: StringNullableFilter<"SettingsChangeRequest"> | string | null
+    requestedValue?: StringFilter<"SettingsChangeRequest"> | string
+    reason?: StringNullableFilter<"SettingsChangeRequest"> | string | null
+    status?: EnumRequestStatusFilter<"SettingsChangeRequest"> | $Enums.RequestStatus
+    reviewedBy?: StringNullableFilter<"SettingsChangeRequest"> | string | null
+    reviewedAt?: DateTimeNullableFilter<"SettingsChangeRequest"> | Date | string | null
+    reviewNotes?: StringNullableFilter<"SettingsChangeRequest"> | string | null
+    createdAt?: DateTimeFilter<"SettingsChangeRequest"> | Date | string
+    updatedAt?: DateTimeFilter<"SettingsChangeRequest"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }
+
+  export type SettingsChangeRequestOrderByWithRelationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    requestType?: SortOrder
+    currentValue?: SortOrderInput | SortOrder
+    requestedValue?: SortOrder
+    reason?: SortOrderInput | SortOrder
+    status?: SortOrder
+    reviewedBy?: SortOrderInput | SortOrder
+    reviewedAt?: SortOrderInput | SortOrder
+    reviewNotes?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type SettingsChangeRequestWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: SettingsChangeRequestWhereInput | SettingsChangeRequestWhereInput[]
+    OR?: SettingsChangeRequestWhereInput[]
+    NOT?: SettingsChangeRequestWhereInput | SettingsChangeRequestWhereInput[]
+    userId?: StringFilter<"SettingsChangeRequest"> | string
+    requestType?: EnumSettingsChangeTypeFilter<"SettingsChangeRequest"> | $Enums.SettingsChangeType
+    currentValue?: StringNullableFilter<"SettingsChangeRequest"> | string | null
+    requestedValue?: StringFilter<"SettingsChangeRequest"> | string
+    reason?: StringNullableFilter<"SettingsChangeRequest"> | string | null
+    status?: EnumRequestStatusFilter<"SettingsChangeRequest"> | $Enums.RequestStatus
+    reviewedBy?: StringNullableFilter<"SettingsChangeRequest"> | string | null
+    reviewedAt?: DateTimeNullableFilter<"SettingsChangeRequest"> | Date | string | null
+    reviewNotes?: StringNullableFilter<"SettingsChangeRequest"> | string | null
+    createdAt?: DateTimeFilter<"SettingsChangeRequest"> | Date | string
+    updatedAt?: DateTimeFilter<"SettingsChangeRequest"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }, "id">
+
+  export type SettingsChangeRequestOrderByWithAggregationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    requestType?: SortOrder
+    currentValue?: SortOrderInput | SortOrder
+    requestedValue?: SortOrder
+    reason?: SortOrderInput | SortOrder
+    status?: SortOrder
+    reviewedBy?: SortOrderInput | SortOrder
+    reviewedAt?: SortOrderInput | SortOrder
+    reviewNotes?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: SettingsChangeRequestCountOrderByAggregateInput
+    _max?: SettingsChangeRequestMaxOrderByAggregateInput
+    _min?: SettingsChangeRequestMinOrderByAggregateInput
+  }
+
+  export type SettingsChangeRequestScalarWhereWithAggregatesInput = {
+    AND?: SettingsChangeRequestScalarWhereWithAggregatesInput | SettingsChangeRequestScalarWhereWithAggregatesInput[]
+    OR?: SettingsChangeRequestScalarWhereWithAggregatesInput[]
+    NOT?: SettingsChangeRequestScalarWhereWithAggregatesInput | SettingsChangeRequestScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"SettingsChangeRequest"> | string
+    userId?: StringWithAggregatesFilter<"SettingsChangeRequest"> | string
+    requestType?: EnumSettingsChangeTypeWithAggregatesFilter<"SettingsChangeRequest"> | $Enums.SettingsChangeType
+    currentValue?: StringNullableWithAggregatesFilter<"SettingsChangeRequest"> | string | null
+    requestedValue?: StringWithAggregatesFilter<"SettingsChangeRequest"> | string
+    reason?: StringNullableWithAggregatesFilter<"SettingsChangeRequest"> | string | null
+    status?: EnumRequestStatusWithAggregatesFilter<"SettingsChangeRequest"> | $Enums.RequestStatus
+    reviewedBy?: StringNullableWithAggregatesFilter<"SettingsChangeRequest"> | string | null
+    reviewedAt?: DateTimeNullableWithAggregatesFilter<"SettingsChangeRequest"> | Date | string | null
+    reviewNotes?: StringNullableWithAggregatesFilter<"SettingsChangeRequest"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"SettingsChangeRequest"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"SettingsChangeRequest"> | Date | string
+  }
+
   export type SystemConfigWhereInput = {
     AND?: SystemConfigWhereInput | SystemConfigWhereInput[]
     OR?: SystemConfigWhereInput[]
@@ -38356,6 +39773,7 @@ export namespace Prisma {
     notificationRecipients?: NotificationRecipientCreateNestedManyWithoutUserInput
     notificationPreferences?: NotificationPreferenceCreateNestedOneWithoutUserInput
     orderNotes?: OrderNoteCreateNestedManyWithoutAuthorInput
+    settingsChangeRequests?: SettingsChangeRequestCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -38385,6 +39803,7 @@ export namespace Prisma {
     notificationRecipients?: NotificationRecipientUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: NotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
     orderNotes?: OrderNoteUncheckedCreateNestedManyWithoutAuthorInput
+    settingsChangeRequests?: SettingsChangeRequestUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -38414,6 +39833,7 @@ export namespace Prisma {
     notificationRecipients?: NotificationRecipientUpdateManyWithoutUserNestedInput
     notificationPreferences?: NotificationPreferenceUpdateOneWithoutUserNestedInput
     orderNotes?: OrderNoteUpdateManyWithoutAuthorNestedInput
+    settingsChangeRequests?: SettingsChangeRequestUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -38443,6 +39863,7 @@ export namespace Prisma {
     notificationRecipients?: NotificationRecipientUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: NotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
     orderNotes?: OrderNoteUncheckedUpdateManyWithoutAuthorNestedInput
+    settingsChangeRequests?: SettingsChangeRequestUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -40902,6 +42323,110 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type SettingsChangeRequestCreateInput = {
+    id?: string
+    requestType: $Enums.SettingsChangeType
+    currentValue?: string | null
+    requestedValue: string
+    reason?: string | null
+    status?: $Enums.RequestStatus
+    reviewedBy?: string | null
+    reviewedAt?: Date | string | null
+    reviewNotes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutSettingsChangeRequestsInput
+  }
+
+  export type SettingsChangeRequestUncheckedCreateInput = {
+    id?: string
+    userId: string
+    requestType: $Enums.SettingsChangeType
+    currentValue?: string | null
+    requestedValue: string
+    reason?: string | null
+    status?: $Enums.RequestStatus
+    reviewedBy?: string | null
+    reviewedAt?: Date | string | null
+    reviewNotes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type SettingsChangeRequestUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    requestType?: EnumSettingsChangeTypeFieldUpdateOperationsInput | $Enums.SettingsChangeType
+    currentValue?: NullableStringFieldUpdateOperationsInput | string | null
+    requestedValue?: StringFieldUpdateOperationsInput | string
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumRequestStatusFieldUpdateOperationsInput | $Enums.RequestStatus
+    reviewedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutSettingsChangeRequestsNestedInput
+  }
+
+  export type SettingsChangeRequestUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    requestType?: EnumSettingsChangeTypeFieldUpdateOperationsInput | $Enums.SettingsChangeType
+    currentValue?: NullableStringFieldUpdateOperationsInput | string | null
+    requestedValue?: StringFieldUpdateOperationsInput | string
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumRequestStatusFieldUpdateOperationsInput | $Enums.RequestStatus
+    reviewedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SettingsChangeRequestCreateManyInput = {
+    id?: string
+    userId: string
+    requestType: $Enums.SettingsChangeType
+    currentValue?: string | null
+    requestedValue: string
+    reason?: string | null
+    status?: $Enums.RequestStatus
+    reviewedBy?: string | null
+    reviewedAt?: Date | string | null
+    reviewNotes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type SettingsChangeRequestUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    requestType?: EnumSettingsChangeTypeFieldUpdateOperationsInput | $Enums.SettingsChangeType
+    currentValue?: NullableStringFieldUpdateOperationsInput | string | null
+    requestedValue?: StringFieldUpdateOperationsInput | string
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumRequestStatusFieldUpdateOperationsInput | $Enums.RequestStatus
+    reviewedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SettingsChangeRequestUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    requestType?: EnumSettingsChangeTypeFieldUpdateOperationsInput | $Enums.SettingsChangeType
+    currentValue?: NullableStringFieldUpdateOperationsInput | string | null
+    requestedValue?: StringFieldUpdateOperationsInput | string
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumRequestStatusFieldUpdateOperationsInput | $Enums.RequestStatus
+    reviewedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type SystemConfigCreateInput = {
     id?: string
     key: string
@@ -41173,6 +42698,12 @@ export namespace Prisma {
     none?: OrderNoteWhereInput
   }
 
+  export type SettingsChangeRequestListRelationFilter = {
+    every?: SettingsChangeRequestWhereInput
+    some?: SettingsChangeRequestWhereInput
+    none?: SettingsChangeRequestWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -41191,6 +42722,10 @@ export namespace Prisma {
   }
 
   export type OrderNoteOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type SettingsChangeRequestOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -43123,6 +44658,68 @@ export namespace Prisma {
     _max?: NestedEnumDocumentTypeFilter<$PrismaModel>
   }
 
+  export type EnumSettingsChangeTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.SettingsChangeType | EnumSettingsChangeTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.SettingsChangeType[] | ListEnumSettingsChangeTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.SettingsChangeType[] | ListEnumSettingsChangeTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumSettingsChangeTypeFilter<$PrismaModel> | $Enums.SettingsChangeType
+  }
+
+  export type SettingsChangeRequestCountOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    requestType?: SortOrder
+    currentValue?: SortOrder
+    requestedValue?: SortOrder
+    reason?: SortOrder
+    status?: SortOrder
+    reviewedBy?: SortOrder
+    reviewedAt?: SortOrder
+    reviewNotes?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type SettingsChangeRequestMaxOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    requestType?: SortOrder
+    currentValue?: SortOrder
+    requestedValue?: SortOrder
+    reason?: SortOrder
+    status?: SortOrder
+    reviewedBy?: SortOrder
+    reviewedAt?: SortOrder
+    reviewNotes?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type SettingsChangeRequestMinOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    requestType?: SortOrder
+    currentValue?: SortOrder
+    requestedValue?: SortOrder
+    reason?: SortOrder
+    status?: SortOrder
+    reviewedBy?: SortOrder
+    reviewedAt?: SortOrder
+    reviewNotes?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type EnumSettingsChangeTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.SettingsChangeType | EnumSettingsChangeTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.SettingsChangeType[] | ListEnumSettingsChangeTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.SettingsChangeType[] | ListEnumSettingsChangeTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumSettingsChangeTypeWithAggregatesFilter<$PrismaModel> | $Enums.SettingsChangeType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumSettingsChangeTypeFilter<$PrismaModel>
+    _max?: NestedEnumSettingsChangeTypeFilter<$PrismaModel>
+  }
+
   export type SystemConfigCountOrderByAggregateInput = {
     id?: SortOrder
     key?: SortOrder
@@ -43235,6 +44832,13 @@ export namespace Prisma {
     connect?: OrderNoteWhereUniqueInput | OrderNoteWhereUniqueInput[]
   }
 
+  export type SettingsChangeRequestCreateNestedManyWithoutUserInput = {
+    create?: XOR<SettingsChangeRequestCreateWithoutUserInput, SettingsChangeRequestUncheckedCreateWithoutUserInput> | SettingsChangeRequestCreateWithoutUserInput[] | SettingsChangeRequestUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: SettingsChangeRequestCreateOrConnectWithoutUserInput | SettingsChangeRequestCreateOrConnectWithoutUserInput[]
+    createMany?: SettingsChangeRequestCreateManyUserInputEnvelope
+    connect?: SettingsChangeRequestWhereUniqueInput | SettingsChangeRequestWhereUniqueInput[]
+  }
+
   export type EmployeeUncheckedCreateNestedOneWithoutUserInput = {
     create?: XOR<EmployeeCreateWithoutUserInput, EmployeeUncheckedCreateWithoutUserInput>
     connectOrCreate?: EmployeeCreateOrConnectWithoutUserInput
@@ -43279,6 +44883,13 @@ export namespace Prisma {
     connectOrCreate?: OrderNoteCreateOrConnectWithoutAuthorInput | OrderNoteCreateOrConnectWithoutAuthorInput[]
     createMany?: OrderNoteCreateManyAuthorInputEnvelope
     connect?: OrderNoteWhereUniqueInput | OrderNoteWhereUniqueInput[]
+  }
+
+  export type SettingsChangeRequestUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<SettingsChangeRequestCreateWithoutUserInput, SettingsChangeRequestUncheckedCreateWithoutUserInput> | SettingsChangeRequestCreateWithoutUserInput[] | SettingsChangeRequestUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: SettingsChangeRequestCreateOrConnectWithoutUserInput | SettingsChangeRequestCreateOrConnectWithoutUserInput[]
+    createMany?: SettingsChangeRequestCreateManyUserInputEnvelope
+    connect?: SettingsChangeRequestWhereUniqueInput | SettingsChangeRequestWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -43391,6 +45002,20 @@ export namespace Prisma {
     deleteMany?: OrderNoteScalarWhereInput | OrderNoteScalarWhereInput[]
   }
 
+  export type SettingsChangeRequestUpdateManyWithoutUserNestedInput = {
+    create?: XOR<SettingsChangeRequestCreateWithoutUserInput, SettingsChangeRequestUncheckedCreateWithoutUserInput> | SettingsChangeRequestCreateWithoutUserInput[] | SettingsChangeRequestUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: SettingsChangeRequestCreateOrConnectWithoutUserInput | SettingsChangeRequestCreateOrConnectWithoutUserInput[]
+    upsert?: SettingsChangeRequestUpsertWithWhereUniqueWithoutUserInput | SettingsChangeRequestUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: SettingsChangeRequestCreateManyUserInputEnvelope
+    set?: SettingsChangeRequestWhereUniqueInput | SettingsChangeRequestWhereUniqueInput[]
+    disconnect?: SettingsChangeRequestWhereUniqueInput | SettingsChangeRequestWhereUniqueInput[]
+    delete?: SettingsChangeRequestWhereUniqueInput | SettingsChangeRequestWhereUniqueInput[]
+    connect?: SettingsChangeRequestWhereUniqueInput | SettingsChangeRequestWhereUniqueInput[]
+    update?: SettingsChangeRequestUpdateWithWhereUniqueWithoutUserInput | SettingsChangeRequestUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: SettingsChangeRequestUpdateManyWithWhereWithoutUserInput | SettingsChangeRequestUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: SettingsChangeRequestScalarWhereInput | SettingsChangeRequestScalarWhereInput[]
+  }
+
   export type EmployeeUncheckedUpdateOneWithoutUserNestedInput = {
     create?: XOR<EmployeeCreateWithoutUserInput, EmployeeUncheckedCreateWithoutUserInput>
     connectOrCreate?: EmployeeCreateOrConnectWithoutUserInput
@@ -43475,6 +45100,20 @@ export namespace Prisma {
     update?: OrderNoteUpdateWithWhereUniqueWithoutAuthorInput | OrderNoteUpdateWithWhereUniqueWithoutAuthorInput[]
     updateMany?: OrderNoteUpdateManyWithWhereWithoutAuthorInput | OrderNoteUpdateManyWithWhereWithoutAuthorInput[]
     deleteMany?: OrderNoteScalarWhereInput | OrderNoteScalarWhereInput[]
+  }
+
+  export type SettingsChangeRequestUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<SettingsChangeRequestCreateWithoutUserInput, SettingsChangeRequestUncheckedCreateWithoutUserInput> | SettingsChangeRequestCreateWithoutUserInput[] | SettingsChangeRequestUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: SettingsChangeRequestCreateOrConnectWithoutUserInput | SettingsChangeRequestCreateOrConnectWithoutUserInput[]
+    upsert?: SettingsChangeRequestUpsertWithWhereUniqueWithoutUserInput | SettingsChangeRequestUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: SettingsChangeRequestCreateManyUserInputEnvelope
+    set?: SettingsChangeRequestWhereUniqueInput | SettingsChangeRequestWhereUniqueInput[]
+    disconnect?: SettingsChangeRequestWhereUniqueInput | SettingsChangeRequestWhereUniqueInput[]
+    delete?: SettingsChangeRequestWhereUniqueInput | SettingsChangeRequestWhereUniqueInput[]
+    connect?: SettingsChangeRequestWhereUniqueInput | SettingsChangeRequestWhereUniqueInput[]
+    update?: SettingsChangeRequestUpdateWithWhereUniqueWithoutUserInput | SettingsChangeRequestUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: SettingsChangeRequestUpdateManyWithWhereWithoutUserInput | SettingsChangeRequestUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: SettingsChangeRequestScalarWhereInput | SettingsChangeRequestScalarWhereInput[]
   }
 
   export type DepartmentCreateNestedOneWithoutEmployeesInput = {
@@ -45232,6 +46871,24 @@ export namespace Prisma {
     update?: XOR<XOR<AssignmentUpdateToOneWithWhereWithoutFilesInput, AssignmentUpdateWithoutFilesInput>, AssignmentUncheckedUpdateWithoutFilesInput>
   }
 
+  export type UserCreateNestedOneWithoutSettingsChangeRequestsInput = {
+    create?: XOR<UserCreateWithoutSettingsChangeRequestsInput, UserUncheckedCreateWithoutSettingsChangeRequestsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutSettingsChangeRequestsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type EnumSettingsChangeTypeFieldUpdateOperationsInput = {
+    set?: $Enums.SettingsChangeType
+  }
+
+  export type UserUpdateOneRequiredWithoutSettingsChangeRequestsNestedInput = {
+    create?: XOR<UserCreateWithoutSettingsChangeRequestsInput, UserUncheckedCreateWithoutSettingsChangeRequestsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutSettingsChangeRequestsInput
+    upsert?: UserUpsertWithoutSettingsChangeRequestsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutSettingsChangeRequestsInput, UserUpdateWithoutSettingsChangeRequestsInput>, UserUncheckedUpdateWithoutSettingsChangeRequestsInput>
+  }
+
   export type NestedStringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -45754,6 +47411,23 @@ export namespace Prisma {
     _max?: NestedEnumDocumentTypeFilter<$PrismaModel>
   }
 
+  export type NestedEnumSettingsChangeTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.SettingsChangeType | EnumSettingsChangeTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.SettingsChangeType[] | ListEnumSettingsChangeTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.SettingsChangeType[] | ListEnumSettingsChangeTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumSettingsChangeTypeFilter<$PrismaModel> | $Enums.SettingsChangeType
+  }
+
+  export type NestedEnumSettingsChangeTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.SettingsChangeType | EnumSettingsChangeTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.SettingsChangeType[] | ListEnumSettingsChangeTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.SettingsChangeType[] | ListEnumSettingsChangeTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumSettingsChangeTypeWithAggregatesFilter<$PrismaModel> | $Enums.SettingsChangeType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumSettingsChangeTypeFilter<$PrismaModel>
+    _max?: NestedEnumSettingsChangeTypeFilter<$PrismaModel>
+  }
+
   export type EmployeeCreateWithoutUserInput = {
     id?: string
     employeeCode: string
@@ -46083,6 +47757,44 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type SettingsChangeRequestCreateWithoutUserInput = {
+    id?: string
+    requestType: $Enums.SettingsChangeType
+    currentValue?: string | null
+    requestedValue: string
+    reason?: string | null
+    status?: $Enums.RequestStatus
+    reviewedBy?: string | null
+    reviewedAt?: Date | string | null
+    reviewNotes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type SettingsChangeRequestUncheckedCreateWithoutUserInput = {
+    id?: string
+    requestType: $Enums.SettingsChangeType
+    currentValue?: string | null
+    requestedValue: string
+    reason?: string | null
+    status?: $Enums.RequestStatus
+    reviewedBy?: string | null
+    reviewedAt?: Date | string | null
+    reviewNotes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type SettingsChangeRequestCreateOrConnectWithoutUserInput = {
+    where: SettingsChangeRequestWhereUniqueInput
+    create: XOR<SettingsChangeRequestCreateWithoutUserInput, SettingsChangeRequestUncheckedCreateWithoutUserInput>
+  }
+
+  export type SettingsChangeRequestCreateManyUserInputEnvelope = {
+    data: SettingsChangeRequestCreateManyUserInput | SettingsChangeRequestCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
   export type EmployeeUpsertWithoutUserInput = {
     update: XOR<EmployeeUpdateWithoutUserInput, EmployeeUncheckedUpdateWithoutUserInput>
     create: XOR<EmployeeCreateWithoutUserInput, EmployeeUncheckedCreateWithoutUserInput>
@@ -46388,6 +48100,40 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"OrderNote"> | Date | string
   }
 
+  export type SettingsChangeRequestUpsertWithWhereUniqueWithoutUserInput = {
+    where: SettingsChangeRequestWhereUniqueInput
+    update: XOR<SettingsChangeRequestUpdateWithoutUserInput, SettingsChangeRequestUncheckedUpdateWithoutUserInput>
+    create: XOR<SettingsChangeRequestCreateWithoutUserInput, SettingsChangeRequestUncheckedCreateWithoutUserInput>
+  }
+
+  export type SettingsChangeRequestUpdateWithWhereUniqueWithoutUserInput = {
+    where: SettingsChangeRequestWhereUniqueInput
+    data: XOR<SettingsChangeRequestUpdateWithoutUserInput, SettingsChangeRequestUncheckedUpdateWithoutUserInput>
+  }
+
+  export type SettingsChangeRequestUpdateManyWithWhereWithoutUserInput = {
+    where: SettingsChangeRequestScalarWhereInput
+    data: XOR<SettingsChangeRequestUpdateManyMutationInput, SettingsChangeRequestUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type SettingsChangeRequestScalarWhereInput = {
+    AND?: SettingsChangeRequestScalarWhereInput | SettingsChangeRequestScalarWhereInput[]
+    OR?: SettingsChangeRequestScalarWhereInput[]
+    NOT?: SettingsChangeRequestScalarWhereInput | SettingsChangeRequestScalarWhereInput[]
+    id?: StringFilter<"SettingsChangeRequest"> | string
+    userId?: StringFilter<"SettingsChangeRequest"> | string
+    requestType?: EnumSettingsChangeTypeFilter<"SettingsChangeRequest"> | $Enums.SettingsChangeType
+    currentValue?: StringNullableFilter<"SettingsChangeRequest"> | string | null
+    requestedValue?: StringFilter<"SettingsChangeRequest"> | string
+    reason?: StringNullableFilter<"SettingsChangeRequest"> | string | null
+    status?: EnumRequestStatusFilter<"SettingsChangeRequest"> | $Enums.RequestStatus
+    reviewedBy?: StringNullableFilter<"SettingsChangeRequest"> | string | null
+    reviewedAt?: DateTimeNullableFilter<"SettingsChangeRequest"> | Date | string | null
+    reviewNotes?: StringNullableFilter<"SettingsChangeRequest"> | string | null
+    createdAt?: DateTimeFilter<"SettingsChangeRequest"> | Date | string
+    updatedAt?: DateTimeFilter<"SettingsChangeRequest"> | Date | string
+  }
+
   export type DepartmentCreateWithoutEmployeesInput = {
     id?: string
     name: string
@@ -46478,6 +48224,7 @@ export namespace Prisma {
     notificationRecipients?: NotificationRecipientCreateNestedManyWithoutUserInput
     notificationPreferences?: NotificationPreferenceCreateNestedOneWithoutUserInput
     orderNotes?: OrderNoteCreateNestedManyWithoutAuthorInput
+    settingsChangeRequests?: SettingsChangeRequestCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSubordinatesInput = {
@@ -46506,6 +48253,7 @@ export namespace Prisma {
     notificationRecipients?: NotificationRecipientUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: NotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
     orderNotes?: OrderNoteUncheckedCreateNestedManyWithoutAuthorInput
+    settingsChangeRequests?: SettingsChangeRequestUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSubordinatesInput = {
@@ -46577,6 +48325,7 @@ export namespace Prisma {
     notificationRecipients?: NotificationRecipientCreateNestedManyWithoutUserInput
     notificationPreferences?: NotificationPreferenceCreateNestedOneWithoutUserInput
     orderNotes?: OrderNoteCreateNestedManyWithoutAuthorInput
+    settingsChangeRequests?: SettingsChangeRequestCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutEmployeeInput = {
@@ -46605,6 +48354,7 @@ export namespace Prisma {
     notificationRecipients?: NotificationRecipientUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: NotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
     orderNotes?: OrderNoteUncheckedCreateNestedManyWithoutAuthorInput
+    settingsChangeRequests?: SettingsChangeRequestUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutEmployeeInput = {
@@ -46999,6 +48749,7 @@ export namespace Prisma {
     notificationRecipients?: NotificationRecipientUpdateManyWithoutUserNestedInput
     notificationPreferences?: NotificationPreferenceUpdateOneWithoutUserNestedInput
     orderNotes?: OrderNoteUpdateManyWithoutAuthorNestedInput
+    settingsChangeRequests?: SettingsChangeRequestUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSubordinatesInput = {
@@ -47027,6 +48778,7 @@ export namespace Prisma {
     notificationRecipients?: NotificationRecipientUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: NotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
     orderNotes?: OrderNoteUncheckedUpdateManyWithoutAuthorNestedInput
+    settingsChangeRequests?: SettingsChangeRequestUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type EmployeePerformanceUpsertWithWhereUniqueWithoutEmployeeInput = {
@@ -47082,6 +48834,7 @@ export namespace Prisma {
     notificationRecipients?: NotificationRecipientUpdateManyWithoutUserNestedInput
     notificationPreferences?: NotificationPreferenceUpdateOneWithoutUserNestedInput
     orderNotes?: OrderNoteUpdateManyWithoutAuthorNestedInput
+    settingsChangeRequests?: SettingsChangeRequestUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutEmployeeInput = {
@@ -47110,6 +48863,7 @@ export namespace Prisma {
     notificationRecipients?: NotificationRecipientUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: NotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
     orderNotes?: OrderNoteUncheckedUpdateManyWithoutAuthorNestedInput
+    settingsChangeRequests?: SettingsChangeRequestUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type EmployeeQualificationUpsertWithWhereUniqueWithoutEmployeeInput = {
@@ -47458,6 +49212,7 @@ export namespace Prisma {
     notificationRecipients?: NotificationRecipientCreateNestedManyWithoutUserInput
     notificationPreferences?: NotificationPreferenceCreateNestedOneWithoutUserInput
     orderNotes?: OrderNoteCreateNestedManyWithoutAuthorInput
+    settingsChangeRequests?: SettingsChangeRequestCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutManualOverridesInput = {
@@ -47486,6 +49241,7 @@ export namespace Prisma {
     notificationRecipients?: NotificationRecipientUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: NotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
     orderNotes?: OrderNoteUncheckedCreateNestedManyWithoutAuthorInput
+    settingsChangeRequests?: SettingsChangeRequestUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutManualOverridesInput = {
@@ -47615,6 +49371,7 @@ export namespace Prisma {
     notificationRecipients?: NotificationRecipientUpdateManyWithoutUserNestedInput
     notificationPreferences?: NotificationPreferenceUpdateOneWithoutUserNestedInput
     orderNotes?: OrderNoteUpdateManyWithoutAuthorNestedInput
+    settingsChangeRequests?: SettingsChangeRequestUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutManualOverridesInput = {
@@ -47643,6 +49400,7 @@ export namespace Prisma {
     notificationRecipients?: NotificationRecipientUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: NotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
     orderNotes?: OrderNoteUncheckedUpdateManyWithoutAuthorNestedInput
+    settingsChangeRequests?: SettingsChangeRequestUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type DepartmentCreateWithoutPerformanceThresholdInput = {
@@ -48287,6 +50045,7 @@ export namespace Prisma {
     notificationRecipients?: NotificationRecipientCreateNestedManyWithoutUserInput
     notificationPreferences?: NotificationPreferenceCreateNestedOneWithoutUserInput
     orderNotes?: OrderNoteCreateNestedManyWithoutAuthorInput
+    settingsChangeRequests?: SettingsChangeRequestCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutCustomerInput = {
@@ -48315,6 +50074,7 @@ export namespace Prisma {
     notificationRecipients?: NotificationRecipientUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: NotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
     orderNotes?: OrderNoteUncheckedCreateNestedManyWithoutAuthorInput
+    settingsChangeRequests?: SettingsChangeRequestUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutCustomerInput = {
@@ -48495,6 +50255,7 @@ export namespace Prisma {
     notificationRecipients?: NotificationRecipientUpdateManyWithoutUserNestedInput
     notificationPreferences?: NotificationPreferenceUpdateOneWithoutUserNestedInput
     orderNotes?: OrderNoteUpdateManyWithoutAuthorNestedInput
+    settingsChangeRequests?: SettingsChangeRequestUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCustomerInput = {
@@ -48523,6 +50284,7 @@ export namespace Prisma {
     notificationRecipients?: NotificationRecipientUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: NotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
     orderNotes?: OrderNoteUncheckedUpdateManyWithoutAuthorNestedInput
+    settingsChangeRequests?: SettingsChangeRequestUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type SubAccountUpsertWithWhereUniqueWithoutCustomerInput = {
@@ -51167,6 +52929,7 @@ export namespace Prisma {
     subordinates?: EmployeeCreateNestedManyWithoutManagerInput
     notificationPreferences?: NotificationPreferenceCreateNestedOneWithoutUserInput
     orderNotes?: OrderNoteCreateNestedManyWithoutAuthorInput
+    settingsChangeRequests?: SettingsChangeRequestCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutNotificationRecipientsInput = {
@@ -51195,6 +52958,7 @@ export namespace Prisma {
     subordinates?: EmployeeUncheckedCreateNestedManyWithoutManagerInput
     notificationPreferences?: NotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
     orderNotes?: OrderNoteUncheckedCreateNestedManyWithoutAuthorInput
+    settingsChangeRequests?: SettingsChangeRequestUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutNotificationRecipientsInput = {
@@ -51278,6 +53042,7 @@ export namespace Prisma {
     subordinates?: EmployeeUpdateManyWithoutManagerNestedInput
     notificationPreferences?: NotificationPreferenceUpdateOneWithoutUserNestedInput
     orderNotes?: OrderNoteUpdateManyWithoutAuthorNestedInput
+    settingsChangeRequests?: SettingsChangeRequestUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutNotificationRecipientsInput = {
@@ -51306,6 +53071,7 @@ export namespace Prisma {
     subordinates?: EmployeeUncheckedUpdateManyWithoutManagerNestedInput
     notificationPreferences?: NotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
     orderNotes?: OrderNoteUncheckedUpdateManyWithoutAuthorNestedInput
+    settingsChangeRequests?: SettingsChangeRequestUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type NotificationCreateWithoutNotificationOutboxInput = {
@@ -51406,6 +53172,7 @@ export namespace Prisma {
     subordinates?: EmployeeCreateNestedManyWithoutManagerInput
     notificationRecipients?: NotificationRecipientCreateNestedManyWithoutUserInput
     orderNotes?: OrderNoteCreateNestedManyWithoutAuthorInput
+    settingsChangeRequests?: SettingsChangeRequestCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutNotificationPreferencesInput = {
@@ -51434,6 +53201,7 @@ export namespace Prisma {
     subordinates?: EmployeeUncheckedCreateNestedManyWithoutManagerInput
     notificationRecipients?: NotificationRecipientUncheckedCreateNestedManyWithoutUserInput
     orderNotes?: OrderNoteUncheckedCreateNestedManyWithoutAuthorInput
+    settingsChangeRequests?: SettingsChangeRequestUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutNotificationPreferencesInput = {
@@ -51478,6 +53246,7 @@ export namespace Prisma {
     subordinates?: EmployeeUpdateManyWithoutManagerNestedInput
     notificationRecipients?: NotificationRecipientUpdateManyWithoutUserNestedInput
     orderNotes?: OrderNoteUpdateManyWithoutAuthorNestedInput
+    settingsChangeRequests?: SettingsChangeRequestUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutNotificationPreferencesInput = {
@@ -51506,6 +53275,7 @@ export namespace Prisma {
     subordinates?: EmployeeUncheckedUpdateManyWithoutManagerNestedInput
     notificationRecipients?: NotificationRecipientUncheckedUpdateManyWithoutUserNestedInput
     orderNotes?: OrderNoteUncheckedUpdateManyWithoutAuthorNestedInput
+    settingsChangeRequests?: SettingsChangeRequestUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type OrderCreateWithoutNotesInput = {
@@ -51599,6 +53369,7 @@ export namespace Prisma {
     subordinates?: EmployeeCreateNestedManyWithoutManagerInput
     notificationRecipients?: NotificationRecipientCreateNestedManyWithoutUserInput
     notificationPreferences?: NotificationPreferenceCreateNestedOneWithoutUserInput
+    settingsChangeRequests?: SettingsChangeRequestCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutOrderNotesInput = {
@@ -51627,6 +53398,7 @@ export namespace Prisma {
     subordinates?: EmployeeUncheckedCreateNestedManyWithoutManagerInput
     notificationRecipients?: NotificationRecipientUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: NotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
+    settingsChangeRequests?: SettingsChangeRequestUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutOrderNotesInput = {
@@ -51742,6 +53514,7 @@ export namespace Prisma {
     subordinates?: EmployeeUpdateManyWithoutManagerNestedInput
     notificationRecipients?: NotificationRecipientUpdateManyWithoutUserNestedInput
     notificationPreferences?: NotificationPreferenceUpdateOneWithoutUserNestedInput
+    settingsChangeRequests?: SettingsChangeRequestUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutOrderNotesInput = {
@@ -51770,6 +53543,7 @@ export namespace Prisma {
     subordinates?: EmployeeUncheckedUpdateManyWithoutManagerNestedInput
     notificationRecipients?: NotificationRecipientUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: NotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
+    settingsChangeRequests?: SettingsChangeRequestUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type EmployeeCreateWithoutFilesInput = {
@@ -52160,6 +53934,138 @@ export namespace Prisma {
     updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
+  export type UserCreateWithoutSettingsChangeRequestsInput = {
+    id?: string
+    email?: string | null
+    username: string
+    password: string
+    role?: $Enums.UserRole
+    isActive?: boolean
+    lastLogin?: Date | string | null
+    refreshToken?: string | null
+    emailVerificationToken?: string | null
+    emailVerificationExpires?: Date | string | null
+    passwordResetToken?: string | null
+    passwordResetExpires?: Date | string | null
+    emailVerified?: boolean
+    twoFactorEnabled?: boolean
+    twoFactorSecret?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    createdBy?: string | null
+    updatedBy?: string | null
+    employee?: EmployeeCreateNestedOneWithoutUserInput
+    customer?: CustomerCreateNestedOneWithoutUserInput
+    manualOverrides?: EmployeePerformanceCreateNestedManyWithoutManualOverrideByInput
+    subordinates?: EmployeeCreateNestedManyWithoutManagerInput
+    notificationRecipients?: NotificationRecipientCreateNestedManyWithoutUserInput
+    notificationPreferences?: NotificationPreferenceCreateNestedOneWithoutUserInput
+    orderNotes?: OrderNoteCreateNestedManyWithoutAuthorInput
+  }
+
+  export type UserUncheckedCreateWithoutSettingsChangeRequestsInput = {
+    id?: string
+    email?: string | null
+    username: string
+    password: string
+    role?: $Enums.UserRole
+    isActive?: boolean
+    lastLogin?: Date | string | null
+    refreshToken?: string | null
+    emailVerificationToken?: string | null
+    emailVerificationExpires?: Date | string | null
+    passwordResetToken?: string | null
+    passwordResetExpires?: Date | string | null
+    emailVerified?: boolean
+    twoFactorEnabled?: boolean
+    twoFactorSecret?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    createdBy?: string | null
+    updatedBy?: string | null
+    employee?: EmployeeUncheckedCreateNestedOneWithoutUserInput
+    customer?: CustomerUncheckedCreateNestedOneWithoutUserInput
+    manualOverrides?: EmployeePerformanceUncheckedCreateNestedManyWithoutManualOverrideByInput
+    subordinates?: EmployeeUncheckedCreateNestedManyWithoutManagerInput
+    notificationRecipients?: NotificationRecipientUncheckedCreateNestedManyWithoutUserInput
+    notificationPreferences?: NotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
+    orderNotes?: OrderNoteUncheckedCreateNestedManyWithoutAuthorInput
+  }
+
+  export type UserCreateOrConnectWithoutSettingsChangeRequestsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutSettingsChangeRequestsInput, UserUncheckedCreateWithoutSettingsChangeRequestsInput>
+  }
+
+  export type UserUpsertWithoutSettingsChangeRequestsInput = {
+    update: XOR<UserUpdateWithoutSettingsChangeRequestsInput, UserUncheckedUpdateWithoutSettingsChangeRequestsInput>
+    create: XOR<UserCreateWithoutSettingsChangeRequestsInput, UserUncheckedCreateWithoutSettingsChangeRequestsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutSettingsChangeRequestsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutSettingsChangeRequestsInput, UserUncheckedUpdateWithoutSettingsChangeRequestsInput>
+  }
+
+  export type UserUpdateWithoutSettingsChangeRequestsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    username?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    lastLogin?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    passwordResetToken?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordResetExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    twoFactorEnabled?: BoolFieldUpdateOperationsInput | boolean
+    twoFactorSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    employee?: EmployeeUpdateOneWithoutUserNestedInput
+    customer?: CustomerUpdateOneWithoutUserNestedInput
+    manualOverrides?: EmployeePerformanceUpdateManyWithoutManualOverrideByNestedInput
+    subordinates?: EmployeeUpdateManyWithoutManagerNestedInput
+    notificationRecipients?: NotificationRecipientUpdateManyWithoutUserNestedInput
+    notificationPreferences?: NotificationPreferenceUpdateOneWithoutUserNestedInput
+    orderNotes?: OrderNoteUpdateManyWithoutAuthorNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutSettingsChangeRequestsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    username?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    lastLogin?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    passwordResetToken?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordResetExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    twoFactorEnabled?: BoolFieldUpdateOperationsInput | boolean
+    twoFactorSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    employee?: EmployeeUncheckedUpdateOneWithoutUserNestedInput
+    customer?: CustomerUncheckedUpdateOneWithoutUserNestedInput
+    manualOverrides?: EmployeePerformanceUncheckedUpdateManyWithoutManualOverrideByNestedInput
+    subordinates?: EmployeeUncheckedUpdateManyWithoutManagerNestedInput
+    notificationRecipients?: NotificationRecipientUncheckedUpdateManyWithoutUserNestedInput
+    notificationPreferences?: NotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
+    orderNotes?: OrderNoteUncheckedUpdateManyWithoutAuthorNestedInput
+  }
+
   export type EmployeePerformanceCreateManyManualOverrideByInput = {
     id?: string
     employeeId: string
@@ -52222,6 +54128,20 @@ export namespace Prisma {
     triggersStatus?: $Enums.OrderStatus | null
     category?: $Enums.NoteCategory
     isInternal?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type SettingsChangeRequestCreateManyUserInput = {
+    id?: string
+    requestType: $Enums.SettingsChangeType
+    currentValue?: string | null
+    requestedValue: string
+    reason?: string | null
+    status?: $Enums.RequestStatus
+    reviewedBy?: string | null
+    reviewedAt?: Date | string | null
+    reviewNotes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -52436,6 +54356,48 @@ export namespace Prisma {
     triggersStatus?: NullableEnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus | null
     category?: EnumNoteCategoryFieldUpdateOperationsInput | $Enums.NoteCategory
     isInternal?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SettingsChangeRequestUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    requestType?: EnumSettingsChangeTypeFieldUpdateOperationsInput | $Enums.SettingsChangeType
+    currentValue?: NullableStringFieldUpdateOperationsInput | string | null
+    requestedValue?: StringFieldUpdateOperationsInput | string
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumRequestStatusFieldUpdateOperationsInput | $Enums.RequestStatus
+    reviewedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SettingsChangeRequestUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    requestType?: EnumSettingsChangeTypeFieldUpdateOperationsInput | $Enums.SettingsChangeType
+    currentValue?: NullableStringFieldUpdateOperationsInput | string | null
+    requestedValue?: StringFieldUpdateOperationsInput | string
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumRequestStatusFieldUpdateOperationsInput | $Enums.RequestStatus
+    reviewedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SettingsChangeRequestUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    requestType?: EnumSettingsChangeTypeFieldUpdateOperationsInput | $Enums.SettingsChangeType
+    currentValue?: NullableStringFieldUpdateOperationsInput | string | null
+    requestedValue?: StringFieldUpdateOperationsInput | string
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumRequestStatusFieldUpdateOperationsInput | $Enums.RequestStatus
+    reviewedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewNotes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

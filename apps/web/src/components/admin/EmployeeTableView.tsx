@@ -36,8 +36,11 @@ const EmployeeTableView: React.FC<EmployeeTableViewProps> = ({
 }) => {
   const { t } = useTranslation();
   const { currentPage, setCurrentPage, paginatedItems, totalItems } = usePagination(employees);
-  const getInitials = (firstName: string, lastName: string) => {
-    return `${firstName?.[0] || ""}${lastName?.[0] || ""}`.toUpperCase();
+  const getInitials = (firstName?: string, lastName?: string, username?: string) => {
+    if (firstName || lastName) {
+      return `${firstName?.[0] || ""}${lastName?.[0] || ""}`.toUpperCase();
+    }
+    return username?.[0]?.toUpperCase() || "U";
   };
   const router = useRouter();
   return (
@@ -82,12 +85,15 @@ const EmployeeTableView: React.FC<EmployeeTableViewProps> = ({
                     >
                       <Avatar className="h-8 w-8">
                         <AvatarFallback className="text-xs">
-                          {getInitials(employee.firstName, employee.lastName)}
+                          {getInitials(employee.firstName, employee.lastName, employee.user?.username)}
                         </AvatarFallback>
                       </Avatar>
                       <div>
                         <p className="font-medium text-primary hover:underline">
-                          {employee.firstName || ""} {employee.lastName || ""}
+                          {employee.firstName || employee.lastName ? 
+                            `${employee.firstName || ""} ${employee.lastName || ""}`.trim() : 
+                            employee.user?.username || "No Name"
+                          }
                         </p>
                       </div>
                     </div>
