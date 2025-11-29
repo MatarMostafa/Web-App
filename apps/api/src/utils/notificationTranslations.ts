@@ -86,6 +86,14 @@ const translations = {
       positionCreated: {
         title: "New Position Created",
         body: "New position \"{{positionTitle}}\" has been created."
+      },
+      customerBlocked: {
+        title: "Account Blocked",
+        body: "Your account has been blocked by the administrator.{{reason}}"
+      },
+      customerUnblocked: {
+        title: "Account Unblocked",
+        body: "Your account has been unblocked. You can now access your account normally."
       }
     },
     customer: {
@@ -112,6 +120,14 @@ const translations = {
       orderCreated: {
         title: "New Order Created",
         body: "Your order \"{{orderNumber}}\" has been created and scheduled for {{scheduledDate}}."
+      },
+      accountBlocked: {
+        title: "Account Blocked",
+        body: "Your customer account has been blocked.{{reason}}"
+      },
+      accountUnblocked: {
+        title: "Account Unblocked",
+        body: "Your customer account has been unblocked. You can now access the system normally."
       }
     },
     statusMessages: {
@@ -205,6 +221,14 @@ const translations = {
       positionCreated: {
         title: "Neue Position erstellt",
         body: "Neue Position \"{{positionTitle}}\" wurde erstellt."
+      },
+      customerBlocked: {
+        title: "Konto gesperrt",
+        body: "Ihr Konto wurde vom Administrator gesperrt.{{reason}}"
+      },
+      customerUnblocked: {
+        title: "Konto entsperrt",
+        body: "Ihr Konto wurde entsperrt. Sie können Ihr Konto nun normal nutzen."
       }
     },
     customer: {
@@ -231,6 +255,14 @@ const translations = {
       orderCreated: {
         title: "Neuer Auftrag erstellt",
         body: "Ihr Auftrag \"{{orderNumber}}\" wurde erstellt und für {{scheduledDate}} geplant."
+      },
+      accountBlocked: {
+        title: "Konto gesperrt",
+        body: "Ihr Kundenkonto wurde gesperrt.{{reason}}"
+      },
+      accountUnblocked: {
+        title: "Konto entsperrt",
+        body: "Ihr Kundenkonto wurde entsperrt. Sie können das System nun normal nutzen."
       }
     },
     statusMessages: {
@@ -243,34 +275,31 @@ const translations = {
   }
 };
 
-// Get user's preferred language (default to English)
+// Get user's preferred language (default to German for this German ERP system)
 export const getUserLanguage = async (userId: string): Promise<'en' | 'de'> => {
   try {
     // Get user's language preference from user settings or profile
     const user = await prisma.user.findUnique({
       where: { id: userId },
       select: { 
-        language: true,
+        id: true,
         employee: { select: { id: true } },
         customer: { select: { id: true } }
       }
     });
     
-    // Return user's preferred language if set, otherwise default to English
-    if (user?.language === 'de' || user?.language === 'german') {
-      return 'de';
-    }
-    return 'en';
+    // Default to German for this German ERP system
+    return 'de';
   } catch (error) {
     console.error('Error getting user language:', error);
-    return 'en';
+    return 'de'; // Default to German
   }
 };
 
 // Template replacement function
 const replaceTemplate = (template: string, variables: Record<string, string>): string => {
-  return template.replace(/\{\{(\w+)\}\}/g, (match, key) => {
-    return variables[key] || match;
+  return template.replace(/\{\{([^}]+)\}\}/g, (match, key) => {
+    return variables[key] || '';
   });
 };
 

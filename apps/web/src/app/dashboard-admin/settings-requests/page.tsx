@@ -47,10 +47,9 @@ export default function SettingsRequestsPage() {
 
   const fetchRequests = async () => {
     try {
-      const response = await apiClient.get("/api/admin/settings/pending-requests");
+      const response = await apiClient.get<SettingsRequest[]>("/api/admin/settings/pending-requests");
       console.log("API Response:", response);
-      console.log("Response data:", response.data);
-      const requestsData = Array.isArray(response.data) ? response.data : Array.isArray(response) ? response : [];
+      const requestsData = Array.isArray(response) ? response : [];
       console.log("Setting requests:", requestsData);
       setRequests(requestsData);
     } catch (error: any) {

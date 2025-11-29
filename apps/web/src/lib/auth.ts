@@ -78,16 +78,16 @@ export const authOptions: NextAuthOptions = {
             // Throw specific errors that can be caught by NextAuth
             if (response.status === 429) {
               throw new Error('RATE_LIMIT');
+            } else if (response.status === 403) {
+              // 403 status for blocked users - pass through the specific message
+              throw new Error(errorData.message || 'ACCESS_DENIED');
             } else if (response.status === 401) {
-              // Check if it's a blocked user error
-              if (errorData.message && (errorData.message.includes('blocked') || errorData.message.includes('gesperrt'))) {
-                throw new Error(errorData.message);
-              }
+              // 401 for invalid credentials
               throw new Error('INVALID_CREDENTIALS');
             } else if (response.status === 400) {
               throw new Error(errorData.message || 'BAD_REQUEST');
             } else {
-              throw new Error('LOGIN_FAILED');
+              throw new Error(errorData.message || 'LOGIN_FAILED');
             }
           }
 

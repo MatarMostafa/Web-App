@@ -8,6 +8,7 @@ import {
   updateCustomerProfileService
 } from "../services/customerService";
 import { registerCustomer } from "../services/authService";
+import { notifyCustomerBlocked, notifyCustomerUnblocked } from "../services/notificationHelpers";
 
 const router = express.Router();
 
@@ -161,7 +162,14 @@ router.get(
           },
         },
       });
-      res.json(customers);
+      
+      // Prioritize user email over customer contactEmail
+      const customersWithCorrectEmail = customers.map(customer => ({
+        ...customer,
+        contactEmail: customer.user?.email || customer.contactEmail,
+      }));
+      
+      res.json(customersWithCorrectEmail);
     } catch (error) {
       console.error("Get customers error:", error);
       res.status(500).json({
@@ -243,11 +251,26 @@ router.put(
   async (req, res) => {
     try {
       const { id } = req.params;
+      const { contactEmail, ...customerData } = req.body;
       const { prisma } = await import("@repo/db");
       
+      // Get current customer to check if it has a user account
+      const currentCustomer = await prisma.customer.findUnique({
+        where: { id },
+        include: { user: true },
+      });
+      
+      if (!currentCustomer) {
+        return res.status(404).json({ message: "Customer not found" });
+      }
+      
+      // Update customer data
       const customer = await prisma.customer.update({
         where: { id },
-        data: req.body,
+        data: {
+          ...customerData,
+          contactEmail,
+        },
         include: {
           user: {
             select: {
@@ -260,11 +283,134 @@ router.put(
         },
       });
       
-      res.json(customer);
+      // If customer has a user account and email changed, update user email too
+      if (currentCustomer.userId && contactEmail && contactEmail !== currentCustomer.user?.email) {
+        await prisma.user.update({
+          where: { id: currentCustomer.userId },
+          data: { email: contactEmail },
+        });
+        
+        // Refresh customer data to get updated user email
+        const updatedCustomer = await prisma.customer.findUnique({
+          where: { id },
+          include: {
+            user: {
+              select: {
+                id: true,
+                username: true,
+                email: true,
+                isActive: true,
+              },
+            },
+          },
+        });
+        
+        const customerWithCorrectEmail = {
+          ...updatedCustomer,
+          contactEmail: updatedCustomer?.user?.email || updatedCustomer?.contactEmail,
+        };
+        
+        return res.json(customerWithCorrectEmail);
+      }
+      
+      // Prioritize user email over customer contactEmail
+      const customerWithCorrectEmail = {
+        ...customer,
+        contactEmail: customer.user?.email || customer.contactEmail,
+      };
+      
+      res.json(customerWithCorrectEmail);
     } catch (error) {
       console.error("Update customer error:", error);
       res.status(500).json({
         message: "Failed to update customer",
+        error: error instanceof Error ? error.message : String(error)
+      });
+    }
+  }
+);
+
+// Block customer (Admin only)
+router.post(
+  "/:id/block",
+  authMiddleware,
+  roleMiddleware(["ADMIN", "HR_MANAGER"]),
+  async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { reason } = req.body;
+      const { prisma } = await import("@repo/db");
+
+      
+      const customer = await prisma.customer.findUnique({
+        where: { id },
+        include: { user: true },
+      });
+      
+      if (!customer) {
+        return res.status(404).json({ message: "Customer not found" });
+      }
+      
+      if (!customer.userId) {
+        return res.status(400).json({ message: "Customer has no user account to block" });
+      }
+      
+      await prisma.customer.update({
+        where: { id },
+        data: { isActive: false },
+      });
+      
+      // Send notification to customer
+      await notifyCustomerBlocked(id, reason, req.user?.id);
+      
+      res.json({ message: "Customer blocked successfully" });
+    } catch (error) {
+      console.error("Block customer error:", error);
+      res.status(500).json({
+        message: "Failed to block customer",
+        error: error instanceof Error ? error.message : String(error)
+      });
+    }
+  }
+);
+
+// Unblock customer (Admin only)
+router.post(
+  "/:id/unblock",
+  authMiddleware,
+  roleMiddleware(["ADMIN", "HR_MANAGER"]),
+  async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { prisma } = await import("@repo/db");
+
+      
+      const customer = await prisma.customer.findUnique({
+        where: { id },
+        include: { user: true },
+      });
+      
+      if (!customer) {
+        return res.status(404).json({ message: "Customer not found" });
+      }
+      
+      if (!customer.userId) {
+        return res.status(400).json({ message: "Customer has no user account to unblock" });
+      }
+      
+      await prisma.customer.update({
+        where: { id },
+        data: { isActive: true },
+      });
+      
+      // Send notification to customer
+      await notifyCustomerUnblocked(id, req.user?.id);
+      
+      res.json({ message: "Customer unblocked successfully" });
+    } catch (error) {
+      console.error("Unblock customer error:", error);
+      res.status(500).json({
+        message: "Failed to unblock customer",
         error: error instanceof Error ? error.message : String(error)
       });
     }

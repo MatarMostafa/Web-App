@@ -64,10 +64,12 @@ export default function SignInPage() {
           toast.error("Ungültige E-Mail oder Passwort");
         } else if (result?.error === "CredentialsSignin") {
           toast.error("Ungültige E-Mail oder Passwort");
-        } else if (result?.error && result.error.includes('blocked')) {
+        } else if (result?.error && (result.error.includes("gesperrt") || result.error.includes("deaktiviert") || result.error.includes("Support"))) {
+          // Show blocking/deactivation messages directly
           toast.error(result.error);
-        } else if (result?.error) {
-          toast.error("Anmeldung fehlgeschlagen. Bitte versuchen Sie es erneut.");
+        } else if (result?.error && result.error !== "CredentialsSignin" && result.error !== "INVALID_CREDENTIALS") {
+          // Show other specific backend error messages
+          toast.error(result.error);
         } else {
           toast.error("Anmeldung fehlgeschlagen. Bitte versuchen Sie es erneut.");
         }
@@ -77,10 +79,8 @@ export default function SignInPage() {
     } catch (error) {
       console.log("Catch error:", error);
       toast.error("Ein unerwarteter Fehler ist aufgetreten");
-    } finally {
       setIsLoading(false);
       setLoadingMessage("");
-      
     }
   };
 

@@ -12,6 +12,12 @@ export interface Customer {
   subAccounts?: SubAccount[];
   orders?: any[];
   ratings?: any[];
+  user?: {
+    id: string;
+    username: string;
+    email: string;
+    isActive: boolean;
+  };
 }
 
 export interface SubAccount {

@@ -106,7 +106,7 @@ export const getCustomerProfileService = async (userId: string) => {
   return {
     id: user.customer.id,
     companyName: user.customer.companyName,
-    contactEmail: user.customer.contactEmail,
+    contactEmail: user.email || user.customer.contactEmail, // Prioritize user's email
     contactPhone: user.customer.contactPhone,
     address: user.customer.address,
     industry: user.customer.industry,

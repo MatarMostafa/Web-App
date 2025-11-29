@@ -94,7 +94,9 @@
     "medium": "Mittel",
     "low": "Niedrig",
     "urgent": "Dringend",
-    "normal": "Normal"
+    "normal": "Normal",
+    "username": "Benutzername",
+    "name": "Name"
   },
   "auth": {
     "signIn": "Anmelden",
@@ -471,7 +473,8 @@
         "editEmployee": "Mitarbeiter bearbeiten",
         "blockEmployee": "Mitarbeiter sperren",
         "unblockEmployee": "Mitarbeiter entsperren",
-        "deleteEmployee": "Mitarbeiter löschen"
+        "deleteEmployee": "Mitarbeiter löschen",
+        "resetPassword": "Passwort zurücksetzen"
       },
       "blockModal": {
         "blockTitle": "Mitarbeiter sperren",
@@ -706,6 +709,8 @@
       "editCustomer": "Kunde bearbeiten",
       "searchPlaceholder": "Kunden nach Firma, E-Mail, Telefon oder Branche suchen...",
       "confirmDelete": "Sind Sie sicher, dass Sie diesen Kunden löschen möchten?",
+      "confirmBlock": "Sind Sie sicher, dass Sie {{name}} sperren möchten? Sie können nicht mehr auf ihr Konto zugreifen.",
+      "confirmUnblock": "Sind Sie sicher, dass Sie {{name}} entsperren möchten? Sie erhalten wieder Zugang zu ihrem Konto.",
       "noCustomersFound": "Keine Kunden gefunden",
       "getStartedMessage": "Beginnen Sie, indem Sie Ihren ersten Kunden hinzufügen",
       "table": {
@@ -720,7 +725,14 @@
         "active": "Aktiv",
         "inactive": "Inaktiv",
         "loadingCustomers": "Kunden werden geladen...",
-        "noCustomersFound": "Keine Kunden gefunden"
+        "noCustomersFound": "Keine Kunden gefunden",
+        "editCustomer": "Kunde bearbeiten",
+        "resetPassword": "Passwort zurücksetzen",
+        "createAccount": "Konto erstellen",
+        "deleteCustomer": "Kunde löschen",
+        "blockCustomer": "Kunde sperren",
+        "unblockCustomer": "Kunde entsperren",
+        "blocked": "Gesperrt"
       },
       "form": {
         "addNewCustomer": "Neuen Kunden hinzufügen",
@@ -749,7 +761,52 @@
         "updateSuccess": "Kunde {{name}} erfolgreich aktualisiert!",
         "createError": "Fehler beim Erstellen des Kunden",
         "updateError": "Fehler beim Aktualisieren des Kunden"
+      },
+      "blockModal": {
+        "blockTitle": "Kunde sperren",
+        "unblockTitle": "Kunde entsperren",
+        "blockDescription": "sperren? Dies verhindert den Zugriff auf ihr Konto.",
+        "unblockDescription": "entsperren wird den Kontozugriff wiederherstellen und normale Aktivitäten ermöglichen.",
+        "blockReason": "Sperrgrund",
+        "blockReasonPlaceholder": "Geben Sie einen Grund für die Sperrung dieses Kunden an...",
+        "cancel": "Abbrechen",
+        "processing": "Wird verarbeitet...",
+        "blockCustomer": "Kunde sperren",
+        "unblockCustomer": "Kunde entsperren"
       }
+    },
+    "passwordReset": {
+      "title": "Passwort zurücksetzen",
+      "newPassword": "Neues Passwort",
+      "enterPassword": "Neues Passwort eingeben",
+      "generateRandom": "Zufälliges Passwort generieren",
+      "copyToClipboard": "In Zwischenablage kopieren",
+      "resetPassword": "Passwort zurücksetzen",
+      "resetting": "Wird zurückgesetzt...",
+      "passwordRequired": "Passwort ist erforderlich",
+      "passwordTooShort": "Passwort muss mindestens 8 Zeichen lang sein",
+      "resetSuccess": "Passwort erfolgreich zurückgesetzt für {{name}}",
+      "resetFailed": "Passwort konnte nicht zurückgesetzt werden",
+      "passwordCopied": "Passwort in Zwischenablage kopiert",
+      "copyFailed": "Passwort konnte nicht kopiert werden"
+    },
+    "createAccount": {
+      "title": "Kundenkonto erstellen",
+      "username": "Benutzername",
+      "password": "Passwort",
+      "enterUsername": "Benutzername eingeben",
+      "enterPassword": "Passwort eingeben",
+      "generateRandom": "Zufälliges Passwort generieren",
+      "copyCredentials": "Anmeldedaten kopieren",
+      "createAccount": "Konto erstellen",
+      "creating": "Wird erstellt...",
+      "usernameRequired": "Benutzername ist erforderlich",
+      "passwordRequired": "Passwort ist erforderlich",
+      "passwordTooShort": "Passwort muss mindestens 8 Zeichen lang sein",
+      "accountCreated": "Konto erfolgreich erstellt für {{company}}",
+      "createFailed": "Konto konnte nicht erstellt werden",
+      "credentialsCopied": "Anmeldedaten in Zwischenablage kopiert",
+      "copyFailed": "Anmeldedaten konnten nicht kopiert werden"
     },
     "departments": {
       "title": "Abteilungen",
@@ -950,6 +1007,14 @@
       "employeeUnblocked": {
         "title": "Konto entsperrt",
         "body": "Ihr Konto wurde entsperrt. Sie können das System nun normal nutzen."
+      },
+      "customerBlocked": {
+        "title": "Konto gesperrt",
+        "body": "Ihr Konto wurde vom Administrator gesperrt.{{reason}}"
+      },
+      "customerUnblocked": {
+        "title": "Konto entsperrt",
+        "body": "Ihr Konto wurde entsperrt. Sie können Ihr Konto nun normal nutzen."
       },
       "departmentCreated": {
         "title": "Neue Abteilung erstellt",

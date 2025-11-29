@@ -38,26 +38,24 @@ export function ContactSection({ userType }: ContactSectionProps) {
       let endpoint = "";
       switch (userType) {
         case "employee":
+        case "admin": // Admin uses same endpoint as employee
           endpoint = "/api/employees/me";
           break;
         case "customer":
           endpoint = "/api/customers/me";
           break;
-        case "admin":
-          endpoint = "/api/auth/me";
-          break;
       }
       
-      const response = await apiClient.get(endpoint);
+      const response = await apiClient.get(endpoint) as any;
       const data = response.data || response;
       
       setContactInfo({
         phone: data.phoneNumber || data.contactPhone || "",
-        email: data.email || data.contactEmail || "",
+        email: data.email || data.user?.email || data.contactEmail || "",
       });
       setEditValues({
         phone: data.phoneNumber || data.contactPhone || "",
-        email: data.email || data.contactEmail || "",
+        email: data.email || data.user?.email || data.contactEmail || "",
       });
     } catch (error) {
       console.error("Failed to fetch contact info:", error);
@@ -77,16 +75,13 @@ export function ContactSection({ userType }: ContactSectionProps) {
       
       switch (userType) {
         case "employee":
+        case "admin": // Admin uses same endpoint as employee
           endpoint = "/api/settings/employee/phone";
           payload = { phoneNumber: editValues.phone };
           break;
         case "customer":
           endpoint = "/api/settings/customer/phone";
           payload = { contactPhone: editValues.phone };
-          break;
-        case "admin":
-          endpoint = "/api/settings/employee/phone";
-          payload = { phoneNumber: editValues.phone };
           break;
       }
       
@@ -136,8 +131,23 @@ export function ContactSection({ userType }: ContactSectionProps) {
 
     setSubmittingEmail(true);
     try {
-      await apiClient.post("/api/settings/request-email-change", emailChangeForm);
-      toast.success(t('settings.requests.requestSubmittedMessage'));
+      if (userType === "admin") {
+        // Admin gets instant update
+        await apiClient.post("/api/settings/admin/email", {
+          email: emailChangeForm.email,
+        });
+        
+        // Update local state
+        setContactInfo(prev => ({ ...prev, email: emailChangeForm.email }));
+        setEditValues(prev => ({ ...prev, email: emailChangeForm.email }));
+        
+        toast.success("Email updated successfully");
+      } else {
+        // Employee/Customer needs approval
+        await apiClient.post("/api/settings/request-email-change", emailChangeForm);
+        toast.success(t('settings.requests.requestSubmittedMessage'));
+      }
+      
       setShowEmailChangeModal(false);
     } catch (error: any) {
       toast.error(error.message || t('settings.changeRequests.requestFailed'));
@@ -204,7 +214,9 @@ export function ContactSection({ userType }: ContactSectionProps) {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <Badge variant="secondary">{t('settings.contact.requiresApproval')}</Badge>
+            {userType !== "admin" && (
+              <Badge variant="secondary">{t('settings.contact.requiresApproval')}</Badge>
+            )}
             <Button variant="ghost" size="sm" onClick={handleEmailChangeRequest}>
               <Edit2 className="h-4 w-4" />
             </Button>
@@ -234,21 +246,26 @@ export function ContactSection({ userType }: ContactSectionProps) {
                 placeholder="Enter new email address"
               />
             </div>
-            <div className="space-y-2">
-              <Label>{t('settings.requests.requestReason')}</Label>
-              <Textarea
-                value={emailChangeForm.reason}
-                onChange={(e) => setEmailChangeForm(prev => ({ ...prev, reason: e.target.value }))}
-                placeholder={t('settings.requests.reasonPlaceholder')}
-                className="min-h-[80px]"
-              />
-            </div>
+            {userType !== "admin" && (
+              <div className="space-y-2">
+                <Label>{t('settings.requests.requestReason')}</Label>
+                <Textarea
+                  value={emailChangeForm.reason}
+                  onChange={(e) => setEmailChangeForm(prev => ({ ...prev, reason: e.target.value }))}
+                  placeholder={t('settings.requests.reasonPlaceholder')}
+                  className="min-h-[80px]"
+                />
+              </div>
+            )}
             <div className="flex gap-2 justify-end">
               <Button variant="outline" onClick={() => setShowEmailChangeModal(false)}>
                 {t('common.cancel')}
               </Button>
               <Button onClick={submitEmailChangeRequest} disabled={submittingEmail}>
-                {submittingEmail ? t('settings.requests.submitting') : t('settings.requests.submitRequest')}
+                {submittingEmail 
+                  ? (userType === "admin" ? "Updating..." : t('settings.requests.submitting'))
+                  : (userType === "admin" ? "Update Email" : t('settings.requests.submitRequest'))
+                }
               </Button>
             </div>
           </div>

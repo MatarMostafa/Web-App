@@ -30,17 +30,10 @@ export function PersonalSection({ userType }: PersonalSectionProps) {
 
   const fetchPersonalInfo = async () => {
     try {
-      let endpoint = "";
-      switch (userType) {
-        case "employee":
-          endpoint = "/api/employees/me";
-          break;
-        case "admin":
-          endpoint = "/api/auth/me";
-          break;
-      }
+      // Both admin and employee use the same endpoint (admins are in employees table)
+      const endpoint = "/api/employees/me";
       
-      const response = await apiClient.get(endpoint);
+      const response = await apiClient.get(endpoint) as any;
       const data = response.data || response;
       
       setPersonalInfo({
@@ -78,8 +71,27 @@ export function PersonalSection({ userType }: PersonalSectionProps) {
 
     setSubmitting(true);
     try {
-      await apiClient.post("/api/settings/request-name-change", nameChangeForm);
-      toast.success(t('settings.requests.requestSubmittedMessage'));
+      if (userType === "admin") {
+        // Admin gets instant update
+        await apiClient.post("/api/settings/admin/name", {
+          firstName: nameChangeForm.firstName,
+          lastName: nameChangeForm.lastName,
+        });
+        
+        // Update local state
+        setPersonalInfo(prev => ({
+          ...prev,
+          firstName: nameChangeForm.firstName,
+          lastName: nameChangeForm.lastName,
+        }));
+        
+        toast.success("Name updated successfully");
+      } else {
+        // Employee needs approval
+        await apiClient.post("/api/settings/request-name-change", nameChangeForm);
+        toast.success(t('settings.requests.requestSubmittedMessage'));
+      }
+      
       setShowNameChangeModal(false);
     } catch (error: any) {
       toast.error(error.message || t('settings.changeRequests.requestFailed'));
@@ -103,7 +115,9 @@ export function PersonalSection({ userType }: PersonalSectionProps) {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <Badge variant="secondary">{t('settings.personal.requiresApproval')}</Badge>
+            {userType !== "admin" && (
+              <Badge variant="secondary">{t('settings.personal.requiresApproval')}</Badge>
+            )}
             <Button variant="ghost" size="sm" onClick={handleNameChangeRequest}>
               <Edit2 className="h-4 w-4" />
             </Button>
@@ -130,7 +144,9 @@ export function PersonalSection({ userType }: PersonalSectionProps) {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <Badge variant="secondary">{t('settings.personal.requiresApproval')}</Badge>
+            {userType !== "admin" && (
+              <Badge variant="secondary">{t('settings.personal.requiresApproval')}</Badge>
+            )}
             <Button variant="ghost" size="sm" onClick={handleNameChangeRequest}>
               <Edit2 className="h-4 w-4" />
             </Button>
@@ -186,21 +202,26 @@ export function PersonalSection({ userType }: PersonalSectionProps) {
                 placeholder={t('settings.personal.lastNameDescription')}
               />
             </div>
-            <div className="space-y-2">
-              <Label>{t('settings.requests.requestReason')}</Label>
-              <Textarea
-                value={nameChangeForm.reason}
-                onChange={(e) => setNameChangeForm(prev => ({ ...prev, reason: e.target.value }))}
-                placeholder={t('settings.requests.reasonPlaceholder')}
-                className="min-h-[80px]"
-              />
-            </div>
+            {userType !== "admin" && (
+              <div className="space-y-2">
+                <Label>{t('settings.requests.requestReason')}</Label>
+                <Textarea
+                  value={nameChangeForm.reason}
+                  onChange={(e) => setNameChangeForm(prev => ({ ...prev, reason: e.target.value }))}
+                  placeholder={t('settings.requests.reasonPlaceholder')}
+                  className="min-h-[80px]"
+                />
+              </div>
+            )}
             <div className="flex gap-2 justify-end">
               <Button variant="outline" onClick={() => setShowNameChangeModal(false)}>
                 {t('common.cancel')}
               </Button>
               <Button onClick={submitNameChangeRequest} disabled={submitting}>
-                {submitting ? t('settings.requests.submitting') : t('settings.requests.submitRequest')}
+                {submitting 
+                  ? (userType === "admin" ? "Updating..." : t('settings.requests.submitting'))
+                  : (userType === "admin" ? "Update Name" : t('settings.requests.submitRequest'))
+                }
               </Button>
             </div>
           </div>
