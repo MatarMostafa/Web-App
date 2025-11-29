@@ -53,7 +53,13 @@ router.get(
         return res.status(404).json({ message: "Employee profile not found" });
       }
 
-      res.json(employee);
+      // Add user's email to the main response for consistency
+      const response = {
+        ...employee,
+        email: employee.user?.email, // Add user's email at top level
+      };
+
+      res.json(response);
     } catch (error) {
       console.error("Get employee profile error:", error);
       res.status(500).json({ message: "Failed to fetch employee profile" });

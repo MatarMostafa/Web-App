@@ -50,6 +50,8 @@ interface CustomerState {
   createCustomer: (data: CreateCustomerData) => Promise<void>;
   updateCustomer: (id: string, data: UpdateCustomerData) => Promise<void>;
   deleteCustomer: (id: string) => Promise<void>;
+  blockCustomer: (id: string, reason?: string) => Promise<void>;
+  unblockCustomer: (id: string) => Promise<void>;
   
   clearError: () => void;
 }
@@ -186,6 +188,42 @@ export const useCustomerStore = create<CustomerState>((set, get) => ({
       toast.success("Customer deleted successfully");
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Failed to delete customer";
+      set({ error: errorMessage, loading: false });
+      toast.error(errorMessage);
+    }
+  },
+
+  blockCustomer: async (id: string, reason?: string) => {
+    set({ loading: true, error: null });
+    try {
+      await apiClient.post(`/api/customers/${id}/block`, { reason });
+      set(state => ({
+        customers: state.customers.map(c => 
+          c.id === id ? { ...c, isActive: false } : c
+        ),
+        loading: false
+      }));
+      toast.success("Customer blocked successfully");
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Failed to block customer";
+      set({ error: errorMessage, loading: false });
+      toast.error(errorMessage);
+    }
+  },
+
+  unblockCustomer: async (id: string) => {
+    set({ loading: true, error: null });
+    try {
+      await apiClient.post(`/api/customers/${id}/unblock`, {});
+      set(state => ({
+        customers: state.customers.map(c => 
+          c.id === id ? { ...c, isActive: true } : c
+        ),
+        loading: false
+      }));
+      toast.success("Customer unblocked successfully");
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Failed to unblock customer";
       set({ error: errorMessage, loading: false });
       toast.error(errorMessage);
     }

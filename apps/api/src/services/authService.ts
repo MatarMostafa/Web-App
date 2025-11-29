@@ -248,6 +248,9 @@ export const login = async (identifier: string, password: string) => {
   
   if (!user.isActive) {
     console.log('User account not active');
+    if (user.role === 'CUSTOMER') {
+      throw new Error("Ihr Kundenkonto wurde deaktiviert. Bitte wenden Sie sich an den Support.");
+    }
     throw new Error("Konto nicht verifiziert");
   }
 

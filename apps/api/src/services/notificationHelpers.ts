@@ -708,6 +708,66 @@ export const notifySkillRejected = async (employeeId: string, qualificationName:
 };
 
 /**
+ * Customer Status Notifications
+ */
+export const notifyCustomerBlocked = async (customerId: string, reason?: string, createdBy?: string) => {
+  const customer = await prisma.customer.findUnique({
+    where: { id: customerId },
+    include: { user: true }
+  });
+
+  if (!customer?.user) return;
+
+  const translation = await getNotificationTranslation(
+    customer.user.id,
+    'system',
+    'customerBlocked',
+    { reason: reason ? ` Grund: ${reason}` : '' }
+  );
+
+  await createNotification({
+    templateKey: "CUSTOMER_BLOCKED",
+    title: translation.title,
+    body: translation.body,
+    data: {
+      category: "system",
+      customerId,
+      reason
+    },
+    recipients: [{ userId: customer.user.id }],
+    createdBy
+  });
+};
+
+export const notifyCustomerUnblocked = async (customerId: string, createdBy?: string) => {
+  const customer = await prisma.customer.findUnique({
+    where: { id: customerId },
+    include: { user: true }
+  });
+
+  if (!customer?.user) return;
+
+  const translation = await getNotificationTranslation(
+    customer.user.id,
+    'system',
+    'customerUnblocked',
+    {}
+  );
+
+  await createNotification({
+    templateKey: "CUSTOMER_UNBLOCKED",
+    title: translation.title,
+    body: translation.body,
+    data: {
+      category: "system",
+      customerId
+    },
+    recipients: [{ userId: customer.user.id }],
+    createdBy
+  });
+};
+
+/**
  * Customer Notifications
  */
 export const notifyCustomerOrderStatusChanged = async (orderId: string, newStatus: string, createdBy?: string) => {

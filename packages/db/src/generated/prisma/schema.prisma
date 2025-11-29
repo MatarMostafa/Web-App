@@ -130,7 +130,7 @@ model User {
   twoFactorEnabled         Boolean   @default(false)
   twoFactorSecret          String?
 
-  // Cascade delete Employee
+  // Cascade delete relations
   employee        Employee?
   customer        Customer?
   manualOverrides EmployeePerformance[] @relation("ManualOverrideByUser")

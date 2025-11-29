@@ -1,9 +1,11 @@
-import { getSession } from "next-auth/react";
+import { getSession, signOut } from "next-auth/react";
 import toast from "react-hot-toast";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
 class ApiClient {
+  private isLoggingOut = false;
+  
   private async getAuthHeaders() {
     try {
       const session = await getSession();
@@ -53,9 +55,33 @@ class ApiClient {
       if (response.status === 404) {
         errorMessage = "Resource not found";
       } else if (response.status === 401) {
-        errorMessage = "Unauthorized access";
+        // Auto logout on 401 (inactive user)
+        if (!this.isLoggingOut) {
+          this.isLoggingOut = true;
+          const isGerman = navigator.language.startsWith('de') || localStorage.getItem('language') === 'de';
+          const message = isGerman ? "Sitzung abgelaufen. Bitte melden Sie sich erneut an." : "Session expired. Please login again.";
+          toast.error(message, { duration: 6000 });
+          signOut({ callbackUrl: '/login' });
+          errorMessage = message;
+        }
       } else if (response.status === 403) {
-        errorMessage = "Access denied";
+        // Auto logout on 403 (blocked user) - check if it's a blocking message
+        if (!this.isLoggingOut) {
+          this.isLoggingOut = true;
+          const isGerman = navigator.language.startsWith('de') || localStorage.getItem('language') === 'de';
+          let message;
+          if (errorMessage.includes('gesperrt') || errorMessage.includes('deaktiviert')) {
+            // It's a blocking message, show it with longer duration
+            message = errorMessage;
+            toast.error(message, { duration: 8000 });
+          } else {
+            // Generic access denied
+            message = isGerman ? "Zugriff verweigert. Sie wurden abgemeldet." : "Access denied. You have been logged out.";
+            toast.error(message, { duration: 6000 });
+          }
+          signOut({ callbackUrl: '/login' });
+          errorMessage = message;
+        }
       } else if (response.status === 500) {
         errorMessage = "Server error occurred";
       }

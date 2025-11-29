@@ -125,6 +125,8 @@ const getTranslationKey = (templateKey: string): string | null => {
     'PROFILE_UPDATED': 'notifications.system.profileUpdated',
     'EMPLOYEE_BLOCKED': 'notifications.system.employeeBlocked',
     'EMPLOYEE_UNBLOCKED': 'notifications.system.employeeUnblocked',
+    'CUSTOMER_BLOCKED': 'notifications.system.customerBlocked',
+    'CUSTOMER_UNBLOCKED': 'notifications.system.customerUnblocked',
     'CUSTOMER_ORDER_CREATED': 'notifications.customer.created',
     'CUSTOMER_ORDER_STATUS_CHANGED': 'notifications.customer.orderStatusChanged',
     'CUSTOMER_ORDER_COMPLETED': 'notifications.customer.orderCompleted',
