@@ -94,7 +94,8 @@
     "medium": "Medium",
     "low": "Low",
     "urgent": "Urgent",
-    "normal": "Normal"
+    "normal": "Normal",
+    "username": "Username"
   },
   "auth": {
     "signIn": "Sign In",
@@ -471,7 +472,8 @@
         "editEmployee": "Edit Employee",
         "blockEmployee": "Block Employee",
         "unblockEmployee": "Unblock Employee",
-        "deleteEmployee": "Delete Employee"
+        "deleteEmployee": "Delete Employee",
+        "resetPassword": "Reset Password"
       },
       "blockModal": {
         "blockTitle": "Block Employee",
@@ -706,6 +708,8 @@
       "editCustomer": "Edit Customer",
       "searchPlaceholder": "Search customers by company, email, phone, or industry...",
       "confirmDelete": "Are you sure you want to delete this customer?",
+      "confirmBlock": "Are you sure you want to block {{name}}? They will not be able to access their account.",
+      "confirmUnblock": "Are you sure you want to unblock {{name}}? They will regain access to their account.",
       "noCustomersFound": "No customers found",
       "getStartedMessage": "Get started by adding your first customer",
       "table": {
@@ -720,7 +724,14 @@
         "active": "Active",
         "inactive": "Inactive",
         "loadingCustomers": "Loading customers...",
-        "noCustomersFound": "No customers found"
+        "noCustomersFound": "No customers found",
+        "editCustomer": "Edit Customer",
+        "resetPassword": "Reset Password",
+        "createAccount": "Create Account",
+        "deleteCustomer": "Delete Customer",
+        "blockCustomer": "Block Customer",
+        "unblockCustomer": "Unblock Customer",
+        "blocked": "Blocked"
       },
       "form": {
         "addNewCustomer": "Add New Customer",
@@ -749,7 +760,52 @@
         "updateSuccess": "Customer {{name}} updated successfully!",
         "createError": "Failed to create customer",
         "updateError": "Failed to update customer"
+      },
+      "blockModal": {
+        "blockTitle": "Block Customer",
+        "unblockTitle": "Unblock Customer",
+        "blockDescription": "? This will prevent them from accessing their account.",
+        "unblockDescription": "will restore their account access and allow them to resume normal activities.",
+        "blockReason": "Block Reason",
+        "blockReasonPlaceholder": "Provide a reason for blocking this customer...",
+        "cancel": "Cancel",
+        "processing": "Processing...",
+        "blockCustomer": "Block Customer",
+        "unblockCustomer": "Unblock Customer"
       }
+    },
+    "passwordReset": {
+      "title": "Reset Password",
+      "newPassword": "New Password",
+      "enterPassword": "Enter new password",
+      "generateRandom": "Generate Random Password",
+      "copyToClipboard": "Copy to Clipboard",
+      "resetPassword": "Reset Password",
+      "resetting": "Resetting...",
+      "passwordRequired": "Password is required",
+      "passwordTooShort": "Password must be at least 8 characters long",
+      "resetSuccess": "Password reset successfully for {{name}}",
+      "resetFailed": "Failed to reset password",
+      "passwordCopied": "Password copied to clipboard",
+      "copyFailed": "Failed to copy password"
+    },
+    "createAccount": {
+      "title": "Create Customer Account",
+      "username": "Username",
+      "password": "Password",
+      "enterUsername": "Enter username",
+      "enterPassword": "Enter password",
+      "generateRandom": "Generate Random Password",
+      "copyCredentials": "Copy Credentials",
+      "createAccount": "Create Account",
+      "creating": "Creating...",
+      "usernameRequired": "Username is required",
+      "passwordRequired": "Password is required",
+      "passwordTooShort": "Password must be at least 8 characters long",
+      "accountCreated": "Account created successfully for {{company}}",
+      "createFailed": "Failed to create account",
+      "credentialsCopied": "Credentials copied to clipboard",
+      "copyFailed": "Failed to copy credentials"
     },
     "departments": {
       "title": "Departments",
@@ -950,6 +1006,14 @@
       "employeeUnblocked": {
         "title": "Account Unblocked",
         "body": "Your account has been unblocked. You can now access the system normally."
+      },
+      "customerBlocked": {
+        "title": "Account Blocked",
+        "body": "Your account has been blocked by the administrator.{{reason}}"
+      },
+      "customerUnblocked": {
+        "title": "Account Unblocked",
+        "body": "Your account has been unblocked. You can now access your account normally."
       },
       "departmentCreated": {
         "title": "New Department Created",

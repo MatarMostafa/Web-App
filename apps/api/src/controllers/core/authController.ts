@@ -32,7 +32,12 @@ export const login = async (req: Request, res: Response) => {
     const result = await authService.login(identifier, password);
     res.json(result);
   } catch (error: any) {
-    res.status(401).json({ message: error.message });
+    // Check if it's a blocking error (403) or invalid credentials (401)
+    if (error.message.includes('gesperrt') || error.message.includes('deaktiviert')) {
+      res.status(403).json({ message: error.message });
+    } else {
+      res.status(401).json({ message: error.message });
+    }
   }
 };
 

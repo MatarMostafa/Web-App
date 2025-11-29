@@ -42,9 +42,9 @@ export const useAuthStore = create<AuthState>(() => ({
 
       useCustomerStore.setState({
         customers: [],
-        currentCustomer: null,
+        profile: null,
+        orders: [],
         loading: false,
-        isLoadingCustomer: false,
         error: null,
       });
 

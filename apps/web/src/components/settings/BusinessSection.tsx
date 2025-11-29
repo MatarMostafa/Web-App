@@ -36,8 +36,8 @@ export function BusinessSection() {
 
   const fetchBusinessInfo = async () => {
     try {
-      const response = await apiClient.get("/api/customers/me");
-      const data = response.data || response;
+      const response = await apiClient.get<any>("/api/customers/me");
+      const data = response;
       
       setBusinessInfo({
         companyName: data.companyName || "",

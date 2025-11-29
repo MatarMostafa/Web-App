@@ -15,21 +15,21 @@ import { Label } from "@/components/ui/label";
 import { Shield, ShieldOff } from "lucide-react";
 import { useTranslation } from '@/hooks/useTranslation';
 
-interface BlockEmployeeModalProps {
+interface BlockCustomerModalProps {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: (reason?: string) => void;
   action: "block" | "unblock";
-  employeeName: string;
+  customerName: string;
   loading?: boolean;
 }
 
-const BlockEmployeeModal: React.FC<BlockEmployeeModalProps> = ({
+const BlockCustomerModal: React.FC<BlockCustomerModalProps> = ({
   isOpen,
   onClose,
   onConfirm,
   action,
-  employeeName,
+  customerName,
   loading = false,
 }) => {
   const { t } = useTranslation();
@@ -58,20 +58,20 @@ const BlockEmployeeModal: React.FC<BlockEmployeeModalProps> = ({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             {isBlock ? (
-              <Shield className="h-5 w-5 text-red-600" />
+              <ShieldOff className="h-5 w-5 text-red-600" />
             ) : (
-              <ShieldOff className="h-5 w-5 text-green-600" />
+              <Shield className="h-5 w-5 text-green-600" />
             )}
-            {isBlock ? t('admin.employees.blockModal.blockTitle') : t('admin.employees.blockModal.unblockTitle')}
+            {isBlock ? t('admin.customers.blockModal.blockTitle') : t('admin.customers.blockModal.unblockTitle')}
           </DialogTitle>
           <DialogDescription>
             {isBlock ? (
               <>
-                <span className="font-medium">{employeeName}</span> {t('admin.employees.blockModal.blockDescription')}
+                <span className="font-medium">{customerName}</span> {t('admin.customers.blockModal.blockDescription')}
               </>
             ) : (
               <>
-                <span className="font-medium">{employeeName}</span> {t('admin.employees.blockModal.unblockDescription')}
+                <span className="font-medium">{customerName}</span> {t('admin.customers.blockModal.unblockDescription')}
               </>
             )}
           </DialogDescription>
@@ -81,11 +81,11 @@ const BlockEmployeeModal: React.FC<BlockEmployeeModalProps> = ({
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
               <Label htmlFor="reason">
-                {t('admin.employees.blockModal.blockReason')} <span className="text-red-500">*</span>
+                {t('admin.customers.blockModal.blockReason')} <span className="text-red-500">*</span>
               </Label>
               <Textarea
                 id="reason"
-                placeholder={t('admin.employees.blockModal.blockReasonPlaceholder')}
+                placeholder={t('admin.customers.blockModal.blockReasonPlaceholder')}
                 value={reason}
                 onChange={(e) => setReason(e.target.value)}
                 rows={3}
@@ -97,7 +97,7 @@ const BlockEmployeeModal: React.FC<BlockEmployeeModalProps> = ({
 
         <DialogFooter>
           <Button variant="outline" onClick={handleClose} disabled={loading}>
-            {t('admin.employees.blockModal.cancel')}
+            {t('admin.customers.blockModal.cancel')}
           </Button>
           <Button
             onClick={handleConfirm}
@@ -108,7 +108,7 @@ const BlockEmployeeModal: React.FC<BlockEmployeeModalProps> = ({
                 : "bg-green-600 hover:bg-green-700"
             }
           >
-            {loading ? t('admin.employees.blockModal.processing') : isBlock ? t('admin.employees.blockModal.blockEmployee') : t('admin.employees.blockModal.unblockEmployee')}
+            {loading ? t('admin.customers.blockModal.processing') : isBlock ? t('admin.customers.blockModal.blockCustomer') : t('admin.customers.blockModal.unblockCustomer')}
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -116,4 +116,4 @@ const BlockEmployeeModal: React.FC<BlockEmployeeModalProps> = ({
   );
 };
 
-export default BlockEmployeeModal;
+export default BlockCustomerModal;
