@@ -3,7 +3,18 @@ import { AuthRequest } from "../middleware/authMiddleware";
 import * as employeeService from "../services/employeeService";
 
 export const getAllEmployees = async (req: Request, res: Response) => {
+  const authReq = req as AuthRequest;
   try {
+    const userRole = authReq.user?.role;
+    
+    // Team leaders should not access all employees - redirect to team-specific endpoint
+    if (userRole === "TEAM_LEADER") {
+      return res.status(403).json({ 
+        message: "Team leaders should use /team-leader/employees endpoint",
+        redirectTo: "/team-leader/employees"
+      });
+    }
+    
     const employees = await employeeService.getAllEmployees();
     res.json(employees);
   } catch (error) {

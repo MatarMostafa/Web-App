@@ -680,6 +680,8 @@
         "priority": "Priority",
         "priorityRequired": "Priority must be at least 1",
         "duration": "Duration (hours)",
+        "activities": "Activities",
+        "selectActivity": "Select activity",
         "specialInstructions": "Special Instructions",
         "assignEmployees": "Assign Employees (Optional)",
         "assignEmployeesEdit": "Assign Employees",
@@ -697,6 +699,13 @@
         "createError": "Failed to create order",
         "updateError": "Failed to update order",
         "deleteError": "Failed to delete order"
+      },
+      "activities": {
+        "containerUnloading": "Container Unloading",
+        "picking": "Picking",
+        "palletSorting": "Pallet Sorting",
+        "qualityControl": "Quality Control",
+        "packaging": "Packaging"
       }
     },
     "customers": {
@@ -980,6 +989,63 @@
       "daysAgo": "{{count}} days ago"
     }
   },
+  "teamLeader": {
+    "dashboard": {
+      "title": "Team Leader Dashboard",
+      "subtitle": "Manage your teams and orders",
+      "failedToLoad": "Failed to load dashboard data",
+      "totalOrders": "Total Orders",
+      "activeOrders": "Active Orders",
+      "completedOrders": "Completed Orders",
+      "teamMembers": "Team Members",
+      "myTeams": "",
+      "noTeamsAssigned": "No teams assigned",
+      "members": "members",
+      "recentOrders": "Recent Orders",
+      "status": "Status"
+    },
+    "orders": {
+      "title": "Orders",
+      "subtitle": "Manage orders assigned to your teams",
+      "createOrder": "Create Order",
+      "noOrdersFound": "No orders found",
+      "assignedEmployees": "Assigned Employees",
+      "team": "Team",
+      "backToOrders": "Back to Orders",
+      "orderNotFound": "Order Not Found",
+      "orderNotFoundDesc": "Order not found or not accessible",
+      "failedToFetch": "Failed to fetch order",
+      "errorFetching": "Error fetching order",
+      "noDescription": "No description provided",
+      "scheduledDate": "Scheduled Date",
+      "start": "Start",
+      "location": "Location",
+      "assignedStaff": "Assigned Staff",
+      "noStaffAssigned": "No staff assigned",
+      "personAssigned": "person assigned",
+      "peopleAssigned": "people assigned",
+      "duration": "Duration",
+      "minutes": "minutes",
+      "specialInstructions": "Special Instructions",
+      "customerInformation": "Customer Information",
+      "teamAssignment": "Team Assignment"
+    },
+    "teams": {
+      "title": "My Team",
+      "subtitle": "View and manage your team members",
+      "noTeamsAssigned": "No teams assigned",
+      "members": "members",
+      "employee": "Employee",
+      "employeeCode": "Employee Code",
+      "department": "Department",
+      "position": "Position",
+      "joinedDate": "Joined Date",
+      "status": "Status",
+      "noTeamMembers": "No team members found",
+      "active": "Active",
+      "inactive": "Inactive"
+    }
+  },
   "employee": {
     "form": {
       "addEmployee": "Add Employee",
@@ -1072,6 +1138,7 @@
       },
       "status": {
         "assigned": "Assigned",
+        "active": "Active",
         "inprogress": "In Progress",
         "pending": "Pending",
         "completed": "Completed"
