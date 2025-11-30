@@ -6,29 +6,37 @@ async function main() {
 
   // Create departments
   const departments = await Promise.all([
-    prisma.department.create({
-      data: {
+    prisma.department.upsert({
+      where: { name: "Information Technology" },
+      update: {},
+      create: {
         name: "Information Technology",
         description: "IT Department",
         code: "IT",
       },
     }),
-    prisma.department.create({
-      data: {
+    prisma.department.upsert({
+      where: { name: "Human Resources" },
+      update: {},
+      create: {
         name: "Human Resources",
         description: "HR Department",
         code: "HR",
       },
     }),
-    prisma.department.create({
-      data: {
+    prisma.department.upsert({
+      where: { name: "Finance" },
+      update: {},
+      create: {
         name: "Finance",
         description: "Finance Department",
         code: "FIN",
       },
     }),
-    prisma.department.create({
-      data: {
+    prisma.department.upsert({
+      where: { name: "Marketing" },
+      update: {},
+      create: {
         name: "Marketing",
         description: "Marketing Department",
         code: "MKT",
@@ -38,8 +46,10 @@ async function main() {
 
   // Create positions
   const positions = await Promise.all([
-    prisma.position.create({
-      data: {
+    prisma.position.upsert({
+      where: { title_departmentId: { title: "Software Developer", departmentId: departments[0].id } },
+      update: {},
+      create: {
         title: "Software Developer",
         description: "Full-stack developer",
         level: 2,
@@ -48,8 +58,10 @@ async function main() {
         maxSalary: 80000,
       },
     }),
-    prisma.position.create({
-      data: {
+    prisma.position.upsert({
+      where: { title_departmentId: { title: "HR Manager", departmentId: departments[1].id } },
+      update: {},
+      create: {
         title: "HR Manager",
         description: "Human Resources Manager",
         level: 3,
@@ -58,8 +70,10 @@ async function main() {
         maxSalary: 90000,
       },
     }),
-    prisma.position.create({
-      data: {
+    prisma.position.upsert({
+      where: { title_departmentId: { title: "Financial Analyst", departmentId: departments[2].id } },
+      update: {},
+      create: {
         title: "Financial Analyst",
         description: "Financial data analyst",
         level: 2,
@@ -68,8 +82,10 @@ async function main() {
         maxSalary: 70000,
       },
     }),
-    prisma.position.create({
-      data: {
+    prisma.position.upsert({
+      where: { title_departmentId: { title: "Marketing Specialist", departmentId: departments[3].id } },
+      update: {},
+      create: {
         title: "Marketing Specialist",
         description: "Digital marketing specialist",
         level: 2,
@@ -84,8 +100,10 @@ async function main() {
   const hashedPassword = await bcrypt.hash("password123", 10);
 
   const users = await Promise.all([
-    prisma.user.create({
-      data: {
+    prisma.user.upsert({
+      where: { username: "admin" },
+      update: {},
+      create: {
         email: "admin@company.com",
         username: "admin",
         password: hashedPassword,
@@ -115,8 +133,10 @@ async function main() {
       },
       include: { employee: true },
     }),
-    prisma.user.create({
-      data: {
+    prisma.user.upsert({
+      where: { username: "hrmanager" },
+      update: {},
+      create: {
         email: "hr@company.com",
         username: "hrmanager",
         password: hashedPassword,
@@ -146,8 +166,10 @@ async function main() {
       },
       include: { employee: true },
     }),
-    prisma.user.create({
-      data: {
+    prisma.user.upsert({
+      where: { username: "employee1" },
+      update: {},
+      create: {
         email: "employee1@company.com",
         username: "employee1",
         password: hashedPassword,
@@ -177,8 +199,10 @@ async function main() {
       },
       include: { employee: true },
     }),
-    prisma.user.create({
-      data: {
+    prisma.user.upsert({
+      where: { username: "employee2" },
+      update: {},
+      create: {
         email: "employee2@company.com",
         username: "employee2",
         password: hashedPassword,
@@ -208,8 +232,10 @@ async function main() {
       },
       include: { employee: true },
     }),
-    prisma.user.create({
-      data: {
+    prisma.user.upsert({
+      where: { username: "teamleader" },
+      update: {},
+      create: {
         email: "teamleader@company.com",
         username: "teamleader",
         password: hashedPassword,
@@ -694,6 +720,34 @@ async function main() {
       data: {
         performanceScore: 55,
         trafficLight: "RED",
+      },
+    }),
+  ]);
+
+  // Create notification templates for settings changes
+  await Promise.all([
+    prisma.notificationTemplate.create({
+      data: {
+        key: "SETTINGS_CHANGE_REQUESTED",
+        title: "Settings Change Request",
+        body: "{{employeeName}} has requested to change their {{changeType}} from '{{currentValue}}' to '{{requestedValue}}'. Reason: {{reason}}",
+        defaultChannels: ["in_app", "email"],
+      },
+    }),
+    prisma.notificationTemplate.create({
+      data: {
+        key: "SETTINGS_CHANGE_APPROVED",
+        title: "Settings Change Approved",
+        body: "Your request to change {{changeType}} has been approved by {{reviewerName}}.",
+        defaultChannels: ["in_app", "email"],
+      },
+    }),
+    prisma.notificationTemplate.create({
+      data: {
+        key: "SETTINGS_CHANGE_REJECTED",
+        title: "Settings Change Rejected",
+        body: "Your request to change {{changeType}} has been rejected. Reason: {{reviewNotes}}",
+        defaultChannels: ["in_app", "email"],
       },
     }),
   ]);

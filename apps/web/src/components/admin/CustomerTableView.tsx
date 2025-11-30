@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui";
 import { Button } from "@/components/ui";
 import { Avatar, AvatarFallback } from "@/components/ui";
 import { Pagination, usePagination } from "@/components/ui/pagination";
-import { Edit3, Trash2 } from "lucide-react";
+import { Edit3, Trash2, KeyRound, UserPlus, Shield, ShieldOff } from "lucide-react";
 import { format } from "date-fns";
 import { Customer } from "@/types/customer";
 import { useRouter } from "next/navigation";
@@ -22,6 +22,10 @@ interface CustomerTableViewProps {
   loading?: boolean;
   onEdit?: (customer: Customer) => void;
   onDelete?: (id: string) => void;
+  onResetPassword?: (customer: Customer) => void;
+  onCreateAccount?: (customer: Customer) => void;
+  onBlock?: (customer: Customer) => void;
+  onUnblock?: (customer: Customer) => void;
 }
 
 const CustomerTableView: React.FC<CustomerTableViewProps> = ({
@@ -29,6 +33,10 @@ const CustomerTableView: React.FC<CustomerTableViewProps> = ({
   loading = false,
   onEdit,
   onDelete,
+  onResetPassword,
+  onCreateAccount,
+  onBlock,
+  onUnblock,
 }) => {
   const { t } = useTranslation();
   const { currentPage, setCurrentPage, paginatedItems, totalItems } = usePagination(customers);
@@ -127,10 +135,10 @@ const CustomerTableView: React.FC<CustomerTableViewProps> = ({
                   {/* Status */}
                   <TableCell>
                     <Badge
-                      variant={customer.isActive ? "default" : "destructive"}
+                      variant={customer.isActive !== false ? "default" : "destructive"}
                       className="text-xs"
                     >
-                      {customer.isActive ? t("admin.customers.table.active") : t("admin.customers.table.inactive")}
+                      {customer.isActive !== false ? t("admin.customers.table.active") : t("admin.customers.table.blocked")}
                     </Badge>
                   </TableCell>
 
@@ -143,21 +151,77 @@ const CustomerTableView: React.FC<CustomerTableViewProps> = ({
 
                   {/* Actions */}
                   <TableCell>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1">
                       {onEdit && (
                         <Button
                           variant="ghost"
                           size="sm"
                           onClick={() => onEdit(customer)}
+                          title={t('admin.customers.table.editCustomer')}
                         >
                           <Edit3 className="h-4 w-4" />
                         </Button>
+                      )}
+                      {customer.user ? (
+                        // Customer has account - show reset password
+                        onResetPassword && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => onResetPassword(customer)}
+                            title={t('admin.customers.table.resetPassword')}
+                            className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                          >
+                            <KeyRound className="h-4 w-4" />
+                          </Button>
+                        )
+                      ) : (
+                        // Customer has no account - show create account
+                        onCreateAccount && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => onCreateAccount(customer)}
+                            title={t('admin.customers.table.createAccount')}
+                            className="text-green-600 hover:text-green-700 hover:bg-green-50"
+                          >
+                            <UserPlus className="h-4 w-4" />
+                          </Button>
+                        )
+                      )}
+                      {customer.user && (
+                        customer.isActive !== false ? (
+                          onBlock && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => onBlock(customer)}
+                              title={t('admin.customers.table.blockCustomer')}
+                              className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                            >
+                              <ShieldOff className="h-4 w-4" />
+                            </Button>
+                          )
+                        ) : (
+                          onUnblock && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => onUnblock(customer)}
+                              title={t('admin.customers.table.unblockCustomer')}
+                              className="text-green-600 hover:text-green-700 hover:bg-green-50"
+                            >
+                              <Shield className="h-4 w-4" />
+                            </Button>
+                          )
+                        )
                       )}
                       {onDelete && (
                         <Button
                           variant="ghost"
                           size="sm"
                           onClick={() => onDelete(customer.id)}
+                          title={t('admin.customers.table.deleteCustomer')}
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>

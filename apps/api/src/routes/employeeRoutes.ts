@@ -12,6 +12,61 @@ import { prisma } from "@repo/db";
 
 const router = express.Router();
 
+// Get current employee's profile
+router.get(
+  "/me",
+  authMiddleware,
+  roleMiddleware(["EMPLOYEE", "ADMIN", "TEAM_LEADER", "HR_MANAGER"]),
+  async (req, res) => {
+    try {
+      const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const employee = await prisma.employee.findUnique({
+        where: { userId },
+        include: {
+          user: {
+            select: {
+              id: true,
+              username: true,
+              email: true
+            }
+          },
+          department: {
+            select: {
+              id: true,
+              name: true
+            }
+          },
+          position: {
+            select: {
+              id: true,
+              title: true
+            }
+          }
+        }
+      });
+
+      if (!employee) {
+        return res.status(404).json({ message: "Employee profile not found" });
+      }
+
+      // Add user's email to the main response for consistency
+      const response = {
+        ...employee,
+        email: employee.user?.email, // Add user's email at top level
+      };
+
+      res.json(response);
+    } catch (error) {
+      console.error("Get employee profile error:", error);
+      res.status(500).json({ message: "Failed to fetch employee profile" });
+    }
+  }
+);
+
 router.get(
   "/",
   authMiddleware,

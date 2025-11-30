@@ -135,11 +135,19 @@ export function NotificationDropdown() {
         setTimeout(() => {
           window.dispatchEvent(new CustomEvent('refreshEmployeeOrders'));
         }, 100);
+      } else if (templateKey?.startsWith("CUSTOMER_")) {
+        // Customer notifications should go to customer portal
+        targetPath = "/dashboard-customer/orders";
+        setTimeout(() => {
+          window.dispatchEvent(new CustomEvent('refreshCustomerOrders'));
+        }, 100);
       } else {
         // For other order notifications, check current path to determine target
         const currentPath = window.location.pathname;
         if (currentPath.includes("/dashboard-employee")) {
           targetPath = "/dashboard-employee/orders";
+        } else if (currentPath.includes("/dashboard-customer")) {
+          targetPath = "/dashboard-customer/orders";
         } else if (currentPath.includes("/dashboard-team-leader")) {
           targetPath = "/dashboard-team-leader/orders";
         } else {
@@ -218,6 +226,15 @@ export function NotificationDropdown() {
         setTimeout(() => {
           window.dispatchEvent(new CustomEvent('refreshSkillsData'));
         }, 100);
+      }
+    } else if (data?.category === "settings" || templateKey?.startsWith("SETTINGS_")) {
+      // Handle settings change notifications
+      if (templateKey === "SETTINGS_CHANGE_REQUESTED") {
+        // Admin received settings change request - go to settings requests page
+        router.push("/dashboard-admin/settings-requests");
+      } else if (templateKey === "SETTINGS_CHANGE_APPROVED" || templateKey === "SETTINGS_CHANGE_REJECTED") {
+        // Employee received approval/rejection - go to settings page
+        router.push("/dashboard-employee/settings");
       }
     }
   };
