@@ -134,8 +134,12 @@ export const useCustomerStore = create<CustomerState>((set, get) => ({
   fetchCustomers: async () => {
     set({ loading: true, error: null });
     try {
-      const customers = await apiClient.get<Customer[]>("/api/customers");
-      set({ customers, loading: false });
+      const response = await apiClient.get<{ success: boolean; data: Customer[] }>("/api/customers");
+      if (response.success) {
+        set({ customers: response.data, loading: false });
+      } else {
+        throw new Error("Failed to fetch customers");
+      }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Failed to fetch customers";
       set({ error: errorMessage, loading: false });
