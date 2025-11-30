@@ -145,42 +145,27 @@ router.put(
 router.get(
   "/",
   authMiddleware,
-  roleMiddleware(["ADMIN", "HR_MANAGER"]),
-  async (req, res) => {
-    try {
-      const { prisma } = await import("@repo/db");
-      const customers = await prisma.customer.findMany({
-        orderBy: { companyName: 'asc' },
-        include: {
-          user: {
-            select: {
-              id: true,
-              username: true,
-              email: true,
-              isActive: true,
-            },
-          },
-        },
-      });
-      
-      // Prioritize user email over customer contactEmail
-      const customersWithCorrectEmail = customers.map(customer => ({
-        ...customer,
-        contactEmail: customer.user?.email || customer.contactEmail,
-      }));
-      
-      res.json(customersWithCorrectEmail);
-    } catch (error) {
-      console.error("Get customers error:", error);
-      res.status(500).json({
-        message: "Failed to fetch customers",
-        error: error instanceof Error ? error.message : String(error)
-      });
-    }
-  }
+  roleMiddleware(["ADMIN", "HR_MANAGER", "TEAM_LEADER"]),
+  getAllCustomers
 );
 
-// Create customer (Admin only)
+/**
+ * @route GET /api/customers/:id
+ * @desc Get customer by ID (including subAccounts, orders, ratings if needed)
+ * @access ADMIN, HR_MANAGER, TEAM_LEADER
+ */
+router.get(
+  "/:id",
+  authMiddleware,
+  roleMiddleware(["ADMIN", "HR_MANAGER", "TEAM_LEADER"]),
+  getCustomerById
+);
+
+/**
+ * @route POST /api/customers
+ * @desc Create new customer
+ * @access ADMIN, HR_MANAGER
+ */
 router.post(
   "/",
   authMiddleware,

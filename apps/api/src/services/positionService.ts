@@ -51,7 +51,6 @@ export const updatePositionService = async (
   id: string,
   data: PositionUpdateData
 ) => {
-  console.log("data positions = ", data);
   return prisma.position.update({
     where: { id },
     data,

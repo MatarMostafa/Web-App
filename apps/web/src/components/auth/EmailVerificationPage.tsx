@@ -61,7 +61,6 @@ export default function EmailVerificationPage() {
       setLastResendTime(Date.now());
       setCooldownTime(300); // 5 minutes = 300 seconds
     } catch (error: any) {
-      console.log("Resend error:", error);
       let errorMessage = "Failed to resend email";
 
       // Parse error response

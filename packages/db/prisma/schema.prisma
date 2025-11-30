@@ -202,6 +202,10 @@ model Employee {
   orderAssignments OrderAssignment[]
   files            File[]
 
+  // Team relationships
+  teamMemberships TeamMember[]
+  ledTeams        Team[]       @relation("TeamLeader")
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   createdBy String?
@@ -368,6 +372,8 @@ model Order {
 
   customer            Customer             @relation(fields: [customerId], references: [id], onDelete: Cascade)
   customerId          String
+  team                Team?                @relation(fields: [teamId], references: [id], onDelete: SetNull)
+  teamId              String?
   qualifications      OrderQualification[]
   orderAssignments    OrderAssignment[]
   employeeAssignments Assignment[]
@@ -747,6 +753,44 @@ model SettingsChangeRequest {
   @@index([userId, status])
   @@index([status, createdAt])
   @@map("settings_change_requests")
+}
+
+// ===============================
+// TEAMS
+// ===============================
+
+model Team {
+  id          String  @id @default(cuid())
+  name        String  @unique
+  description String?
+  isActive    Boolean @default(true)
+
+  teamLeader   Employee? @relation("TeamLeader", fields: [teamLeaderId], references: [id], onDelete: SetNull)
+  teamLeaderId String?   @unique
+
+  members TeamMember[]
+  orders  Order[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("teams")
+}
+
+model TeamMember {
+  id String @id @default(cuid())
+
+  team       Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  teamId     String
+  employee   Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  employeeId String
+
+  joinedAt DateTime  @default(now())
+  leftAt   DateTime?
+  isActive Boolean   @default(true)
+
+  @@unique([teamId, employeeId])
+  @@map("team_members")
 }
 
 // ===============================

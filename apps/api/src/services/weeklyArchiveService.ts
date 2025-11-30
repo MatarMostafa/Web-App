@@ -108,6 +108,5 @@ export const shouldRunArchiveProcess = () => {
  * Manual trigger for archiving (for testing or manual execution)
  */
 export const manualArchiveTrigger = async () => {
-  console.log("Manual archive trigger initiated");
   return await archivePreviousWeekOrders();
 };

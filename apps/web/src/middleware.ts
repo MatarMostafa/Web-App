@@ -9,12 +9,27 @@ export default withAuth(
     // Role-based route protection
     if (pathname.startsWith("/dashboard-admin")) {
       if (token?.role !== "ADMIN") {
+        if (token?.role === "TEAM_LEADER") {
+          return NextResponse.redirect(new URL("/dashboard-team-leader", req.url));
+        }
+        return NextResponse.redirect(new URL("/dashboard-employee", req.url));
+      }
+    }
+
+    if (pathname.startsWith("/dashboard-team-leader")) {
+      if (token?.role !== "TEAM_LEADER") {
+        if (token?.role === "ADMIN") {
+          return NextResponse.redirect(new URL("/dashboard-admin", req.url));
+        }
         return NextResponse.redirect(new URL("/dashboard-employee", req.url));
       }
     }
 
     if (pathname.startsWith("/dashboard-employee")) {
       if (token?.role !== "EMPLOYEE" && token?.role !== "ADMIN") {
+        if (token?.role === "TEAM_LEADER") {
+          return NextResponse.redirect(new URL("/dashboard-team-leader", req.url));
+        }
         return NextResponse.redirect(new URL("/login", req.url));
       }
     }
@@ -24,12 +39,6 @@ export default withAuth(
   {
     callbacks: {
       authorized: ({ token }) => {
-        console.log(
-          "Auth check - Token exists:",
-          !!token,
-          "Role:",
-          token?.role
-        );
         return !!token;
       },
     },
@@ -37,5 +46,5 @@ export default withAuth(
 );
 
 export const config = {
-  matcher: ["/dashboard-admin/:path*", "/dashboard-employee/:path*"],
+  matcher: ["/dashboard-admin/:path*", "/dashboard-employee/:path*", "/dashboard-team-leader/:path*"],
 };
