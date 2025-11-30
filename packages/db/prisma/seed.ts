@@ -208,6 +208,64 @@ async function main() {
       },
       include: { employee: true },
     }),
+    prisma.user.create({
+      data: {
+        email: "teamleader@company.com",
+        username: "teamleader",
+        password: hashedPassword,
+        role: "TEAM_LEADER",
+        emailVerified: true,
+        employee: {
+          create: {
+            employeeCode: "EMP005",
+            firstName: "Alex",
+            lastName: "Leader",
+            phoneNumber: "+1-555-0501",
+            address: "555 Leader Lane, City, State 12345",
+            hireDate: new Date("2023-01-20"),
+            dateOfBirth: new Date("1987-09-12"),
+            departmentId: departments[0].id,
+            positionId: positions[0].id,
+            salary: 80000,
+            scheduleType: "FULL_TIME",
+            priority: 1,
+            emergencyContact: {
+              name: "Sam Leader",
+              relationship: "Partner",
+              phone: "+1-555-0502",
+            },
+          },
+        },
+      },
+      include: { employee: true },
+    }),
+  ]);
+
+  // Create teams (one per leader)
+  const teams = await Promise.all([
+    prisma.team.create({
+      data: {
+        name: "Development Team",
+        description: "Frontend and backend development team",
+        teamLeaderId: users[4].employee!.id,
+      },
+    }),
+  ]);
+
+  // Add team members
+  await Promise.all([
+    prisma.teamMember.create({
+      data: {
+        teamId: teams[0].id,
+        employeeId: users[0].employee!.id,
+      },
+    }),
+    prisma.teamMember.create({
+      data: {
+        teamId: teams[0].id,
+        employeeId: users[2].employee!.id,
+      },
+    }),
   ]);
 
   // Create customers
@@ -349,6 +407,7 @@ async function main() {
         priority: 1,
         status: "ACTIVE",
         customerId: customers[0].id,
+        teamId: teams[0].id,
         createdBy: users[0].id,
       },
     }),
@@ -664,6 +723,7 @@ async function main() {
   console.log(`- ${users.length} users with employees`);
   console.log(`- ${customers.length} customers`);
   console.log(`- ${qualifications.length} qualifications`);
+  console.log(`- ${teams.length} teams`);
   console.log(`- ${orders.length} orders`);
   console.log(`- Sample assignments, absences, ratings, and work statistics`);
   console.log(`- Performance thresholds and employee performance records`);

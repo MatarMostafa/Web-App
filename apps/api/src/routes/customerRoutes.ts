@@ -33,7 +33,7 @@ const router = express.Router();
 router.get(
   "/",
   authMiddleware,
-  roleMiddleware(["ADMIN", "HR_MANAGER"]),
+  roleMiddleware(["ADMIN", "HR_MANAGER", "TEAM_LEADER"]),
   getAllCustomers
 );
 

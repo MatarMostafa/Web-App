@@ -140,6 +140,8 @@ export function NotificationDropdown() {
         const currentPath = window.location.pathname;
         if (currentPath.includes("/dashboard-employee")) {
           targetPath = "/dashboard-employee/orders";
+        } else if (currentPath.includes("/dashboard-team-leader")) {
+          targetPath = "/dashboard-team-leader/orders";
         } else {
           targetPath = "/dashboard-admin/orders";
         }
