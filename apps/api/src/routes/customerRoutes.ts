@@ -5,7 +5,9 @@ import {
   getCustomerOrdersService, 
   getCustomerOrderByIdService,
   getCustomerProfileService,
-  updateCustomerProfileService
+  updateCustomerProfileService,
+  getAllCustomersService,
+  getCustomerByIdService
 } from "../services/customerService";
 import { registerCustomer } from "../services/authService";
 import { notifyCustomerBlocked, notifyCustomerUnblocked } from "../services/notificationHelpers";
@@ -146,7 +148,18 @@ router.get(
   "/",
   authMiddleware,
   roleMiddleware(["ADMIN", "HR_MANAGER", "TEAM_LEADER"]),
-  getAllCustomers
+  async (req, res) => {
+    try {
+      const customers = await getAllCustomersService();
+      res.json({ success: true, data: customers });
+    } catch (error) {
+      console.error("Get all customers error:", error);
+      res.status(500).json({
+        message: "Failed to fetch customers",
+        error: error instanceof Error ? error.message : String(error)
+      });
+    }
+  }
 );
 
 /**
@@ -158,7 +171,22 @@ router.get(
   "/:id",
   authMiddleware,
   roleMiddleware(["ADMIN", "HR_MANAGER", "TEAM_LEADER"]),
-  getCustomerById
+  async (req, res) => {
+    try {
+      const { id } = req.params;
+      const customer = await getCustomerByIdService(id);
+      res.json({ success: true, data: customer });
+    } catch (error) {
+      console.error("Get customer by ID error:", error);
+      if (error instanceof Error && error.message === 'Customer not found') {
+        return res.status(404).json({ message: "Customer not found" });
+      }
+      res.status(500).json({
+        message: "Failed to fetch customer",
+        error: error instanceof Error ? error.message : String(error)
+      });
+    }
+  }
 );
 
 /**

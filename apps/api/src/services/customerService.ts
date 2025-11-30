@@ -141,3 +141,65 @@ export const updateCustomerProfileService = async (userId: string, data: any) =>
 
   return updatedCustomer;
 };
+
+// Get all customers (Admin)
+export const getAllCustomersService = async () => {
+  const customers = await prisma.customer.findMany({
+    include: {
+      user: {
+        select: {
+          id: true,
+          username: true,
+          email: true,
+          isActive: true,
+        },
+      },
+      _count: {
+        select: {
+          orders: true,
+        },
+      },
+    },
+    orderBy: { companyName: 'asc' },
+  });
+
+  return customers.map(customer => ({
+    ...customer,
+    contactEmail: customer.user?.email || customer.contactEmail,
+  }));
+};
+
+// Get customer by ID (Admin)
+export const getCustomerByIdService = async (customerId: string) => {
+  const customer = await prisma.customer.findUnique({
+    where: { id: customerId },
+    include: {
+      user: {
+        select: {
+          id: true,
+          username: true,
+          email: true,
+          isActive: true,
+        },
+      },
+      orders: {
+        orderBy: { createdAt: 'desc' },
+        take: 10,
+      },
+      _count: {
+        select: {
+          orders: true,
+        },
+      },
+    },
+  });
+
+  if (!customer) {
+    throw new Error('Customer not found');
+  }
+
+  return {
+    ...customer,
+    contactEmail: customer.user?.email || customer.contactEmail,
+  };
+};
