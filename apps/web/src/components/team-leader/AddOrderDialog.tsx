@@ -91,7 +91,7 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger, onOrderCreated
       });
       if (response.ok) {
         const data = await response.json();
-        const teamMembers = data.teams.flatMap((team: any) => 
+        const teamMembers = (data.teams || []).flatMap((team: any) => 
           team.members?.map((member: any) => ({
             id: member.employee.id,
             firstName: member.employee.firstName,
