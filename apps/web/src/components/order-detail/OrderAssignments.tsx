@@ -129,8 +129,13 @@ export const OrderAssignments: React.FC<OrderAssignmentsProps> = ({
     }
   };
 
-  const getInitials = (firstName: string, lastName: string) => {
-    return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
+  const getInitials = (firstName?: string, lastName?: string, username?: string) => {
+    if (firstName || lastName) {
+      const first = firstName?.charAt(0) || '';
+      const last = lastName?.charAt(0) || '';
+      return `${first}${last}`.toUpperCase();
+    }
+    return username?.charAt(0)?.toUpperCase() || 'U';
   };
 
   if (loading) {
@@ -207,14 +212,17 @@ export const OrderAssignments: React.FC<OrderAssignmentsProps> = ({
               <div key={assignment.id} className="flex items-start gap-3 p-3 border rounded-lg">
                 <Avatar className="w-10 h-10">
                   <AvatarFallback>
-                    {getInitials(assignment.employee.firstName, assignment.employee.lastName)}
+                    {getInitials(assignment.employee.firstName, assignment.employee.lastName, assignment.employee.user?.email?.split('@')[0])}
                   </AvatarFallback>
                 </Avatar>
                 
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
                     <h4 className="font-medium text-sm">
-                      {assignment.employee.firstName} {assignment.employee.lastName}
+                      {assignment.employee.firstName || assignment.employee.lastName ? 
+                        `${assignment.employee.firstName || ''} ${assignment.employee.lastName || ''}`.trim() : 
+                        assignment.employee.user?.email?.split('@')[0] || 'No Name'
+                      }
                     </h4>
                     <Badge variant="outline" className="text-xs">
                       {assignment.employee.employeeCode}

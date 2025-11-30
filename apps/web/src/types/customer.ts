@@ -12,6 +12,12 @@ export interface Customer {
   subAccounts?: SubAccount[];
   orders?: any[];
   ratings?: any[];
+  user?: {
+    id: string;
+    username: string;
+    email: string;
+    isActive: boolean;
+  };
 }
 
 export interface SubAccount {
@@ -32,6 +38,9 @@ export interface CreateCustomerData {
   industry?: string;
   taxNumber?: string;
   isActive?: boolean;
+  // Login credentials (optional)
+  username?: string;
+  password?: string;
 }
 
 export interface UpdateCustomerData {

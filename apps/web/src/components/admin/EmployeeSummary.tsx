@@ -23,12 +23,16 @@ interface EmployeeSummaryProps {
 
 const EmployeeSummary: React.FC<EmployeeSummaryProps> = ({ employee }) => {
   const { t } = useTranslation();
-  const getInitials = (firstName?: string, lastName?: string) => {
-    return `${firstName?.[0] || ""}${lastName?.[0] || ""}`.toUpperCase();
+  const getInitials = (firstName?: string, lastName?: string, username?: string) => {
+    if (firstName || lastName) {
+      return `${firstName?.[0] || ""}${lastName?.[0] || ""}`.toUpperCase();
+    }
+    return username?.[0]?.toUpperCase() || "U";
   };
 
   const getFullName = () => {
-    return `${employee.firstName} ${employee.lastName}`.trim();
+    const fullName = `${employee.firstName || ""} ${employee.lastName || ""}`.trim();
+    return fullName || employee.user?.username || "No Name";
   };
 
   const formatDate = (dateString: string) => {
@@ -54,7 +58,7 @@ const EmployeeSummary: React.FC<EmployeeSummaryProps> = ({ employee }) => {
           <div className="flex items-center gap-4 w-full justify-center lg:justify-start">
             <Avatar className="h-20 w-20">
               <AvatarFallback className="text-lg font-semibold">
-                {getInitials(employee.firstName, employee.lastName)}
+                {getInitials(employee.firstName, employee.lastName, employee.user?.username)}
               </AvatarFallback>
             </Avatar>
           </div>

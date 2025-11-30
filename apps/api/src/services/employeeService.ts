@@ -9,7 +9,7 @@ const transformUserToEmployee = (user: any): Employee => {
   return {
     id: employee?.id || user.id,
     employeeCode: employee?.employeeCode || `EMP${user.id.slice(-4)}`,
-    email: user.email || undefined,
+    email: user.email || employee?.email || undefined, // Prioritize user.email
     username: user.username || undefined,
     firstName: employee?.firstName || undefined,
     lastName: employee?.lastName || undefined,
@@ -45,8 +45,8 @@ export const getAllEmployees = async (): Promise<Employee[]> => {
   try {
     const users = await prisma.user.findMany({
       where: {
-        NOT: {
-          role: "ADMIN",
+        role: {
+          in: ["EMPLOYEE", "HR_MANAGER", "TEAM_LEADER"],
         },
       },
       include: {

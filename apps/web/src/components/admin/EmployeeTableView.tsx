@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui";
 import { Button } from "@/components/ui";
 import { Avatar, AvatarFallback } from "@/components/ui";
 import { Pagination, usePagination } from "@/components/ui/pagination";
-import { Edit3, Trash2, Shield, ShieldOff } from "lucide-react";
+import { Edit3, Trash2, Shield, ShieldOff, KeyRound } from "lucide-react";
 import { format } from "date-fns";
 import { Employee } from "@/types/employee";
 import { useRouter } from "next/navigation";
@@ -24,6 +24,7 @@ interface EmployeeTableViewProps {
   onDelete?: (id: string) => void;
   onBlock?: (employee: Employee) => void;
   onUnblock?: (employee: Employee) => void;
+  onResetPassword?: (employee: Employee) => void;
 }
 
 const EmployeeTableView: React.FC<EmployeeTableViewProps> = ({
@@ -33,11 +34,15 @@ const EmployeeTableView: React.FC<EmployeeTableViewProps> = ({
   onDelete,
   onBlock,
   onUnblock,
+  onResetPassword,
 }) => {
   const { t } = useTranslation();
   const { currentPage, setCurrentPage, paginatedItems, totalItems } = usePagination(employees);
-  const getInitials = (firstName: string, lastName: string) => {
-    return `${firstName?.[0] || ""}${lastName?.[0] || ""}`.toUpperCase();
+  const getInitials = (firstName?: string, lastName?: string, username?: string) => {
+    if (firstName || lastName) {
+      return `${firstName?.[0] || ""}${lastName?.[0] || ""}`.toUpperCase();
+    }
+    return username?.[0]?.toUpperCase() || "U";
   };
   const router = useRouter();
   return (
@@ -82,12 +87,15 @@ const EmployeeTableView: React.FC<EmployeeTableViewProps> = ({
                     >
                       <Avatar className="h-8 w-8">
                         <AvatarFallback className="text-xs">
-                          {getInitials(employee.firstName, employee.lastName)}
+                          {getInitials(employee.firstName, employee.lastName, employee.user?.username)}
                         </AvatarFallback>
                       </Avatar>
                       <div>
                         <p className="font-medium text-primary hover:underline">
-                          {employee.firstName || ""} {employee.lastName || ""}
+                          {employee.firstName || employee.lastName ? 
+                            `${employee.firstName || ""} ${employee.lastName || ""}`.trim() : 
+                            employee.user?.username || "No Name"
+                          }
                         </p>
                       </div>
                     </div>
@@ -149,6 +157,17 @@ const EmployeeTableView: React.FC<EmployeeTableViewProps> = ({
                           title={t('admin.employees.table.editEmployee')}
                         >
                           <Edit3 className="h-4 w-4" />
+                        </Button>
+                      )}
+                      {onResetPassword && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => onResetPassword(employee)}
+                          title={t('admin.employees.table.resetPassword')}
+                          className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                        >
+                          <KeyRound className="h-4 w-4" />
                         </Button>
                       )}
                       {employee.isAvailable ? (

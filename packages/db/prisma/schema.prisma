@@ -22,6 +22,7 @@ enum UserRole {
   EMPLOYEE
   HR_MANAGER
   SUPER_ADMIN
+  CUSTOMER
 }
 
 enum RatingStatus {
@@ -46,6 +47,14 @@ enum RequestStatus {
   APPROVED
   REJECTED
   CANCELLED
+}
+
+enum SettingsChangeType {
+  FIRST_NAME
+  LAST_NAME
+  EMAIL_ADDRESS
+  COMPANY_NAME
+  TAX_NUMBER
 }
 
 enum AssignmentStatus {
@@ -121,8 +130,9 @@ model User {
   twoFactorEnabled         Boolean   @default(false)
   twoFactorSecret          String?
 
-  // Cascade delete Employee
+  // Cascade delete relations
   employee        Employee?
+  customer        Customer?
   manualOverrides EmployeePerformance[] @relation("ManualOverrideByUser")
 
   // Manager relationships
@@ -137,6 +147,7 @@ model User {
   notificationRecipients  NotificationRecipient[]
   notificationPreferences NotificationPreference?
   orderNotes              OrderNote[]
+  settingsChangeRequests  SettingsChangeRequest[]
 
   @@map("users")
 }
@@ -303,6 +314,9 @@ model Customer {
 
   industry  String?
   taxNumber String? @unique
+
+  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String? @unique
 
   subAccounts SubAccount[]
   orders      Order[]
@@ -713,6 +727,32 @@ model File {
   updatedAt    DateTime     @updatedAt
   
   @@map("files")
+}
+
+// ===============================
+// SETTINGS CHANGE REQUESTS
+// ===============================
+
+model SettingsChangeRequest {
+  id             String              @id @default(cuid())
+  userId         String
+  requestType    SettingsChangeType
+  currentValue   String?
+  requestedValue String
+  reason         String?
+  status         RequestStatus       @default(PENDING)
+  reviewedBy     String?
+  reviewedAt     DateTime?
+  reviewNotes    String?
+  
+  user           User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+  
+  @@index([userId, status])
+  @@index([status, createdAt])
+  @@map("settings_change_requests")
 }
 
 // ===============================

@@ -6,6 +6,7 @@ import { Search, Plus, Users } from "lucide-react";
 import EmployeeTableView from "@/components/admin/EmployeeTableView";
 import AddEmployeeDialog from "@/components/admin/AddEmployeeDialog";
 import EditEmployeeDialog from "@/components/admin/EditEmployeeDialog";
+import ResetPasswordDialog from "@/components/admin/ResetPasswordDialog";
 import { useEmployeeStore } from "@/store/employeeStore";
 import { useEmployeeBlockStore } from "@/store/employeeBlockStore";
 import { Employee } from "@/types/employee";
@@ -28,6 +29,10 @@ const EmployeesPage = () => {
     employee: Employee | null;
   }>({ isOpen: false, action: "block", employee: null });
   const [deleteModalState, setDeleteModalState] = useState<{
+    isOpen: boolean;
+    employee: Employee | null;
+  }>({ isOpen: false, employee: null });
+  const [resetPasswordState, setResetPasswordState] = useState<{
     isOpen: boolean;
     employee: Employee | null;
   }>({ isOpen: false, employee: null });
@@ -99,7 +104,6 @@ const EmployeesPage = () => {
         await unblockEmployee(blockModalState.employee.userId!);
       }
       await fetchEmployees(); // Refresh the list
-      setBlockModalState({ isOpen: false, action: "block", employee: null });
     } catch (error) {
       // Error is handled in the store
     }
@@ -107,6 +111,14 @@ const EmployeesPage = () => {
 
   const handleBlockModalClose = () => {
     setBlockModalState({ isOpen: false, action: "block", employee: null });
+  };
+
+  const handleResetPassword = (employee: Employee) => {
+    setResetPasswordState({ isOpen: true, employee });
+  };
+
+  const handleResetPasswordClose = () => {
+    setResetPasswordState({ isOpen: false, employee: null });
   };
 
   return (
@@ -148,6 +160,7 @@ const EmployeesPage = () => {
         onDelete={handleDelete}
         onBlock={handleBlock}
         onUnblock={handleUnblock}
+        onResetPassword={handleResetPassword}
       />
 
       {editingEmployee && (
@@ -177,6 +190,22 @@ const EmployeesPage = () => {
         employeeName={deleteModalState.employee ? `${deleteModalState.employee.firstName} ${deleteModalState.employee.lastName}` : ""}
         loading={loading}
       />
+
+      {resetPasswordState.employee && (
+        <ResetPasswordDialog
+          open={resetPasswordState.isOpen}
+          onOpenChange={(open) => {
+            setResetPasswordState({ isOpen: open, employee: open ? resetPasswordState.employee : null });
+          }}
+          userType="employee"
+          userId={resetPasswordState.employee.id}
+          userName={resetPasswordState.employee.firstName && resetPasswordState.employee.lastName 
+            ? `${resetPasswordState.employee.firstName} ${resetPasswordState.employee.lastName}`
+            : resetPasswordState.employee.user?.username || "Employee"
+          }
+          username={resetPasswordState.employee.user?.username}
+        />
+      )}
 
       {!loading && employees.length === 0 && (
         <div className="flex flex-col items-center justify-center text-center p-12 border rounded-lg">
