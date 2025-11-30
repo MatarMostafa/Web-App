@@ -116,7 +116,6 @@ export const createOrderService = async (data: OrderCreateInput & { assignedEmpl
       createdBy
     },
   });
-  console.log("order = ", order)
   // Auto-update status based on assignments
   let newStatus = order.status;
   if (assignedEmployeeIds && assignedEmployeeIds.length > 0) {

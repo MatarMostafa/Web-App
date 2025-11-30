@@ -14,7 +14,6 @@ const getNotificationQueue = () => {
           port: Number(process.env.REDIS_PORT ?? 6379),
         };
     
-    console.log("Initializing notification queue with connection:", connection);
     notificationQueue = new Queue("notifications", { connection });
   }
   return notificationQueue;

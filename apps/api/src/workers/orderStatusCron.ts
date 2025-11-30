@@ -13,20 +13,15 @@ export const startOrderStatusCron = () => {
   // This gives time for other midnight processes to complete
   const cronExpression = "30 0 * * *"; // Daily at 00:30
   
-  console.log("🚀 Starting order status cron job...");
-  
   cron.schedule(cronExpression, async () => {
     if (isRunning) {
-      console.log("⏳ Order status check already running, skipping...");
       return;
     }
     
     isRunning = true;
     
     try {
-      console.log("🔄 Daily order status check triggered");
       await OrderStatusWorker.runDailyStatusCheck();
-      console.log("✅ Daily order status check completed");
     } catch (error) {
       console.error("❌ Daily order status check failed:", error);
       
@@ -41,8 +36,6 @@ export const startOrderStatusCron = () => {
     timezone: "UTC" // Use UTC to avoid timezone issues
   });
   
-  console.log("✅ Order status cron job scheduled successfully");
-  console.log("📅 Next run: Daily at 00:30 UTC");
 };
 
 /**
@@ -52,7 +45,6 @@ export const stopOrderStatusCron = () => {
   cron.getTasks().forEach((task) => {
     task.stop();
   });
-  console.log("🛑 Order status cron job stopped");
 };
 
 /**
@@ -75,13 +67,11 @@ export const triggerOrderStatusCheckManually = async () => {
   if (isRunning) {
     throw new Error("Order status check already running");
   }
-  
-  console.log("🔧 Manual trigger: Starting order status check...");
+
   isRunning = true;
   
   try {
     await OrderStatusWorker.runDailyStatusCheck();
-    console.log("✅ Manual order status check completed");
   } finally {
     isRunning = false;
   }

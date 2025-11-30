@@ -4,8 +4,8 @@
     "build": {
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "outputs": ["dist/**", ".next/**", "!.next/cache/**", "public/dist/**"],
-      "dependsOn": ["^build"],
-      "env": ["NEXT_PUBLIC_API_HOST"]
+      "dependsOn": ["^build", "db:generate"],
+      "env": ["NEXT_PUBLIC_API_HOST", "DATABASE_URL"]
     },
     "test": {
       "outputs": ["coverage/**"],
@@ -17,6 +17,16 @@
     "dev": {
       "cache": false,
       "persistent": true
+    },
+    "db:generate": {
+      "cache": false
+    },
+    "db:migrate": {
+      "cache": false,
+      "persistent": true
+    },
+    "db:deploy": {
+      "cache": false
     },
     "clean": {
       "cache": false

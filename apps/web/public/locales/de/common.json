@@ -683,6 +683,8 @@
         "priority": "Priorität",
         "priorityRequired": "Priorität muss mindestens 1 sein",
         "duration": "Dauer (Stunden)",
+        "activities": "Aktivitäten",
+        "selectActivity": "Aktivität auswählen",
         "specialInstructions": "Besondere Anweisungen",
         "assignEmployees": "Mitarbeiter zuweisen (Optional)",
         "assignEmployeesEdit": "Mitarbeiter zuweisen",
@@ -700,6 +702,13 @@
         "createError": "Fehler beim Erstellen des Auftrags",
         "updateError": "Fehler beim Aktualisieren des Auftrags",
         "deleteError": "Fehler beim Löschen des Auftrags"
+      },
+      "activities": {
+        "containerUnloading": "Container entladen",
+        "picking": "Kommissionieren",
+        "palletSorting": "Paletten sortieren",
+        "qualityControl": "Qualitätskontrolle",
+        "packaging": "Verpacken"
       }
     },
     "customers": {
@@ -1265,6 +1274,63 @@
         "completed": "Ihr Auftrag wurde erfolgreich abgeschlossen.",
         "cancelled": "Dieser Auftrag wurde storniert."
       }
+    }
+  },
+  "teamLeader": {
+    "dashboard": {
+      "title": "Teamleiter Dashboard",
+      "subtitle": "Verwalten Sie Ihre Teams und Aufträge",
+      "failedToLoad": "Dashboard-Daten konnten nicht geladen werden",
+      "totalOrders": "Gesamte Aufträge",
+      "activeOrders": "Aktive Aufträge",
+      "completedOrders": "Abgeschlossene Aufträge",
+      "teamMembers": "Teammitglieder",
+      "myTeams": "Meine Teams",
+      "noTeamsAssigned": "Keine Teams zugewiesen",
+      "members": "Mitglieder",
+      "recentOrders": "Aktuelle Aufträge",
+      "status": "Status"
+    },
+    "orders": {
+      "title": "Aufträge",
+      "subtitle": "Verwalten Sie Aufträge, die Ihren Teams zugewiesen sind",
+      "createOrder": "Auftrag erstellen",
+      "noOrdersFound": "Keine Aufträge gefunden",
+      "assignedEmployees": "Zugewiesene Mitarbeiter",
+      "team": "Team",
+      "backToOrders": "Zurück zu Aufträgen",
+      "orderNotFound": "Auftrag nicht gefunden",
+      "orderNotFoundDesc": "Auftrag nicht gefunden oder nicht zugänglich",
+      "failedToFetch": "Fehler beim Laden des Auftrags",
+      "errorFetching": "Fehler beim Laden des Auftrags",
+      "noDescription": "Keine Beschreibung vorhanden",
+      "scheduledDate": "Geplantes Datum",
+      "start": "Start",
+      "location": "Standort",
+      "assignedStaff": "Zugewiesenes Personal",
+      "noStaffAssigned": "Kein Personal zugewiesen",
+      "personAssigned": "Person zugewiesen",
+      "peopleAssigned": "Personen zugewiesen",
+      "duration": "Dauer",
+      "minutes": "Minuten",
+      "specialInstructions": "Besondere Anweisungen",
+      "customerInformation": "Kundeninformationen",
+      "teamAssignment": "Teamzuweisung"
+    },
+    "teams": {
+      "title": "Meine Teams",
+      "subtitle": "Anzeigen und verwalten Sie Ihre Teammitglieder",
+      "noTeamsAssigned": "Keine Teams zugewiesen",
+      "members": "Mitglieder",
+      "employee": "Mitarbeiter",
+      "employeeCode": "Mitarbeiternummer",
+      "department": "Abteilung",
+      "position": "Position",
+      "joinedDate": "Beitrittsdatum",
+      "status": "Status",
+      "noTeamMembers": "Keine Teammitglieder gefunden",
+      "active": "Aktiv",
+      "inactive": "Inaktiv"
     }
   },
   "employee": {

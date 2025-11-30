@@ -31,7 +31,6 @@ class ApiClient {
       let errorMessage = `HTTP error! status: ${response.status}`;
       try {
         const errorData = await response.json();
-        console.log("API Error Response:", errorData);
         // Extract the specific error message from the API response
         if (errorData.message) {
           errorMessage = errorData.message;
@@ -39,7 +38,6 @@ class ApiClient {
           errorMessage = errorData.error;
         }
       } catch (parseError) {
-        console.log('JSON parse failed, trying text');
         // If JSON parsing fails, try to get text
         try {
           const errorText = await response.text();
@@ -101,15 +99,12 @@ class ApiClient {
   async get<T>(endpoint: string): Promise<T> {
     try {
       const headers = await this.getAuthHeaders();
-      console.log("Making GET request to:", `${API_URL}${endpoint}`);
-      console.log("Headers:", headers);
 
       const response = await fetch(`${API_URL}${endpoint}`, {
         method: "GET",
         headers,
       });
 
-      console.log("Response status:", response.status);
       return this.handleResponse<T>(response);
     } catch (error) {
       console.error("API GET error:", error);
@@ -122,8 +117,6 @@ class ApiClient {
 
   async post<T>(endpoint: string, data: any): Promise<T> {
     try {
-      console.log("Making POST request to:", `${API_URL}${endpoint}`);
-      console.log("POST data:", data);
       
       const response = await fetch(`${API_URL}${endpoint}`, {
         method: "POST",
@@ -131,7 +124,6 @@ class ApiClient {
         body: JSON.stringify(data),
       });
       
-      console.log("POST response status:", response.status);
       return this.handleResponse<T>(response);
     } catch (error) {
       console.error("POST error:", error);
