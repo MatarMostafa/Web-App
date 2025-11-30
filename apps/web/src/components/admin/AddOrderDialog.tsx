@@ -331,15 +331,22 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
           </div>
 
           <div>
-            <Label htmlFor="specialInstructions">{t("admin.orders.form.specialInstructions")}</Label>
-            <Textarea
-              id="specialInstructions"
+            <Label htmlFor="specialInstructions">{t("admin.orders.form.activities")}</Label>
+            <Select
               value={formData.specialInstructions}
-              onChange={(e) =>
-                handleInputChange("specialInstructions", e.target.value)
-              }
-              rows={3}
-            />
+              onValueChange={(value) => handleInputChange("specialInstructions", value)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder={t("admin.orders.form.selectActivity")} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Container entladen">{t("admin.orders.activities.containerUnloading")}</SelectItem>
+                <SelectItem value="Kommissionieren">{t("admin.orders.activities.picking")}</SelectItem>
+                <SelectItem value="Paletten sortieren">{t("admin.orders.activities.palletSorting")}</SelectItem>
+                <SelectItem value="Qualitätskontrolle">{t("admin.orders.activities.qualityControl")}</SelectItem>
+                <SelectItem value="Verpacken">{t("admin.orders.activities.packaging")}</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           <div>

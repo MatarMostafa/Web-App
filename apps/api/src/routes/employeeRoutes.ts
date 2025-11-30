@@ -15,7 +15,7 @@ const router = express.Router();
 router.get(
   "/",
   authMiddleware,
-  roleMiddleware(["ADMIN", "TEAM_LEADER", "HR_MANAGER"]),
+  roleMiddleware(["ADMIN", "HR_MANAGER"]),
   getAllEmployees
 );
 

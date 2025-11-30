@@ -86,6 +86,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => {
   const dashboardNavItems = [
     { name: "Dashboard", key: "navigation.dashboard", path: "/dashboard-admin", icon: LayoutGrid },
     { name: "Employees", key: "navigation.employees", path: "/dashboard-admin/employees", icon: Users },
+    { name: "Teams", key: "navigation.teams", path: "/dashboard-admin/teams", icon: Users },
     {
       name: "Leave Management",
       key: "navigation.leaveManagement",
@@ -178,6 +179,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => {
                     pathname.startsWith("/dashboard-admin/customers/")) ||
                   (item.path === "/dashboard-admin/orders" &&
                     pathname.startsWith("/dashboard-admin/orders/")) ||
+                  (item.path === "/dashboard-admin/teams" &&
+                    pathname.startsWith("/dashboard-admin/teams/")) ||
                   (item.path === "/dashboard-admin/qualifications" &&
                     pathname.startsWith("/dashboard-admin/qualifications"));
                 const Icon = item.icon;
