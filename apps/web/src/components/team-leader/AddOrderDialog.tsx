@@ -28,7 +28,10 @@ interface AddOrderDialogProps {
   onOrderCreated?: () => void;
 }
 
-const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger, onOrderCreated }) => {
+const AddOrderDialog: React.FC<AddOrderDialogProps> = ({
+  trigger,
+  onOrderCreated,
+}) => {
   const { data: session } = useSession();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -58,26 +61,35 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger, onOrderCreated
 
   useEffect(() => {
     if (formData.scheduledDate && startTimeOnly) {
-      setFormData(prev => ({ ...prev, startTime: `${formData.scheduledDate}T${startTimeOnly}` }));
+      setFormData((prev) => ({
+        ...prev,
+        startTime: `${formData.scheduledDate}T${startTimeOnly}`,
+      }));
     }
   }, [formData.scheduledDate, startTimeOnly]);
 
   useEffect(() => {
     if (formData.scheduledDate && endTimeOnly) {
-      setFormData(prev => ({ ...prev, endTime: `${formData.scheduledDate}T${endTimeOnly}` }));
+      setFormData((prev) => ({
+        ...prev,
+        endTime: `${formData.scheduledDate}T${endTimeOnly}`,
+      }));
     } else if (!endTimeOnly) {
-      setFormData(prev => ({ ...prev, endTime: "" }));
+      setFormData((prev) => ({ ...prev, endTime: "" }));
     }
   }, [formData.scheduledDate, endTimeOnly]);
 
   const fetchCustomers = async () => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/customers`, {
-        headers: { Authorization: `Bearer ${session?.accessToken}` },
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/customers`,
+        {
+          headers: { Authorization: `Bearer ${session?.accessToken}` },
+        }
+      );
       if (response.ok) {
         const data = await response.json();
-        setCustomers(data);
+        setCustomers(data.success ? data.data : []);
       }
     } catch (error) {
       console.error("Error fetching customers:", error);
@@ -86,18 +98,22 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger, onOrderCreated
 
   const fetchEmployees = async () => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/team-leader/dashboard`, {
-        headers: { Authorization: `Bearer ${session?.accessToken}` },
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/team-leader/dashboard`,
+        {
+          headers: { Authorization: `Bearer ${session?.accessToken}` },
+        }
+      );
       if (response.ok) {
         const data = await response.json();
-        const teamMembers = (data.teams || []).flatMap((team: any) => 
-          team.members?.map((member: any) => ({
-            id: member.employee.id,
-            firstName: member.employee.firstName,
-            lastName: member.employee.lastName,
-            employeeCode: member.employee.employeeCode,
-          })) || []
+        const teamMembers = (data.teams || []).flatMap(
+          (team: any) =>
+            team.members?.map((member: any) => ({
+              id: member.employee.id,
+              firstName: member.employee.firstName,
+              lastName: member.employee.lastName,
+              employeeCode: member.employee.employeeCode,
+            })) || []
         );
         setEmployees(teamMembers);
       }
@@ -125,7 +141,7 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger, onOrderCreated
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.customerId || !formData.scheduledDate) {
       toast.error("Customer and scheduled date are required");
       return;
@@ -134,7 +150,7 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger, onOrderCreated
     setLoading(true);
     try {
       const submitData = { ...formData };
-      
+
       if (submitData.scheduledDate) {
         const dateStr = submitData.scheduledDate.includes("T")
           ? submitData.scheduledDate
@@ -150,14 +166,17 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger, onOrderCreated
         delete (submitData as any).endTime;
       }
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/team-leader/orders`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${session?.accessToken}`,
-        },
-        body: JSON.stringify(submitData),
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/team-leader/orders`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session?.accessToken}`,
+          },
+          body: JSON.stringify(submitData),
+        }
+      );
 
       if (response.ok) {
         toast.success("Order created successfully");
@@ -176,11 +195,11 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger, onOrderCreated
   };
 
   const handleEmployeeToggle = (employeeId: string, checked: boolean) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       assignedEmployeeIds: checked
         ? [...prev.assignedEmployeeIds, employeeId]
-        : prev.assignedEmployeeIds.filter(id => id !== employeeId)
+        : prev.assignedEmployeeIds.filter((id) => id !== employeeId),
     }));
   };
 
@@ -194,7 +213,12 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger, onOrderCreated
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <Label htmlFor="customerId">Customer *</Label>
-            <Select value={formData.customerId} onValueChange={(value) => setFormData(prev => ({ ...prev, customerId: value }))}>
+            <Select
+              value={formData.customerId}
+              onValueChange={(value) =>
+                setFormData((prev) => ({ ...prev, customerId: value }))
+              }
+            >
               <SelectTrigger>
                 <SelectValue placeholder="Select customer" />
               </SelectTrigger>
@@ -213,7 +237,12 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger, onOrderCreated
             <Textarea
               id="description"
               value={formData.description}
-              onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  description: e.target.value,
+                }))
+              }
               rows={3}
             />
           </div>
@@ -225,7 +254,12 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger, onOrderCreated
                 id="scheduledDate"
                 type="date"
                 value={formData.scheduledDate}
-                onChange={(e) => setFormData(prev => ({ ...prev, scheduledDate: e.target.value }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    scheduledDate: e.target.value,
+                  }))
+                }
               />
             </div>
             <div>
@@ -233,7 +267,9 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger, onOrderCreated
               <Input
                 id="location"
                 value={formData.location}
-                onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, location: e.target.value }))
+                }
                 placeholder="Order location"
               />
             </div>
@@ -242,7 +278,10 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger, onOrderCreated
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <Label htmlFor="startTime">Start Time</Label>
-              <TimeOnlyInput value={startTimeOnly} onChange={setStartTimeOnly} />
+              <TimeOnlyInput
+                value={startTimeOnly}
+                onChange={setStartTimeOnly}
+              />
             </div>
             <div>
               <Label htmlFor="endTime">End Time (Optional)</Label>
@@ -258,7 +297,12 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger, onOrderCreated
                 type="number"
                 min="1"
                 value={formData.priority}
-                onChange={(e) => setFormData(prev => ({ ...prev, priority: Number(e.target.value) }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    priority: Number(e.target.value),
+                  }))
+                }
               />
             </div>
             <div>
@@ -268,7 +312,12 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger, onOrderCreated
                 type="number"
                 min="0"
                 value={formData.duration || ""}
-                onChange={(e) => setFormData(prev => ({ ...prev, duration: e.target.value ? Number(e.target.value) : null }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    duration: e.target.value ? Number(e.target.value) : null,
+                  }))
+                }
               />
             </div>
           </div>
@@ -277,16 +326,24 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger, onOrderCreated
             <Label htmlFor="specialInstructions">Activities</Label>
             <Select
               value={formData.specialInstructions}
-              onValueChange={(value) => setFormData(prev => ({ ...prev, specialInstructions: value }))}
+              onValueChange={(value) =>
+                setFormData((prev) => ({ ...prev, specialInstructions: value }))
+              }
             >
               <SelectTrigger>
                 <SelectValue placeholder="Select activity" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="Container entladen">Container Unloading</SelectItem>
+                <SelectItem value="Container entladen">
+                  Container Unloading
+                </SelectItem>
                 <SelectItem value="Kommissionieren">Picking</SelectItem>
-                <SelectItem value="Paletten sortieren">Pallet Sorting</SelectItem>
-                <SelectItem value="Qualitätskontrolle">Quality Control</SelectItem>
+                <SelectItem value="Paletten sortieren">
+                  Pallet Sorting
+                </SelectItem>
+                <SelectItem value="Qualitätskontrolle">
+                  Quality Control
+                </SelectItem>
                 <SelectItem value="Verpacken">Packaging</SelectItem>
               </SelectContent>
             </Select>
@@ -303,10 +360,16 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger, onOrderCreated
                   <Checkbox
                     id={`employee-${employee.id}`}
                     checked={formData.assignedEmployeeIds.includes(employee.id)}
-                    onCheckedChange={(checked) => handleEmployeeToggle(employee.id, checked as boolean)}
+                    onCheckedChange={(checked) =>
+                      handleEmployeeToggle(employee.id, checked as boolean)
+                    }
                   />
-                  <Label htmlFor={`employee-${employee.id}`} className="text-sm">
-                    {employee.firstName} {employee.lastName} ({employee.employeeCode})
+                  <Label
+                    htmlFor={`employee-${employee.id}`}
+                    className="text-sm"
+                  >
+                    {employee.firstName} {employee.lastName} (
+                    {employee.employeeCode})
                   </Label>
                 </div>
               ))}
@@ -314,7 +377,11 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger, onOrderCreated
           </div>
 
           <div className="flex justify-end gap-2 pt-4">
-            <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setOpen(false)}
+            >
               Cancel
             </Button>
             <Button type="submit" disabled={loading}>
