@@ -42,6 +42,7 @@ const BlockEmployeeModal: React.FC<BlockEmployeeModalProps> = ({
       onConfirm();
     }
     setReason("");
+    onClose();
   };
 
   const handleClose = () => {

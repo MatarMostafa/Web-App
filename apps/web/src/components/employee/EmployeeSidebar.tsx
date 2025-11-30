@@ -260,6 +260,32 @@ const EmployeeSidebar: React.FC<SidebarProps> = ({
                       <TooltipTrigger asChild>
                         <Button
                           variant="ghost"
+                          className={cn(
+                            "w-full justify-start text-[#ffffff] hover:text-white hover:bg-[#444444]",
+                            collapsed ? "px-2" : "px-3"
+                          )}
+                          asChild
+                        >
+                          <Link href="/dashboard-employee/settings" onClick={handleNavClick}>
+                            <Settings
+                              className={cn(
+                                "h-5 w-5",
+                                collapsed && !isMobile ? "mr-0" : "mr-2"
+                              )}
+                            />
+                            {(!collapsed || isMobile) && <span>{t('navigation.settings')}</span>}
+                          </Link>
+                        </Button>
+                      </TooltipTrigger>
+                      {collapsed && !isMobile && (
+                        <TooltipContent side="right">{t('navigation.settings')}</TooltipContent>
+                      )}
+                    </Tooltip>
+
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="ghost"
                           onClick={handleLogout}
                           className={cn(
                             "w-full justify-start text-[#ffffff] hover:text-white hover:bg-[#444444]",

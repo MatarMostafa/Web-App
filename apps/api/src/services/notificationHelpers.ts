@@ -708,6 +708,299 @@ export const notifySkillRejected = async (employeeId: string, qualificationName:
 };
 
 /**
+ * Customer Status Notifications
+ */
+export const notifyCustomerBlocked = async (customerId: string, reason?: string, createdBy?: string) => {
+  const customer = await prisma.customer.findUnique({
+    where: { id: customerId },
+    include: { user: true }
+  });
+
+  if (!customer?.user) return;
+
+  const translation = await getNotificationTranslation(
+    customer.user.id,
+    'system',
+    'customerBlocked',
+    { reason: reason ? ` Grund: ${reason}` : '' }
+  );
+
+  await createNotification({
+    templateKey: "CUSTOMER_BLOCKED",
+    title: translation.title,
+    body: translation.body,
+    data: {
+      category: "system",
+      customerId,
+      reason
+    },
+    recipients: [{ userId: customer.user.id }],
+    createdBy
+  });
+};
+
+export const notifyCustomerUnblocked = async (customerId: string, createdBy?: string) => {
+  const customer = await prisma.customer.findUnique({
+    where: { id: customerId },
+    include: { user: true }
+  });
+
+  if (!customer?.user) return;
+
+  const translation = await getNotificationTranslation(
+    customer.user.id,
+    'system',
+    'customerUnblocked',
+    {}
+  );
+
+  await createNotification({
+    templateKey: "CUSTOMER_UNBLOCKED",
+    title: translation.title,
+    body: translation.body,
+    data: {
+      category: "system",
+      customerId
+    },
+    recipients: [{ userId: customer.user.id }],
+    createdBy
+  });
+};
+
+/**
+ * Customer Notifications
+ */
+export const notifyCustomerOrderStatusChanged = async (orderId: string, newStatus: string, createdBy?: string) => {
+  console.log("🔔 notifyCustomerOrderStatusChanged called:", { orderId, newStatus });
+  
+  const order = await prisma.order.findUnique({
+    where: { id: orderId },
+    include: {
+      customer: {
+        include: { user: true }
+      }
+    }
+  });
+
+  console.log("📋 Order details:", {
+    orderFound: !!order,
+    customerFound: !!order?.customer,
+    userFound: !!order?.customer?.user,
+    customerId: order?.customer?.id,
+    userId: order?.customer?.user?.id,
+    orderNumber: order?.orderNumber
+  });
+
+  if (!order?.customer?.user) {
+    console.log("❌ No customer user found for order:", orderId);
+    return;
+  }
+
+  const statusMessage = await getStatusMessageTranslation(order.customer.user.id, newStatus);
+  
+  const translation = await getNotificationTranslation(
+    order.customer.user.id,
+    'customer',
+    'orderStatusChanged',
+    {
+      orderNumber: order.orderNumber,
+      status: statusMessage
+    }
+  );
+
+  console.log("📧 Creating customer notification:", {
+    userId: order.customer.user.id,
+    title: translation.title,
+    body: translation.body
+  });
+
+  const result = await createNotification({
+    templateKey: "CUSTOMER_ORDER_STATUS_CHANGED",
+    title: translation.title,
+    body: translation.body,
+    data: {
+      category: "order",
+      orderId: order.id,
+      orderNumber: order.orderNumber,
+      newStatus,
+      status: statusMessage
+    },
+    recipients: [{ userId: order.customer.user.id }],
+    createdBy
+  });
+  
+  console.log("✅ Customer notification result:", result);
+};
+
+export const notifyCustomerOrderCompleted = async (orderId: string, createdBy?: string) => {
+  const order = await prisma.order.findUnique({
+    where: { id: orderId },
+    include: {
+      customer: {
+        include: { user: true }
+      }
+    }
+  });
+
+  if (!order?.customer?.user) return;
+  
+  const translation = await getNotificationTranslation(
+    order.customer.user.id,
+    'customer',
+    'orderCompleted',
+    {
+      orderNumber: order.orderNumber
+    }
+  );
+
+  await createNotification({
+    templateKey: "CUSTOMER_ORDER_COMPLETED",
+    title: translation.title,
+    body: translation.body,
+    data: {
+      category: "order",
+      orderId: order.id,
+      orderNumber: order.orderNumber
+    },
+    recipients: [{ userId: order.customer.user.id }],
+    createdBy
+  });
+};
+
+export const notifyCustomerOrderCancelled = async (orderId: string, reason?: string, createdBy?: string) => {
+  const order = await prisma.order.findUnique({
+    where: { id: orderId },
+    include: {
+      customer: {
+        include: { user: true }
+      }
+    }
+  });
+
+  if (!order?.customer?.user) return;
+  
+  const translation = await getNotificationTranslation(
+    order.customer.user.id,
+    'customer',
+    'orderCancelled',
+    {
+      orderNumber: order.orderNumber,
+      reason: reason ? ` Reason: ${reason}` : ''
+    }
+  );
+
+  await createNotification({
+    templateKey: "CUSTOMER_ORDER_CANCELLED",
+    title: translation.title,
+    body: translation.body,
+    data: {
+      category: "order",
+      orderId: order.id,
+      orderNumber: order.orderNumber,
+      reason
+    },
+    recipients: [{ userId: order.customer.user.id }],
+    createdBy
+  });
+};
+
+export const notifyCustomerOrderCreated = async (orderId: string, createdBy?: string) => {
+  console.log("🔔 notifyCustomerOrderCreated called:", { orderId });
+  
+  const order = await prisma.order.findUnique({
+    where: { id: orderId },
+    include: {
+      customer: {
+        include: { user: true }
+      }
+    }
+  });
+
+  console.log("📋 Order creation details:", {
+    orderFound: !!order,
+    customerFound: !!order?.customer,
+    userFound: !!order?.customer?.user,
+    customerId: order?.customer?.id,
+    userId: order?.customer?.user?.id,
+    orderNumber: order?.orderNumber
+  });
+
+  if (!order?.customer?.user) {
+    console.log("❌ No customer user found for order:", orderId);
+    return;
+  }
+  
+  const translation = await getNotificationTranslation(
+    order.customer.user.id,
+    'customer',
+    'orderCreated',
+    {
+      orderNumber: order.orderNumber,
+      scheduledDate: new Date(order.scheduledDate).toLocaleDateString()
+    }
+  );
+
+  console.log("📧 Creating customer order creation notification:", {
+    userId: order.customer.user.id,
+    title: translation.title,
+    body: translation.body
+  });
+
+  const result = await createNotification({
+    templateKey: "CUSTOMER_ORDER_CREATED",
+    title: translation.title,
+    body: translation.body,
+    data: {
+      category: "order",
+      orderId: order.id,
+      orderNumber: order.orderNumber,
+      scheduledDate: new Date(order.scheduledDate).toLocaleDateString()
+    },
+    recipients: [{ userId: order.customer.user.id }],
+    createdBy
+  });
+  
+  console.log("✅ Customer order creation notification result:", result);
+};
+
+export const notifyCustomerOrderScheduleChanged = async (orderId: string, newDate: Date, createdBy?: string) => {
+  const order = await prisma.order.findUnique({
+    where: { id: orderId },
+    include: {
+      customer: {
+        include: { user: true }
+      }
+    }
+  });
+
+  if (!order?.customer?.user) return;
+  
+  const translation = await getNotificationTranslation(
+    order.customer.user.id,
+    'customer',
+    'orderScheduleChanged',
+    {
+      orderNumber: order.orderNumber,
+      newDate: newDate.toLocaleDateString()
+    }
+  );
+
+  await createNotification({
+    templateKey: "CUSTOMER_ORDER_SCHEDULE_CHANGED",
+    title: translation.title,
+    body: translation.body,
+    data: {
+      category: "order",
+      orderId: order.id,
+      orderNumber: order.orderNumber,
+      newDate: newDate.toISOString()
+    },
+    recipients: [{ userId: order.customer.user.id }],
+    createdBy
+  });
+};
+
+/**
  * System Notifications
  */
 export const notifyWelcomeNewEmployee = async (employeeId: string) => {

@@ -12,6 +12,7 @@ import {
   Shield,
   ArrowLeft,
   FileBox,
+  Settings,
   Contact,
   Briefcase,
   UserCheck,
@@ -103,6 +104,12 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => {
     },
     { name: "Positions", key: "navigation.positions", path: "/dashboard-admin/positions", icon: UserCheck },
     { name: "Qualifications", key: "navigation.qualifications", path: "/dashboard-admin/qualifications", icon: Award },
+    {
+      name: "Settings Requests",
+      key: "settings.requests.title",
+      path: "/dashboard-admin/settings-requests",
+      icon: Settings,
+    },
   ];
 
   const settingsNavItems = [
@@ -182,7 +189,9 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => {
                   (item.path === "/dashboard-admin/teams" &&
                     pathname.startsWith("/dashboard-admin/teams/")) ||
                   (item.path === "/dashboard-admin/qualifications" &&
-                    pathname.startsWith("/dashboard-admin/qualifications"));
+                    pathname.startsWith("/dashboard-admin/qualifications")) ||
+                  (item.path === "/dashboard-admin/settings-requests" &&
+                    pathname.startsWith("/dashboard-admin/settings-requests"));
                 const Icon = item.icon;
 
                 return (
@@ -289,31 +298,31 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => {
                   </>
                 ) : (
                   <>
-                    {/* <Tooltip>
+                    <Tooltip>
                       <TooltipTrigger asChild>
                         <Button
                           variant="ghost"
                           className={cn(
-                            "w-full justify-start text-[#ffffff] hover:text-white hover:bg-[#1D4ED8]/60",
+                            "w-full justify-start text-[#ffffff] hover:text-white hover:bg-[#ffffff]/10",
                             collapsed ? "px-2" : "px-3"
                           )}
                           asChild
                         >
-                          <Link href="/settings" onClick={handleNavClick}>
+                          <Link href="/dashboard-admin/settings" onClick={handleNavClick}>
                             <Settings
                               className={cn(
                                 "h-5 w-5",
                                 collapsed && !isMobile ? "mr-0" : "mr-2"
                               )}
                             />
-                            {(!collapsed || isMobile) && <span>Settings</span>}
+                            {(!collapsed || isMobile) && <span>{t('navigation.settings')}</span>}
                           </Link>
                         </Button>
                       </TooltipTrigger>
                       {collapsed && !isMobile && (
-                        <TooltipContent side="right">Settings</TooltipContent>
+                        <TooltipContent side="right">{t('navigation.settings')}</TooltipContent>
                       )}
-                    </Tooltip> */}
+                    </Tooltip>
 
                     <Tooltip>
                       <TooltipTrigger asChild>

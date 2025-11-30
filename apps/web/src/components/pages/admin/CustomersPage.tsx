@@ -6,17 +6,33 @@ import { Search, Plus, Building } from "lucide-react";
 import CustomerTableView from "@/components/admin/CustomerTableView";
 import AddCustomerDialog from "@/components/admin/AddCustomerDialog";
 import EditCustomerDialog from "@/components/admin/EditCustomerDialog";
+import ResetPasswordDialog from "@/components/admin/ResetPasswordDialog";
+import CreateCustomerAccountDialog from "@/components/admin/CreateCustomerAccountDialog";
+import BlockCustomerModal from "@/components/modals/BlockCustomerModal";
 import { useCustomerStore } from "@/store/customerStore";
 import { Customer } from "@/types/customer";
 import { useTranslation } from "@/hooks/useTranslation";
 
 const CustomersPage = () => {
   const { t } = useTranslation();
-  const { customers, loading, fetchCustomers, deleteCustomer } =
+  const { customers, loading, fetchCustomers, deleteCustomer, blockCustomer, unblockCustomer } =
     useCustomerStore();
   const [searchQuery, setSearchQuery] = useState("");
   const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [resetPasswordState, setResetPasswordState] = useState<{
+    isOpen: boolean;
+    customer: Customer | null;
+  }>({ isOpen: false, customer: null });
+  const [createAccountState, setCreateAccountState] = useState<{
+    isOpen: boolean;
+    customer: Customer | null;
+  }>({ isOpen: false, customer: null });
+  const [blockModalState, setBlockModalState] = useState<{
+    isOpen: boolean;
+    action: "block" | "unblock";
+    customer: Customer | null;
+  }>({ isOpen: false, action: "block", customer: null });
 
   useEffect(() => {
     fetchCustomers();
@@ -43,6 +59,53 @@ const CustomersPage = () => {
     if (confirm(t("admin.customers.confirmDelete"))) {
       await deleteCustomer(id);
     }
+  };
+
+  const handleResetPassword = (customer: Customer) => {
+    setResetPasswordState({ isOpen: true, customer });
+  };
+
+  const handleCreateAccount = (customer: Customer) => {
+    setCreateAccountState({ isOpen: true, customer });
+  };
+
+  const handleBlock = (customer: Customer) => {
+    setBlockModalState({
+      isOpen: true,
+      action: "block",
+      customer,
+    });
+  };
+
+  const handleUnblock = (customer: Customer) => {
+    setBlockModalState({
+      isOpen: true,
+      action: "unblock",
+      customer,
+    });
+  };
+
+  const handleBlockConfirm = async (reason?: string) => {
+    if (!blockModalState.customer) return;
+    
+    try {
+      if (blockModalState.action === "block") {
+        await blockCustomer(blockModalState.customer.id, reason);
+      } else {
+        await unblockCustomer(blockModalState.customer.id);
+      }
+      await fetchCustomers(); // Refresh the customer list
+    } catch (error) {
+      // Error is handled in the store
+    }
+  };
+
+  const handleBlockModalClose = () => {
+    setBlockModalState({ isOpen: false, action: "block", customer: null });
+  };
+
+  const handleAccountCreated = () => {
+    fetchCustomers(); // Refresh the list
   };
 
   return (
@@ -80,6 +143,10 @@ const CustomersPage = () => {
         loading={loading}
         onEdit={handleEdit}
         onDelete={handleDelete}
+        onResetPassword={handleResetPassword}
+        onCreateAccount={handleCreateAccount}
+        onBlock={handleBlock}
+        onUnblock={handleUnblock}
       />
 
       {editingCustomer && (
@@ -92,6 +159,39 @@ const CustomersPage = () => {
           }}
         />
       )}
+
+      {resetPasswordState.customer && (
+        <ResetPasswordDialog
+          open={resetPasswordState.isOpen}
+          onOpenChange={(open) => {
+            setResetPasswordState({ isOpen: open, customer: open ? resetPasswordState.customer : null });
+          }}
+          userType="customer"
+          userId={resetPasswordState.customer.id}
+          userName={resetPasswordState.customer.companyName}
+          username={resetPasswordState.customer.user?.username}
+        />
+      )}
+
+      {createAccountState.customer && (
+        <CreateCustomerAccountDialog
+          open={createAccountState.isOpen}
+          onOpenChange={(open) => {
+            setCreateAccountState({ isOpen: open, customer: open ? createAccountState.customer : null });
+          }}
+          customer={createAccountState.customer}
+          onAccountCreated={handleAccountCreated}
+        />
+      )}
+
+      <BlockCustomerModal
+        isOpen={blockModalState.isOpen}
+        onClose={handleBlockModalClose}
+        onConfirm={handleBlockConfirm}
+        action={blockModalState.action}
+        customerName={blockModalState.customer ? blockModalState.customer.companyName : ""}
+        loading={loading}
+      />
 
       {!loading && customers.length === 0 && (
         <div className="flex flex-col items-center justify-center text-center p-12 border rounded-lg">

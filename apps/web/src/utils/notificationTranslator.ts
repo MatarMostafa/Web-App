@@ -12,6 +12,9 @@ interface NotificationData {
   leaveType?: string;
   startDate?: string;
   endDate?: string;
+  scheduledDate?: string;
+  status?: string;
+  newDate?: string;
 }
 
 export const translateNotification = (
@@ -27,6 +30,8 @@ export const translateNotification = (
   }
 
   try {
+    
+
     // Map template keys to translation keys
     const translationKey = getTranslationKey(templateKey);
     if (!translationKey) {
@@ -41,19 +46,50 @@ export const translateNotification = (
       return { title, body };
     }
 
+    // For customer notifications, extract data from the backend body if not in data object
+    if (templateKey?.startsWith('CUSTOMER_')) {
+      // Extract values from the backend-generated body text if data fields are missing
+      if (!data?.scheduledDate && templateKey === 'CUSTOMER_ORDER_CREATED') {
+        const dateMatch = body.match(/scheduled for ([^.]+)/);
+        if (dateMatch) {
+          (data as any) = { ...data, scheduledDate: dateMatch[1] };
+        }
+      }
+      
+      if (!data?.status && templateKey === 'CUSTOMER_ORDER_STATUS_CHANGED') {
+        const statusMatch = body.match(/updated to (.+)\.$/);
+        if (statusMatch) {
+          (data as any) = { ...data, status: statusMatch[1] };
+        }
+      }
+    }
+
     // Prepare translation data with proper fallbacks
+    // Handle both direct data and nested data structures
+    const extractValue = (key: string) => {
+      return data?.[key as keyof NotificationData] || 
+             (data as any)?.[key] || 
+             '';
+    };
+
     const translationData = {
-      orderNumber: data?.orderNumber || '',
-      customerName: data?.customerName || '',
-      employeeName: data?.employeeName || '',
-      statusMessage: data?.statusMessage || '',
-      notePreview: data?.notePreview || '',
-      reason: data?.reason || '',
-      departmentName: data?.departmentName || '',
-      positionTitle: data?.positionTitle || '',
-      leaveType: data?.leaveType || '',
-      startDate: data?.startDate || '',
-      endDate: data?.endDate || ''
+      orderNumber: extractValue('orderNumber'),
+      customerName: extractValue('customerName'),
+      employeeName: extractValue('employeeName'),
+      statusMessage: extractValue('statusMessage'),
+      notePreview: extractValue('notePreview'),
+      reason: extractValue('reason'),
+      departmentName: extractValue('departmentName'),
+      positionTitle: extractValue('positionTitle'),
+      leaveType: extractValue('leaveType'),
+      startDate: extractValue('startDate'),
+      endDate: extractValue('endDate'),
+      scheduledDate: extractValue('scheduledDate'),
+      status: extractValue('status'),
+      newDate: extractValue('newDate'),
+      changeType: extractValue('changeType'),
+      currentValue: extractValue('currentValue'),
+      requestedValue: extractValue('requestedValue')
     };
 
     // Get translated title and body with interpolation
@@ -88,7 +124,17 @@ const getTranslationKey = (templateKey: string): string | null => {
     'WELCOME_NEW_EMPLOYEE': 'notifications.system.welcome',
     'PROFILE_UPDATED': 'notifications.system.profileUpdated',
     'EMPLOYEE_BLOCKED': 'notifications.system.employeeBlocked',
-    'EMPLOYEE_UNBLOCKED': 'notifications.system.employeeUnblocked'
+    'EMPLOYEE_UNBLOCKED': 'notifications.system.employeeUnblocked',
+    'CUSTOMER_BLOCKED': 'notifications.system.customerBlocked',
+    'CUSTOMER_UNBLOCKED': 'notifications.system.customerUnblocked',
+    'CUSTOMER_ORDER_CREATED': 'notifications.customer.created',
+    'CUSTOMER_ORDER_STATUS_CHANGED': 'notifications.customer.orderStatusChanged',
+    'CUSTOMER_ORDER_COMPLETED': 'notifications.customer.orderCompleted',
+    'CUSTOMER_ORDER_CANCELLED': 'notifications.customer.orderCancelled',
+    'CUSTOMER_ORDER_SCHEDULE_CHANGED': 'notifications.customer.orderScheduleChanged',
+    'SETTINGS_CHANGE_REQUESTED': 'notifications.settings.changeRequested',
+    'SETTINGS_CHANGE_APPROVED': 'notifications.settings.changeApproved',
+    'SETTINGS_CHANGE_REJECTED': 'notifications.settings.changeRejected'
   };
 
   return keyMap[templateKey] || null;

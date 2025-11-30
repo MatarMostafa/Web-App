@@ -94,7 +94,8 @@
     "medium": "Medium",
     "low": "Low",
     "urgent": "Urgent",
-    "normal": "Normal"
+    "normal": "Normal",
+    "username": "Username"
   },
   "auth": {
     "signIn": "Sign In",
@@ -471,7 +472,8 @@
         "editEmployee": "Edit Employee",
         "blockEmployee": "Block Employee",
         "unblockEmployee": "Unblock Employee",
-        "deleteEmployee": "Delete Employee"
+        "deleteEmployee": "Delete Employee",
+        "resetPassword": "Reset Password"
       },
       "blockModal": {
         "blockTitle": "Block Employee",
@@ -715,6 +717,8 @@
       "editCustomer": "Edit Customer",
       "searchPlaceholder": "Search customers by company, email, phone, or industry...",
       "confirmDelete": "Are you sure you want to delete this customer?",
+      "confirmBlock": "Are you sure you want to block {{name}}? They will not be able to access their account.",
+      "confirmUnblock": "Are you sure you want to unblock {{name}}? They will regain access to their account.",
       "noCustomersFound": "No customers found",
       "getStartedMessage": "Get started by adding your first customer",
       "table": {
@@ -729,7 +733,14 @@
         "active": "Active",
         "inactive": "Inactive",
         "loadingCustomers": "Loading customers...",
-        "noCustomersFound": "No customers found"
+        "noCustomersFound": "No customers found",
+        "editCustomer": "Edit Customer",
+        "resetPassword": "Reset Password",
+        "createAccount": "Create Account",
+        "deleteCustomer": "Delete Customer",
+        "blockCustomer": "Block Customer",
+        "unblockCustomer": "Unblock Customer",
+        "blocked": "Blocked"
       },
       "form": {
         "addNewCustomer": "Add New Customer",
@@ -758,7 +769,52 @@
         "updateSuccess": "Customer {{name}} updated successfully!",
         "createError": "Failed to create customer",
         "updateError": "Failed to update customer"
+      },
+      "blockModal": {
+        "blockTitle": "Block Customer",
+        "unblockTitle": "Unblock Customer",
+        "blockDescription": "? This will prevent them from accessing their account.",
+        "unblockDescription": "will restore their account access and allow them to resume normal activities.",
+        "blockReason": "Block Reason",
+        "blockReasonPlaceholder": "Provide a reason for blocking this customer...",
+        "cancel": "Cancel",
+        "processing": "Processing...",
+        "blockCustomer": "Block Customer",
+        "unblockCustomer": "Unblock Customer"
       }
+    },
+    "passwordReset": {
+      "title": "Reset Password",
+      "newPassword": "New Password",
+      "enterPassword": "Enter new password",
+      "generateRandom": "Generate Random Password",
+      "copyToClipboard": "Copy to Clipboard",
+      "resetPassword": "Reset Password",
+      "resetting": "Resetting...",
+      "passwordRequired": "Password is required",
+      "passwordTooShort": "Password must be at least 8 characters long",
+      "resetSuccess": "Password reset successfully for {{name}}",
+      "resetFailed": "Failed to reset password",
+      "passwordCopied": "Password copied to clipboard",
+      "copyFailed": "Failed to copy password"
+    },
+    "createAccount": {
+      "title": "Create Customer Account",
+      "username": "Username",
+      "password": "Password",
+      "enterUsername": "Enter username",
+      "enterPassword": "Enter password",
+      "generateRandom": "Generate Random Password",
+      "copyCredentials": "Copy Credentials",
+      "createAccount": "Create Account",
+      "creating": "Creating...",
+      "usernameRequired": "Username is required",
+      "passwordRequired": "Password is required",
+      "passwordTooShort": "Password must be at least 8 characters long",
+      "accountCreated": "Account created successfully for {{company}}",
+      "createFailed": "Failed to create account",
+      "credentialsCopied": "Credentials copied to clipboard",
+      "copyFailed": "Failed to copy credentials"
     },
     "departments": {
       "title": "Departments",
@@ -960,6 +1016,14 @@
         "title": "Account Unblocked",
         "body": "Your account has been unblocked. You can now access the system normally."
       },
+      "customerBlocked": {
+        "title": "Account Blocked",
+        "body": "Your account has been blocked by the administrator.{{reason}}"
+      },
+      "customerUnblocked": {
+        "title": "Account Unblocked",
+        "body": "Your account has been unblocked. You can now access your account normally."
+      },
       "departmentCreated": {
         "title": "New Department Created",
         "body": "New department \"{{departmentName}}\" has been created."
@@ -971,8 +1035,38 @@
     },
     "customer": {
       "created": {
-        "title": "New Customer Added",
-        "body": "New customer \"{{customerName}}\" has been added to the system."
+        "title": "New Order Created",
+        "body": "Your order \"{{orderNumber}}\" has been created and scheduled for {{scheduledDate}}."
+      },
+      "orderStatusChanged": {
+        "title": "Order Status Update",
+        "body": "Your order \"{{orderNumber}}\" status has been updated to {{status}}."
+      },
+      "orderCompleted": {
+        "title": "Order Completed",
+        "body": "Your order \"{{orderNumber}}\" has been completed successfully."
+      },
+      "orderCancelled": {
+        "title": "Order Cancelled",
+        "body": "Your order \"{{orderNumber}}\" has been cancelled.{{reason}}"
+      },
+      "orderScheduleChanged": {
+        "title": "Order Schedule Updated",
+        "body": "The scheduled date for your order \"{{orderNumber}}\" has been updated to {{newDate}}."
+      }
+    },
+    "settings": {
+      "changeRequested": {
+        "title": "Settings Change Request",
+        "body": "{{employeeName}} has requested to change their {{changeType}} from '{{currentValue}}' to '{{requestedValue}}'."
+      },
+      "changeApproved": {
+        "title": "Settings Change Approved",
+        "body": "Your request to change {{changeType}} has been approved."
+      },
+      "changeRejected": {
+        "title": "Settings Change Rejected",
+        "body": "Your request to change {{changeType}} has been rejected. Reason: {{reviewNotes}}"
       }
     },
     "statusMessages": {
@@ -987,6 +1081,198 @@
       "minutesAgo": "{{count}} minutes ago",
       "hoursAgo": "{{count}} hours ago",
       "daysAgo": "{{count}} days ago"
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Manage your account settings and preferences",
+    "accountSecurity": "Account Security",
+    "personalInformation": "Personal Information",
+    "contactInformation": "Contact Information",
+    "businessInformation": "Business Information",
+    "password": {
+      "title": "Password",
+      "lastChanged": "Last changed",
+      "changePassword": "Change Password",
+      "currentPassword": "Current Password",
+      "newPassword": "New Password",
+      "confirmNewPassword": "Confirm New Password",
+      "enterCurrentPassword": "Enter current password",
+      "enterNewPassword": "Enter new password",
+      "confirmNewPassword": "Confirm new password",
+      "requirements": "Password requirements:",
+      "atLeast8Characters": "At least 8 characters long",
+      "containsNumber": "Contains at least one number",
+      "changing": "Changing...",
+      "cancel": "Cancel",
+      "passwordsDoNotMatch": "New passwords do not match",
+      "passwordTooShort": "Password must be at least 8 characters long",
+      "passwordChangedSuccess": "Password changed successfully",
+      "passwordChangeFailed": "Failed to change password"
+    },
+    "personal": {
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "username": "Username",
+      "firstNameDescription": "Your legal first name",
+      "lastNameDescription": "Your legal last name",
+      "usernameDescription": "Your system username (cannot be changed)",
+      "requiresApproval": "Requires Approval",
+      "notSet": "Not set",
+      "nameChangeRequest": "Name changes require admin approval. This feature will be available soon."
+    },
+    "contact": {
+      "phoneNumber": "Phone Number",
+      "emailAddress": "Email Address",
+      "phoneDescription": "Your contact phone number",
+      "emailDescription": "Your account email address",
+      "enterPhoneNumber": "Enter phone number",
+      "noPhoneSet": "No phone number set",
+      "noEmailSet": "No email set",
+      "requiresApproval": "Requires Approval",
+      "phoneUpdatedSuccess": "Phone number updated successfully",
+      "phoneUpdateFailed": "Failed to update phone number",
+      "emailChangeRequest": "Email changes require admin approval. This feature will be available soon."
+    },
+    "business": {
+      "companyName": "Company Name",
+      "businessAddress": "Business Address",
+      "industry": "Industry",
+      "taxNumber": "Tax Number",
+      "companyNameDescription": "Your legal company name",
+      "addressDescription": "Your company's business address",
+      "industryDescription": "Your business industry or sector",
+      "taxNumberDescription": "Your company's tax identification number",
+      "enterBusinessAddress": "Enter business address",
+      "industryPlaceholder": "e.g., Technology, Healthcare, Manufacturing",
+      "notSet": "Not set",
+      "noAddressSet": "No address set",
+      "notSpecified": "Not specified",
+      "requiresApproval": "Requires Approval",
+      "addressUpdatedSuccess": "Business address updated successfully",
+      "addressUpdateFailed": "Failed to update address",
+      "industryUpdatedSuccess": "Industry updated successfully",
+      "industryUpdateFailed": "Failed to update industry",
+      "companyNameChangeRequest": "Company name changes require admin approval. This feature will be available soon.",
+      "taxNumberChangeRequest": "Tax number changes require admin approval. This feature will be available soon."
+    },
+    "requests": {
+      "title": "Settings Requests",
+      "subtitle": "Manage pending settings change requests",
+      "myRequests": "My Requests",
+      "pendingRequests": "Pending Requests",
+      "requestChange": "Request Change",
+      "requestReason": "Reason for Change",
+      "reasonPlaceholder": "Please provide a reason for this change...",
+      "submitRequest": "Submit Request",
+      "submitting": "Submitting...",
+      "requestSubmitted": "Change request submitted successfully",
+      "requestSubmittedMessage": "Request submitted successfully. Changes will be applied after admin approval.",
+      "requestFailed": "Failed to submit change request",
+      "noRequests": "No requests found",
+      "requestType": "Request Type",
+      "currentValue": "Current Value",
+      "requestedValue": "Requested Value",
+      "requestDate": "Request Date",
+      "reviewDate": "Review Date",
+      "reviewer": "Reviewer",
+      "reviewNotes": "Review Notes",
+      "approve": "Approve",
+      "reject": "Reject",
+      "approving": "Approving...",
+      "rejecting": "Rejecting...",
+      "approvalNotes": "Approval Notes (Optional)",
+      "rejectionReason": "Rejection Reason",
+      "rejectionReasonRequired": "Rejection reason is required",
+      "requestApproved": "Request approved successfully",
+      "requestRejected": "Request rejected successfully",
+      "approveFailed": "Failed to approve request",
+      "rejectFailed": "Failed to reject request",
+      "status": {
+        "PENDING": "Pending",
+        "APPROVED": "Approved",
+        "REJECTED": "Rejected"
+      },
+      "types": {
+        "FIRST_NAME": "First Name",
+        "LAST_NAME": "Last Name",
+        "EMAIL_ADDRESS": "Email Address",
+        "COMPANY_NAME": "Company Name",
+        "TAX_NUMBER": "Tax Number"
+      }
+    }
+  },
+  "customerPortal": {
+    "dashboard": {
+      "title": "Customer Portal",
+      "welcome": "Welcome back",
+      "overview": "Here's an overview of your orders and account",
+      "totalOrders": "Total Orders",
+      "completed": "Completed",
+      "inProgress": "In Progress",
+      "planned": "Planned",
+      "recentOrders": "Recent Orders",
+      "noOrders": "No orders found",
+      "viewAllOrders": "View All Orders"
+    },
+    "orders": {
+      "title": "My Orders",
+      "subtitle": "Track and manage your orders",
+      "searchPlaceholder": "Search orders by number, title, or description...",
+      "noOrdersFound": "No orders found",
+      "noOrdersMessage": "Your orders will appear here once they are created",
+      "tryAdjustingSearch": "Try adjusting your search terms",
+      "orderNumber": "Order Number",
+      "scheduled": "Scheduled",
+      "location": "Location",
+      "created": "Created",
+      "viewDetails": "View Details",
+      "status": {
+        "planned": "Planned",
+        "inprogress": "In Progress",
+        "completed": "Completed",
+        "cancelled": "Cancelled",
+        "unknown": "Unknown"
+      }
+    },
+    "profile": {
+      "title": "Company Profile",
+      "subtitle": "Manage your company information",
+      "companyName": "Company Name",
+      "contactEmail": "Contact Email",
+      "contactPhone": "Contact Phone",
+      "address": "Address",
+      "industry": "Industry",
+      "updateProfile": "Update Profile",
+      "updating": "Updating...",
+      "profileUpdated": "Profile updated successfully"
+    },
+    "navigation": {
+      "dashboard": "Dashboard",
+      "orders": "My Orders",
+      "profile": "Profile"
+    },
+    "orderDetail": {
+      "orderNotFound": "Order not found",
+      "orderNotFoundMessage": "The order you're looking for doesn't exist or you don't have access to it.",
+      "backToOrders": "Back to Orders",
+      "orderInformation": "Order Information",
+      "scheduledDate": "Scheduled Date",
+      "location": "Location",
+      "created": "Created",
+      "statusInformation": "Status Information",
+      "lastUpdated": "Last updated",
+      "description": "Description",
+      "needHelp": "Need Help?",
+      "needHelpMessage": "If you have any questions about this order, please contact our support team.",
+      "contactSupport": "Contact Support",
+      "viewFaq": "View FAQ",
+      "statusDescription": {
+        "planned": "Your order has been scheduled and is awaiting execution.",
+        "inprogress": "Your order is currently being worked on by our team.",
+        "completed": "Your order has been successfully completed.",
+        "cancelled": "This order has been cancelled."
+      }
     }
   },
   "teamLeader": {

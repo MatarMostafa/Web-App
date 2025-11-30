@@ -94,7 +94,9 @@
     "medium": "Mittel",
     "low": "Niedrig",
     "urgent": "Dringend",
-    "normal": "Normal"
+    "normal": "Normal",
+    "username": "Benutzername",
+    "name": "Name"
   },
   "auth": {
     "signIn": "Anmelden",
@@ -471,7 +473,8 @@
         "editEmployee": "Mitarbeiter bearbeiten",
         "blockEmployee": "Mitarbeiter sperren",
         "unblockEmployee": "Mitarbeiter entsperren",
-        "deleteEmployee": "Mitarbeiter löschen"
+        "deleteEmployee": "Mitarbeiter löschen",
+        "resetPassword": "Passwort zurücksetzen"
       },
       "blockModal": {
         "blockTitle": "Mitarbeiter sperren",
@@ -715,6 +718,8 @@
       "editCustomer": "Kunde bearbeiten",
       "searchPlaceholder": "Kunden nach Firma, E-Mail, Telefon oder Branche suchen...",
       "confirmDelete": "Sind Sie sicher, dass Sie diesen Kunden löschen möchten?",
+      "confirmBlock": "Sind Sie sicher, dass Sie {{name}} sperren möchten? Sie können nicht mehr auf ihr Konto zugreifen.",
+      "confirmUnblock": "Sind Sie sicher, dass Sie {{name}} entsperren möchten? Sie erhalten wieder Zugang zu ihrem Konto.",
       "noCustomersFound": "Keine Kunden gefunden",
       "getStartedMessage": "Beginnen Sie, indem Sie Ihren ersten Kunden hinzufügen",
       "table": {
@@ -729,7 +734,14 @@
         "active": "Aktiv",
         "inactive": "Inaktiv",
         "loadingCustomers": "Kunden werden geladen...",
-        "noCustomersFound": "Keine Kunden gefunden"
+        "noCustomersFound": "Keine Kunden gefunden",
+        "editCustomer": "Kunde bearbeiten",
+        "resetPassword": "Passwort zurücksetzen",
+        "createAccount": "Konto erstellen",
+        "deleteCustomer": "Kunde löschen",
+        "blockCustomer": "Kunde sperren",
+        "unblockCustomer": "Kunde entsperren",
+        "blocked": "Gesperrt"
       },
       "form": {
         "addNewCustomer": "Neuen Kunden hinzufügen",
@@ -758,7 +770,52 @@
         "updateSuccess": "Kunde {{name}} erfolgreich aktualisiert!",
         "createError": "Fehler beim Erstellen des Kunden",
         "updateError": "Fehler beim Aktualisieren des Kunden"
+      },
+      "blockModal": {
+        "blockTitle": "Kunde sperren",
+        "unblockTitle": "Kunde entsperren",
+        "blockDescription": "sperren? Dies verhindert den Zugriff auf ihr Konto.",
+        "unblockDescription": "entsperren wird den Kontozugriff wiederherstellen und normale Aktivitäten ermöglichen.",
+        "blockReason": "Sperrgrund",
+        "blockReasonPlaceholder": "Geben Sie einen Grund für die Sperrung dieses Kunden an...",
+        "cancel": "Abbrechen",
+        "processing": "Wird verarbeitet...",
+        "blockCustomer": "Kunde sperren",
+        "unblockCustomer": "Kunde entsperren"
       }
+    },
+    "passwordReset": {
+      "title": "Passwort zurücksetzen",
+      "newPassword": "Neues Passwort",
+      "enterPassword": "Neues Passwort eingeben",
+      "generateRandom": "Zufälliges Passwort generieren",
+      "copyToClipboard": "In Zwischenablage kopieren",
+      "resetPassword": "Passwort zurücksetzen",
+      "resetting": "Wird zurückgesetzt...",
+      "passwordRequired": "Passwort ist erforderlich",
+      "passwordTooShort": "Passwort muss mindestens 8 Zeichen lang sein",
+      "resetSuccess": "Passwort erfolgreich zurückgesetzt für {{name}}",
+      "resetFailed": "Passwort konnte nicht zurückgesetzt werden",
+      "passwordCopied": "Passwort in Zwischenablage kopiert",
+      "copyFailed": "Passwort konnte nicht kopiert werden"
+    },
+    "createAccount": {
+      "title": "Kundenkonto erstellen",
+      "username": "Benutzername",
+      "password": "Passwort",
+      "enterUsername": "Benutzername eingeben",
+      "enterPassword": "Passwort eingeben",
+      "generateRandom": "Zufälliges Passwort generieren",
+      "copyCredentials": "Anmeldedaten kopieren",
+      "createAccount": "Konto erstellen",
+      "creating": "Wird erstellt...",
+      "usernameRequired": "Benutzername ist erforderlich",
+      "passwordRequired": "Passwort ist erforderlich",
+      "passwordTooShort": "Passwort muss mindestens 8 Zeichen lang sein",
+      "accountCreated": "Konto erfolgreich erstellt für {{company}}",
+      "createFailed": "Konto konnte nicht erstellt werden",
+      "credentialsCopied": "Anmeldedaten in Zwischenablage kopiert",
+      "copyFailed": "Anmeldedaten konnten nicht kopiert werden"
     },
     "departments": {
       "title": "Abteilungen",
@@ -960,6 +1017,14 @@
         "title": "Konto entsperrt",
         "body": "Ihr Konto wurde entsperrt. Sie können das System nun normal nutzen."
       },
+      "customerBlocked": {
+        "title": "Konto gesperrt",
+        "body": "Ihr Konto wurde vom Administrator gesperrt.{{reason}}"
+      },
+      "customerUnblocked": {
+        "title": "Konto entsperrt",
+        "body": "Ihr Konto wurde entsperrt. Sie können Ihr Konto nun normal nutzen."
+      },
       "departmentCreated": {
         "title": "Neue Abteilung erstellt",
         "body": "Neue Abteilung \"{{departmentName}}\" wurde erstellt."
@@ -971,8 +1036,38 @@
     },
     "customer": {
       "created": {
-        "title": "Neuer Kunde hinzugefügt",
-        "body": "Neuer Kunde \"{{customerName}}\" wurde zum System hinzugefügt."
+        "title": "Neuer Auftrag erstellt",
+        "body": "Ihr Auftrag \"{{orderNumber}}\" wurde erstellt und für {{scheduledDate}} geplant."
+      },
+      "orderStatusChanged": {
+        "title": "Auftragsstatus aktualisiert",
+        "body": "Der Status Ihres Auftrags \"{{orderNumber}}\" wurde auf {{status}} aktualisiert."
+      },
+      "orderCompleted": {
+        "title": "Auftrag abgeschlossen",
+        "body": "Ihr Auftrag \"{{orderNumber}}\" wurde erfolgreich abgeschlossen."
+      },
+      "orderCancelled": {
+        "title": "Auftrag storniert",
+        "body": "Ihr Auftrag \"{{orderNumber}}\" wurde storniert.{{reason}}"
+      },
+      "orderScheduleChanged": {
+        "title": "Auftragstermin aktualisiert",
+        "body": "Der geplante Termin für Ihren Auftrag \"{{orderNumber}}\" wurde auf {{newDate}} aktualisiert."
+      }
+    },
+    "settings": {
+      "changeRequested": {
+        "title": "Einstellungsänderungsantrag",
+        "body": "{{employeeName}} hat beantragt, {{changeType}} von '{{currentValue}}' zu '{{requestedValue}}' zu ändern."
+      },
+      "changeApproved": {
+        "title": "Einstellungsänderung genehmigt",
+        "body": "Ihr Antrag zur Änderung von {{changeType}} wurde genehmigt."
+      },
+      "changeRejected": {
+        "title": "Einstellungsänderung abgelehnt",
+        "body": "Ihr Antrag zur Änderung von {{changeType}} wurde abgelehnt. Grund: {{reviewNotes}}"
       }
     },
     "statusMessages": {
@@ -987,6 +1082,198 @@
       "minutesAgo": "vor {{count}} Minuten",
       "hoursAgo": "vor {{count}} Stunden",
       "daysAgo": "vor {{count}} Tagen"
+    }
+  },
+  "settings": {
+    "title": "Einstellungen",
+    "subtitle": "Verwalten Sie Ihre Kontoeinstellungen und Präferenzen",
+    "accountSecurity": "Kontosicherheit",
+    "personalInformation": "Persönliche Informationen",
+    "contactInformation": "Kontaktinformationen",
+    "businessInformation": "Geschäftsinformationen",
+    "password": {
+      "title": "Passwort",
+      "lastChanged": "Zuletzt geändert",
+      "changePassword": "Passwort ändern",
+      "currentPassword": "Aktuelles Passwort",
+      "newPassword": "Neues Passwort",
+      "confirmNewPassword": "Neues Passwort bestätigen",
+      "enterCurrentPassword": "Aktuelles Passwort eingeben",
+      "enterNewPassword": "Neues Passwort eingeben",
+      "confirmNewPassword": "Neues Passwort bestätigen",
+      "requirements": "Passwort-Anforderungen:",
+      "atLeast8Characters": "Mindestens 8 Zeichen lang",
+      "containsNumber": "Enthält mindestens eine Zahl",
+      "changing": "Wird geändert...",
+      "cancel": "Abbrechen",
+      "passwordsDoNotMatch": "Neue Passwörter stimmen nicht überein",
+      "passwordTooShort": "Passwort muss mindestens 8 Zeichen lang sein",
+      "passwordChangedSuccess": "Passwort erfolgreich geändert",
+      "passwordChangeFailed": "Passwort konnte nicht geändert werden"
+    },
+    "personal": {
+      "firstName": "Vorname",
+      "lastName": "Nachname",
+      "username": "Benutzername",
+      "firstNameDescription": "Ihr rechtlicher Vorname",
+      "lastNameDescription": "Ihr rechtlicher Nachname",
+      "usernameDescription": "Ihr System-Benutzername (kann nicht geändert werden)",
+      "requiresApproval": "Genehmigung erforderlich",
+      "notSet": "Nicht festgelegt",
+      "nameChangeRequest": "Namensänderungen erfordern eine Admin-Genehmigung. Diese Funktion wird bald verfügbar sein."
+    },
+    "contact": {
+      "phoneNumber": "Telefonnummer",
+      "emailAddress": "E-Mail-Adresse",
+      "phoneDescription": "Ihre Kontakt-Telefonnummer",
+      "emailDescription": "Ihre Konto-E-Mail-Adresse",
+      "enterPhoneNumber": "Telefonnummer eingeben",
+      "noPhoneSet": "Keine Telefonnummer festgelegt",
+      "noEmailSet": "Keine E-Mail festgelegt",
+      "requiresApproval": "Genehmigung erforderlich",
+      "phoneUpdatedSuccess": "Telefonnummer erfolgreich aktualisiert",
+      "phoneUpdateFailed": "Telefonnummer konnte nicht aktualisiert werden",
+      "emailChangeRequest": "E-Mail-Änderungen erfordern eine Admin-Genehmigung. Diese Funktion wird bald verfügbar sein."
+    },
+    "business": {
+      "companyName": "Firmenname",
+      "businessAddress": "Geschäftsadresse",
+      "industry": "Branche",
+      "taxNumber": "Steuernummer",
+      "companyNameDescription": "Ihr rechtlicher Firmenname",
+      "addressDescription": "Die Geschäftsadresse Ihres Unternehmens",
+      "industryDescription": "Ihre Geschäftsbranche oder Ihr Sektor",
+      "taxNumberDescription": "Die Steueridentifikationsnummer Ihres Unternehmens",
+      "enterBusinessAddress": "Geschäftsadresse eingeben",
+      "industryPlaceholder": "z.B. Technologie, Gesundheitswesen, Fertigung",
+      "notSet": "Nicht festgelegt",
+      "noAddressSet": "Keine Adresse festgelegt",
+      "notSpecified": "Nicht angegeben",
+      "requiresApproval": "Genehmigung erforderlich",
+      "addressUpdatedSuccess": "Geschäftsadresse erfolgreich aktualisiert",
+      "addressUpdateFailed": "Geschäftsadresse konnte nicht aktualisiert werden",
+      "industryUpdatedSuccess": "Branche erfolgreich aktualisiert",
+      "industryUpdateFailed": "Branche konnte nicht aktualisiert werden",
+      "companyNameChangeRequest": "Firmennamen-Änderungen erfordern eine Admin-Genehmigung. Diese Funktion wird bald verfügbar sein.",
+      "taxNumberChangeRequest": "Steuernummer-Änderungen erfordern eine Admin-Genehmigung. Diese Funktion wird bald verfügbar sein."
+    },
+    "requests": {
+      "title": "Einstellungsanträge",
+      "subtitle": "Ausstehende Einstellungsänderungsanträge verwalten",
+      "myRequests": "Meine Anträge",
+      "pendingRequests": "Ausstehende Anträge",
+      "requestChange": "Änderung beantragen",
+      "requestReason": "Grund für Änderung",
+      "reasonPlaceholder": "Bitte geben Sie einen Grund für diese Änderung an...",
+      "submitRequest": "Antrag einreichen",
+      "submitting": "Wird eingereicht...",
+      "requestSubmitted": "Änderungsantrag erfolgreich eingereicht",
+      "requestSubmittedMessage": "Antrag erfolgreich eingereicht. Änderungen werden nach Admin-Genehmigung angewendet.",
+      "requestFailed": "Änderungsantrag konnte nicht eingereicht werden",
+      "noRequests": "Keine Anträge gefunden",
+      "requestType": "Antragstyp",
+      "currentValue": "Aktueller Wert",
+      "requestedValue": "Angefragter Wert",
+      "requestDate": "Antragsdatum",
+      "reviewDate": "Prüfungsdatum",
+      "reviewer": "Prüfer",
+      "reviewNotes": "Prüfungsnotizen",
+      "approve": "Genehmigen",
+      "reject": "Ablehnen",
+      "approving": "Wird genehmigt...",
+      "rejecting": "Wird abgelehnt...",
+      "approvalNotes": "Genehmigungsnotizen (Optional)",
+      "rejectionReason": "Ablehnungsgrund",
+      "rejectionReasonRequired": "Ablehnungsgrund ist erforderlich",
+      "requestApproved": "Antrag erfolgreich genehmigt",
+      "requestRejected": "Antrag erfolgreich abgelehnt",
+      "approveFailed": "Antrag konnte nicht genehmigt werden",
+      "rejectFailed": "Antrag konnte nicht abgelehnt werden",
+      "status": {
+        "PENDING": "Ausstehend",
+        "APPROVED": "Genehmigt",
+        "REJECTED": "Abgelehnt"
+      },
+      "types": {
+        "FIRST_NAME": "Vorname",
+        "LAST_NAME": "Nachname",
+        "EMAIL_ADDRESS": "E-Mail-Adresse",
+        "COMPANY_NAME": "Firmenname",
+        "TAX_NUMBER": "Steuernummer"
+      }
+    }
+  },
+  "customerPortal": {
+    "dashboard": {
+      "title": "Kundenportal",
+      "welcome": "Willkommen zurück",
+      "overview": "Hier ist eine Übersicht über Ihre Aufträge und Ihr Konto",
+      "totalOrders": "Gesamtaufträge",
+      "completed": "Abgeschlossen",
+      "inProgress": "In Bearbeitung",
+      "planned": "Geplant",
+      "recentOrders": "Aktuelle Aufträge",
+      "noOrders": "Keine Aufträge gefunden",
+      "viewAllOrders": "Alle Aufträge anzeigen"
+    },
+    "orders": {
+      "title": "Meine Aufträge",
+      "subtitle": "Verfolgen und verwalten Sie Ihre Aufträge",
+      "searchPlaceholder": "Aufträge nach Nummer, Titel oder Beschreibung suchen...",
+      "noOrdersFound": "Keine Aufträge gefunden",
+      "noOrdersMessage": "Ihre Aufträge werden hier angezeigt, sobald sie erstellt wurden",
+      "tryAdjustingSearch": "Versuchen Sie, Ihre Suchbegriffe anzupassen",
+      "orderNumber": "Auftragsnummer",
+      "scheduled": "Geplant",
+      "location": "Standort",
+      "created": "Erstellt",
+      "viewDetails": "Details anzeigen",
+      "status": {
+        "planned": "Geplant",
+        "inprogress": "In Bearbeitung",
+        "completed": "Abgeschlossen",
+        "cancelled": "Storniert",
+        "unknown": "Unbekannt"
+      }
+    },
+    "profile": {
+      "title": "Firmenprofil",
+      "subtitle": "Verwalten Sie Ihre Firmeninformationen",
+      "companyName": "Firmenname",
+      "contactEmail": "Kontakt-E-Mail",
+      "contactPhone": "Kontakttelefon",
+      "address": "Adresse",
+      "industry": "Branche",
+      "updateProfile": "Profil aktualisieren",
+      "updating": "Wird aktualisiert...",
+      "profileUpdated": "Profil erfolgreich aktualisiert"
+    },
+    "navigation": {
+      "dashboard": "Dashboard",
+      "orders": "Meine Aufträge",
+      "profile": "Profil"
+    },
+    "orderDetail": {
+      "orderNotFound": "Auftrag nicht gefunden",
+      "orderNotFoundMessage": "Der gesuchte Auftrag existiert nicht oder Sie haben keinen Zugriff darauf.",
+      "backToOrders": "Zurück zu Aufträgen",
+      "orderInformation": "Auftragsinformationen",
+      "scheduledDate": "Geplantes Datum",
+      "location": "Standort",
+      "created": "Erstellt",
+      "statusInformation": "Statusinformationen",
+      "lastUpdated": "Zuletzt aktualisiert",
+      "description": "Beschreibung",
+      "needHelp": "Benötigen Sie Hilfe?",
+      "needHelpMessage": "Wenn Sie Fragen zu diesem Auftrag haben, wenden Sie sich bitte an unser Support-Team.",
+      "contactSupport": "Support kontaktieren",
+      "viewFaq": "FAQ anzeigen",
+      "statusDescription": {
+        "planned": "Ihr Auftrag wurde geplant und wartet auf die Ausführung.",
+        "inprogress": "Ihr Auftrag wird derzeit von unserem Team bearbeitet.",
+        "completed": "Ihr Auftrag wurde erfolgreich abgeschlossen.",
+        "cancelled": "Dieser Auftrag wurde storniert."
+      }
     }
   },
   "teamLeader": {

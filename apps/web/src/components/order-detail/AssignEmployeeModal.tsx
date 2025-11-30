@@ -140,10 +140,13 @@ export const AssignEmployeeModal: React.FC<AssignEmployeeModalProps> = ({
     }
   };
 
-  const getInitials = (firstName?: string, lastName?: string) => {
-    const first = firstName?.charAt(0) || '';
-    const last = lastName?.charAt(0) || '';
-    return `${first}${last}`.toUpperCase() || 'U';
+  const getInitials = (firstName?: string, lastName?: string, username?: string) => {
+    if (firstName || lastName) {
+      const first = firstName?.charAt(0) || '';
+      const last = lastName?.charAt(0) || '';
+      return `${first}${last}`.toUpperCase();
+    }
+    return username?.charAt(0)?.toUpperCase() || 'U';
   };
 
   return (
@@ -211,14 +214,17 @@ export const AssignEmployeeModal: React.FC<AssignEmployeeModalProps> = ({
                   
                   <Avatar className="w-10 h-10">
                     <AvatarFallback>
-                      {getInitials(employee.firstName, employee.lastName)}
+                      {getInitials(employee.firstName, employee.lastName, employee.user?.email?.split('@')[0])}
                     </AvatarFallback>
                   </Avatar>
 
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
                       <h4 className="font-medium text-sm">
-                        {employee.firstName || ''} {employee.lastName || ''}
+                        {employee.firstName || employee.lastName ? 
+                          `${employee.firstName || ''} ${employee.lastName || ''}`.trim() : 
+                          employee.user?.email?.split('@')[0] || 'No Name'
+                        }
                       </h4>
                       <Badge variant="outline" className="text-xs">
                         {employee.employeeCode}

@@ -22,6 +22,11 @@ export interface Employee {
   isAvailable: boolean;
   priority: number;
   userId: string;
+  user?: {
+    id: string;
+    username: string;
+    email?: string;
+  };
   createdAt: string;
   updatedAt: string;
   createdBy?: string; // Creator name or 'Manually' if no creator

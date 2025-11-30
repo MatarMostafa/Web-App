@@ -1,74 +1,205 @@
-// src/services/customerService.ts
 import { prisma } from "@repo/db";
+import { OrderStatus } from "@repo/db/src/generated/prisma";
 
-export const getAllCustomers = () => {
-  return prisma.customer.findMany({
-    include: {
-      subAccounts: true,
-      orders: true,
-      ratings: true,
+// Customer-specific order filtering
+export const filterOrderForCustomer = (order: any) => {
+  return {
+    id: order.id,
+    orderNumber: order.orderNumber,
+    title: order.title,
+    description: order.description,
+    scheduledDate: order.scheduledDate,
+    location: order.location,
+    status: mapOrderStatusForCustomer(order.status),
+    createdAt: order.createdAt,
+    updatedAt: order.updatedAt,
+    // Exclude: estimatedHours, actualHours, employeeAssignments, ratings, specialInstructions
+  };
+};
+
+// Map internal order status to customer-friendly status
+export const mapOrderStatusForCustomer = (status: OrderStatus): string => {
+  switch (status) {
+    case 'DRAFT':
+    case 'OPEN':
+      return 'planned';
+    case 'ACTIVE':
+    case 'IN_PROGRESS':
+    case 'IN_REVIEW':
+      return 'inprogress';
+    case 'COMPLETED':
+      return 'completed';
+    case 'CANCELLED':
+    case 'EXPIRED':
+      return 'cancelled';
+    default:
+      return 'unknown';
+  }
+};
+
+// Validate customer order access
+export const validateCustomerOrderAccess = async (customerId: string, orderId: string): Promise<boolean> => {
+  const order = await prisma.order.findFirst({
+    where: {
+      id: orderId,
+      customerId: customerId,
     },
   });
+  return !!order;
 };
 
-export const getCustomerById = (id: string) => {
-  return prisma.customer.findUnique({
-    where: { id },
-    include: {
-      subAccounts: true,
-      orders: true,
-      ratings: true,
-    },
-  });
-};
-
-export const createCustomer = async (data: any, createdBy?: string) => {
-  const customer = await prisma.customer.create({ data });
-  return customer;
-};
-
-export const updateCustomer = (id: string, data: any) => {
-  return prisma.customer.update({
-    where: { id },
-    data,
-  });
-};
-
-export const deleteCustomer = (id: string) => {
-  return prisma.customer.delete({
-    where: { id },
-  });
-};
-
-/*Subaccounts */
-// Create
-export const createSubAccount = (customerId: string, data: any) => {
-  return prisma.subAccount.create({
-    data: {
-      ...data,
-      customerId,
-    },
-  });
-};
-
-// Get all for customer
-export const getSubAccounts = (customerId: string) => {
-  return prisma.subAccount.findMany({
+// Get customer's orders
+export const getCustomerOrdersService = async (customerId: string) => {
+  const orders = await prisma.order.findMany({
     where: { customerId },
+    orderBy: { scheduledDate: 'desc' },
+    include: {
+      customer: {
+        select: {
+          companyName: true,
+        },
+      },
+    },
   });
+
+  return orders.map(filterOrderForCustomer);
 };
 
-// Update
-export const updateSubAccount = (id: string, data: any) => {
-  return prisma.subAccount.update({
-    where: { id },
-    data,
+// Get single customer order
+export const getCustomerOrderByIdService = async (customerId: string, orderId: string) => {
+  const hasAccess = await validateCustomerOrderAccess(customerId, orderId);
+  if (!hasAccess) {
+    throw new Error('Order not found or access denied');
+  }
+
+  const order = await prisma.order.findUnique({
+    where: { id: orderId },
+    include: {
+      customer: {
+        select: {
+          companyName: true,
+        },
+      },
+    },
   });
+
+  if (!order) {
+    throw new Error('Order not found');
+  }
+
+  return filterOrderForCustomer(order);
 };
 
-// Delete
-export const deleteSubAccount = (id: string) => {
-  return prisma.subAccount.delete({
-    where: { id },
+// Get customer profile
+export const getCustomerProfileService = async (userId: string) => {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    include: {
+      customer: true,
+    },
   });
+
+  if (!user?.customer) {
+    throw new Error('Customer profile not found');
+  }
+
+  return {
+    id: user.customer.id,
+    companyName: user.customer.companyName,
+    contactEmail: user.email || user.customer.contactEmail, // Prioritize user's email
+    contactPhone: user.customer.contactPhone,
+    address: user.customer.address,
+    industry: user.customer.industry,
+    user: {
+      email: user.email,
+      username: user.username,
+    },
+  };
+};
+
+// Update customer profile
+export const updateCustomerProfileService = async (userId: string, data: any) => {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    include: { customer: true },
+  });
+
+  if (!user?.customer) {
+    throw new Error('Customer profile not found');
+  }
+
+  const updatedCustomer = await prisma.customer.update({
+    where: { id: user.customer.id },
+    data: {
+      companyName: data.companyName,
+      contactEmail: data.contactEmail,
+      contactPhone: data.contactPhone,
+      address: data.address,
+      industry: data.industry,
+    },
+  });
+
+  return updatedCustomer;
+};
+
+// Get all customers (Admin)
+export const getAllCustomersService = async () => {
+  const customers = await prisma.customer.findMany({
+    include: {
+      user: {
+        select: {
+          id: true,
+          username: true,
+          email: true,
+          isActive: true,
+        },
+      },
+      _count: {
+        select: {
+          orders: true,
+        },
+      },
+    },
+    orderBy: { companyName: 'asc' },
+  });
+
+  return customers.map(customer => ({
+    ...customer,
+    contactEmail: customer.user?.email || customer.contactEmail,
+  }));
+};
+
+// Get customer by ID (Admin)
+export const getCustomerByIdService = async (customerId: string) => {
+  const customer = await prisma.customer.findUnique({
+    where: { id: customerId },
+    include: {
+      user: {
+        select: {
+          id: true,
+          username: true,
+          email: true,
+          isActive: true,
+        },
+      },
+      orders: {
+        orderBy: { createdAt: 'desc' },
+        take: 10,
+      },
+      _count: {
+        select: {
+          orders: true,
+        },
+      },
+    },
+  });
+
+  if (!customer) {
+    throw new Error('Customer not found');
+  }
+
+  return {
+    ...customer,
+    contactEmail: customer.user?.email || customer.contactEmail,
+  };
 };

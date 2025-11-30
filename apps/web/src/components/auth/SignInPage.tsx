@@ -44,6 +44,8 @@ export default function SignInPage() {
 
         if (session?.user?.role === "ADMIN") {
           router.push("/dashboard-admin");
+        } else if (session?.user?.role === "CUSTOMER") {
+          router.push("/dashboard-customer");
         } else if (session?.user?.role === "TEAM_LEADER") {
           router.push("/dashboard-team-leader");
         } else {
@@ -61,10 +63,12 @@ export default function SignInPage() {
           toast.error("Ungültige E-Mail oder Passwort");
         } else if (result?.error === "CredentialsSignin") {
           toast.error("Ungültige E-Mail oder Passwort");
-        } else if (result?.error && result.error.includes('blocked')) {
+        } else if (result?.error && (result.error.includes("gesperrt") || result.error.includes("deaktiviert") || result.error.includes("Support"))) {
+          // Show blocking/deactivation messages directly
           toast.error(result.error);
-        } else if (result?.error) {
-          toast.error("Anmeldung fehlgeschlagen. Bitte versuchen Sie es erneut.");
+        } else if (result?.error && result.error !== "CredentialsSignin" && result.error !== "INVALID_CREDENTIALS") {
+          // Show other specific backend error messages
+          toast.error(result.error);
         } else {
           toast.error("Anmeldung fehlgeschlagen. Bitte versuchen Sie es erneut.");
         }
@@ -73,10 +77,8 @@ export default function SignInPage() {
       }
     } catch (error) {
       toast.error("Ein unerwarteter Fehler ist aufgetreten");
-    } finally {
       setIsLoading(false);
       setLoadingMessage("");
-      
     }
   };
 
@@ -176,8 +178,8 @@ export default function SignInPage() {
               </Button>
             </form>
 
-            {/* Sign Up Link */}
-            <div className="text-center pt-4 border-t border-border/50">
+            {/* Sign Up Links */}
+            <div className="text-center pt-4 border-t border-border/50 space-y-2">
               <p className="text-sm text-mforeground">
                 Noch kein Konto?{" "}
                 <button
@@ -187,6 +189,15 @@ export default function SignInPage() {
                   Registrieren
                 </button>
               </p>
+              {/* <p className="text-sm text-mforeground">
+                Sind Sie ein Kunde?{" "}
+                <button
+                  onClick={() => router.push("/customer-register")}
+                  className="text-primary hover:underline font-medium"
+                >
+                  Kunden Registrierung
+                </button>
+              </p> */}
             </div>
           </CardContent>
         </Card>

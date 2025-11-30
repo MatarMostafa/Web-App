@@ -97,6 +97,114 @@ export const register = async (userData: any) => {
   };
 };
 
+export const registerEmployee = async (userData: any) => {
+  const { name, email, username, password, role = "EMPLOYEE" } = userData;
+
+  // Check for existing email
+  const existingEmail = await prisma.user.findUnique({
+    where: { email },
+  });
+
+  if (existingEmail) {
+    throw new Error("E-Mail-Adresse existiert bereits");
+  }
+
+  // Check for existing username
+  const existingUsername = await prisma.user.findUnique({
+    where: { username },
+  });
+
+  if (existingUsername) {
+    throw new Error("Benutzername ist nicht verfügbar");
+  }
+
+  const hashedPassword = await bcrypt.hash(password, 12);
+
+  const user = await prisma.user.create({
+    data: {
+      email,
+      username,
+      password: hashedPassword,
+      role,
+      isActive: true,
+      emailVerified: true,
+    },
+  });
+
+  // Create employee record if role is EMPLOYEE
+  if (role === "EMPLOYEE") {
+    await prisma.employee.create({
+      data: {
+        userId: user.id,
+        firstName: name ? name.split(' ')[0] : undefined,
+        lastName: name ? name.split(' ').slice(1).join(' ') || undefined : undefined,
+        employeeCode: `EMP${Date.now().toString().slice(-6)}`,
+        hireDate: new Date(),
+        isAvailable: true,
+        priority: 1,
+      },
+    });
+  }
+
+  return {
+    message: "Employee account created successfully.",
+  };
+};
+
+export const registerCustomer = async (userData: any) => {
+  const { email, username, password, companyName, contactPhone, industry, address, taxNumber } = userData;
+
+  // Check for existing email
+  const existingEmail = await prisma.user.findUnique({
+    where: { email },
+  });
+
+  if (existingEmail) {
+    throw new Error("E-Mail-Adresse existiert bereits");
+  }
+
+  // Check for existing username
+  const existingUsername = await prisma.user.findUnique({
+    where: { username },
+  });
+
+  if (existingUsername) {
+    throw new Error("Benutzername ist nicht verfügbar");
+  }
+
+  const hashedPassword = await bcrypt.hash(password, 12);
+
+  // Create user with CUSTOMER role (admin-created, immediately active)
+  const user = await prisma.user.create({
+    data: {
+      email,
+      username,
+      password: hashedPassword,
+      role: "CUSTOMER",
+      isActive: true,
+      emailVerified: true,
+    },
+  });
+
+  // Create customer record
+  await prisma.customer.create({
+    data: {
+      userId: user.id,
+      companyName,
+      contactEmail: email,
+      contactPhone,
+      industry,
+      address,
+      taxNumber,
+      isActive: true,
+    },
+  });
+
+  return {
+    message: "Customer account created successfully.",
+  };
+};
+
 export const login = async (identifier: string, password: string) => {
   console.log('Auth service - trying to find user with identifier:', identifier);
   
@@ -104,7 +212,8 @@ export const login = async (identifier: string, password: string) => {
   let user = await prisma.user.findUnique({ 
     where: { email: identifier },
     include: {
-      employee: true
+      employee: true,
+      customer: true
     }
   });
   
@@ -114,7 +223,8 @@ export const login = async (identifier: string, password: string) => {
     user = await prisma.user.findUnique({ 
       where: { username: identifier },
       include: {
-        employee: true
+        employee: true,
+        customer: true
       }
     });
     console.log('User found by username:', !!user);
@@ -130,9 +240,17 @@ export const login = async (identifier: string, password: string) => {
     throw new Error("Ihr Zugang zum System wurde gesperrt. Bitte wenden Sie sich an den Administrator.");
   }
   
+  // Check if customer is blocked before password validation
+  if (user.customer && !user.customer.isActive) {
+    throw new Error("Ihr Kundenkonto wurde deaktiviert. Bitte wenden Sie sich an den Support.");
+  }
+  
   
   if (!user.isActive) {
     console.log('User account not active');
+    if (user.role === 'CUSTOMER') {
+      throw new Error("Ihr Kundenkonto wurde deaktiviert. Bitte wenden Sie sich an den Support.");
+    }
     throw new Error("Konto nicht verifiziert");
   }
 
@@ -278,7 +396,7 @@ export const verifyEmail = async (token: string) => {
     // Verify JWT token
     const decoded = jwt.verify(token, JWT_SECRET) as any;
     
-    if (decoded.type !== "email-verification") {
+    if (decoded.type !== "email-verification" && decoded.type !== "email-change-verification") {
       throw new Error("Ungültiger Token-Typ");
     }
 
@@ -296,6 +414,31 @@ export const verifyEmail = async (token: string) => {
       throw new Error("Ungültiger oder abgelaufener Verifizierungstoken");
     }
 
+    // Handle email change verification
+    if (decoded.type === "email-change-verification") {
+      // Update user email and mark as verified
+      await prisma.user.update({
+        where: { id: user.id },
+        data: {
+          email: decoded.email,
+          emailVerified: true,
+          emailVerificationToken: null,
+          emailVerificationExpires: null,
+        },
+      });
+      
+      // Mark the settings change request as completed
+      if (decoded.requestId) {
+        await prisma.settingsChangeRequest.update({
+          where: { id: decoded.requestId },
+          data: { status: "APPROVED" },
+        });
+      }
+      
+      return { message: "E-Mail erfolgreich geändert" };
+    }
+    
+    // Handle regular email verification
     if (user.isActive) {
       throw new Error("E-Mail bereits verifiziert");
     }

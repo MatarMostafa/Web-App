@@ -42,6 +42,11 @@ export const authMiddleware = async (
             isAvailable: true,
           },
         },
+        customer: {
+          select: {
+            isActive: true,
+          },
+        },
       },
     });
 
@@ -51,6 +56,10 @@ export const authMiddleware = async (
 
     if (user.employee && !user.employee.isAvailable) {
       return res.status(403).json({ message: "Ihr Zugang zum System wurde gesperrt. Bitte wenden Sie sich an den Administrator." });
+    }
+
+    if (user.customer && !user.customer.isActive) {
+      return res.status(403).json({ message: "Ihr Kundenkonto wurde deaktiviert. Bitte wenden Sie sich an den Support." });
     }
 
     authReq.user = user;
