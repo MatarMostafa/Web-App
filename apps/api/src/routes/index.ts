@@ -16,6 +16,8 @@ import fileRoutes from "./fileRoutes";
 import qualificationRoutes from "./qualificationRoutes";
 import absenceRoutes from "./absenceRoutes";
 import settingsRoutes from "./settingsRoutes";
+import teamRoutes from "./teamRoutes";
+import teamLeaderRoutes from "./teamLeaderRoutes";
 
 const router = express.Router();
 
@@ -60,5 +62,11 @@ router.use("/absences", absenceRoutes);
 
 // Settings routes
 router.use("/settings", settingsRoutes);
+
+// Team routes
+router.use("/teams", teamRoutes);
+
+// Team Leader routes
+router.use("/team-leader", teamLeaderRoutes);
 
 export default router;

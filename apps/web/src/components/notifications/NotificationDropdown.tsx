@@ -148,6 +148,8 @@ export function NotificationDropdown() {
           targetPath = "/dashboard-employee/orders";
         } else if (currentPath.includes("/dashboard-customer")) {
           targetPath = "/dashboard-customer/orders";
+        } else if (currentPath.includes("/dashboard-team-leader")) {
+          targetPath = "/dashboard-team-leader/orders";
         } else {
           targetPath = "/dashboard-admin/orders";
         }

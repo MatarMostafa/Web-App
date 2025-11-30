@@ -121,7 +121,6 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Form submitted with data:", formData);
 
     // Validate required fields
     const newErrors: Record<string, string> = {};
@@ -131,14 +130,11 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
     if (!formData.priority || formData.priority < 1) newErrors.priority = t("admin.orders.form.priorityRequired");
     
     setErrors(newErrors);
-    console.log("Validation errors:", newErrors);
     
     if (Object.keys(newErrors).length > 0) {
       toast.error(t("admin.orders.form.validationError"));
       return;
     }
-
-    console.log("Starting order creation...");
     setLoading(true);
 
     try {
@@ -160,9 +156,7 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
         submitData.endTime = undefined;
       }
 
-      console.log("Calling createOrder with:", submitData);
       const newOrder = await createOrder(submitData);
-      console.log("Order created successfully:", newOrder);
       setOpen(false);
       resetFormData();
     } catch (error) {
@@ -337,15 +331,22 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
           </div>
 
           <div>
-            <Label htmlFor="specialInstructions">{t("admin.orders.form.specialInstructions")}</Label>
-            <Textarea
-              id="specialInstructions"
+            <Label htmlFor="specialInstructions">{t("admin.orders.form.activities")}</Label>
+            <Select
               value={formData.specialInstructions}
-              onChange={(e) =>
-                handleInputChange("specialInstructions", e.target.value)
-              }
-              rows={3}
-            />
+              onValueChange={(value) => handleInputChange("specialInstructions", value)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder={t("admin.orders.form.selectActivity")} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Container entladen">{t("admin.orders.activities.containerUnloading")}</SelectItem>
+                <SelectItem value="Kommissionieren">{t("admin.orders.activities.picking")}</SelectItem>
+                <SelectItem value="Paletten sortieren">{t("admin.orders.activities.palletSorting")}</SelectItem>
+                <SelectItem value="Qualitätskontrolle">{t("admin.orders.activities.qualityControl")}</SelectItem>
+                <SelectItem value="Verpacken">{t("admin.orders.activities.packaging")}</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           <div>
