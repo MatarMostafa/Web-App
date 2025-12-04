@@ -92,12 +92,15 @@ export const OrderDetailPage: React.FC<OrderDetailPageProps> = ({
         setDataFetched(true);
         const assignment = employeeAssignments.find(a => a.order.id === orderId);
         if (assignment) {
-          setOrder(assignment.order as Order);
+          const orderData = assignment.order as any;
+          // Use the order data from assignment, even if customer data is missing
+          setOrder(orderData);
           setError(null);
+          setLoading(false);
         } else {
           setError("Order not found or not assigned to you");
+          setLoading(false);
         }
-        setLoading(false);
       }
     }
   }, [orders, employeeAssignments, orderId, userRole]);
@@ -161,7 +164,7 @@ export const OrderDetailPage: React.FC<OrderDetailPageProps> = ({
           </div>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3">
             <div className="flex items-center gap-2">
               <Calendar className="h-4 w-4 text-muted-foreground" />
               <div>
@@ -176,6 +179,16 @@ export const OrderDetailPage: React.FC<OrderDetailPageProps> = ({
                 )}
               </div>
             </div>
+            
+            {(order as any)?.customer?.companyName && (
+              <div className="flex items-center gap-2">
+                <User className="h-4 w-4 text-muted-foreground" />
+                <div>
+                  <p className="text-sm font-medium">Company</p>
+                  <p className="text-sm text-muted-foreground">{(order as any).customer.companyName}</p>
+                </div>
+              </div>
+            )}
             
             {order.location && (
               <div className="flex items-center gap-2">
