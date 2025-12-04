@@ -147,6 +147,12 @@ router.get(
               status: true,
               createdAt: true,
               updatedAt: true,
+              customer: {
+                select: {
+                  id: true,
+                  companyName: true,
+                },
+              },
             },
           },
         },
