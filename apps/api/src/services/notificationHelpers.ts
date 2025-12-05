@@ -7,7 +7,6 @@ import { getNotificationTranslation, getStatusMessageTranslation } from "../util
  * Assignment Notifications
  */
 export const notifyAssignmentCreated = async (assignmentId: string, createdBy?: string) => {
-  console.log("🔔 notifyAssignmentCreated called for:", assignmentId);
   const assignment = await prisma.assignment.findUnique({
     where: { id: assignmentId },
     include: {
@@ -17,12 +16,9 @@ export const notifyAssignmentCreated = async (assignmentId: string, createdBy?: 
   });
 
   if (!assignment) {
-    console.log("❌ Assignment not found:", assignmentId);
     return;
   }
-
-  console.log("📧 Creating notification for employee:", assignment.employeeId, "userId:", assignment.employee.userId);
-  
+ 
   const customerName = assignment.order?.customer?.companyName || 'Unknown Customer';
   
   try {
