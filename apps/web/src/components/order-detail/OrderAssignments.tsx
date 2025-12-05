@@ -224,28 +224,30 @@ export const OrderAssignments: React.FC<OrderAssignmentsProps> = ({
                         assignment.employee.user?.email?.split('@')[0] || 'No Name'
                       }
                     </h4>
-                    <Badge variant="outline" className="text-xs">
-                      {assignment.employee.employeeCode}
-                    </Badge>
+                    {userRole === "ADMIN" && (
+                      <Badge variant="outline" className="text-xs">
+                        {assignment.employee.employeeCode}
+                      </Badge>
+                    )}
                   </div>
                   
                   <div className="space-y-1 text-xs text-muted-foreground">
-                    {assignment.employee.position && (
+                    {userRole === "ADMIN" && assignment.employee.position && (
                       <p>{assignment.employee.position.title}</p>
                     )}
                     
-                    {assignment.employee.department && (
+                    {userRole === "ADMIN" && assignment.employee.department && (
                       <p>{assignment.employee.department.name}</p>
                     )}
                     
-                    {assignment.employee.user?.email && (
+                    {userRole === "ADMIN" && assignment.employee.user?.email && (
                       <div className="flex items-center gap-1">
                         <Mail className="h-3 w-3" />
                         <span>{assignment.employee.user.email}</span>
                       </div>
                     )}
                     
-                    {assignment.employee.phoneNumber && (
+                    {userRole === "ADMIN" && assignment.employee.phoneNumber && (
                       <div className="flex items-center gap-1">
                         <Phone className="h-3 w-3" />
                         <span>{assignment.employee.phoneNumber}</span>
