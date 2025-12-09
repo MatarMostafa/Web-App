@@ -241,11 +241,18 @@ exports.Prisma.CustomerScalarFieldEnum = {
 exports.Prisma.SubAccountScalarFieldEnum = {
   id: 'id',
   name: 'name',
+  email: 'email',
   code: 'code',
   isActive: 'isActive',
+  canCreateOrders: 'canCreateOrders',
+  canEditOrders: 'canEditOrders',
+  canViewReports: 'canViewReports',
   customerId: 'customerId',
+  userId: 'userId',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  createdBy: 'createdBy',
+  updatedBy: 'updatedBy'
 };
 
 exports.Prisma.OrderScalarFieldEnum = {
@@ -267,6 +274,7 @@ exports.Prisma.OrderScalarFieldEnum = {
   estimatedHours: 'estimatedHours',
   actualHours: 'actualHours',
   customerId: 'customerId',
+  createdBySubAccountId: 'createdBySubAccountId',
   teamId: 'teamId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
@@ -567,7 +575,8 @@ exports.UserRole = exports.$Enums.UserRole = {
   EMPLOYEE: 'EMPLOYEE',
   HR_MANAGER: 'HR_MANAGER',
   SUPER_ADMIN: 'SUPER_ADMIN',
-  CUSTOMER: 'CUSTOMER'
+  CUSTOMER: 'CUSTOMER',
+  CUSTOMER_SUB_USER: 'CUSTOMER_SUB_USER'
 };
 
 exports.WorkScheduleType = exports.$Enums.WorkScheduleType = {

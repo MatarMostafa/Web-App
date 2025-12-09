@@ -1251,7 +1251,50 @@
     "navigation": {
       "dashboard": "Dashboard",
       "orders": "Meine Aufträge",
+      "subAccounts": "Unterkonten",
       "profile": "Profil"
+    },
+    "subAccounts": {
+      "title": "Unterkonten",
+      "subtitle": "Verwalten Sie die Unterkonten und Benutzerzugriffe Ihres Unternehmens",
+      "addSubAccount": "Unterkonto hinzufügen",
+      "searchPlaceholder": "Unterkonten nach Name oder E-Mail suchen...",
+      "confirmDelete": "Sind Sie sicher, dass Sie dieses Unterkonto löschen möchten?",
+      "noSubAccountsFound": "Keine Unterkonten gefunden",
+      "getStartedMessage": "Beginnen Sie mit der Erstellung Ihres ersten Unterkontos",
+      "table": {
+        "name": "Name",
+        "email": "E-Mail",
+        "permissions": "Berechtigungen",
+        "status": "Status",
+        "lastLogin": "Letzte Anmeldung",
+        "actions": "Aktionen"
+      },
+      "form": {
+        "addNewSubAccount": "Neues Unterkonto hinzufügen",
+        "editSubAccount": "Unterkonto bearbeiten",
+        "basicInformation": "Grundinformationen",
+        "name": "Name",
+        "namePlaceholder": "Vollständigen Namen eingeben",
+        "nameRequired": "Name ist erforderlich",
+        "email": "E-Mail",
+        "emailPlaceholder": "E-Mail-Adresse eingeben",
+        "emailRequired": "E-Mail ist erforderlich",
+        "permissions": "Berechtigungen",
+        "canCreateOrders": "Aufträge erstellen",
+        "canCreateOrdersDesc": "Diesem Benutzer erlauben, neue Aufträge zu erstellen",
+        "canEditOrders": "Aufträge bearbeiten",
+        "canEditOrdersDesc": "Diesem Benutzer erlauben, bestehende Aufträge zu ändern",
+        "canViewReports": "Berichte anzeigen",
+        "canViewReportsDesc": "Diesem Benutzer Zugriff auf Berichte und Analysen gewähren",
+        "activeAccount": "Aktives Konto",
+        "activeAccountDesc": "Dieses Unterkonto aktivieren oder deaktivieren",
+        "cancel": "Abbrechen",
+        "creating": "Wird erstellt...",
+        "addSubAccount": "Unterkonto hinzufügen",
+        "updating": "Wird aktualisiert...",
+        "updateSubAccount": "Unterkonto aktualisieren"
+      }
     },
     "orderDetail": {
       "orderNotFound": "Auftrag nicht gefunden",
