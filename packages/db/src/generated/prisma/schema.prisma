@@ -23,6 +23,7 @@ enum UserRole {
   HR_MANAGER
   SUPER_ADMIN
   CUSTOMER
+  CUSTOMER_SUB_USER
 }
 
 enum RatingStatus {
@@ -133,6 +134,7 @@ model User {
   // Cascade delete relations
   employee        Employee?
   customer        Customer?
+  subAccount      SubAccount?
   manualOverrides EmployeePerformance[] @relation("ManualOverrideByUser")
 
   // Manager relationships
@@ -331,16 +333,30 @@ model Customer {
 model SubAccount {
   id       String  @id @default(cuid())
   name     String
+  email    String  @unique
   code     String?
   isActive Boolean @default(true)
 
+  // Permissions
+  canCreateOrders Boolean @default(true)
+  canEditOrders   Boolean @default(true)
+  canViewReports  Boolean @default(false)
+
+  // Relations
   customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
   customerId String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     String   @unique
+
+  // Orders created by this sub-account
+  createdOrders Order[] @relation("SubAccountCreatedOrders")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  createdBy String?
+  updatedBy String?
 
-  @@unique([customerId, name])
+  @@unique([customerId, email])
   @@map("sub_accounts")
 }
 
@@ -370,16 +386,18 @@ model Order {
   estimatedHours Decimal? @db.Decimal(5, 2)
   actualHours    Decimal? @db.Decimal(5, 2)
 
-  customer            Customer             @relation(fields: [customerId], references: [id], onDelete: Cascade)
-  customerId          String
-  team                Team?                @relation(fields: [teamId], references: [id], onDelete: SetNull)
-  teamId              String?
-  qualifications      OrderQualification[]
-  orderAssignments    OrderAssignment[]
-  employeeAssignments Assignment[]
-  ratings             Rating[]
-  files               File[]
-  notes               OrderNote[]
+  customer              Customer             @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  customerId            String
+  createdBySubAccount   SubAccount?          @relation("SubAccountCreatedOrders", fields: [createdBySubAccountId], references: [id], onDelete: SetNull)
+  createdBySubAccountId String?
+  team                  Team?                @relation(fields: [teamId], references: [id], onDelete: SetNull)
+  teamId                String?
+  qualifications        OrderQualification[]
+  orderAssignments      OrderAssignment[]
+  employeeAssignments   Assignment[]
+  ratings               Rating[]
+  files                 File[]
+  notes                 OrderNote[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

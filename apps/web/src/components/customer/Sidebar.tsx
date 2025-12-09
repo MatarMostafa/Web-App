@@ -3,6 +3,7 @@ import {
   LayoutGrid,
   Package,
   User,
+  Users,
   LogOut,
   ChevronLeft,
   ChevronRight,
@@ -48,6 +49,11 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
       name: t('customerPortal.navigation.orders'),
       href: "/dashboard-customer/orders",
       icon: Package,
+    },
+    {
+      name: t('customerPortal.navigation.subAccounts'),
+      href: "/dashboard-customer/sub-accounts",
+      icon: Users,
     },
   ];
 

@@ -169,7 +169,8 @@ export namespace $Enums {
   EMPLOYEE: 'EMPLOYEE',
   HR_MANAGER: 'HR_MANAGER',
   SUPER_ADMIN: 'SUPER_ADMIN',
-  CUSTOMER: 'CUSTOMER'
+  CUSTOMER: 'CUSTOMER',
+  CUSTOMER_SUB_USER: 'CUSTOMER_SUB_USER'
 };
 
 export type UserRole = (typeof UserRole)[keyof typeof UserRole]
@@ -3900,6 +3901,37 @@ export namespace Prisma {
 
 
   /**
+   * Count Type SubAccountCountOutputType
+   */
+
+  export type SubAccountCountOutputType = {
+    createdOrders: number
+  }
+
+  export type SubAccountCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    createdOrders?: boolean | SubAccountCountOutputTypeCountCreatedOrdersArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * SubAccountCountOutputType without action
+   */
+  export type SubAccountCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SubAccountCountOutputType
+     */
+    select?: SubAccountCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * SubAccountCountOutputType without action
+   */
+  export type SubAccountCountOutputTypeCountCreatedOrdersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: OrderWhereInput
+  }
+
+
+  /**
    * Count Type OrderCountOutputType
    */
 
@@ -4408,6 +4440,7 @@ export namespace Prisma {
     updatedBy?: boolean
     employee?: boolean | User$employeeArgs<ExtArgs>
     customer?: boolean | User$customerArgs<ExtArgs>
+    subAccount?: boolean | User$subAccountArgs<ExtArgs>
     manualOverrides?: boolean | User$manualOverridesArgs<ExtArgs>
     subordinates?: boolean | User$subordinatesArgs<ExtArgs>
     notificationRecipients?: boolean | User$notificationRecipientsArgs<ExtArgs>
@@ -4487,6 +4520,7 @@ export namespace Prisma {
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     employee?: boolean | User$employeeArgs<ExtArgs>
     customer?: boolean | User$customerArgs<ExtArgs>
+    subAccount?: boolean | User$subAccountArgs<ExtArgs>
     manualOverrides?: boolean | User$manualOverridesArgs<ExtArgs>
     subordinates?: boolean | User$subordinatesArgs<ExtArgs>
     notificationRecipients?: boolean | User$notificationRecipientsArgs<ExtArgs>
@@ -4503,6 +4537,7 @@ export namespace Prisma {
     objects: {
       employee: Prisma.$EmployeePayload<ExtArgs> | null
       customer: Prisma.$CustomerPayload<ExtArgs> | null
+      subAccount: Prisma.$SubAccountPayload<ExtArgs> | null
       manualOverrides: Prisma.$EmployeePerformancePayload<ExtArgs>[]
       subordinates: Prisma.$EmployeePayload<ExtArgs>[]
       notificationRecipients: Prisma.$NotificationRecipientPayload<ExtArgs>[]
@@ -4926,6 +4961,7 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     employee<T extends User$employeeArgs<ExtArgs> = {}>(args?: Subset<T, User$employeeArgs<ExtArgs>>): Prisma__EmployeeClient<$Result.GetResult<Prisma.$EmployeePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     customer<T extends User$customerArgs<ExtArgs> = {}>(args?: Subset<T, User$customerArgs<ExtArgs>>): Prisma__CustomerClient<$Result.GetResult<Prisma.$CustomerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    subAccount<T extends User$subAccountArgs<ExtArgs> = {}>(args?: Subset<T, User$subAccountArgs<ExtArgs>>): Prisma__SubAccountClient<$Result.GetResult<Prisma.$SubAccountPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     manualOverrides<T extends User$manualOverridesArgs<ExtArgs> = {}>(args?: Subset<T, User$manualOverridesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EmployeePerformancePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     subordinates<T extends User$subordinatesArgs<ExtArgs> = {}>(args?: Subset<T, User$subordinatesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EmployeePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     notificationRecipients<T extends User$notificationRecipientsArgs<ExtArgs> = {}>(args?: Subset<T, User$notificationRecipientsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationRecipientPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -5403,6 +5439,25 @@ export namespace Prisma {
      */
     include?: CustomerInclude<ExtArgs> | null
     where?: CustomerWhereInput
+  }
+
+  /**
+   * User.subAccount
+   */
+  export type User$subAccountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SubAccount
+     */
+    select?: SubAccountSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SubAccount
+     */
+    omit?: SubAccountOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SubAccountInclude<ExtArgs> | null
+    where?: SubAccountWhereInput
   }
 
   /**
@@ -13365,31 +13420,52 @@ export namespace Prisma {
   export type SubAccountMinAggregateOutputType = {
     id: string | null
     name: string | null
+    email: string | null
     code: string | null
     isActive: boolean | null
+    canCreateOrders: boolean | null
+    canEditOrders: boolean | null
+    canViewReports: boolean | null
     customerId: string | null
+    userId: string | null
     createdAt: Date | null
     updatedAt: Date | null
+    createdBy: string | null
+    updatedBy: string | null
   }
 
   export type SubAccountMaxAggregateOutputType = {
     id: string | null
     name: string | null
+    email: string | null
     code: string | null
     isActive: boolean | null
+    canCreateOrders: boolean | null
+    canEditOrders: boolean | null
+    canViewReports: boolean | null
     customerId: string | null
+    userId: string | null
     createdAt: Date | null
     updatedAt: Date | null
+    createdBy: string | null
+    updatedBy: string | null
   }
 
   export type SubAccountCountAggregateOutputType = {
     id: number
     name: number
+    email: number
     code: number
     isActive: number
+    canCreateOrders: number
+    canEditOrders: number
+    canViewReports: number
     customerId: number
+    userId: number
     createdAt: number
     updatedAt: number
+    createdBy: number
+    updatedBy: number
     _all: number
   }
 
@@ -13397,31 +13473,52 @@ export namespace Prisma {
   export type SubAccountMinAggregateInputType = {
     id?: true
     name?: true
+    email?: true
     code?: true
     isActive?: true
+    canCreateOrders?: true
+    canEditOrders?: true
+    canViewReports?: true
     customerId?: true
+    userId?: true
     createdAt?: true
     updatedAt?: true
+    createdBy?: true
+    updatedBy?: true
   }
 
   export type SubAccountMaxAggregateInputType = {
     id?: true
     name?: true
+    email?: true
     code?: true
     isActive?: true
+    canCreateOrders?: true
+    canEditOrders?: true
+    canViewReports?: true
     customerId?: true
+    userId?: true
     createdAt?: true
     updatedAt?: true
+    createdBy?: true
+    updatedBy?: true
   }
 
   export type SubAccountCountAggregateInputType = {
     id?: true
     name?: true
+    email?: true
     code?: true
     isActive?: true
+    canCreateOrders?: true
+    canEditOrders?: true
+    canViewReports?: true
     customerId?: true
+    userId?: true
     createdAt?: true
     updatedAt?: true
+    createdBy?: true
+    updatedBy?: true
     _all?: true
   }
 
@@ -13500,11 +13597,18 @@ export namespace Prisma {
   export type SubAccountGroupByOutputType = {
     id: string
     name: string
+    email: string
     code: string | null
     isActive: boolean
+    canCreateOrders: boolean
+    canEditOrders: boolean
+    canViewReports: boolean
     customerId: string
+    userId: string
     createdAt: Date
     updatedAt: Date
+    createdBy: string | null
+    updatedBy: string | null
     _count: SubAccountCountAggregateOutputType | null
     _min: SubAccountMinAggregateOutputType | null
     _max: SubAccountMaxAggregateOutputType | null
@@ -13527,70 +13631,117 @@ export namespace Prisma {
   export type SubAccountSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
+    email?: boolean
     code?: boolean
     isActive?: boolean
+    canCreateOrders?: boolean
+    canEditOrders?: boolean
+    canViewReports?: boolean
     customerId?: boolean
+    userId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    createdBy?: boolean
+    updatedBy?: boolean
     customer?: boolean | CustomerDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    createdOrders?: boolean | SubAccount$createdOrdersArgs<ExtArgs>
+    _count?: boolean | SubAccountCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["subAccount"]>
 
   export type SubAccountSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
+    email?: boolean
     code?: boolean
     isActive?: boolean
+    canCreateOrders?: boolean
+    canEditOrders?: boolean
+    canViewReports?: boolean
     customerId?: boolean
+    userId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    createdBy?: boolean
+    updatedBy?: boolean
     customer?: boolean | CustomerDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["subAccount"]>
 
   export type SubAccountSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
+    email?: boolean
     code?: boolean
     isActive?: boolean
+    canCreateOrders?: boolean
+    canEditOrders?: boolean
+    canViewReports?: boolean
     customerId?: boolean
+    userId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    createdBy?: boolean
+    updatedBy?: boolean
     customer?: boolean | CustomerDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["subAccount"]>
 
   export type SubAccountSelectScalar = {
     id?: boolean
     name?: boolean
+    email?: boolean
     code?: boolean
     isActive?: boolean
+    canCreateOrders?: boolean
+    canEditOrders?: boolean
+    canViewReports?: boolean
     customerId?: boolean
+    userId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    createdBy?: boolean
+    updatedBy?: boolean
   }
 
-  export type SubAccountOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "code" | "isActive" | "customerId" | "createdAt" | "updatedAt", ExtArgs["result"]["subAccount"]>
+  export type SubAccountOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "email" | "code" | "isActive" | "canCreateOrders" | "canEditOrders" | "canViewReports" | "customerId" | "userId" | "createdAt" | "updatedAt" | "createdBy" | "updatedBy", ExtArgs["result"]["subAccount"]>
   export type SubAccountInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     customer?: boolean | CustomerDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    createdOrders?: boolean | SubAccount$createdOrdersArgs<ExtArgs>
+    _count?: boolean | SubAccountCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type SubAccountIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     customer?: boolean | CustomerDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
   }
   export type SubAccountIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     customer?: boolean | CustomerDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
   }
 
   export type $SubAccountPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "SubAccount"
     objects: {
       customer: Prisma.$CustomerPayload<ExtArgs>
+      user: Prisma.$UserPayload<ExtArgs>
+      createdOrders: Prisma.$OrderPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
       name: string
+      email: string
       code: string | null
       isActive: boolean
+      canCreateOrders: boolean
+      canEditOrders: boolean
+      canViewReports: boolean
       customerId: string
+      userId: string
       createdAt: Date
       updatedAt: Date
+      createdBy: string | null
+      updatedBy: string | null
     }, ExtArgs["result"]["subAccount"]>
     composites: {}
   }
@@ -13986,6 +14137,8 @@ export namespace Prisma {
   export interface Prisma__SubAccountClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     customer<T extends CustomerDefaultArgs<ExtArgs> = {}>(args?: Subset<T, CustomerDefaultArgs<ExtArgs>>): Prisma__CustomerClient<$Result.GetResult<Prisma.$CustomerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    createdOrders<T extends SubAccount$createdOrdersArgs<ExtArgs> = {}>(args?: Subset<T, SubAccount$createdOrdersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -14017,11 +14170,18 @@ export namespace Prisma {
   interface SubAccountFieldRefs {
     readonly id: FieldRef<"SubAccount", 'String'>
     readonly name: FieldRef<"SubAccount", 'String'>
+    readonly email: FieldRef<"SubAccount", 'String'>
     readonly code: FieldRef<"SubAccount", 'String'>
     readonly isActive: FieldRef<"SubAccount", 'Boolean'>
+    readonly canCreateOrders: FieldRef<"SubAccount", 'Boolean'>
+    readonly canEditOrders: FieldRef<"SubAccount", 'Boolean'>
+    readonly canViewReports: FieldRef<"SubAccount", 'Boolean'>
     readonly customerId: FieldRef<"SubAccount", 'String'>
+    readonly userId: FieldRef<"SubAccount", 'String'>
     readonly createdAt: FieldRef<"SubAccount", 'DateTime'>
     readonly updatedAt: FieldRef<"SubAccount", 'DateTime'>
+    readonly createdBy: FieldRef<"SubAccount", 'String'>
+    readonly updatedBy: FieldRef<"SubAccount", 'String'>
   }
     
 
@@ -14418,6 +14578,30 @@ export namespace Prisma {
   }
 
   /**
+   * SubAccount.createdOrders
+   */
+  export type SubAccount$createdOrdersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Order
+     */
+    select?: OrderSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Order
+     */
+    omit?: OrderOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderInclude<ExtArgs> | null
+    where?: OrderWhereInput
+    orderBy?: OrderOrderByWithRelationInput | OrderOrderByWithRelationInput[]
+    cursor?: OrderWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: OrderScalarFieldEnum | OrderScalarFieldEnum[]
+  }
+
+  /**
    * SubAccount without action
    */
   export type SubAccountDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -14483,6 +14667,7 @@ export namespace Prisma {
     estimatedHours: Decimal | null
     actualHours: Decimal | null
     customerId: string | null
+    createdBySubAccountId: string | null
     teamId: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -14509,6 +14694,7 @@ export namespace Prisma {
     estimatedHours: Decimal | null
     actualHours: Decimal | null
     customerId: string | null
+    createdBySubAccountId: string | null
     teamId: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -14535,6 +14721,7 @@ export namespace Prisma {
     estimatedHours: number
     actualHours: number
     customerId: number
+    createdBySubAccountId: number
     teamId: number
     createdAt: number
     updatedAt: number
@@ -14579,6 +14766,7 @@ export namespace Prisma {
     estimatedHours?: true
     actualHours?: true
     customerId?: true
+    createdBySubAccountId?: true
     teamId?: true
     createdAt?: true
     updatedAt?: true
@@ -14605,6 +14793,7 @@ export namespace Prisma {
     estimatedHours?: true
     actualHours?: true
     customerId?: true
+    createdBySubAccountId?: true
     teamId?: true
     createdAt?: true
     updatedAt?: true
@@ -14631,6 +14820,7 @@ export namespace Prisma {
     estimatedHours?: true
     actualHours?: true
     customerId?: true
+    createdBySubAccountId?: true
     teamId?: true
     createdAt?: true
     updatedAt?: true
@@ -14744,6 +14934,7 @@ export namespace Prisma {
     estimatedHours: Decimal | null
     actualHours: Decimal | null
     customerId: string
+    createdBySubAccountId: string | null
     teamId: string | null
     createdAt: Date
     updatedAt: Date
@@ -14789,12 +14980,14 @@ export namespace Prisma {
     estimatedHours?: boolean
     actualHours?: boolean
     customerId?: boolean
+    createdBySubAccountId?: boolean
     teamId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     createdBy?: boolean
     updatedBy?: boolean
     customer?: boolean | CustomerDefaultArgs<ExtArgs>
+    createdBySubAccount?: boolean | Order$createdBySubAccountArgs<ExtArgs>
     team?: boolean | Order$teamArgs<ExtArgs>
     qualifications?: boolean | Order$qualificationsArgs<ExtArgs>
     orderAssignments?: boolean | Order$orderAssignmentsArgs<ExtArgs>
@@ -14824,12 +15017,14 @@ export namespace Prisma {
     estimatedHours?: boolean
     actualHours?: boolean
     customerId?: boolean
+    createdBySubAccountId?: boolean
     teamId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     createdBy?: boolean
     updatedBy?: boolean
     customer?: boolean | CustomerDefaultArgs<ExtArgs>
+    createdBySubAccount?: boolean | Order$createdBySubAccountArgs<ExtArgs>
     team?: boolean | Order$teamArgs<ExtArgs>
   }, ExtArgs["result"]["order"]>
 
@@ -14852,12 +15047,14 @@ export namespace Prisma {
     estimatedHours?: boolean
     actualHours?: boolean
     customerId?: boolean
+    createdBySubAccountId?: boolean
     teamId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     createdBy?: boolean
     updatedBy?: boolean
     customer?: boolean | CustomerDefaultArgs<ExtArgs>
+    createdBySubAccount?: boolean | Order$createdBySubAccountArgs<ExtArgs>
     team?: boolean | Order$teamArgs<ExtArgs>
   }, ExtArgs["result"]["order"]>
 
@@ -14880,6 +15077,7 @@ export namespace Prisma {
     estimatedHours?: boolean
     actualHours?: boolean
     customerId?: boolean
+    createdBySubAccountId?: boolean
     teamId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -14887,9 +15085,10 @@ export namespace Prisma {
     updatedBy?: boolean
   }
 
-  export type OrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "orderNumber" | "title" | "description" | "scheduledDate" | "startTime" | "endTime" | "duration" | "location" | "requiredEmployees" | "priority" | "specialInstructions" | "status" | "isArchived" | "archivedAt" | "estimatedHours" | "actualHours" | "customerId" | "teamId" | "createdAt" | "updatedAt" | "createdBy" | "updatedBy", ExtArgs["result"]["order"]>
+  export type OrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "orderNumber" | "title" | "description" | "scheduledDate" | "startTime" | "endTime" | "duration" | "location" | "requiredEmployees" | "priority" | "specialInstructions" | "status" | "isArchived" | "archivedAt" | "estimatedHours" | "actualHours" | "customerId" | "createdBySubAccountId" | "teamId" | "createdAt" | "updatedAt" | "createdBy" | "updatedBy", ExtArgs["result"]["order"]>
   export type OrderInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     customer?: boolean | CustomerDefaultArgs<ExtArgs>
+    createdBySubAccount?: boolean | Order$createdBySubAccountArgs<ExtArgs>
     team?: boolean | Order$teamArgs<ExtArgs>
     qualifications?: boolean | Order$qualificationsArgs<ExtArgs>
     orderAssignments?: boolean | Order$orderAssignmentsArgs<ExtArgs>
@@ -14901,10 +15100,12 @@ export namespace Prisma {
   }
   export type OrderIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     customer?: boolean | CustomerDefaultArgs<ExtArgs>
+    createdBySubAccount?: boolean | Order$createdBySubAccountArgs<ExtArgs>
     team?: boolean | Order$teamArgs<ExtArgs>
   }
   export type OrderIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     customer?: boolean | CustomerDefaultArgs<ExtArgs>
+    createdBySubAccount?: boolean | Order$createdBySubAccountArgs<ExtArgs>
     team?: boolean | Order$teamArgs<ExtArgs>
   }
 
@@ -14912,6 +15113,7 @@ export namespace Prisma {
     name: "Order"
     objects: {
       customer: Prisma.$CustomerPayload<ExtArgs>
+      createdBySubAccount: Prisma.$SubAccountPayload<ExtArgs> | null
       team: Prisma.$TeamPayload<ExtArgs> | null
       qualifications: Prisma.$OrderQualificationPayload<ExtArgs>[]
       orderAssignments: Prisma.$OrderAssignmentPayload<ExtArgs>[]
@@ -14939,6 +15141,7 @@ export namespace Prisma {
       estimatedHours: Prisma.Decimal | null
       actualHours: Prisma.Decimal | null
       customerId: string
+      createdBySubAccountId: string | null
       teamId: string | null
       createdAt: Date
       updatedAt: Date
@@ -15339,6 +15542,7 @@ export namespace Prisma {
   export interface Prisma__OrderClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     customer<T extends CustomerDefaultArgs<ExtArgs> = {}>(args?: Subset<T, CustomerDefaultArgs<ExtArgs>>): Prisma__CustomerClient<$Result.GetResult<Prisma.$CustomerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    createdBySubAccount<T extends Order$createdBySubAccountArgs<ExtArgs> = {}>(args?: Subset<T, Order$createdBySubAccountArgs<ExtArgs>>): Prisma__SubAccountClient<$Result.GetResult<Prisma.$SubAccountPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     team<T extends Order$teamArgs<ExtArgs> = {}>(args?: Subset<T, Order$teamArgs<ExtArgs>>): Prisma__TeamClient<$Result.GetResult<Prisma.$TeamPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     qualifications<T extends Order$qualificationsArgs<ExtArgs> = {}>(args?: Subset<T, Order$qualificationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderQualificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     orderAssignments<T extends Order$orderAssignmentsArgs<ExtArgs> = {}>(args?: Subset<T, Order$orderAssignmentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderAssignmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -15393,6 +15597,7 @@ export namespace Prisma {
     readonly estimatedHours: FieldRef<"Order", 'Decimal'>
     readonly actualHours: FieldRef<"Order", 'Decimal'>
     readonly customerId: FieldRef<"Order", 'String'>
+    readonly createdBySubAccountId: FieldRef<"Order", 'String'>
     readonly teamId: FieldRef<"Order", 'String'>
     readonly createdAt: FieldRef<"Order", 'DateTime'>
     readonly updatedAt: FieldRef<"Order", 'DateTime'>
@@ -15791,6 +15996,25 @@ export namespace Prisma {
      * Limit how many Orders to delete.
      */
     limit?: number
+  }
+
+  /**
+   * Order.createdBySubAccount
+   */
+  export type Order$createdBySubAccountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SubAccount
+     */
+    select?: SubAccountSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SubAccount
+     */
+    omit?: SubAccountOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SubAccountInclude<ExtArgs> | null
+    where?: SubAccountWhereInput
   }
 
   /**
@@ -39146,11 +39370,18 @@ export namespace Prisma {
   export const SubAccountScalarFieldEnum: {
     id: 'id',
     name: 'name',
+    email: 'email',
     code: 'code',
     isActive: 'isActive',
+    canCreateOrders: 'canCreateOrders',
+    canEditOrders: 'canEditOrders',
+    canViewReports: 'canViewReports',
     customerId: 'customerId',
+    userId: 'userId',
     createdAt: 'createdAt',
-    updatedAt: 'updatedAt'
+    updatedAt: 'updatedAt',
+    createdBy: 'createdBy',
+    updatedBy: 'updatedBy'
   };
 
   export type SubAccountScalarFieldEnum = (typeof SubAccountScalarFieldEnum)[keyof typeof SubAccountScalarFieldEnum]
@@ -39175,6 +39406,7 @@ export namespace Prisma {
     estimatedHours: 'estimatedHours',
     actualHours: 'actualHours',
     customerId: 'customerId',
+    createdBySubAccountId: 'createdBySubAccountId',
     teamId: 'teamId',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
@@ -39843,6 +40075,7 @@ export namespace Prisma {
     updatedBy?: StringNullableFilter<"User"> | string | null
     employee?: XOR<EmployeeNullableScalarRelationFilter, EmployeeWhereInput> | null
     customer?: XOR<CustomerNullableScalarRelationFilter, CustomerWhereInput> | null
+    subAccount?: XOR<SubAccountNullableScalarRelationFilter, SubAccountWhereInput> | null
     manualOverrides?: EmployeePerformanceListRelationFilter
     subordinates?: EmployeeListRelationFilter
     notificationRecipients?: NotificationRecipientListRelationFilter
@@ -39873,6 +40106,7 @@ export namespace Prisma {
     updatedBy?: SortOrderInput | SortOrder
     employee?: EmployeeOrderByWithRelationInput
     customer?: CustomerOrderByWithRelationInput
+    subAccount?: SubAccountOrderByWithRelationInput
     manualOverrides?: EmployeePerformanceOrderByRelationAggregateInput
     subordinates?: EmployeeOrderByRelationAggregateInput
     notificationRecipients?: NotificationRecipientOrderByRelationAggregateInput
@@ -39906,6 +40140,7 @@ export namespace Prisma {
     updatedBy?: StringNullableFilter<"User"> | string | null
     employee?: XOR<EmployeeNullableScalarRelationFilter, EmployeeWhereInput> | null
     customer?: XOR<CustomerNullableScalarRelationFilter, CustomerWhereInput> | null
+    subAccount?: XOR<SubAccountNullableScalarRelationFilter, SubAccountWhereInput> | null
     manualOverrides?: EmployeePerformanceListRelationFilter
     subordinates?: EmployeeListRelationFilter
     notificationRecipients?: NotificationRecipientListRelationFilter
@@ -40615,48 +40850,82 @@ export namespace Prisma {
     NOT?: SubAccountWhereInput | SubAccountWhereInput[]
     id?: StringFilter<"SubAccount"> | string
     name?: StringFilter<"SubAccount"> | string
+    email?: StringFilter<"SubAccount"> | string
     code?: StringNullableFilter<"SubAccount"> | string | null
     isActive?: BoolFilter<"SubAccount"> | boolean
+    canCreateOrders?: BoolFilter<"SubAccount"> | boolean
+    canEditOrders?: BoolFilter<"SubAccount"> | boolean
+    canViewReports?: BoolFilter<"SubAccount"> | boolean
     customerId?: StringFilter<"SubAccount"> | string
+    userId?: StringFilter<"SubAccount"> | string
     createdAt?: DateTimeFilter<"SubAccount"> | Date | string
     updatedAt?: DateTimeFilter<"SubAccount"> | Date | string
+    createdBy?: StringNullableFilter<"SubAccount"> | string | null
+    updatedBy?: StringNullableFilter<"SubAccount"> | string | null
     customer?: XOR<CustomerScalarRelationFilter, CustomerWhereInput>
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    createdOrders?: OrderListRelationFilter
   }
 
   export type SubAccountOrderByWithRelationInput = {
     id?: SortOrder
     name?: SortOrder
+    email?: SortOrder
     code?: SortOrderInput | SortOrder
     isActive?: SortOrder
+    canCreateOrders?: SortOrder
+    canEditOrders?: SortOrder
+    canViewReports?: SortOrder
     customerId?: SortOrder
+    userId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    createdBy?: SortOrderInput | SortOrder
+    updatedBy?: SortOrderInput | SortOrder
     customer?: CustomerOrderByWithRelationInput
+    user?: UserOrderByWithRelationInput
+    createdOrders?: OrderOrderByRelationAggregateInput
   }
 
   export type SubAccountWhereUniqueInput = Prisma.AtLeast<{
     id?: string
-    customerId_name?: SubAccountCustomerIdNameCompoundUniqueInput
+    email?: string
+    userId?: string
+    customerId_email?: SubAccountCustomerIdEmailCompoundUniqueInput
     AND?: SubAccountWhereInput | SubAccountWhereInput[]
     OR?: SubAccountWhereInput[]
     NOT?: SubAccountWhereInput | SubAccountWhereInput[]
     name?: StringFilter<"SubAccount"> | string
     code?: StringNullableFilter<"SubAccount"> | string | null
     isActive?: BoolFilter<"SubAccount"> | boolean
+    canCreateOrders?: BoolFilter<"SubAccount"> | boolean
+    canEditOrders?: BoolFilter<"SubAccount"> | boolean
+    canViewReports?: BoolFilter<"SubAccount"> | boolean
     customerId?: StringFilter<"SubAccount"> | string
     createdAt?: DateTimeFilter<"SubAccount"> | Date | string
     updatedAt?: DateTimeFilter<"SubAccount"> | Date | string
+    createdBy?: StringNullableFilter<"SubAccount"> | string | null
+    updatedBy?: StringNullableFilter<"SubAccount"> | string | null
     customer?: XOR<CustomerScalarRelationFilter, CustomerWhereInput>
-  }, "id" | "customerId_name">
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    createdOrders?: OrderListRelationFilter
+  }, "id" | "email" | "userId" | "customerId_email">
 
   export type SubAccountOrderByWithAggregationInput = {
     id?: SortOrder
     name?: SortOrder
+    email?: SortOrder
     code?: SortOrderInput | SortOrder
     isActive?: SortOrder
+    canCreateOrders?: SortOrder
+    canEditOrders?: SortOrder
+    canViewReports?: SortOrder
     customerId?: SortOrder
+    userId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    createdBy?: SortOrderInput | SortOrder
+    updatedBy?: SortOrderInput | SortOrder
     _count?: SubAccountCountOrderByAggregateInput
     _max?: SubAccountMaxOrderByAggregateInput
     _min?: SubAccountMinOrderByAggregateInput
@@ -40668,11 +40937,18 @@ export namespace Prisma {
     NOT?: SubAccountScalarWhereWithAggregatesInput | SubAccountScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"SubAccount"> | string
     name?: StringWithAggregatesFilter<"SubAccount"> | string
+    email?: StringWithAggregatesFilter<"SubAccount"> | string
     code?: StringNullableWithAggregatesFilter<"SubAccount"> | string | null
     isActive?: BoolWithAggregatesFilter<"SubAccount"> | boolean
+    canCreateOrders?: BoolWithAggregatesFilter<"SubAccount"> | boolean
+    canEditOrders?: BoolWithAggregatesFilter<"SubAccount"> | boolean
+    canViewReports?: BoolWithAggregatesFilter<"SubAccount"> | boolean
     customerId?: StringWithAggregatesFilter<"SubAccount"> | string
+    userId?: StringWithAggregatesFilter<"SubAccount"> | string
     createdAt?: DateTimeWithAggregatesFilter<"SubAccount"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"SubAccount"> | Date | string
+    createdBy?: StringNullableWithAggregatesFilter<"SubAccount"> | string | null
+    updatedBy?: StringNullableWithAggregatesFilter<"SubAccount"> | string | null
   }
 
   export type OrderWhereInput = {
@@ -40697,12 +40973,14 @@ export namespace Prisma {
     estimatedHours?: DecimalNullableFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
     actualHours?: DecimalNullableFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
     customerId?: StringFilter<"Order"> | string
+    createdBySubAccountId?: StringNullableFilter<"Order"> | string | null
     teamId?: StringNullableFilter<"Order"> | string | null
     createdAt?: DateTimeFilter<"Order"> | Date | string
     updatedAt?: DateTimeFilter<"Order"> | Date | string
     createdBy?: StringNullableFilter<"Order"> | string | null
     updatedBy?: StringNullableFilter<"Order"> | string | null
     customer?: XOR<CustomerScalarRelationFilter, CustomerWhereInput>
+    createdBySubAccount?: XOR<SubAccountNullableScalarRelationFilter, SubAccountWhereInput> | null
     team?: XOR<TeamNullableScalarRelationFilter, TeamWhereInput> | null
     qualifications?: OrderQualificationListRelationFilter
     orderAssignments?: OrderAssignmentListRelationFilter
@@ -40731,12 +41009,14 @@ export namespace Prisma {
     estimatedHours?: SortOrderInput | SortOrder
     actualHours?: SortOrderInput | SortOrder
     customerId?: SortOrder
+    createdBySubAccountId?: SortOrderInput | SortOrder
     teamId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     createdBy?: SortOrderInput | SortOrder
     updatedBy?: SortOrderInput | SortOrder
     customer?: CustomerOrderByWithRelationInput
+    createdBySubAccount?: SubAccountOrderByWithRelationInput
     team?: TeamOrderByWithRelationInput
     qualifications?: OrderQualificationOrderByRelationAggregateInput
     orderAssignments?: OrderAssignmentOrderByRelationAggregateInput
@@ -40768,12 +41048,14 @@ export namespace Prisma {
     estimatedHours?: DecimalNullableFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
     actualHours?: DecimalNullableFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
     customerId?: StringFilter<"Order"> | string
+    createdBySubAccountId?: StringNullableFilter<"Order"> | string | null
     teamId?: StringNullableFilter<"Order"> | string | null
     createdAt?: DateTimeFilter<"Order"> | Date | string
     updatedAt?: DateTimeFilter<"Order"> | Date | string
     createdBy?: StringNullableFilter<"Order"> | string | null
     updatedBy?: StringNullableFilter<"Order"> | string | null
     customer?: XOR<CustomerScalarRelationFilter, CustomerWhereInput>
+    createdBySubAccount?: XOR<SubAccountNullableScalarRelationFilter, SubAccountWhereInput> | null
     team?: XOR<TeamNullableScalarRelationFilter, TeamWhereInput> | null
     qualifications?: OrderQualificationListRelationFilter
     orderAssignments?: OrderAssignmentListRelationFilter
@@ -40802,6 +41084,7 @@ export namespace Prisma {
     estimatedHours?: SortOrderInput | SortOrder
     actualHours?: SortOrderInput | SortOrder
     customerId?: SortOrder
+    createdBySubAccountId?: SortOrderInput | SortOrder
     teamId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -40836,6 +41119,7 @@ export namespace Prisma {
     estimatedHours?: DecimalNullableWithAggregatesFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
     actualHours?: DecimalNullableWithAggregatesFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
     customerId?: StringWithAggregatesFilter<"Order"> | string
+    createdBySubAccountId?: StringNullableWithAggregatesFilter<"Order"> | string | null
     teamId?: StringNullableWithAggregatesFilter<"Order"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Order"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Order"> | Date | string
@@ -42519,6 +42803,7 @@ export namespace Prisma {
     updatedBy?: string | null
     employee?: EmployeeCreateNestedOneWithoutUserInput
     customer?: CustomerCreateNestedOneWithoutUserInput
+    subAccount?: SubAccountCreateNestedOneWithoutUserInput
     manualOverrides?: EmployeePerformanceCreateNestedManyWithoutManualOverrideByInput
     subordinates?: EmployeeCreateNestedManyWithoutManagerInput
     notificationRecipients?: NotificationRecipientCreateNestedManyWithoutUserInput
@@ -42549,6 +42834,7 @@ export namespace Prisma {
     updatedBy?: string | null
     employee?: EmployeeUncheckedCreateNestedOneWithoutUserInput
     customer?: CustomerUncheckedCreateNestedOneWithoutUserInput
+    subAccount?: SubAccountUncheckedCreateNestedOneWithoutUserInput
     manualOverrides?: EmployeePerformanceUncheckedCreateNestedManyWithoutManualOverrideByInput
     subordinates?: EmployeeUncheckedCreateNestedManyWithoutManagerInput
     notificationRecipients?: NotificationRecipientUncheckedCreateNestedManyWithoutUserInput
@@ -42579,6 +42865,7 @@ export namespace Prisma {
     updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
     employee?: EmployeeUpdateOneWithoutUserNestedInput
     customer?: CustomerUpdateOneWithoutUserNestedInput
+    subAccount?: SubAccountUpdateOneWithoutUserNestedInput
     manualOverrides?: EmployeePerformanceUpdateManyWithoutManualOverrideByNestedInput
     subordinates?: EmployeeUpdateManyWithoutManagerNestedInput
     notificationRecipients?: NotificationRecipientUpdateManyWithoutUserNestedInput
@@ -42609,6 +42896,7 @@ export namespace Prisma {
     updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
     employee?: EmployeeUncheckedUpdateOneWithoutUserNestedInput
     customer?: CustomerUncheckedUpdateOneWithoutUserNestedInput
+    subAccount?: SubAccountUncheckedUpdateOneWithoutUserNestedInput
     manualOverrides?: EmployeePerformanceUncheckedUpdateManyWithoutManualOverrideByNestedInput
     subordinates?: EmployeeUncheckedUpdateManyWithoutManagerNestedInput
     notificationRecipients?: NotificationRecipientUncheckedUpdateManyWithoutUserNestedInput
@@ -43420,70 +43708,122 @@ export namespace Prisma {
   export type SubAccountCreateInput = {
     id?: string
     name: string
+    email: string
     code?: string | null
     isActive?: boolean
+    canCreateOrders?: boolean
+    canEditOrders?: boolean
+    canViewReports?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
+    createdBy?: string | null
+    updatedBy?: string | null
     customer: CustomerCreateNestedOneWithoutSubAccountsInput
+    user: UserCreateNestedOneWithoutSubAccountInput
+    createdOrders?: OrderCreateNestedManyWithoutCreatedBySubAccountInput
   }
 
   export type SubAccountUncheckedCreateInput = {
     id?: string
     name: string
+    email: string
     code?: string | null
     isActive?: boolean
+    canCreateOrders?: boolean
+    canEditOrders?: boolean
+    canViewReports?: boolean
     customerId: string
+    userId: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    createdBy?: string | null
+    updatedBy?: string | null
+    createdOrders?: OrderUncheckedCreateNestedManyWithoutCreatedBySubAccountInput
   }
 
   export type SubAccountUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
     code?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    canCreateOrders?: BoolFieldUpdateOperationsInput | boolean
+    canEditOrders?: BoolFieldUpdateOperationsInput | boolean
+    canViewReports?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
     customer?: CustomerUpdateOneRequiredWithoutSubAccountsNestedInput
+    user?: UserUpdateOneRequiredWithoutSubAccountNestedInput
+    createdOrders?: OrderUpdateManyWithoutCreatedBySubAccountNestedInput
   }
 
   export type SubAccountUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
     code?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    canCreateOrders?: BoolFieldUpdateOperationsInput | boolean
+    canEditOrders?: BoolFieldUpdateOperationsInput | boolean
+    canViewReports?: BoolFieldUpdateOperationsInput | boolean
     customerId?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdOrders?: OrderUncheckedUpdateManyWithoutCreatedBySubAccountNestedInput
   }
 
   export type SubAccountCreateManyInput = {
     id?: string
     name: string
+    email: string
     code?: string | null
     isActive?: boolean
+    canCreateOrders?: boolean
+    canEditOrders?: boolean
+    canViewReports?: boolean
     customerId: string
+    userId: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    createdBy?: string | null
+    updatedBy?: string | null
   }
 
   export type SubAccountUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
     code?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    canCreateOrders?: BoolFieldUpdateOperationsInput | boolean
+    canEditOrders?: BoolFieldUpdateOperationsInput | boolean
+    canViewReports?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type SubAccountUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
     code?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    canCreateOrders?: BoolFieldUpdateOperationsInput | boolean
+    canEditOrders?: BoolFieldUpdateOperationsInput | boolean
+    canViewReports?: BoolFieldUpdateOperationsInput | boolean
     customerId?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type OrderCreateInput = {
@@ -43509,6 +43849,7 @@ export namespace Prisma {
     createdBy?: string | null
     updatedBy?: string | null
     customer: CustomerCreateNestedOneWithoutOrdersInput
+    createdBySubAccount?: SubAccountCreateNestedOneWithoutCreatedOrdersInput
     team?: TeamCreateNestedOneWithoutOrdersInput
     qualifications?: OrderQualificationCreateNestedManyWithoutOrderInput
     orderAssignments?: OrderAssignmentCreateNestedManyWithoutOrderInput
@@ -43537,6 +43878,7 @@ export namespace Prisma {
     estimatedHours?: Decimal | DecimalJsLike | number | string | null
     actualHours?: Decimal | DecimalJsLike | number | string | null
     customerId: string
+    createdBySubAccountId?: string | null
     teamId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -43573,6 +43915,7 @@ export namespace Prisma {
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
     customer?: CustomerUpdateOneRequiredWithoutOrdersNestedInput
+    createdBySubAccount?: SubAccountUpdateOneWithoutCreatedOrdersNestedInput
     team?: TeamUpdateOneWithoutOrdersNestedInput
     qualifications?: OrderQualificationUpdateManyWithoutOrderNestedInput
     orderAssignments?: OrderAssignmentUpdateManyWithoutOrderNestedInput
@@ -43601,6 +43944,7 @@ export namespace Prisma {
     estimatedHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     actualHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     customerId?: StringFieldUpdateOperationsInput | string
+    createdBySubAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     teamId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -43633,6 +43977,7 @@ export namespace Prisma {
     estimatedHours?: Decimal | DecimalJsLike | number | string | null
     actualHours?: Decimal | DecimalJsLike | number | string | null
     customerId: string
+    createdBySubAccountId?: string | null
     teamId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -43683,6 +44028,7 @@ export namespace Prisma {
     estimatedHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     actualHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     customerId?: StringFieldUpdateOperationsInput | string
+    createdBySubAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     teamId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -45572,6 +45918,11 @@ export namespace Prisma {
     isNot?: CustomerWhereInput | null
   }
 
+  export type SubAccountNullableScalarRelationFilter = {
+    is?: SubAccountWhereInput | null
+    isNot?: SubAccountWhereInput | null
+  }
+
   export type EmployeePerformanceListRelationFilter = {
     every?: EmployeePerformanceWhereInput
     some?: EmployeePerformanceWhereInput
@@ -46470,39 +46821,60 @@ export namespace Prisma {
     isNot?: CustomerWhereInput
   }
 
-  export type SubAccountCustomerIdNameCompoundUniqueInput = {
+  export type SubAccountCustomerIdEmailCompoundUniqueInput = {
     customerId: string
-    name: string
+    email: string
   }
 
   export type SubAccountCountOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
+    email?: SortOrder
     code?: SortOrder
     isActive?: SortOrder
+    canCreateOrders?: SortOrder
+    canEditOrders?: SortOrder
+    canViewReports?: SortOrder
     customerId?: SortOrder
+    userId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    createdBy?: SortOrder
+    updatedBy?: SortOrder
   }
 
   export type SubAccountMaxOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
+    email?: SortOrder
     code?: SortOrder
     isActive?: SortOrder
+    canCreateOrders?: SortOrder
+    canEditOrders?: SortOrder
+    canViewReports?: SortOrder
     customerId?: SortOrder
+    userId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    createdBy?: SortOrder
+    updatedBy?: SortOrder
   }
 
   export type SubAccountMinOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
+    email?: SortOrder
     code?: SortOrder
     isActive?: SortOrder
+    canCreateOrders?: SortOrder
+    canEditOrders?: SortOrder
+    canViewReports?: SortOrder
     customerId?: SortOrder
+    userId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    createdBy?: SortOrder
+    updatedBy?: SortOrder
   }
 
   export type IntNullableFilter<$PrismaModel = never> = {
@@ -46557,6 +46929,7 @@ export namespace Prisma {
     estimatedHours?: SortOrder
     actualHours?: SortOrder
     customerId?: SortOrder
+    createdBySubAccountId?: SortOrder
     teamId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -46591,6 +46964,7 @@ export namespace Prisma {
     estimatedHours?: SortOrder
     actualHours?: SortOrder
     customerId?: SortOrder
+    createdBySubAccountId?: SortOrder
     teamId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -46617,6 +46991,7 @@ export namespace Prisma {
     estimatedHours?: SortOrder
     actualHours?: SortOrder
     customerId?: SortOrder
+    createdBySubAccountId?: SortOrder
     teamId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -47796,6 +48171,12 @@ export namespace Prisma {
     connect?: CustomerWhereUniqueInput
   }
 
+  export type SubAccountCreateNestedOneWithoutUserInput = {
+    create?: XOR<SubAccountCreateWithoutUserInput, SubAccountUncheckedCreateWithoutUserInput>
+    connectOrCreate?: SubAccountCreateOrConnectWithoutUserInput
+    connect?: SubAccountWhereUniqueInput
+  }
+
   export type EmployeePerformanceCreateNestedManyWithoutManualOverrideByInput = {
     create?: XOR<EmployeePerformanceCreateWithoutManualOverrideByInput, EmployeePerformanceUncheckedCreateWithoutManualOverrideByInput> | EmployeePerformanceCreateWithoutManualOverrideByInput[] | EmployeePerformanceUncheckedCreateWithoutManualOverrideByInput[]
     connectOrCreate?: EmployeePerformanceCreateOrConnectWithoutManualOverrideByInput | EmployeePerformanceCreateOrConnectWithoutManualOverrideByInput[]
@@ -47847,6 +48228,12 @@ export namespace Prisma {
     create?: XOR<CustomerCreateWithoutUserInput, CustomerUncheckedCreateWithoutUserInput>
     connectOrCreate?: CustomerCreateOrConnectWithoutUserInput
     connect?: CustomerWhereUniqueInput
+  }
+
+  export type SubAccountUncheckedCreateNestedOneWithoutUserInput = {
+    create?: XOR<SubAccountCreateWithoutUserInput, SubAccountUncheckedCreateWithoutUserInput>
+    connectOrCreate?: SubAccountCreateOrConnectWithoutUserInput
+    connect?: SubAccountWhereUniqueInput
   }
 
   export type EmployeePerformanceUncheckedCreateNestedManyWithoutManualOverrideByInput = {
@@ -47932,6 +48319,16 @@ export namespace Prisma {
     delete?: CustomerWhereInput | boolean
     connect?: CustomerWhereUniqueInput
     update?: XOR<XOR<CustomerUpdateToOneWithWhereWithoutUserInput, CustomerUpdateWithoutUserInput>, CustomerUncheckedUpdateWithoutUserInput>
+  }
+
+  export type SubAccountUpdateOneWithoutUserNestedInput = {
+    create?: XOR<SubAccountCreateWithoutUserInput, SubAccountUncheckedCreateWithoutUserInput>
+    connectOrCreate?: SubAccountCreateOrConnectWithoutUserInput
+    upsert?: SubAccountUpsertWithoutUserInput
+    disconnect?: SubAccountWhereInput | boolean
+    delete?: SubAccountWhereInput | boolean
+    connect?: SubAccountWhereUniqueInput
+    update?: XOR<XOR<SubAccountUpdateToOneWithWhereWithoutUserInput, SubAccountUpdateWithoutUserInput>, SubAccountUncheckedUpdateWithoutUserInput>
   }
 
   export type EmployeePerformanceUpdateManyWithoutManualOverrideByNestedInput = {
@@ -48032,6 +48429,16 @@ export namespace Prisma {
     delete?: CustomerWhereInput | boolean
     connect?: CustomerWhereUniqueInput
     update?: XOR<XOR<CustomerUpdateToOneWithWhereWithoutUserInput, CustomerUpdateWithoutUserInput>, CustomerUncheckedUpdateWithoutUserInput>
+  }
+
+  export type SubAccountUncheckedUpdateOneWithoutUserNestedInput = {
+    create?: XOR<SubAccountCreateWithoutUserInput, SubAccountUncheckedCreateWithoutUserInput>
+    connectOrCreate?: SubAccountCreateOrConnectWithoutUserInput
+    upsert?: SubAccountUpsertWithoutUserInput
+    disconnect?: SubAccountWhereInput | boolean
+    delete?: SubAccountWhereInput | boolean
+    connect?: SubAccountWhereUniqueInput
+    update?: XOR<XOR<SubAccountUpdateToOneWithWhereWithoutUserInput, SubAccountUpdateWithoutUserInput>, SubAccountUncheckedUpdateWithoutUserInput>
   }
 
   export type EmployeePerformanceUncheckedUpdateManyWithoutManualOverrideByNestedInput = {
@@ -49054,6 +49461,26 @@ export namespace Prisma {
     connect?: CustomerWhereUniqueInput
   }
 
+  export type UserCreateNestedOneWithoutSubAccountInput = {
+    create?: XOR<UserCreateWithoutSubAccountInput, UserUncheckedCreateWithoutSubAccountInput>
+    connectOrCreate?: UserCreateOrConnectWithoutSubAccountInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type OrderCreateNestedManyWithoutCreatedBySubAccountInput = {
+    create?: XOR<OrderCreateWithoutCreatedBySubAccountInput, OrderUncheckedCreateWithoutCreatedBySubAccountInput> | OrderCreateWithoutCreatedBySubAccountInput[] | OrderUncheckedCreateWithoutCreatedBySubAccountInput[]
+    connectOrCreate?: OrderCreateOrConnectWithoutCreatedBySubAccountInput | OrderCreateOrConnectWithoutCreatedBySubAccountInput[]
+    createMany?: OrderCreateManyCreatedBySubAccountInputEnvelope
+    connect?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+  }
+
+  export type OrderUncheckedCreateNestedManyWithoutCreatedBySubAccountInput = {
+    create?: XOR<OrderCreateWithoutCreatedBySubAccountInput, OrderUncheckedCreateWithoutCreatedBySubAccountInput> | OrderCreateWithoutCreatedBySubAccountInput[] | OrderUncheckedCreateWithoutCreatedBySubAccountInput[]
+    connectOrCreate?: OrderCreateOrConnectWithoutCreatedBySubAccountInput | OrderCreateOrConnectWithoutCreatedBySubAccountInput[]
+    createMany?: OrderCreateManyCreatedBySubAccountInputEnvelope
+    connect?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+  }
+
   export type CustomerUpdateOneRequiredWithoutSubAccountsNestedInput = {
     create?: XOR<CustomerCreateWithoutSubAccountsInput, CustomerUncheckedCreateWithoutSubAccountsInput>
     connectOrCreate?: CustomerCreateOrConnectWithoutSubAccountsInput
@@ -49062,10 +49489,52 @@ export namespace Prisma {
     update?: XOR<XOR<CustomerUpdateToOneWithWhereWithoutSubAccountsInput, CustomerUpdateWithoutSubAccountsInput>, CustomerUncheckedUpdateWithoutSubAccountsInput>
   }
 
+  export type UserUpdateOneRequiredWithoutSubAccountNestedInput = {
+    create?: XOR<UserCreateWithoutSubAccountInput, UserUncheckedCreateWithoutSubAccountInput>
+    connectOrCreate?: UserCreateOrConnectWithoutSubAccountInput
+    upsert?: UserUpsertWithoutSubAccountInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutSubAccountInput, UserUpdateWithoutSubAccountInput>, UserUncheckedUpdateWithoutSubAccountInput>
+  }
+
+  export type OrderUpdateManyWithoutCreatedBySubAccountNestedInput = {
+    create?: XOR<OrderCreateWithoutCreatedBySubAccountInput, OrderUncheckedCreateWithoutCreatedBySubAccountInput> | OrderCreateWithoutCreatedBySubAccountInput[] | OrderUncheckedCreateWithoutCreatedBySubAccountInput[]
+    connectOrCreate?: OrderCreateOrConnectWithoutCreatedBySubAccountInput | OrderCreateOrConnectWithoutCreatedBySubAccountInput[]
+    upsert?: OrderUpsertWithWhereUniqueWithoutCreatedBySubAccountInput | OrderUpsertWithWhereUniqueWithoutCreatedBySubAccountInput[]
+    createMany?: OrderCreateManyCreatedBySubAccountInputEnvelope
+    set?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+    disconnect?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+    delete?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+    connect?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+    update?: OrderUpdateWithWhereUniqueWithoutCreatedBySubAccountInput | OrderUpdateWithWhereUniqueWithoutCreatedBySubAccountInput[]
+    updateMany?: OrderUpdateManyWithWhereWithoutCreatedBySubAccountInput | OrderUpdateManyWithWhereWithoutCreatedBySubAccountInput[]
+    deleteMany?: OrderScalarWhereInput | OrderScalarWhereInput[]
+  }
+
+  export type OrderUncheckedUpdateManyWithoutCreatedBySubAccountNestedInput = {
+    create?: XOR<OrderCreateWithoutCreatedBySubAccountInput, OrderUncheckedCreateWithoutCreatedBySubAccountInput> | OrderCreateWithoutCreatedBySubAccountInput[] | OrderUncheckedCreateWithoutCreatedBySubAccountInput[]
+    connectOrCreate?: OrderCreateOrConnectWithoutCreatedBySubAccountInput | OrderCreateOrConnectWithoutCreatedBySubAccountInput[]
+    upsert?: OrderUpsertWithWhereUniqueWithoutCreatedBySubAccountInput | OrderUpsertWithWhereUniqueWithoutCreatedBySubAccountInput[]
+    createMany?: OrderCreateManyCreatedBySubAccountInputEnvelope
+    set?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+    disconnect?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+    delete?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+    connect?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+    update?: OrderUpdateWithWhereUniqueWithoutCreatedBySubAccountInput | OrderUpdateWithWhereUniqueWithoutCreatedBySubAccountInput[]
+    updateMany?: OrderUpdateManyWithWhereWithoutCreatedBySubAccountInput | OrderUpdateManyWithWhereWithoutCreatedBySubAccountInput[]
+    deleteMany?: OrderScalarWhereInput | OrderScalarWhereInput[]
+  }
+
   export type CustomerCreateNestedOneWithoutOrdersInput = {
     create?: XOR<CustomerCreateWithoutOrdersInput, CustomerUncheckedCreateWithoutOrdersInput>
     connectOrCreate?: CustomerCreateOrConnectWithoutOrdersInput
     connect?: CustomerWhereUniqueInput
+  }
+
+  export type SubAccountCreateNestedOneWithoutCreatedOrdersInput = {
+    create?: XOR<SubAccountCreateWithoutCreatedOrdersInput, SubAccountUncheckedCreateWithoutCreatedOrdersInput>
+    connectOrCreate?: SubAccountCreateOrConnectWithoutCreatedOrdersInput
+    connect?: SubAccountWhereUniqueInput
   }
 
   export type TeamCreateNestedOneWithoutOrdersInput = {
@@ -49176,6 +49645,16 @@ export namespace Prisma {
     upsert?: CustomerUpsertWithoutOrdersInput
     connect?: CustomerWhereUniqueInput
     update?: XOR<XOR<CustomerUpdateToOneWithWhereWithoutOrdersInput, CustomerUpdateWithoutOrdersInput>, CustomerUncheckedUpdateWithoutOrdersInput>
+  }
+
+  export type SubAccountUpdateOneWithoutCreatedOrdersNestedInput = {
+    create?: XOR<SubAccountCreateWithoutCreatedOrdersInput, SubAccountUncheckedCreateWithoutCreatedOrdersInput>
+    connectOrCreate?: SubAccountCreateOrConnectWithoutCreatedOrdersInput
+    upsert?: SubAccountUpsertWithoutCreatedOrdersInput
+    disconnect?: SubAccountWhereInput | boolean
+    delete?: SubAccountWhereInput | boolean
+    connect?: SubAccountWhereUniqueInput
+    update?: XOR<XOR<SubAccountUpdateToOneWithWhereWithoutCreatedOrdersInput, SubAccountUpdateWithoutCreatedOrdersInput>, SubAccountUncheckedUpdateWithoutCreatedOrdersInput>
   }
 
   export type TeamUpdateOneWithoutOrdersNestedInput = {
@@ -50774,6 +51253,45 @@ export namespace Prisma {
     create: XOR<CustomerCreateWithoutUserInput, CustomerUncheckedCreateWithoutUserInput>
   }
 
+  export type SubAccountCreateWithoutUserInput = {
+    id?: string
+    name: string
+    email: string
+    code?: string | null
+    isActive?: boolean
+    canCreateOrders?: boolean
+    canEditOrders?: boolean
+    canViewReports?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    createdBy?: string | null
+    updatedBy?: string | null
+    customer: CustomerCreateNestedOneWithoutSubAccountsInput
+    createdOrders?: OrderCreateNestedManyWithoutCreatedBySubAccountInput
+  }
+
+  export type SubAccountUncheckedCreateWithoutUserInput = {
+    id?: string
+    name: string
+    email: string
+    code?: string | null
+    isActive?: boolean
+    canCreateOrders?: boolean
+    canEditOrders?: boolean
+    canViewReports?: boolean
+    customerId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    createdBy?: string | null
+    updatedBy?: string | null
+    createdOrders?: OrderUncheckedCreateNestedManyWithoutCreatedBySubAccountInput
+  }
+
+  export type SubAccountCreateOrConnectWithoutUserInput = {
+    where: SubAccountWhereUniqueInput
+    create: XOR<SubAccountCreateWithoutUserInput, SubAccountUncheckedCreateWithoutUserInput>
+  }
+
   export type EmployeePerformanceCreateWithoutManualOverrideByInput = {
     id?: string
     periodStart: Date | string
@@ -51161,6 +51679,51 @@ export namespace Prisma {
     ratings?: RatingUncheckedUpdateManyWithoutCustomerNestedInput
   }
 
+  export type SubAccountUpsertWithoutUserInput = {
+    update: XOR<SubAccountUpdateWithoutUserInput, SubAccountUncheckedUpdateWithoutUserInput>
+    create: XOR<SubAccountCreateWithoutUserInput, SubAccountUncheckedCreateWithoutUserInput>
+    where?: SubAccountWhereInput
+  }
+
+  export type SubAccountUpdateToOneWithWhereWithoutUserInput = {
+    where?: SubAccountWhereInput
+    data: XOR<SubAccountUpdateWithoutUserInput, SubAccountUncheckedUpdateWithoutUserInput>
+  }
+
+  export type SubAccountUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    canCreateOrders?: BoolFieldUpdateOperationsInput | boolean
+    canEditOrders?: BoolFieldUpdateOperationsInput | boolean
+    canViewReports?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    customer?: CustomerUpdateOneRequiredWithoutSubAccountsNestedInput
+    createdOrders?: OrderUpdateManyWithoutCreatedBySubAccountNestedInput
+  }
+
+  export type SubAccountUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    canCreateOrders?: BoolFieldUpdateOperationsInput | boolean
+    canEditOrders?: BoolFieldUpdateOperationsInput | boolean
+    canViewReports?: BoolFieldUpdateOperationsInput | boolean
+    customerId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdOrders?: OrderUncheckedUpdateManyWithoutCreatedBySubAccountNestedInput
+  }
+
   export type EmployeePerformanceUpsertWithWhereUniqueWithoutManualOverrideByInput = {
     where: EmployeePerformanceWhereUniqueInput
     update: XOR<EmployeePerformanceUpdateWithoutManualOverrideByInput, EmployeePerformanceUncheckedUpdateWithoutManualOverrideByInput>
@@ -51458,6 +52021,7 @@ export namespace Prisma {
     updatedBy?: string | null
     employee?: EmployeeCreateNestedOneWithoutUserInput
     customer?: CustomerCreateNestedOneWithoutUserInput
+    subAccount?: SubAccountCreateNestedOneWithoutUserInput
     manualOverrides?: EmployeePerformanceCreateNestedManyWithoutManualOverrideByInput
     notificationRecipients?: NotificationRecipientCreateNestedManyWithoutUserInput
     notificationPreferences?: NotificationPreferenceCreateNestedOneWithoutUserInput
@@ -51487,6 +52051,7 @@ export namespace Prisma {
     updatedBy?: string | null
     employee?: EmployeeUncheckedCreateNestedOneWithoutUserInput
     customer?: CustomerUncheckedCreateNestedOneWithoutUserInput
+    subAccount?: SubAccountUncheckedCreateNestedOneWithoutUserInput
     manualOverrides?: EmployeePerformanceUncheckedCreateNestedManyWithoutManualOverrideByInput
     notificationRecipients?: NotificationRecipientUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: NotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
@@ -51558,6 +52123,7 @@ export namespace Prisma {
     createdBy?: string | null
     updatedBy?: string | null
     customer?: CustomerCreateNestedOneWithoutUserInput
+    subAccount?: SubAccountCreateNestedOneWithoutUserInput
     manualOverrides?: EmployeePerformanceCreateNestedManyWithoutManualOverrideByInput
     subordinates?: EmployeeCreateNestedManyWithoutManagerInput
     notificationRecipients?: NotificationRecipientCreateNestedManyWithoutUserInput
@@ -51587,6 +52153,7 @@ export namespace Prisma {
     createdBy?: string | null
     updatedBy?: string | null
     customer?: CustomerUncheckedCreateNestedOneWithoutUserInput
+    subAccount?: SubAccountUncheckedCreateNestedOneWithoutUserInput
     manualOverrides?: EmployeePerformanceUncheckedCreateNestedManyWithoutManualOverrideByInput
     subordinates?: EmployeeUncheckedCreateNestedManyWithoutManagerInput
     notificationRecipients?: NotificationRecipientUncheckedCreateNestedManyWithoutUserInput
@@ -52041,6 +52608,7 @@ export namespace Prisma {
     updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
     employee?: EmployeeUpdateOneWithoutUserNestedInput
     customer?: CustomerUpdateOneWithoutUserNestedInput
+    subAccount?: SubAccountUpdateOneWithoutUserNestedInput
     manualOverrides?: EmployeePerformanceUpdateManyWithoutManualOverrideByNestedInput
     notificationRecipients?: NotificationRecipientUpdateManyWithoutUserNestedInput
     notificationPreferences?: NotificationPreferenceUpdateOneWithoutUserNestedInput
@@ -52070,6 +52638,7 @@ export namespace Prisma {
     updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
     employee?: EmployeeUncheckedUpdateOneWithoutUserNestedInput
     customer?: CustomerUncheckedUpdateOneWithoutUserNestedInput
+    subAccount?: SubAccountUncheckedUpdateOneWithoutUserNestedInput
     manualOverrides?: EmployeePerformanceUncheckedUpdateManyWithoutManualOverrideByNestedInput
     notificationRecipients?: NotificationRecipientUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: NotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
@@ -52125,6 +52694,7 @@ export namespace Prisma {
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
     customer?: CustomerUpdateOneWithoutUserNestedInput
+    subAccount?: SubAccountUpdateOneWithoutUserNestedInput
     manualOverrides?: EmployeePerformanceUpdateManyWithoutManualOverrideByNestedInput
     subordinates?: EmployeeUpdateManyWithoutManagerNestedInput
     notificationRecipients?: NotificationRecipientUpdateManyWithoutUserNestedInput
@@ -52154,6 +52724,7 @@ export namespace Prisma {
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
     customer?: CustomerUncheckedUpdateOneWithoutUserNestedInput
+    subAccount?: SubAccountUncheckedUpdateOneWithoutUserNestedInput
     manualOverrides?: EmployeePerformanceUncheckedUpdateManyWithoutManualOverrideByNestedInput
     subordinates?: EmployeeUncheckedUpdateManyWithoutManagerNestedInput
     notificationRecipients?: NotificationRecipientUncheckedUpdateManyWithoutUserNestedInput
@@ -52565,6 +53136,7 @@ export namespace Prisma {
     updatedBy?: string | null
     employee?: EmployeeCreateNestedOneWithoutUserInput
     customer?: CustomerCreateNestedOneWithoutUserInput
+    subAccount?: SubAccountCreateNestedOneWithoutUserInput
     subordinates?: EmployeeCreateNestedManyWithoutManagerInput
     notificationRecipients?: NotificationRecipientCreateNestedManyWithoutUserInput
     notificationPreferences?: NotificationPreferenceCreateNestedOneWithoutUserInput
@@ -52594,6 +53166,7 @@ export namespace Prisma {
     updatedBy?: string | null
     employee?: EmployeeUncheckedCreateNestedOneWithoutUserInput
     customer?: CustomerUncheckedCreateNestedOneWithoutUserInput
+    subAccount?: SubAccountUncheckedCreateNestedOneWithoutUserInput
     subordinates?: EmployeeUncheckedCreateNestedManyWithoutManagerInput
     notificationRecipients?: NotificationRecipientUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: NotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
@@ -52728,6 +53301,7 @@ export namespace Prisma {
     updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
     employee?: EmployeeUpdateOneWithoutUserNestedInput
     customer?: CustomerUpdateOneWithoutUserNestedInput
+    subAccount?: SubAccountUpdateOneWithoutUserNestedInput
     subordinates?: EmployeeUpdateManyWithoutManagerNestedInput
     notificationRecipients?: NotificationRecipientUpdateManyWithoutUserNestedInput
     notificationPreferences?: NotificationPreferenceUpdateOneWithoutUserNestedInput
@@ -52757,6 +53331,7 @@ export namespace Prisma {
     updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
     employee?: EmployeeUncheckedUpdateOneWithoutUserNestedInput
     customer?: CustomerUncheckedUpdateOneWithoutUserNestedInput
+    subAccount?: SubAccountUncheckedUpdateOneWithoutUserNestedInput
     subordinates?: EmployeeUncheckedUpdateManyWithoutManagerNestedInput
     notificationRecipients?: NotificationRecipientUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: NotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
@@ -53409,6 +53984,7 @@ export namespace Prisma {
     createdBy?: string | null
     updatedBy?: string | null
     employee?: EmployeeCreateNestedOneWithoutUserInput
+    subAccount?: SubAccountCreateNestedOneWithoutUserInput
     manualOverrides?: EmployeePerformanceCreateNestedManyWithoutManualOverrideByInput
     subordinates?: EmployeeCreateNestedManyWithoutManagerInput
     notificationRecipients?: NotificationRecipientCreateNestedManyWithoutUserInput
@@ -53438,6 +54014,7 @@ export namespace Prisma {
     createdBy?: string | null
     updatedBy?: string | null
     employee?: EmployeeUncheckedCreateNestedOneWithoutUserInput
+    subAccount?: SubAccountUncheckedCreateNestedOneWithoutUserInput
     manualOverrides?: EmployeePerformanceUncheckedCreateNestedManyWithoutManualOverrideByInput
     subordinates?: EmployeeUncheckedCreateNestedManyWithoutManagerInput
     notificationRecipients?: NotificationRecipientUncheckedCreateNestedManyWithoutUserInput
@@ -53454,19 +54031,35 @@ export namespace Prisma {
   export type SubAccountCreateWithoutCustomerInput = {
     id?: string
     name: string
+    email: string
     code?: string | null
     isActive?: boolean
+    canCreateOrders?: boolean
+    canEditOrders?: boolean
+    canViewReports?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
+    createdBy?: string | null
+    updatedBy?: string | null
+    user: UserCreateNestedOneWithoutSubAccountInput
+    createdOrders?: OrderCreateNestedManyWithoutCreatedBySubAccountInput
   }
 
   export type SubAccountUncheckedCreateWithoutCustomerInput = {
     id?: string
     name: string
+    email: string
     code?: string | null
     isActive?: boolean
+    canCreateOrders?: boolean
+    canEditOrders?: boolean
+    canViewReports?: boolean
+    userId: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    createdBy?: string | null
+    updatedBy?: string | null
+    createdOrders?: OrderUncheckedCreateNestedManyWithoutCreatedBySubAccountInput
   }
 
   export type SubAccountCreateOrConnectWithoutCustomerInput = {
@@ -53501,6 +54094,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     createdBy?: string | null
     updatedBy?: string | null
+    createdBySubAccount?: SubAccountCreateNestedOneWithoutCreatedOrdersInput
     team?: TeamCreateNestedOneWithoutOrdersInput
     qualifications?: OrderQualificationCreateNestedManyWithoutOrderInput
     orderAssignments?: OrderAssignmentCreateNestedManyWithoutOrderInput
@@ -53528,6 +54122,7 @@ export namespace Prisma {
     archivedAt?: Date | string | null
     estimatedHours?: Decimal | DecimalJsLike | number | string | null
     actualHours?: Decimal | DecimalJsLike | number | string | null
+    createdBySubAccountId?: string | null
     teamId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -53621,6 +54216,7 @@ export namespace Prisma {
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
     employee?: EmployeeUpdateOneWithoutUserNestedInput
+    subAccount?: SubAccountUpdateOneWithoutUserNestedInput
     manualOverrides?: EmployeePerformanceUpdateManyWithoutManualOverrideByNestedInput
     subordinates?: EmployeeUpdateManyWithoutManagerNestedInput
     notificationRecipients?: NotificationRecipientUpdateManyWithoutUserNestedInput
@@ -53650,6 +54246,7 @@ export namespace Prisma {
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
     employee?: EmployeeUncheckedUpdateOneWithoutUserNestedInput
+    subAccount?: SubAccountUncheckedUpdateOneWithoutUserNestedInput
     manualOverrides?: EmployeePerformanceUncheckedUpdateManyWithoutManualOverrideByNestedInput
     subordinates?: EmployeeUncheckedUpdateManyWithoutManagerNestedInput
     notificationRecipients?: NotificationRecipientUncheckedUpdateManyWithoutUserNestedInput
@@ -53680,11 +54277,18 @@ export namespace Prisma {
     NOT?: SubAccountScalarWhereInput | SubAccountScalarWhereInput[]
     id?: StringFilter<"SubAccount"> | string
     name?: StringFilter<"SubAccount"> | string
+    email?: StringFilter<"SubAccount"> | string
     code?: StringNullableFilter<"SubAccount"> | string | null
     isActive?: BoolFilter<"SubAccount"> | boolean
+    canCreateOrders?: BoolFilter<"SubAccount"> | boolean
+    canEditOrders?: BoolFilter<"SubAccount"> | boolean
+    canViewReports?: BoolFilter<"SubAccount"> | boolean
     customerId?: StringFilter<"SubAccount"> | string
+    userId?: StringFilter<"SubAccount"> | string
     createdAt?: DateTimeFilter<"SubAccount"> | Date | string
     updatedAt?: DateTimeFilter<"SubAccount"> | Date | string
+    createdBy?: StringNullableFilter<"SubAccount"> | string | null
+    updatedBy?: StringNullableFilter<"SubAccount"> | string | null
   }
 
   export type OrderUpsertWithWhereUniqueWithoutCustomerInput = {
@@ -53725,6 +54329,7 @@ export namespace Prisma {
     estimatedHours?: DecimalNullableFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
     actualHours?: DecimalNullableFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
     customerId?: StringFilter<"Order"> | string
+    createdBySubAccountId?: StringNullableFilter<"Order"> | string | null
     teamId?: StringNullableFilter<"Order"> | string | null
     createdAt?: DateTimeFilter<"Order"> | Date | string
     updatedAt?: DateTimeFilter<"Order"> | Date | string
@@ -53785,6 +54390,145 @@ export namespace Prisma {
     create: XOR<CustomerCreateWithoutSubAccountsInput, CustomerUncheckedCreateWithoutSubAccountsInput>
   }
 
+  export type UserCreateWithoutSubAccountInput = {
+    id?: string
+    email?: string | null
+    username: string
+    password: string
+    role?: $Enums.UserRole
+    isActive?: boolean
+    lastLogin?: Date | string | null
+    refreshToken?: string | null
+    emailVerificationToken?: string | null
+    emailVerificationExpires?: Date | string | null
+    passwordResetToken?: string | null
+    passwordResetExpires?: Date | string | null
+    emailVerified?: boolean
+    twoFactorEnabled?: boolean
+    twoFactorSecret?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    createdBy?: string | null
+    updatedBy?: string | null
+    employee?: EmployeeCreateNestedOneWithoutUserInput
+    customer?: CustomerCreateNestedOneWithoutUserInput
+    manualOverrides?: EmployeePerformanceCreateNestedManyWithoutManualOverrideByInput
+    subordinates?: EmployeeCreateNestedManyWithoutManagerInput
+    notificationRecipients?: NotificationRecipientCreateNestedManyWithoutUserInput
+    notificationPreferences?: NotificationPreferenceCreateNestedOneWithoutUserInput
+    orderNotes?: OrderNoteCreateNestedManyWithoutAuthorInput
+    settingsChangeRequests?: SettingsChangeRequestCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutSubAccountInput = {
+    id?: string
+    email?: string | null
+    username: string
+    password: string
+    role?: $Enums.UserRole
+    isActive?: boolean
+    lastLogin?: Date | string | null
+    refreshToken?: string | null
+    emailVerificationToken?: string | null
+    emailVerificationExpires?: Date | string | null
+    passwordResetToken?: string | null
+    passwordResetExpires?: Date | string | null
+    emailVerified?: boolean
+    twoFactorEnabled?: boolean
+    twoFactorSecret?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    createdBy?: string | null
+    updatedBy?: string | null
+    employee?: EmployeeUncheckedCreateNestedOneWithoutUserInput
+    customer?: CustomerUncheckedCreateNestedOneWithoutUserInput
+    manualOverrides?: EmployeePerformanceUncheckedCreateNestedManyWithoutManualOverrideByInput
+    subordinates?: EmployeeUncheckedCreateNestedManyWithoutManagerInput
+    notificationRecipients?: NotificationRecipientUncheckedCreateNestedManyWithoutUserInput
+    notificationPreferences?: NotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
+    orderNotes?: OrderNoteUncheckedCreateNestedManyWithoutAuthorInput
+    settingsChangeRequests?: SettingsChangeRequestUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutSubAccountInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutSubAccountInput, UserUncheckedCreateWithoutSubAccountInput>
+  }
+
+  export type OrderCreateWithoutCreatedBySubAccountInput = {
+    id?: string
+    orderNumber: string
+    title?: string | null
+    description?: string | null
+    scheduledDate: Date | string
+    startTime?: Date | string | null
+    endTime?: Date | string | null
+    duration?: number | null
+    location?: string | null
+    requiredEmployees?: number
+    priority?: number
+    specialInstructions?: string | null
+    status?: $Enums.OrderStatus
+    isArchived?: boolean
+    archivedAt?: Date | string | null
+    estimatedHours?: Decimal | DecimalJsLike | number | string | null
+    actualHours?: Decimal | DecimalJsLike | number | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    createdBy?: string | null
+    updatedBy?: string | null
+    customer: CustomerCreateNestedOneWithoutOrdersInput
+    team?: TeamCreateNestedOneWithoutOrdersInput
+    qualifications?: OrderQualificationCreateNestedManyWithoutOrderInput
+    orderAssignments?: OrderAssignmentCreateNestedManyWithoutOrderInput
+    employeeAssignments?: AssignmentCreateNestedManyWithoutOrderInput
+    ratings?: RatingCreateNestedManyWithoutOrderInput
+    files?: FileCreateNestedManyWithoutOrderInput
+    notes?: OrderNoteCreateNestedManyWithoutOrderInput
+  }
+
+  export type OrderUncheckedCreateWithoutCreatedBySubAccountInput = {
+    id?: string
+    orderNumber: string
+    title?: string | null
+    description?: string | null
+    scheduledDate: Date | string
+    startTime?: Date | string | null
+    endTime?: Date | string | null
+    duration?: number | null
+    location?: string | null
+    requiredEmployees?: number
+    priority?: number
+    specialInstructions?: string | null
+    status?: $Enums.OrderStatus
+    isArchived?: boolean
+    archivedAt?: Date | string | null
+    estimatedHours?: Decimal | DecimalJsLike | number | string | null
+    actualHours?: Decimal | DecimalJsLike | number | string | null
+    customerId: string
+    teamId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    createdBy?: string | null
+    updatedBy?: string | null
+    qualifications?: OrderQualificationUncheckedCreateNestedManyWithoutOrderInput
+    orderAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutOrderInput
+    employeeAssignments?: AssignmentUncheckedCreateNestedManyWithoutOrderInput
+    ratings?: RatingUncheckedCreateNestedManyWithoutOrderInput
+    files?: FileUncheckedCreateNestedManyWithoutOrderInput
+    notes?: OrderNoteUncheckedCreateNestedManyWithoutOrderInput
+  }
+
+  export type OrderCreateOrConnectWithoutCreatedBySubAccountInput = {
+    where: OrderWhereUniqueInput
+    create: XOR<OrderCreateWithoutCreatedBySubAccountInput, OrderUncheckedCreateWithoutCreatedBySubAccountInput>
+  }
+
+  export type OrderCreateManyCreatedBySubAccountInputEnvelope = {
+    data: OrderCreateManyCreatedBySubAccountInput | OrderCreateManyCreatedBySubAccountInput[]
+    skipDuplicates?: boolean
+  }
+
   export type CustomerUpsertWithoutSubAccountsInput = {
     update: XOR<CustomerUpdateWithoutSubAccountsInput, CustomerUncheckedUpdateWithoutSubAccountsInput>
     create: XOR<CustomerCreateWithoutSubAccountsInput, CustomerUncheckedCreateWithoutSubAccountsInput>
@@ -53828,6 +54572,93 @@ export namespace Prisma {
     ratings?: RatingUncheckedUpdateManyWithoutCustomerNestedInput
   }
 
+  export type UserUpsertWithoutSubAccountInput = {
+    update: XOR<UserUpdateWithoutSubAccountInput, UserUncheckedUpdateWithoutSubAccountInput>
+    create: XOR<UserCreateWithoutSubAccountInput, UserUncheckedCreateWithoutSubAccountInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutSubAccountInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutSubAccountInput, UserUncheckedUpdateWithoutSubAccountInput>
+  }
+
+  export type UserUpdateWithoutSubAccountInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    username?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    lastLogin?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    passwordResetToken?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordResetExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    twoFactorEnabled?: BoolFieldUpdateOperationsInput | boolean
+    twoFactorSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    employee?: EmployeeUpdateOneWithoutUserNestedInput
+    customer?: CustomerUpdateOneWithoutUserNestedInput
+    manualOverrides?: EmployeePerformanceUpdateManyWithoutManualOverrideByNestedInput
+    subordinates?: EmployeeUpdateManyWithoutManagerNestedInput
+    notificationRecipients?: NotificationRecipientUpdateManyWithoutUserNestedInput
+    notificationPreferences?: NotificationPreferenceUpdateOneWithoutUserNestedInput
+    orderNotes?: OrderNoteUpdateManyWithoutAuthorNestedInput
+    settingsChangeRequests?: SettingsChangeRequestUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutSubAccountInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    username?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    lastLogin?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    passwordResetToken?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordResetExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    twoFactorEnabled?: BoolFieldUpdateOperationsInput | boolean
+    twoFactorSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    employee?: EmployeeUncheckedUpdateOneWithoutUserNestedInput
+    customer?: CustomerUncheckedUpdateOneWithoutUserNestedInput
+    manualOverrides?: EmployeePerformanceUncheckedUpdateManyWithoutManualOverrideByNestedInput
+    subordinates?: EmployeeUncheckedUpdateManyWithoutManagerNestedInput
+    notificationRecipients?: NotificationRecipientUncheckedUpdateManyWithoutUserNestedInput
+    notificationPreferences?: NotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
+    orderNotes?: OrderNoteUncheckedUpdateManyWithoutAuthorNestedInput
+    settingsChangeRequests?: SettingsChangeRequestUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type OrderUpsertWithWhereUniqueWithoutCreatedBySubAccountInput = {
+    where: OrderWhereUniqueInput
+    update: XOR<OrderUpdateWithoutCreatedBySubAccountInput, OrderUncheckedUpdateWithoutCreatedBySubAccountInput>
+    create: XOR<OrderCreateWithoutCreatedBySubAccountInput, OrderUncheckedCreateWithoutCreatedBySubAccountInput>
+  }
+
+  export type OrderUpdateWithWhereUniqueWithoutCreatedBySubAccountInput = {
+    where: OrderWhereUniqueInput
+    data: XOR<OrderUpdateWithoutCreatedBySubAccountInput, OrderUncheckedUpdateWithoutCreatedBySubAccountInput>
+  }
+
+  export type OrderUpdateManyWithWhereWithoutCreatedBySubAccountInput = {
+    where: OrderScalarWhereInput
+    data: XOR<OrderUpdateManyMutationInput, OrderUncheckedUpdateManyWithoutCreatedBySubAccountInput>
+  }
+
   export type CustomerCreateWithoutOrdersInput = {
     id?: string
     companyName: string
@@ -53863,6 +54694,45 @@ export namespace Prisma {
   export type CustomerCreateOrConnectWithoutOrdersInput = {
     where: CustomerWhereUniqueInput
     create: XOR<CustomerCreateWithoutOrdersInput, CustomerUncheckedCreateWithoutOrdersInput>
+  }
+
+  export type SubAccountCreateWithoutCreatedOrdersInput = {
+    id?: string
+    name: string
+    email: string
+    code?: string | null
+    isActive?: boolean
+    canCreateOrders?: boolean
+    canEditOrders?: boolean
+    canViewReports?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    createdBy?: string | null
+    updatedBy?: string | null
+    customer: CustomerCreateNestedOneWithoutSubAccountsInput
+    user: UserCreateNestedOneWithoutSubAccountInput
+  }
+
+  export type SubAccountUncheckedCreateWithoutCreatedOrdersInput = {
+    id?: string
+    name: string
+    email: string
+    code?: string | null
+    isActive?: boolean
+    canCreateOrders?: boolean
+    canEditOrders?: boolean
+    canViewReports?: boolean
+    customerId: string
+    userId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    createdBy?: string | null
+    updatedBy?: string | null
+  }
+
+  export type SubAccountCreateOrConnectWithoutCreatedOrdersInput = {
+    where: SubAccountWhereUniqueInput
+    create: XOR<SubAccountCreateWithoutCreatedOrdersInput, SubAccountUncheckedCreateWithoutCreatedOrdersInput>
   }
 
   export type TeamCreateWithoutOrdersInput = {
@@ -54149,6 +55019,51 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     subAccounts?: SubAccountUncheckedUpdateManyWithoutCustomerNestedInput
     ratings?: RatingUncheckedUpdateManyWithoutCustomerNestedInput
+  }
+
+  export type SubAccountUpsertWithoutCreatedOrdersInput = {
+    update: XOR<SubAccountUpdateWithoutCreatedOrdersInput, SubAccountUncheckedUpdateWithoutCreatedOrdersInput>
+    create: XOR<SubAccountCreateWithoutCreatedOrdersInput, SubAccountUncheckedCreateWithoutCreatedOrdersInput>
+    where?: SubAccountWhereInput
+  }
+
+  export type SubAccountUpdateToOneWithWhereWithoutCreatedOrdersInput = {
+    where?: SubAccountWhereInput
+    data: XOR<SubAccountUpdateWithoutCreatedOrdersInput, SubAccountUncheckedUpdateWithoutCreatedOrdersInput>
+  }
+
+  export type SubAccountUpdateWithoutCreatedOrdersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    canCreateOrders?: BoolFieldUpdateOperationsInput | boolean
+    canEditOrders?: BoolFieldUpdateOperationsInput | boolean
+    canViewReports?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    customer?: CustomerUpdateOneRequiredWithoutSubAccountsNestedInput
+    user?: UserUpdateOneRequiredWithoutSubAccountNestedInput
+  }
+
+  export type SubAccountUncheckedUpdateWithoutCreatedOrdersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    canCreateOrders?: BoolFieldUpdateOperationsInput | boolean
+    canEditOrders?: BoolFieldUpdateOperationsInput | boolean
+    canViewReports?: BoolFieldUpdateOperationsInput | boolean
+    customerId?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type TeamUpsertWithoutOrdersInput = {
@@ -54644,6 +55559,7 @@ export namespace Prisma {
     createdBy?: string | null
     updatedBy?: string | null
     customer: CustomerCreateNestedOneWithoutOrdersInput
+    createdBySubAccount?: SubAccountCreateNestedOneWithoutCreatedOrdersInput
     team?: TeamCreateNestedOneWithoutOrdersInput
     orderAssignments?: OrderAssignmentCreateNestedManyWithoutOrderInput
     employeeAssignments?: AssignmentCreateNestedManyWithoutOrderInput
@@ -54671,6 +55587,7 @@ export namespace Prisma {
     estimatedHours?: Decimal | DecimalJsLike | number | string | null
     actualHours?: Decimal | DecimalJsLike | number | string | null
     customerId: string
+    createdBySubAccountId?: string | null
     teamId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -54753,6 +55670,7 @@ export namespace Prisma {
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
     customer?: CustomerUpdateOneRequiredWithoutOrdersNestedInput
+    createdBySubAccount?: SubAccountUpdateOneWithoutCreatedOrdersNestedInput
     team?: TeamUpdateOneWithoutOrdersNestedInput
     orderAssignments?: OrderAssignmentUpdateManyWithoutOrderNestedInput
     employeeAssignments?: AssignmentUpdateManyWithoutOrderNestedInput
@@ -54780,6 +55698,7 @@ export namespace Prisma {
     estimatedHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     actualHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     customerId?: StringFieldUpdateOperationsInput | string
+    createdBySubAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     teamId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -54852,6 +55771,7 @@ export namespace Prisma {
     createdBy?: string | null
     updatedBy?: string | null
     customer: CustomerCreateNestedOneWithoutOrdersInput
+    createdBySubAccount?: SubAccountCreateNestedOneWithoutCreatedOrdersInput
     team?: TeamCreateNestedOneWithoutOrdersInput
     qualifications?: OrderQualificationCreateNestedManyWithoutOrderInput
     orderAssignments?: OrderAssignmentCreateNestedManyWithoutOrderInput
@@ -54879,6 +55799,7 @@ export namespace Prisma {
     estimatedHours?: Decimal | DecimalJsLike | number | string | null
     actualHours?: Decimal | DecimalJsLike | number | string | null
     customerId: string
+    createdBySubAccountId?: string | null
     teamId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -55061,6 +55982,7 @@ export namespace Prisma {
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
     customer?: CustomerUpdateOneRequiredWithoutOrdersNestedInput
+    createdBySubAccount?: SubAccountUpdateOneWithoutCreatedOrdersNestedInput
     team?: TeamUpdateOneWithoutOrdersNestedInput
     qualifications?: OrderQualificationUpdateManyWithoutOrderNestedInput
     orderAssignments?: OrderAssignmentUpdateManyWithoutOrderNestedInput
@@ -55088,6 +56010,7 @@ export namespace Prisma {
     estimatedHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     actualHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     customerId?: StringFieldUpdateOperationsInput | string
+    createdBySubAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     teamId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -55228,6 +56151,7 @@ export namespace Prisma {
     createdBy?: string | null
     updatedBy?: string | null
     customer: CustomerCreateNestedOneWithoutOrdersInput
+    createdBySubAccount?: SubAccountCreateNestedOneWithoutCreatedOrdersInput
     team?: TeamCreateNestedOneWithoutOrdersInput
     qualifications?: OrderQualificationCreateNestedManyWithoutOrderInput
     employeeAssignments?: AssignmentCreateNestedManyWithoutOrderInput
@@ -55255,6 +56179,7 @@ export namespace Prisma {
     estimatedHours?: Decimal | DecimalJsLike | number | string | null
     actualHours?: Decimal | DecimalJsLike | number | string | null
     customerId: string
+    createdBySubAccountId?: string | null
     teamId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -55389,6 +56314,7 @@ export namespace Prisma {
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
     customer?: CustomerUpdateOneRequiredWithoutOrdersNestedInput
+    createdBySubAccount?: SubAccountUpdateOneWithoutCreatedOrdersNestedInput
     team?: TeamUpdateOneWithoutOrdersNestedInput
     qualifications?: OrderQualificationUpdateManyWithoutOrderNestedInput
     employeeAssignments?: AssignmentUpdateManyWithoutOrderNestedInput
@@ -55416,6 +56342,7 @@ export namespace Prisma {
     estimatedHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     actualHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     customerId?: StringFieldUpdateOperationsInput | string
+    createdBySubAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     teamId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -55712,6 +56639,7 @@ export namespace Prisma {
     createdBy?: string | null
     updatedBy?: string | null
     customer: CustomerCreateNestedOneWithoutOrdersInput
+    createdBySubAccount?: SubAccountCreateNestedOneWithoutCreatedOrdersInput
     team?: TeamCreateNestedOneWithoutOrdersInput
     qualifications?: OrderQualificationCreateNestedManyWithoutOrderInput
     orderAssignments?: OrderAssignmentCreateNestedManyWithoutOrderInput
@@ -55739,6 +56667,7 @@ export namespace Prisma {
     estimatedHours?: Decimal | DecimalJsLike | number | string | null
     actualHours?: Decimal | DecimalJsLike | number | string | null
     customerId: string
+    createdBySubAccountId?: string | null
     teamId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -55910,6 +56839,7 @@ export namespace Prisma {
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
     customer?: CustomerUpdateOneRequiredWithoutOrdersNestedInput
+    createdBySubAccount?: SubAccountUpdateOneWithoutCreatedOrdersNestedInput
     team?: TeamUpdateOneWithoutOrdersNestedInput
     qualifications?: OrderQualificationUpdateManyWithoutOrderNestedInput
     orderAssignments?: OrderAssignmentUpdateManyWithoutOrderNestedInput
@@ -55937,6 +56867,7 @@ export namespace Prisma {
     estimatedHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     actualHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     customerId?: StringFieldUpdateOperationsInput | string
+    createdBySubAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     teamId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -56421,6 +57352,7 @@ export namespace Prisma {
     updatedBy?: string | null
     employee?: EmployeeCreateNestedOneWithoutUserInput
     customer?: CustomerCreateNestedOneWithoutUserInput
+    subAccount?: SubAccountCreateNestedOneWithoutUserInput
     manualOverrides?: EmployeePerformanceCreateNestedManyWithoutManualOverrideByInput
     subordinates?: EmployeeCreateNestedManyWithoutManagerInput
     notificationPreferences?: NotificationPreferenceCreateNestedOneWithoutUserInput
@@ -56450,6 +57382,7 @@ export namespace Prisma {
     updatedBy?: string | null
     employee?: EmployeeUncheckedCreateNestedOneWithoutUserInput
     customer?: CustomerUncheckedCreateNestedOneWithoutUserInput
+    subAccount?: SubAccountUncheckedCreateNestedOneWithoutUserInput
     manualOverrides?: EmployeePerformanceUncheckedCreateNestedManyWithoutManualOverrideByInput
     subordinates?: EmployeeUncheckedCreateNestedManyWithoutManagerInput
     notificationPreferences?: NotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
@@ -56534,6 +57467,7 @@ export namespace Prisma {
     updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
     employee?: EmployeeUpdateOneWithoutUserNestedInput
     customer?: CustomerUpdateOneWithoutUserNestedInput
+    subAccount?: SubAccountUpdateOneWithoutUserNestedInput
     manualOverrides?: EmployeePerformanceUpdateManyWithoutManualOverrideByNestedInput
     subordinates?: EmployeeUpdateManyWithoutManagerNestedInput
     notificationPreferences?: NotificationPreferenceUpdateOneWithoutUserNestedInput
@@ -56563,6 +57497,7 @@ export namespace Prisma {
     updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
     employee?: EmployeeUncheckedUpdateOneWithoutUserNestedInput
     customer?: CustomerUncheckedUpdateOneWithoutUserNestedInput
+    subAccount?: SubAccountUncheckedUpdateOneWithoutUserNestedInput
     manualOverrides?: EmployeePerformanceUncheckedUpdateManyWithoutManualOverrideByNestedInput
     subordinates?: EmployeeUncheckedUpdateManyWithoutManagerNestedInput
     notificationPreferences?: NotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
@@ -56664,6 +57599,7 @@ export namespace Prisma {
     updatedBy?: string | null
     employee?: EmployeeCreateNestedOneWithoutUserInput
     customer?: CustomerCreateNestedOneWithoutUserInput
+    subAccount?: SubAccountCreateNestedOneWithoutUserInput
     manualOverrides?: EmployeePerformanceCreateNestedManyWithoutManualOverrideByInput
     subordinates?: EmployeeCreateNestedManyWithoutManagerInput
     notificationRecipients?: NotificationRecipientCreateNestedManyWithoutUserInput
@@ -56693,6 +57629,7 @@ export namespace Prisma {
     updatedBy?: string | null
     employee?: EmployeeUncheckedCreateNestedOneWithoutUserInput
     customer?: CustomerUncheckedCreateNestedOneWithoutUserInput
+    subAccount?: SubAccountUncheckedCreateNestedOneWithoutUserInput
     manualOverrides?: EmployeePerformanceUncheckedCreateNestedManyWithoutManualOverrideByInput
     subordinates?: EmployeeUncheckedCreateNestedManyWithoutManagerInput
     notificationRecipients?: NotificationRecipientUncheckedCreateNestedManyWithoutUserInput
@@ -56738,6 +57675,7 @@ export namespace Prisma {
     updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
     employee?: EmployeeUpdateOneWithoutUserNestedInput
     customer?: CustomerUpdateOneWithoutUserNestedInput
+    subAccount?: SubAccountUpdateOneWithoutUserNestedInput
     manualOverrides?: EmployeePerformanceUpdateManyWithoutManualOverrideByNestedInput
     subordinates?: EmployeeUpdateManyWithoutManagerNestedInput
     notificationRecipients?: NotificationRecipientUpdateManyWithoutUserNestedInput
@@ -56767,6 +57705,7 @@ export namespace Prisma {
     updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
     employee?: EmployeeUncheckedUpdateOneWithoutUserNestedInput
     customer?: CustomerUncheckedUpdateOneWithoutUserNestedInput
+    subAccount?: SubAccountUncheckedUpdateOneWithoutUserNestedInput
     manualOverrides?: EmployeePerformanceUncheckedUpdateManyWithoutManualOverrideByNestedInput
     subordinates?: EmployeeUncheckedUpdateManyWithoutManagerNestedInput
     notificationRecipients?: NotificationRecipientUncheckedUpdateManyWithoutUserNestedInput
@@ -56797,6 +57736,7 @@ export namespace Prisma {
     createdBy?: string | null
     updatedBy?: string | null
     customer: CustomerCreateNestedOneWithoutOrdersInput
+    createdBySubAccount?: SubAccountCreateNestedOneWithoutCreatedOrdersInput
     team?: TeamCreateNestedOneWithoutOrdersInput
     qualifications?: OrderQualificationCreateNestedManyWithoutOrderInput
     orderAssignments?: OrderAssignmentCreateNestedManyWithoutOrderInput
@@ -56824,6 +57764,7 @@ export namespace Prisma {
     estimatedHours?: Decimal | DecimalJsLike | number | string | null
     actualHours?: Decimal | DecimalJsLike | number | string | null
     customerId: string
+    createdBySubAccountId?: string | null
     teamId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -56863,6 +57804,7 @@ export namespace Prisma {
     updatedBy?: string | null
     employee?: EmployeeCreateNestedOneWithoutUserInput
     customer?: CustomerCreateNestedOneWithoutUserInput
+    subAccount?: SubAccountCreateNestedOneWithoutUserInput
     manualOverrides?: EmployeePerformanceCreateNestedManyWithoutManualOverrideByInput
     subordinates?: EmployeeCreateNestedManyWithoutManagerInput
     notificationRecipients?: NotificationRecipientCreateNestedManyWithoutUserInput
@@ -56892,6 +57834,7 @@ export namespace Prisma {
     updatedBy?: string | null
     employee?: EmployeeUncheckedCreateNestedOneWithoutUserInput
     customer?: CustomerUncheckedCreateNestedOneWithoutUserInput
+    subAccount?: SubAccountUncheckedCreateNestedOneWithoutUserInput
     manualOverrides?: EmployeePerformanceUncheckedCreateNestedManyWithoutManualOverrideByInput
     subordinates?: EmployeeUncheckedCreateNestedManyWithoutManagerInput
     notificationRecipients?: NotificationRecipientUncheckedCreateNestedManyWithoutUserInput
@@ -56938,6 +57881,7 @@ export namespace Prisma {
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
     customer?: CustomerUpdateOneRequiredWithoutOrdersNestedInput
+    createdBySubAccount?: SubAccountUpdateOneWithoutCreatedOrdersNestedInput
     team?: TeamUpdateOneWithoutOrdersNestedInput
     qualifications?: OrderQualificationUpdateManyWithoutOrderNestedInput
     orderAssignments?: OrderAssignmentUpdateManyWithoutOrderNestedInput
@@ -56965,6 +57909,7 @@ export namespace Prisma {
     estimatedHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     actualHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     customerId?: StringFieldUpdateOperationsInput | string
+    createdBySubAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     teamId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -57010,6 +57955,7 @@ export namespace Prisma {
     updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
     employee?: EmployeeUpdateOneWithoutUserNestedInput
     customer?: CustomerUpdateOneWithoutUserNestedInput
+    subAccount?: SubAccountUpdateOneWithoutUserNestedInput
     manualOverrides?: EmployeePerformanceUpdateManyWithoutManualOverrideByNestedInput
     subordinates?: EmployeeUpdateManyWithoutManagerNestedInput
     notificationRecipients?: NotificationRecipientUpdateManyWithoutUserNestedInput
@@ -57039,6 +57985,7 @@ export namespace Prisma {
     updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
     employee?: EmployeeUncheckedUpdateOneWithoutUserNestedInput
     customer?: CustomerUncheckedUpdateOneWithoutUserNestedInput
+    subAccount?: SubAccountUncheckedUpdateOneWithoutUserNestedInput
     manualOverrides?: EmployeePerformanceUncheckedUpdateManyWithoutManualOverrideByNestedInput
     subordinates?: EmployeeUncheckedUpdateManyWithoutManagerNestedInput
     notificationRecipients?: NotificationRecipientUncheckedUpdateManyWithoutUserNestedInput
@@ -57152,6 +58099,7 @@ export namespace Prisma {
     createdBy?: string | null
     updatedBy?: string | null
     customer: CustomerCreateNestedOneWithoutOrdersInput
+    createdBySubAccount?: SubAccountCreateNestedOneWithoutCreatedOrdersInput
     team?: TeamCreateNestedOneWithoutOrdersInput
     qualifications?: OrderQualificationCreateNestedManyWithoutOrderInput
     orderAssignments?: OrderAssignmentCreateNestedManyWithoutOrderInput
@@ -57179,6 +58127,7 @@ export namespace Prisma {
     estimatedHours?: Decimal | DecimalJsLike | number | string | null
     actualHours?: Decimal | DecimalJsLike | number | string | null
     customerId: string
+    createdBySubAccountId?: string | null
     teamId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -57360,6 +58309,7 @@ export namespace Prisma {
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
     customer?: CustomerUpdateOneRequiredWithoutOrdersNestedInput
+    createdBySubAccount?: SubAccountUpdateOneWithoutCreatedOrdersNestedInput
     team?: TeamUpdateOneWithoutOrdersNestedInput
     qualifications?: OrderQualificationUpdateManyWithoutOrderNestedInput
     orderAssignments?: OrderAssignmentUpdateManyWithoutOrderNestedInput
@@ -57387,6 +58337,7 @@ export namespace Prisma {
     estimatedHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     actualHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     customerId?: StringFieldUpdateOperationsInput | string
+    createdBySubAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     teamId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -57468,6 +58419,7 @@ export namespace Prisma {
     updatedBy?: string | null
     employee?: EmployeeCreateNestedOneWithoutUserInput
     customer?: CustomerCreateNestedOneWithoutUserInput
+    subAccount?: SubAccountCreateNestedOneWithoutUserInput
     manualOverrides?: EmployeePerformanceCreateNestedManyWithoutManualOverrideByInput
     subordinates?: EmployeeCreateNestedManyWithoutManagerInput
     notificationRecipients?: NotificationRecipientCreateNestedManyWithoutUserInput
@@ -57497,6 +58449,7 @@ export namespace Prisma {
     updatedBy?: string | null
     employee?: EmployeeUncheckedCreateNestedOneWithoutUserInput
     customer?: CustomerUncheckedCreateNestedOneWithoutUserInput
+    subAccount?: SubAccountUncheckedCreateNestedOneWithoutUserInput
     manualOverrides?: EmployeePerformanceUncheckedCreateNestedManyWithoutManualOverrideByInput
     subordinates?: EmployeeUncheckedCreateNestedManyWithoutManagerInput
     notificationRecipients?: NotificationRecipientUncheckedCreateNestedManyWithoutUserInput
@@ -57542,6 +58495,7 @@ export namespace Prisma {
     updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
     employee?: EmployeeUpdateOneWithoutUserNestedInput
     customer?: CustomerUpdateOneWithoutUserNestedInput
+    subAccount?: SubAccountUpdateOneWithoutUserNestedInput
     manualOverrides?: EmployeePerformanceUpdateManyWithoutManualOverrideByNestedInput
     subordinates?: EmployeeUpdateManyWithoutManagerNestedInput
     notificationRecipients?: NotificationRecipientUpdateManyWithoutUserNestedInput
@@ -57571,6 +58525,7 @@ export namespace Prisma {
     updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
     employee?: EmployeeUncheckedUpdateOneWithoutUserNestedInput
     customer?: CustomerUncheckedUpdateOneWithoutUserNestedInput
+    subAccount?: SubAccountUncheckedUpdateOneWithoutUserNestedInput
     manualOverrides?: EmployeePerformanceUncheckedUpdateManyWithoutManualOverrideByNestedInput
     subordinates?: EmployeeUncheckedUpdateManyWithoutManagerNestedInput
     notificationRecipients?: NotificationRecipientUncheckedUpdateManyWithoutUserNestedInput
@@ -57710,6 +58665,7 @@ export namespace Prisma {
     createdBy?: string | null
     updatedBy?: string | null
     customer: CustomerCreateNestedOneWithoutOrdersInput
+    createdBySubAccount?: SubAccountCreateNestedOneWithoutCreatedOrdersInput
     qualifications?: OrderQualificationCreateNestedManyWithoutOrderInput
     orderAssignments?: OrderAssignmentCreateNestedManyWithoutOrderInput
     employeeAssignments?: AssignmentCreateNestedManyWithoutOrderInput
@@ -57737,6 +58693,7 @@ export namespace Prisma {
     estimatedHours?: Decimal | DecimalJsLike | number | string | null
     actualHours?: Decimal | DecimalJsLike | number | string | null
     customerId: string
+    createdBySubAccountId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     createdBy?: string | null
@@ -59359,10 +60316,17 @@ export namespace Prisma {
   export type SubAccountCreateManyCustomerInput = {
     id?: string
     name: string
+    email: string
     code?: string | null
     isActive?: boolean
+    canCreateOrders?: boolean
+    canEditOrders?: boolean
+    canViewReports?: boolean
+    userId: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    createdBy?: string | null
+    updatedBy?: string | null
   }
 
   export type OrderCreateManyCustomerInput = {
@@ -59383,6 +60347,7 @@ export namespace Prisma {
     archivedAt?: Date | string | null
     estimatedHours?: Decimal | DecimalJsLike | number | string | null
     actualHours?: Decimal | DecimalJsLike | number | string | null
+    createdBySubAccountId?: string | null
     teamId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -59407,28 +60372,51 @@ export namespace Prisma {
   export type SubAccountUpdateWithoutCustomerInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
     code?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    canCreateOrders?: BoolFieldUpdateOperationsInput | boolean
+    canEditOrders?: BoolFieldUpdateOperationsInput | boolean
+    canViewReports?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    user?: UserUpdateOneRequiredWithoutSubAccountNestedInput
+    createdOrders?: OrderUpdateManyWithoutCreatedBySubAccountNestedInput
   }
 
   export type SubAccountUncheckedUpdateWithoutCustomerInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
     code?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    canCreateOrders?: BoolFieldUpdateOperationsInput | boolean
+    canEditOrders?: BoolFieldUpdateOperationsInput | boolean
+    canViewReports?: BoolFieldUpdateOperationsInput | boolean
+    userId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdOrders?: OrderUncheckedUpdateManyWithoutCreatedBySubAccountNestedInput
   }
 
   export type SubAccountUncheckedUpdateManyWithoutCustomerInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
     code?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    canCreateOrders?: BoolFieldUpdateOperationsInput | boolean
+    canEditOrders?: BoolFieldUpdateOperationsInput | boolean
+    canViewReports?: BoolFieldUpdateOperationsInput | boolean
+    userId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type OrderUpdateWithoutCustomerInput = {
@@ -59453,6 +60441,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdBySubAccount?: SubAccountUpdateOneWithoutCreatedOrdersNestedInput
     team?: TeamUpdateOneWithoutOrdersNestedInput
     qualifications?: OrderQualificationUpdateManyWithoutOrderNestedInput
     orderAssignments?: OrderAssignmentUpdateManyWithoutOrderNestedInput
@@ -59480,6 +60469,7 @@ export namespace Prisma {
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     estimatedHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     actualHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    createdBySubAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     teamId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -59511,6 +60501,7 @@ export namespace Prisma {
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     estimatedHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     actualHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    createdBySubAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     teamId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -59558,6 +60549,122 @@ export namespace Prisma {
     ratingDate?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type OrderCreateManyCreatedBySubAccountInput = {
+    id?: string
+    orderNumber: string
+    title?: string | null
+    description?: string | null
+    scheduledDate: Date | string
+    startTime?: Date | string | null
+    endTime?: Date | string | null
+    duration?: number | null
+    location?: string | null
+    requiredEmployees?: number
+    priority?: number
+    specialInstructions?: string | null
+    status?: $Enums.OrderStatus
+    isArchived?: boolean
+    archivedAt?: Date | string | null
+    estimatedHours?: Decimal | DecimalJsLike | number | string | null
+    actualHours?: Decimal | DecimalJsLike | number | string | null
+    customerId: string
+    teamId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    createdBy?: string | null
+    updatedBy?: string | null
+  }
+
+  export type OrderUpdateWithoutCreatedBySubAccountInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orderNumber?: StringFieldUpdateOperationsInput | string
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    scheduledDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    startTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    endTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    duration?: NullableIntFieldUpdateOperationsInput | number | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    requiredEmployees?: IntFieldUpdateOperationsInput | number
+    priority?: IntFieldUpdateOperationsInput | number
+    specialInstructions?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    isArchived?: BoolFieldUpdateOperationsInput | boolean
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    estimatedHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    actualHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    customer?: CustomerUpdateOneRequiredWithoutOrdersNestedInput
+    team?: TeamUpdateOneWithoutOrdersNestedInput
+    qualifications?: OrderQualificationUpdateManyWithoutOrderNestedInput
+    orderAssignments?: OrderAssignmentUpdateManyWithoutOrderNestedInput
+    employeeAssignments?: AssignmentUpdateManyWithoutOrderNestedInput
+    ratings?: RatingUpdateManyWithoutOrderNestedInput
+    files?: FileUpdateManyWithoutOrderNestedInput
+    notes?: OrderNoteUpdateManyWithoutOrderNestedInput
+  }
+
+  export type OrderUncheckedUpdateWithoutCreatedBySubAccountInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orderNumber?: StringFieldUpdateOperationsInput | string
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    scheduledDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    startTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    endTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    duration?: NullableIntFieldUpdateOperationsInput | number | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    requiredEmployees?: IntFieldUpdateOperationsInput | number
+    priority?: IntFieldUpdateOperationsInput | number
+    specialInstructions?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    isArchived?: BoolFieldUpdateOperationsInput | boolean
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    estimatedHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    actualHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    customerId?: StringFieldUpdateOperationsInput | string
+    teamId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    qualifications?: OrderQualificationUncheckedUpdateManyWithoutOrderNestedInput
+    orderAssignments?: OrderAssignmentUncheckedUpdateManyWithoutOrderNestedInput
+    employeeAssignments?: AssignmentUncheckedUpdateManyWithoutOrderNestedInput
+    ratings?: RatingUncheckedUpdateManyWithoutOrderNestedInput
+    files?: FileUncheckedUpdateManyWithoutOrderNestedInput
+    notes?: OrderNoteUncheckedUpdateManyWithoutOrderNestedInput
+  }
+
+  export type OrderUncheckedUpdateManyWithoutCreatedBySubAccountInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orderNumber?: StringFieldUpdateOperationsInput | string
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    scheduledDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    startTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    endTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    duration?: NullableIntFieldUpdateOperationsInput | number | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    requiredEmployees?: IntFieldUpdateOperationsInput | number
+    priority?: IntFieldUpdateOperationsInput | number
+    specialInstructions?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    isArchived?: BoolFieldUpdateOperationsInput | boolean
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    estimatedHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    actualHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    customerId?: StringFieldUpdateOperationsInput | string
+    teamId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type OrderQualificationCreateManyOrderInput = {
@@ -60141,6 +61248,7 @@ export namespace Prisma {
     estimatedHours?: Decimal | DecimalJsLike | number | string | null
     actualHours?: Decimal | DecimalJsLike | number | string | null
     customerId: string
+    createdBySubAccountId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     createdBy?: string | null
@@ -60194,6 +61302,7 @@ export namespace Prisma {
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
     customer?: CustomerUpdateOneRequiredWithoutOrdersNestedInput
+    createdBySubAccount?: SubAccountUpdateOneWithoutCreatedOrdersNestedInput
     qualifications?: OrderQualificationUpdateManyWithoutOrderNestedInput
     orderAssignments?: OrderAssignmentUpdateManyWithoutOrderNestedInput
     employeeAssignments?: AssignmentUpdateManyWithoutOrderNestedInput
@@ -60221,6 +61330,7 @@ export namespace Prisma {
     estimatedHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     actualHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     customerId?: StringFieldUpdateOperationsInput | string
+    createdBySubAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
@@ -60252,6 +61362,7 @@ export namespace Prisma {
     estimatedHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     actualHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     customerId?: StringFieldUpdateOperationsInput | string
+    createdBySubAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null

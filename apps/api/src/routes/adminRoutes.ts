@@ -14,6 +14,8 @@ import {
   getPendingSettingsRequests,
   reviewSettingsRequest,
 } from "../services/settingsChangeService";
+import * as subAccountService from "../services/subAccountService";
+import { AuthRequest } from "../middleware/authMiddleware";
 
 const router = express.Router();
 
@@ -124,6 +126,96 @@ router.post(
     } catch (error: any) {
       console.error("Reject request error:", error);
       res.status(500).json({ message: error.message || "Failed to reject request" });
+    }
+  }
+);
+
+// Sub-account management for admins
+router.get(
+  "/customers/:customerId/sub-accounts",
+  authMiddleware,
+  roleMiddleware(["ADMIN", "SUPER_ADMIN"]),
+  async (req: AuthRequest, res) => {
+    try {
+      const { customerId } = req.params;
+      const subAccounts = await subAccountService.getSubAccountsByCustomer(customerId);
+      res.json({ success: true, data: subAccounts });
+    } catch (error: any) {
+      res.status(500).json({ success: false, message: error.message });
+    }
+  }
+);
+
+router.post(
+  "/customers/:customerId/sub-accounts",
+  authMiddleware,
+  roleMiddleware(["ADMIN", "SUPER_ADMIN"]),
+  async (req: AuthRequest, res) => {
+    try {
+      const { customerId } = req.params;
+      const { name, email, canCreateOrders, canEditOrders, canViewReports } = req.body;
+
+      const result = await subAccountService.createSubAccount({
+        name,
+        email,
+        customerId,
+        canCreateOrders,
+        canEditOrders,
+        canViewReports,
+        createdBy: req.user?.id,
+      });
+
+      res.status(201).json({
+        success: true,
+        data: result.subAccount,
+        tempPassword: result.tempPassword,
+      });
+    } catch (error: any) {
+      res.status(400).json({ success: false, message: error.message });
+    }
+  }
+);
+
+router.put(
+  "/sub-accounts/:id",
+  authMiddleware,
+  roleMiddleware(["ADMIN", "SUPER_ADMIN"]),
+  async (req: AuthRequest, res) => {
+    try {
+      const { id } = req.params;
+      const { name, email, canCreateOrders, canEditOrders, canViewReports, isActive } = req.body;
+
+      const updatedSubAccount = await subAccountService.updateSubAccount(id, {
+        name,
+        email,
+        canCreateOrders,
+        canEditOrders,
+        canViewReports,
+        isActive,
+      });
+
+      res.json({ success: true, data: updatedSubAccount });
+    } catch (error: any) {
+      res.status(400).json({ success: false, message: error.message });
+    }
+  }
+);
+
+router.delete(
+  "/sub-accounts/:id",
+  authMiddleware,
+  roleMiddleware(["ADMIN", "SUPER_ADMIN"]),
+  async (req: AuthRequest, res) => {
+    try {
+      const { id } = req.params;
+      await subAccountService.deleteSubAccount(id);
+      res.json({ message: "Sub-account deleted successfully" });
+    } catch (error) {
+      console.error("Delete sub-account error:", error);
+      res.status(500).json({
+        message: "Failed to delete sub-account",
+        error: error instanceof Error ? error.message : String(error)
+      });
     }
   }
 );

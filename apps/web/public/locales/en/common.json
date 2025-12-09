@@ -1250,7 +1250,50 @@
     "navigation": {
       "dashboard": "Dashboard",
       "orders": "My Orders",
+      "subAccounts": "Sub-Accounts",
       "profile": "Profile"
+    },
+    "subAccounts": {
+      "title": "Sub-Accounts",
+      "subtitle": "Manage your company's sub-accounts and user access",
+      "addSubAccount": "Add Sub-Account",
+      "searchPlaceholder": "Search sub-accounts by name or email...",
+      "confirmDelete": "Are you sure you want to delete this sub-account?",
+      "noSubAccountsFound": "No sub-accounts found",
+      "getStartedMessage": "Get started by creating your first sub-account",
+      "table": {
+        "name": "Name",
+        "email": "Email",
+        "permissions": "Permissions",
+        "status": "Status",
+        "lastLogin": "Last Login",
+        "actions": "Actions"
+      },
+      "form": {
+        "addNewSubAccount": "Add New Sub-Account",
+        "editSubAccount": "Edit Sub-Account",
+        "basicInformation": "Basic Information",
+        "name": "Name",
+        "namePlaceholder": "Enter full name",
+        "nameRequired": "Name is required",
+        "email": "Email",
+        "emailPlaceholder": "Enter email address",
+        "emailRequired": "Email is required",
+        "permissions": "Permissions",
+        "canCreateOrders": "Create Orders",
+        "canCreateOrdersDesc": "Allow this user to create new orders",
+        "canEditOrders": "Edit Orders",
+        "canEditOrdersDesc": "Allow this user to modify existing orders",
+        "canViewReports": "View Reports",
+        "canViewReportsDesc": "Allow this user to access reports and analytics",
+        "activeAccount": "Active Account",
+        "activeAccountDesc": "Enable or disable this sub-account",
+        "cancel": "Cancel",
+        "creating": "Creating...",
+        "addSubAccount": "Add Sub-Account",
+        "updating": "Updating...",
+        "updateSubAccount": "Update Sub-Account"
+      }
     },
     "orderDetail": {
       "orderNotFound": "Order not found",

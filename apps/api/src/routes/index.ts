@@ -16,6 +16,7 @@ import fileRoutes from "./fileRoutes";
 import qualificationRoutes from "./qualificationRoutes";
 import absenceRoutes from "./absenceRoutes";
 import settingsRoutes from "./settingsRoutes";
+import subAccountRoutes from "./subAccountRoutes";
 import teamRoutes from "./teamRoutes";
 import teamLeaderRoutes from "./teamLeaderRoutes";
 
@@ -62,6 +63,9 @@ router.use("/absences", absenceRoutes);
 
 // Settings routes
 router.use("/settings", settingsRoutes);
+
+// Sub-account routes
+router.use("/sub-accounts", subAccountRoutes);
 
 // Team routes
 router.use("/teams", teamRoutes);
