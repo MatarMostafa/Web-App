@@ -12,7 +12,7 @@ router.post(
   roleMiddleware(["CUSTOMER"]),
   async (req: AuthRequest, res) => {
     try {
-      const { name, email, canCreateOrders, canEditOrders, canViewReports } = req.body;
+      const { name, username, password, email } = req.body;
       const userId = req.user?.id;
       
       if (!userId) {
@@ -32,24 +32,24 @@ router.post(
 
       const result = await subAccountService.createSubAccount({
         name,
+        username,
+        password,
         email,
         customerId: user.customer.id,
-        canCreateOrders,
-        canEditOrders,
-        canViewReports,
         createdBy: userId,
       });
 
       res.status(201).json({
         success: true,
-        data: result.subAccount,
-        tempPassword: result.tempPassword,
+        data: result,
       });
     } catch (error) {
       console.error("Create sub-account error:", error);
-      res.status(500).json({
-        message: "Failed to create sub-account",
-        error: error instanceof Error ? error.message : String(error)
+      const errorMessage = error instanceof Error ? error.message : "FAILED_TO_CREATE";
+      res.status(400).json({
+        success: false,
+        message: errorMessage,
+        error: errorMessage
       });
     }
   }
@@ -97,7 +97,7 @@ router.put(
   async (req: AuthRequest, res) => {
     try {
       const { id } = req.params;
-      const { name, email, canCreateOrders, canEditOrders, canViewReports, isActive } = req.body;
+      const { name, email, isActive } = req.body;
       const userId = req.user?.id;
       
       if (!userId) {
@@ -124,9 +124,6 @@ router.put(
       const updatedSubAccount = await subAccountService.updateSubAccount(id, {
         name,
         email,
-        canCreateOrders,
-        canEditOrders,
-        canViewReports,
         isActive,
       });
 
@@ -177,6 +174,53 @@ router.delete(
       console.error("Delete sub-account error:", error);
       res.status(500).json({
         message: "Failed to delete sub-account",
+        error: error instanceof Error ? error.message : String(error)
+      });
+    }
+  }
+);
+
+router.put(
+  "/:id/reset-password",
+  authMiddleware,
+  roleMiddleware(["CUSTOMER"]),
+  async (req: AuthRequest, res) => {
+    try {
+      const { id } = req.params;
+      const { newPassword } = req.body;
+      const userId = req.user?.id;
+      
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      if (!newPassword || newPassword.length < 8) {
+        return res.status(400).json({ message: "Password must be at least 8 characters long" });
+      }
+
+      // Get customer ID from user
+      const { prisma } = await import("@repo/db");
+      const user = await prisma.user.findUnique({
+        where: { id: userId },
+        include: { customer: true },
+      });
+
+      if (!user?.customer) {
+        return res.status(404).json({ message: "Customer profile not found" });
+      }
+
+      // Verify sub-account belongs to this customer
+      const existingSubAccount = await subAccountService.getSubAccountById(id);
+      if (!existingSubAccount || existingSubAccount.customerId !== user.customer.id) {
+        return res.status(404).json({ message: "Sub-account not found" });
+      }
+
+      await subAccountService.resetSubAccountPassword(id, newPassword);
+      res.json({ message: "Password reset successfully" });
+    } catch (error) {
+      console.error("Reset sub-account password error:", error);
+      res.status(500).json({
+        message: "Failed to reset password",
         error: error instanceof Error ? error.message : String(error)
       });
     }

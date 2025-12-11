@@ -14,16 +14,16 @@ interface CustomerSubAccountCredentialsModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   name: string;
-  email: string;
-  tempPassword: string;
+  username: string;
+  password: string;
 }
 
 export default function CustomerSubAccountCredentialsModal({
   open,
   onOpenChange,
   name,
-  email,
-  tempPassword,
+  username,
+  password,
 }: CustomerSubAccountCredentialsModalProps) {
   const [copiedField, setCopiedField] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
@@ -55,11 +55,11 @@ export default function CustomerSubAccountCredentialsModal({
 
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="modal-email">Email / Username</Label>
+              <Label htmlFor="modal-username">Username</Label>
               <div className="flex gap-2">
                 <Input
-                  id="modal-email"
-                  value={email}
+                  id="modal-username"
+                  value={username}
                   readOnly
                   className="bg-muted"
                 />
@@ -67,10 +67,10 @@ export default function CustomerSubAccountCredentialsModal({
                   type="button"
                   variant="outline"
                   size="icon"
-                  onClick={() => copyToClipboard(email, "email")}
+                  onClick={() => copyToClipboard(username, "username")}
                   className="shrink-0"
                 >
-                  {copiedField === "email" ? (
+                  {copiedField === "username" ? (
                     <Check className="h-4 w-4 text-green-600" />
                   ) : (
                     <Copy className="h-4 w-4" />
@@ -80,13 +80,13 @@ export default function CustomerSubAccountCredentialsModal({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="modal-password">Temporary Password</Label>
+              <Label htmlFor="modal-password">Password</Label>
               <div className="flex gap-2">
                 <div className="relative flex-1">
                   <Input
                     id="modal-password"
                     type={showPassword ? "text" : "password"}
-                    value={tempPassword}
+                    value={password}
                     readOnly
                     className="bg-muted pr-10"
                   />
@@ -108,7 +108,7 @@ export default function CustomerSubAccountCredentialsModal({
                   type="button"
                   variant="outline"
                   size="icon"
-                  onClick={() => copyToClipboard(tempPassword, "password")}
+                  onClick={() => copyToClipboard(password, "password")}
                   className="shrink-0"
                 >
                   {copiedField === "password" ? (
@@ -123,8 +123,7 @@ export default function CustomerSubAccountCredentialsModal({
 
           <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
             <div className="text-sm text-yellow-800">
-              <strong>Important:</strong> Please save these credentials securely and share them with the user. 
-              They will need to change the password on first login.
+              <strong>Important:</strong> Please save these credentials securely and share them with the user.
             </div>
           </div>
 

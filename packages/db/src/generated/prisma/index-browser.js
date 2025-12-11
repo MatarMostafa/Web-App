@@ -241,7 +241,6 @@ exports.Prisma.CustomerScalarFieldEnum = {
 exports.Prisma.SubAccountScalarFieldEnum = {
   id: 'id',
   name: 'name',
-  email: 'email',
   code: 'code',
   isActive: 'isActive',
   canCreateOrders: 'canCreateOrders',

@@ -23,6 +23,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuthStore } from "@/store/authStore";
 import { useTranslation } from "@/hooks/useTranslation";
+import { useSession } from "next-auth/react";
 
 interface SidebarProps {
   isOpen?: boolean;
@@ -33,11 +34,14 @@ interface SidebarProps {
 
 export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
   const { t } = useTranslation();
+  const { data: session } = useSession();
   const isMobile = useIsMobile();
   const [collapsed, setCollapsed] = useState(false);
   const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
   const { logout } = useAuthStore();
+  
+  const isSubUser = session?.user?.role === "CUSTOMER_SUB_USER";
 
   const navigation = [
     {
@@ -50,11 +54,12 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
       href: "/dashboard-customer/orders",
       icon: Package,
     },
-    {
+    // Only show sub-accounts for main customers, not sub-users
+    ...(!isSubUser ? [{
       name: t('customerPortal.navigation.subAccounts'),
       href: "/dashboard-customer/sub-accounts",
       icon: Users,
-    },
+    }] : []),
   ];
 
   useEffect(() => {
