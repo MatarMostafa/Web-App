@@ -1201,6 +1201,10 @@
         "COMPANY_NAME": "Firmenname",
         "TAX_NUMBER": "Steuernummer"
       }
+    },
+    "subUserLimitations": {
+      "title": "Kontobeschränkungen",
+      "description": "Als Unterkonto-Benutzer können Sie nur Ihr Passwort ändern. Firmen- und Kontaktinformationen können nur vom Hauptkontoinhaber geändert werden."
     }
   },
   "customerPortal": {
@@ -1208,6 +1212,7 @@
       "title": "Kundenportal",
       "welcome": "Willkommen zurück",
       "overview": "Hier ist eine Übersicht über Ihre Aufträge und Ihr Konto",
+      "subUserOverview": "Hier ist eine Übersicht über die Aufträge und Aktivitäten Ihres Unternehmens",
       "totalOrders": "Gesamtaufträge",
       "completed": "Abgeschlossen",
       "inProgress": "In Bearbeitung",
@@ -1265,10 +1270,27 @@
       "table": {
         "name": "Name",
         "email": "E-Mail",
-        "permissions": "Berechtigungen",
+
         "status": "Status",
         "lastLogin": "Letzte Anmeldung",
-        "actions": "Aktionen"
+        "actions": "Aktionen",
+        "noEmail": "Keine E-Mail",
+        "never": "Nie"
+      },
+      "resetPassword": {
+        "title": "Passwort zurücksetzen",
+        "newPassword": "Neues Passwort",
+        "enterPassword": "Neues Passwort eingeben",
+        "generateRandom": "Zufälliges Passwort generieren",
+        "copyToClipboard": "In Zwischenablage kopieren",
+        "passwordRequired": "Passwort ist erforderlich",
+        "passwordTooShort": "Passwort muss mindestens 8 Zeichen lang sein",
+        "resetSuccess": "Passwort erfolgreich zurückgesetzt für {{name}}",
+        "resetFailed": "Passwort konnte nicht zurückgesetzt werden",
+        "resetPassword": "Passwort zurücksetzen",
+        "resetting": "Wird zurückgesetzt...",
+        "passwordCopied": "Passwort in Zwischenablage kopiert",
+        "copyFailed": "Passwort konnte nicht kopiert werden"
       },
       "form": {
         "addNewSubAccount": "Neues Unterkonto hinzufügen",
@@ -1278,15 +1300,14 @@
         "namePlaceholder": "Vollständigen Namen eingeben",
         "nameRequired": "Name ist erforderlich",
         "email": "E-Mail",
-        "emailPlaceholder": "E-Mail-Adresse eingeben",
-        "emailRequired": "E-Mail ist erforderlich",
-        "permissions": "Berechtigungen",
-        "canCreateOrders": "Aufträge erstellen",
-        "canCreateOrdersDesc": "Diesem Benutzer erlauben, neue Aufträge zu erstellen",
-        "canEditOrders": "Aufträge bearbeiten",
-        "canEditOrdersDesc": "Diesem Benutzer erlauben, bestehende Aufträge zu ändern",
-        "canViewReports": "Berichte anzeigen",
-        "canViewReportsDesc": "Diesem Benutzer Zugriff auf Berichte und Analysen gewähren",
+        "username": "Benutzername",
+        "usernamePlaceholder": "Benutzername eingeben",
+        "password": "Passwort",
+        "passwordPlaceholder": "Passwort eingeben",
+        "emailPlaceholder": "E-Mail-Adresse eingeben (optional)",
+        "usernameRequired": "Benutzername ist erforderlich",
+        "passwordRequired": "Passwort ist erforderlich",
+
         "activeAccount": "Aktives Konto",
         "activeAccountDesc": "Dieses Unterkonto aktivieren oder deaktivieren",
         "cancel": "Abbrechen",
@@ -1294,6 +1315,15 @@
         "addSubAccount": "Unterkonto hinzufügen",
         "updating": "Wird aktualisiert...",
         "updateSubAccount": "Unterkonto aktualisieren"
+      },
+      "createSuccess": "Unterkonto erfolgreich erstellt!",
+      "createError": "Fehler beim Erstellen des Unterkontos",
+      "accessDenied": "Zugriff verweigert. Unterkonten können keine anderen Unterkonten verwalten.",
+      "errors": {
+        "usernameExists": "Benutzername bereits vorhanden",
+        "emailExists": "E-Mail bereits vorhanden",
+        "customerNotFound": "Kunde nicht gefunden",
+        "subAccountNotFound": "Unterkonto nicht gefunden"
       }
     },
     "orderDetail": {

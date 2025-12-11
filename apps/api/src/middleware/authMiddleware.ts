@@ -20,9 +20,6 @@ export interface AuthRequest extends Request {
       id: string;
       customerId: string;
       isActive: boolean;
-      canCreateOrders: boolean;
-      canEditOrders: boolean;
-      canViewReports: boolean;
     };
   };
 }
@@ -68,9 +65,6 @@ export const authMiddleware = async (
             id: true,
             customerId: true,
             isActive: true,
-            canCreateOrders: true,
-            canEditOrders: true,
-            canViewReports: true,
           },
         },
       },

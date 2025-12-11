@@ -1,12 +1,8 @@
 export interface SubAccount {
   id: string;
   name: string;
-  email: string;
   code?: string;
   isActive: boolean;
-  canCreateOrders: boolean;
-  canEditOrders: boolean;
-  canViewReports: boolean;
   customerId: string;
   userId: string;
   createdAt: string;
@@ -28,17 +24,13 @@ export interface SubAccount {
 
 export interface CreateSubAccountData {
   name: string;
-  email: string;
-  canCreateOrders?: boolean;
-  canEditOrders?: boolean;
-  canViewReports?: boolean;
+  username: string;
+  password: string;
+  email?: string;
 }
 
 export interface UpdateSubAccountData {
   name?: string;
   email?: string;
-  canCreateOrders?: boolean;
-  canEditOrders?: boolean;
-  canViewReports?: boolean;
   isActive?: boolean;
 }

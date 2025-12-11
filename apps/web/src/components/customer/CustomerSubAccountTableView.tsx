@@ -1,7 +1,7 @@
 import React from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Edit, Trash2, Check, X } from "lucide-react";
+import { Edit, Trash2, KeyRound } from "lucide-react";
 import { SubAccount } from "@/types/subAccount";
 import { useTranslation } from "@/hooks/useTranslation";
 
@@ -10,6 +10,7 @@ interface CustomerSubAccountTableViewProps {
   loading: boolean;
   onEdit: (subAccount: SubAccount) => void;
   onDelete: (id: string) => void;
+  onResetPassword: (subAccount: SubAccount) => void;
 }
 
 export default function CustomerSubAccountTableView({
@@ -17,6 +18,7 @@ export default function CustomerSubAccountTableView({
   loading,
   onEdit,
   onDelete,
+  onResetPassword,
 }: CustomerSubAccountTableViewProps) {
   const { t } = useTranslation();
 
@@ -44,9 +46,6 @@ export default function CustomerSubAccountTableView({
                 {t("customerPortal.subAccounts.table.email")}
               </th>
               <th className="text-left p-4 font-medium">
-                {t("customerPortal.subAccounts.table.permissions")}
-              </th>
-              <th className="text-left p-4 font-medium">
                 {t("customerPortal.subAccounts.table.status")}
               </th>
               <th className="text-left p-4 font-medium">
@@ -67,26 +66,7 @@ export default function CustomerSubAccountTableView({
                 </td>
                 <td className="p-4">
                   <div className="text-sm text-muted-foreground">
-                    {subAccount.email}
-                  </div>
-                </td>
-                <td className="p-4">
-                  <div className="flex flex-wrap gap-1">
-                    {subAccount.canCreateOrders && (
-                      <Badge variant="secondary" className="text-xs">
-                        Create Orders
-                      </Badge>
-                    )}
-                    {subAccount.canEditOrders && (
-                      <Badge variant="secondary" className="text-xs">
-                        Edit Orders
-                      </Badge>
-                    )}
-                    {subAccount.canViewReports && (
-                      <Badge variant="secondary" className="text-xs">
-                        View Reports
-                      </Badge>
-                    )}
+                    {subAccount.user?.email || t("customerPortal.subAccounts.table.noEmail")}
                   </div>
                 </td>
                 <td className="p-4">
@@ -94,14 +74,14 @@ export default function CustomerSubAccountTableView({
                     variant={subAccount.isActive ? "default" : "destructive"}
                     className="text-xs"
                   >
-                    {subAccount.isActive ? "Active" : "Inactive"}
+                    {subAccount.isActive ? t("common.active") : t("common.inactive")}
                   </Badge>
                 </td>
                 <td className="p-4">
                   <div className="text-sm text-muted-foreground">
                     {subAccount.user?.lastLogin
                       ? new Date(subAccount.user.lastLogin).toLocaleDateString()
-                      : "Never"}
+                      : t("customerPortal.subAccounts.table.never")}
                   </div>
                 </td>
                 <td className="p-4">
@@ -111,14 +91,25 @@ export default function CustomerSubAccountTableView({
                       size="sm"
                       onClick={() => onEdit(subAccount)}
                       className="h-8 w-8 p-0"
+                      title={t("common.edit")}
                     >
                       <Edit className="h-4 w-4" />
                     </Button>
                     <Button
                       variant="ghost"
                       size="sm"
+                      onClick={() => onResetPassword(subAccount)}
+                      className="h-8 w-8 p-0"
+                      title={t("customerPortal.subAccounts.resetPassword.title")}
+                    >
+                      <KeyRound className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
                       onClick={() => onDelete(subAccount.id)}
                       className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+                      title={t("common.delete")}
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>

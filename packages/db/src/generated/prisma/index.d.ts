@@ -13420,7 +13420,6 @@ export namespace Prisma {
   export type SubAccountMinAggregateOutputType = {
     id: string | null
     name: string | null
-    email: string | null
     code: string | null
     isActive: boolean | null
     canCreateOrders: boolean | null
@@ -13437,7 +13436,6 @@ export namespace Prisma {
   export type SubAccountMaxAggregateOutputType = {
     id: string | null
     name: string | null
-    email: string | null
     code: string | null
     isActive: boolean | null
     canCreateOrders: boolean | null
@@ -13454,7 +13452,6 @@ export namespace Prisma {
   export type SubAccountCountAggregateOutputType = {
     id: number
     name: number
-    email: number
     code: number
     isActive: number
     canCreateOrders: number
@@ -13473,7 +13470,6 @@ export namespace Prisma {
   export type SubAccountMinAggregateInputType = {
     id?: true
     name?: true
-    email?: true
     code?: true
     isActive?: true
     canCreateOrders?: true
@@ -13490,7 +13486,6 @@ export namespace Prisma {
   export type SubAccountMaxAggregateInputType = {
     id?: true
     name?: true
-    email?: true
     code?: true
     isActive?: true
     canCreateOrders?: true
@@ -13507,7 +13502,6 @@ export namespace Prisma {
   export type SubAccountCountAggregateInputType = {
     id?: true
     name?: true
-    email?: true
     code?: true
     isActive?: true
     canCreateOrders?: true
@@ -13597,7 +13591,6 @@ export namespace Prisma {
   export type SubAccountGroupByOutputType = {
     id: string
     name: string
-    email: string
     code: string | null
     isActive: boolean
     canCreateOrders: boolean
@@ -13631,7 +13624,6 @@ export namespace Prisma {
   export type SubAccountSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
-    email?: boolean
     code?: boolean
     isActive?: boolean
     canCreateOrders?: boolean
@@ -13652,7 +13644,6 @@ export namespace Prisma {
   export type SubAccountSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
-    email?: boolean
     code?: boolean
     isActive?: boolean
     canCreateOrders?: boolean
@@ -13671,7 +13662,6 @@ export namespace Prisma {
   export type SubAccountSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
-    email?: boolean
     code?: boolean
     isActive?: boolean
     canCreateOrders?: boolean
@@ -13690,7 +13680,6 @@ export namespace Prisma {
   export type SubAccountSelectScalar = {
     id?: boolean
     name?: boolean
-    email?: boolean
     code?: boolean
     isActive?: boolean
     canCreateOrders?: boolean
@@ -13704,7 +13693,7 @@ export namespace Prisma {
     updatedBy?: boolean
   }
 
-  export type SubAccountOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "email" | "code" | "isActive" | "canCreateOrders" | "canEditOrders" | "canViewReports" | "customerId" | "userId" | "createdAt" | "updatedAt" | "createdBy" | "updatedBy", ExtArgs["result"]["subAccount"]>
+  export type SubAccountOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "code" | "isActive" | "canCreateOrders" | "canEditOrders" | "canViewReports" | "customerId" | "userId" | "createdAt" | "updatedAt" | "createdBy" | "updatedBy", ExtArgs["result"]["subAccount"]>
   export type SubAccountInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     customer?: boolean | CustomerDefaultArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -13730,7 +13719,6 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: string
       name: string
-      email: string
       code: string | null
       isActive: boolean
       canCreateOrders: boolean
@@ -14170,7 +14158,6 @@ export namespace Prisma {
   interface SubAccountFieldRefs {
     readonly id: FieldRef<"SubAccount", 'String'>
     readonly name: FieldRef<"SubAccount", 'String'>
-    readonly email: FieldRef<"SubAccount", 'String'>
     readonly code: FieldRef<"SubAccount", 'String'>
     readonly isActive: FieldRef<"SubAccount", 'Boolean'>
     readonly canCreateOrders: FieldRef<"SubAccount", 'Boolean'>
@@ -39370,7 +39357,6 @@ export namespace Prisma {
   export const SubAccountScalarFieldEnum: {
     id: 'id',
     name: 'name',
-    email: 'email',
     code: 'code',
     isActive: 'isActive',
     canCreateOrders: 'canCreateOrders',
@@ -40850,7 +40836,6 @@ export namespace Prisma {
     NOT?: SubAccountWhereInput | SubAccountWhereInput[]
     id?: StringFilter<"SubAccount"> | string
     name?: StringFilter<"SubAccount"> | string
-    email?: StringFilter<"SubAccount"> | string
     code?: StringNullableFilter<"SubAccount"> | string | null
     isActive?: BoolFilter<"SubAccount"> | boolean
     canCreateOrders?: BoolFilter<"SubAccount"> | boolean
@@ -40870,7 +40855,6 @@ export namespace Prisma {
   export type SubAccountOrderByWithRelationInput = {
     id?: SortOrder
     name?: SortOrder
-    email?: SortOrder
     code?: SortOrderInput | SortOrder
     isActive?: SortOrder
     canCreateOrders?: SortOrder
@@ -40889,9 +40873,8 @@ export namespace Prisma {
 
   export type SubAccountWhereUniqueInput = Prisma.AtLeast<{
     id?: string
-    email?: string
     userId?: string
-    customerId_email?: SubAccountCustomerIdEmailCompoundUniqueInput
+    customerId_name?: SubAccountCustomerIdNameCompoundUniqueInput
     AND?: SubAccountWhereInput | SubAccountWhereInput[]
     OR?: SubAccountWhereInput[]
     NOT?: SubAccountWhereInput | SubAccountWhereInput[]
@@ -40909,12 +40892,11 @@ export namespace Prisma {
     customer?: XOR<CustomerScalarRelationFilter, CustomerWhereInput>
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
     createdOrders?: OrderListRelationFilter
-  }, "id" | "email" | "userId" | "customerId_email">
+  }, "id" | "userId" | "customerId_name">
 
   export type SubAccountOrderByWithAggregationInput = {
     id?: SortOrder
     name?: SortOrder
-    email?: SortOrder
     code?: SortOrderInput | SortOrder
     isActive?: SortOrder
     canCreateOrders?: SortOrder
@@ -40937,7 +40919,6 @@ export namespace Prisma {
     NOT?: SubAccountScalarWhereWithAggregatesInput | SubAccountScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"SubAccount"> | string
     name?: StringWithAggregatesFilter<"SubAccount"> | string
-    email?: StringWithAggregatesFilter<"SubAccount"> | string
     code?: StringNullableWithAggregatesFilter<"SubAccount"> | string | null
     isActive?: BoolWithAggregatesFilter<"SubAccount"> | boolean
     canCreateOrders?: BoolWithAggregatesFilter<"SubAccount"> | boolean
@@ -43708,7 +43689,6 @@ export namespace Prisma {
   export type SubAccountCreateInput = {
     id?: string
     name: string
-    email: string
     code?: string | null
     isActive?: boolean
     canCreateOrders?: boolean
@@ -43726,7 +43706,6 @@ export namespace Prisma {
   export type SubAccountUncheckedCreateInput = {
     id?: string
     name: string
-    email: string
     code?: string | null
     isActive?: boolean
     canCreateOrders?: boolean
@@ -43744,7 +43723,6 @@ export namespace Prisma {
   export type SubAccountUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
     code?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     canCreateOrders?: BoolFieldUpdateOperationsInput | boolean
@@ -43762,7 +43740,6 @@ export namespace Prisma {
   export type SubAccountUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
     code?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     canCreateOrders?: BoolFieldUpdateOperationsInput | boolean
@@ -43780,7 +43757,6 @@ export namespace Prisma {
   export type SubAccountCreateManyInput = {
     id?: string
     name: string
-    email: string
     code?: string | null
     isActive?: boolean
     canCreateOrders?: boolean
@@ -43797,7 +43773,6 @@ export namespace Prisma {
   export type SubAccountUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
     code?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     canCreateOrders?: BoolFieldUpdateOperationsInput | boolean
@@ -43812,7 +43787,6 @@ export namespace Prisma {
   export type SubAccountUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
     code?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     canCreateOrders?: BoolFieldUpdateOperationsInput | boolean
@@ -46821,15 +46795,14 @@ export namespace Prisma {
     isNot?: CustomerWhereInput
   }
 
-  export type SubAccountCustomerIdEmailCompoundUniqueInput = {
+  export type SubAccountCustomerIdNameCompoundUniqueInput = {
     customerId: string
-    email: string
+    name: string
   }
 
   export type SubAccountCountOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
-    email?: SortOrder
     code?: SortOrder
     isActive?: SortOrder
     canCreateOrders?: SortOrder
@@ -46846,7 +46819,6 @@ export namespace Prisma {
   export type SubAccountMaxOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
-    email?: SortOrder
     code?: SortOrder
     isActive?: SortOrder
     canCreateOrders?: SortOrder
@@ -46863,7 +46835,6 @@ export namespace Prisma {
   export type SubAccountMinOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
-    email?: SortOrder
     code?: SortOrder
     isActive?: SortOrder
     canCreateOrders?: SortOrder
@@ -51256,7 +51227,6 @@ export namespace Prisma {
   export type SubAccountCreateWithoutUserInput = {
     id?: string
     name: string
-    email: string
     code?: string | null
     isActive?: boolean
     canCreateOrders?: boolean
@@ -51273,7 +51243,6 @@ export namespace Prisma {
   export type SubAccountUncheckedCreateWithoutUserInput = {
     id?: string
     name: string
-    email: string
     code?: string | null
     isActive?: boolean
     canCreateOrders?: boolean
@@ -51693,7 +51662,6 @@ export namespace Prisma {
   export type SubAccountUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
     code?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     canCreateOrders?: BoolFieldUpdateOperationsInput | boolean
@@ -51710,7 +51678,6 @@ export namespace Prisma {
   export type SubAccountUncheckedUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
     code?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     canCreateOrders?: BoolFieldUpdateOperationsInput | boolean
@@ -54031,7 +53998,6 @@ export namespace Prisma {
   export type SubAccountCreateWithoutCustomerInput = {
     id?: string
     name: string
-    email: string
     code?: string | null
     isActive?: boolean
     canCreateOrders?: boolean
@@ -54048,7 +54014,6 @@ export namespace Prisma {
   export type SubAccountUncheckedCreateWithoutCustomerInput = {
     id?: string
     name: string
-    email: string
     code?: string | null
     isActive?: boolean
     canCreateOrders?: boolean
@@ -54277,7 +54242,6 @@ export namespace Prisma {
     NOT?: SubAccountScalarWhereInput | SubAccountScalarWhereInput[]
     id?: StringFilter<"SubAccount"> | string
     name?: StringFilter<"SubAccount"> | string
-    email?: StringFilter<"SubAccount"> | string
     code?: StringNullableFilter<"SubAccount"> | string | null
     isActive?: BoolFilter<"SubAccount"> | boolean
     canCreateOrders?: BoolFilter<"SubAccount"> | boolean
@@ -54699,7 +54663,6 @@ export namespace Prisma {
   export type SubAccountCreateWithoutCreatedOrdersInput = {
     id?: string
     name: string
-    email: string
     code?: string | null
     isActive?: boolean
     canCreateOrders?: boolean
@@ -54716,7 +54679,6 @@ export namespace Prisma {
   export type SubAccountUncheckedCreateWithoutCreatedOrdersInput = {
     id?: string
     name: string
-    email: string
     code?: string | null
     isActive?: boolean
     canCreateOrders?: boolean
@@ -55035,7 +54997,6 @@ export namespace Prisma {
   export type SubAccountUpdateWithoutCreatedOrdersInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
     code?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     canCreateOrders?: BoolFieldUpdateOperationsInput | boolean
@@ -55052,7 +55013,6 @@ export namespace Prisma {
   export type SubAccountUncheckedUpdateWithoutCreatedOrdersInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
     code?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     canCreateOrders?: BoolFieldUpdateOperationsInput | boolean
@@ -60316,7 +60276,6 @@ export namespace Prisma {
   export type SubAccountCreateManyCustomerInput = {
     id?: string
     name: string
-    email: string
     code?: string | null
     isActive?: boolean
     canCreateOrders?: boolean
@@ -60372,7 +60331,6 @@ export namespace Prisma {
   export type SubAccountUpdateWithoutCustomerInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
     code?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     canCreateOrders?: BoolFieldUpdateOperationsInput | boolean
@@ -60389,7 +60347,6 @@ export namespace Prisma {
   export type SubAccountUncheckedUpdateWithoutCustomerInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
     code?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     canCreateOrders?: BoolFieldUpdateOperationsInput | boolean
@@ -60406,7 +60363,6 @@ export namespace Prisma {
   export type SubAccountUncheckedUpdateManyWithoutCustomerInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
     code?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     canCreateOrders?: BoolFieldUpdateOperationsInput | boolean

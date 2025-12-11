@@ -1200,6 +1200,10 @@
         "COMPANY_NAME": "Company Name",
         "TAX_NUMBER": "Tax Number"
       }
+    },
+    "subUserLimitations": {
+      "title": "Account Limitations",
+      "description": "As a sub-account user, you can only change your password. Company and contact information can only be modified by the main account holder."
     }
   },
   "customerPortal": {
@@ -1207,6 +1211,7 @@
       "title": "Customer Portal",
       "welcome": "Welcome back",
       "overview": "Here's an overview of your orders and account",
+      "subUserOverview": "Here's an overview of your company's orders and activities",
       "totalOrders": "Total Orders",
       "completed": "Completed",
       "inProgress": "In Progress",
@@ -1264,10 +1269,27 @@
       "table": {
         "name": "Name",
         "email": "Email",
-        "permissions": "Permissions",
+
         "status": "Status",
         "lastLogin": "Last Login",
-        "actions": "Actions"
+        "actions": "Actions",
+        "noEmail": "No email",
+        "never": "Never"
+      },
+      "resetPassword": {
+        "title": "Reset Password",
+        "newPassword": "New Password",
+        "enterPassword": "Enter new password",
+        "generateRandom": "Generate random password",
+        "copyToClipboard": "Copy to clipboard",
+        "passwordRequired": "Password is required",
+        "passwordTooShort": "Password must be at least 8 characters long",
+        "resetSuccess": "Password reset successfully for {{name}}",
+        "resetFailed": "Failed to reset password",
+        "resetPassword": "Reset Password",
+        "resetting": "Resetting...",
+        "passwordCopied": "Password copied to clipboard",
+        "copyFailed": "Failed to copy password"
       },
       "form": {
         "addNewSubAccount": "Add New Sub-Account",
@@ -1277,15 +1299,14 @@
         "namePlaceholder": "Enter full name",
         "nameRequired": "Name is required",
         "email": "Email",
-        "emailPlaceholder": "Enter email address",
-        "emailRequired": "Email is required",
-        "permissions": "Permissions",
-        "canCreateOrders": "Create Orders",
-        "canCreateOrdersDesc": "Allow this user to create new orders",
-        "canEditOrders": "Edit Orders",
-        "canEditOrdersDesc": "Allow this user to modify existing orders",
-        "canViewReports": "View Reports",
-        "canViewReportsDesc": "Allow this user to access reports and analytics",
+        "username": "Username",
+        "usernamePlaceholder": "Enter username",
+        "password": "Password",
+        "passwordPlaceholder": "Enter password",
+        "emailPlaceholder": "Enter email address (optional)",
+        "usernameRequired": "Username is required",
+        "passwordRequired": "Password is required",
+
         "activeAccount": "Active Account",
         "activeAccountDesc": "Enable or disable this sub-account",
         "cancel": "Cancel",
@@ -1293,6 +1314,15 @@
         "addSubAccount": "Add Sub-Account",
         "updating": "Updating...",
         "updateSubAccount": "Update Sub-Account"
+      },
+      "createSuccess": "Sub-account created successfully!",
+      "createError": "Failed to create sub-account",
+      "accessDenied": "Access denied. Sub-accounts cannot manage other sub-accounts.",
+      "errors": {
+        "usernameExists": "Username already exists",
+        "emailExists": "Email already exists",
+        "customerNotFound": "Customer not found",
+        "subAccountNotFound": "Sub-account not found"
       }
     },
     "orderDetail": {

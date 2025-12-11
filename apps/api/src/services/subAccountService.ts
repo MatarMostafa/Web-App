@@ -3,20 +3,16 @@ import bcrypt from "bcryptjs";
 
 export interface CreateSubAccountData {
   name: string;
-  email: string;
+  username: string;
+  password: string;
+  email?: string;
   customerId: string;
-  canCreateOrders?: boolean;
-  canEditOrders?: boolean;
-  canViewReports?: boolean;
   createdBy?: string;
 }
 
 export interface UpdateSubAccountData {
   name?: string;
   email?: string;
-  canCreateOrders?: boolean;
-  canEditOrders?: boolean;
-  canViewReports?: boolean;
   isActive?: boolean;
 }
 
@@ -27,30 +23,39 @@ export const createSubAccount = async (data: CreateSubAccountData) => {
   });
 
   if (!customer) {
-    throw new Error("Customer not found");
+    throw new Error("CUSTOMER_NOT_FOUND");
   }
 
-  // Check if email already exists
+  // Check if username already exists
   const existingUser = await prisma.user.findUnique({
-    where: { email: data.email }
+    where: { username: data.username }
   });
 
   if (existingUser) {
-    throw new Error("Email already exists");
+    throw new Error("USERNAME_EXISTS");
   }
 
-  // Generate temporary password
-  const tempPassword = Math.random().toString(36).slice(-8);
-  const hashedPassword = await bcrypt.hash(tempPassword, 10);
+  // Check if email already exists (if provided)
+  if (data.email) {
+    const existingEmailUser = await prisma.user.findUnique({
+      where: { email: data.email }
+    });
+
+    if (existingEmailUser) {
+      throw new Error("EMAIL_EXISTS");
+    }
+  }
+
+  const hashedPassword = await bcrypt.hash(data.password, 10);
 
   // Create user first
   const user = await prisma.user.create({
     data: {
+      username: data.username,
       email: data.email,
-      username: data.email,
       password: hashedPassword,
       role: "CUSTOMER_SUB_USER",
-      emailVerified: false,
+      emailVerified: data.email ? false : true,
       createdBy: data.createdBy,
     }
   });
@@ -59,18 +64,15 @@ export const createSubAccount = async (data: CreateSubAccountData) => {
   const subAccount = await prisma.subAccount.create({
     data: {
       name: data.name,
-      email: data.email,
       customerId: data.customerId,
       userId: user.id,
-      canCreateOrders: data.canCreateOrders ?? true,
-      canEditOrders: data.canEditOrders ?? true,
-      canViewReports: data.canViewReports ?? false,
       createdBy: data.createdBy,
     },
     include: {
       user: {
         select: {
           id: true,
+          username: true,
           email: true,
           role: true,
           isActive: true,
@@ -85,7 +87,7 @@ export const createSubAccount = async (data: CreateSubAccountData) => {
     }
   });
 
-  return { subAccount, tempPassword };
+  return subAccount;
 };
 
 export const getSubAccountsByCustomer = async (customerId: string) => {
@@ -95,6 +97,7 @@ export const getSubAccountsByCustomer = async (customerId: string) => {
       user: {
         select: {
           id: true,
+          username: true,
           email: true,
           role: true,
           isActive: true,
@@ -113,24 +116,23 @@ export const updateSubAccount = async (id: string, data: UpdateSubAccountData) =
   });
 
   if (!subAccount) {
-    throw new Error("Sub-account not found");
+    throw new Error("SUB_ACCOUNT_NOT_FOUND");
   }
 
   // Update user email if changed
-  if (data.email && data.email !== subAccount.email) {
+  if (data.email && data.email !== subAccount.user.email) {
     const existingUser = await prisma.user.findUnique({
       where: { email: data.email }
     });
 
     if (existingUser && existingUser.id !== subAccount.userId) {
-      throw new Error("Email already exists");
+      throw new Error("EMAIL_EXISTS");
     }
 
     await prisma.user.update({
       where: { id: subAccount.userId },
       data: { 
         email: data.email,
-        username: data.email,
         isActive: data.isActive ?? subAccount.user.isActive,
       }
     });
@@ -141,16 +143,13 @@ export const updateSubAccount = async (id: string, data: UpdateSubAccountData) =
     where: { id },
     data: {
       name: data.name,
-      email: data.email,
-      canCreateOrders: data.canCreateOrders,
-      canEditOrders: data.canEditOrders,
-      canViewReports: data.canViewReports,
       isActive: data.isActive,
     },
     include: {
       user: {
         select: {
           id: true,
+          username: true,
           email: true,
           role: true,
           isActive: true,
@@ -167,7 +166,7 @@ export const deleteSubAccount = async (id: string) => {
   });
 
   if (!subAccount) {
-    throw new Error("Sub-account not found");
+    throw new Error("SUB_ACCOUNT_NOT_FOUND");
   }
 
   // Delete user (will cascade delete sub-account)
@@ -185,6 +184,7 @@ export const getSubAccountById = async (id: string) => {
       user: {
         select: {
           id: true,
+          username: true,
           email: true,
           role: true,
           isActive: true,
@@ -198,5 +198,23 @@ export const getSubAccountById = async (id: string) => {
         }
       }
     }
+  });
+};
+
+export const resetSubAccountPassword = async (id: string, newPassword: string): Promise<void> => {
+  const hashedPassword = await bcrypt.hash(newPassword, 10);
+  
+  const subAccount = await prisma.subAccount.findUnique({
+    where: { id },
+    include: { user: true },
+  });
+  
+  if (!subAccount?.user) {
+    throw new Error("Sub-account or user not found");
+  }
+  
+  await prisma.user.update({
+    where: { id: subAccount.user.id },
+    data: { password: hashedPassword },
   });
 };

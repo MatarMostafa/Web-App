@@ -18,7 +18,7 @@ const router = express.Router();
 router.get(
   "/me/orders",
   authMiddleware,
-  roleMiddleware(["CUSTOMER"]),
+  roleMiddleware(["CUSTOMER", "CUSTOMER_SUB_USER"]),
   async (req, res) => {
     try {
       const userId = req.user?.id;
@@ -26,18 +26,30 @@ router.get(
         return res.status(401).json({ message: "Unauthorized" });
       }
 
-      // Get customer ID from user
+      // Get customer ID from user (works for both CUSTOMER and CUSTOMER_SUB_USER)
       const { prisma } = await import("@repo/db");
       const user = await prisma.user.findUnique({
         where: { id: userId },
-        include: { customer: true },
+        include: { 
+          customer: true,
+          subAccount: {
+            include: { customer: true }
+          }
+        },
       });
 
-      if (!user?.customer) {
+      let customerId: string;
+      if (user?.customer) {
+        // Direct customer
+        customerId = user.customer.id;
+      } else if (user?.subAccount?.customer) {
+        // Sub-user accessing parent customer's data
+        customerId = user.subAccount.customer.id;
+      } else {
         return res.status(404).json({ message: "Customer profile not found" });
       }
 
-      const orders = await getCustomerOrdersService(user.customer.id);
+      const orders = await getCustomerOrdersService(customerId);
       res.json({ success: true, data: orders });
     } catch (error) {
       console.error("Get customer orders error:", error);
@@ -53,7 +65,7 @@ router.get(
 router.get(
   "/me/orders/:id",
   authMiddleware,
-  roleMiddleware(["CUSTOMER"]),
+  roleMiddleware(["CUSTOMER", "CUSTOMER_SUB_USER"]),
   async (req, res) => {
     try {
       const userId = req.user?.id;
@@ -63,18 +75,30 @@ router.get(
         return res.status(401).json({ message: "Unauthorized" });
       }
 
-      // Get customer ID from user
+      // Get customer ID from user (works for both CUSTOMER and CUSTOMER_SUB_USER)
       const { prisma } = await import("@repo/db");
       const user = await prisma.user.findUnique({
         where: { id: userId },
-        include: { customer: true },
+        include: { 
+          customer: true,
+          subAccount: {
+            include: { customer: true }
+          }
+        },
       });
 
-      if (!user?.customer) {
+      let customerId: string;
+      if (user?.customer) {
+        // Direct customer
+        customerId = user.customer.id;
+      } else if (user?.subAccount?.customer) {
+        // Sub-user accessing parent customer's data
+        customerId = user.subAccount.customer.id;
+      } else {
         return res.status(404).json({ message: "Customer profile not found" });
       }
 
-      const order = await getCustomerOrderByIdService(user.customer.id, orderId);
+      const order = await getCustomerOrderByIdService(customerId, orderId);
       res.json({ success: true, data: order });
     } catch (error) {
       console.error("Get customer order error:", error);
@@ -93,7 +117,7 @@ router.get(
 router.get(
   "/me",
   authMiddleware,
-  roleMiddleware(["CUSTOMER"]),
+  roleMiddleware(["CUSTOMER", "CUSTOMER_SUB_USER"]),
   async (req, res) => {
     try {
       const userId = req.user?.id;
@@ -113,7 +137,7 @@ router.get(
   }
 );
 
-// Update customer profile
+// Update customer profile (only main customers, not sub-users)
 router.put(
   "/me",
   authMiddleware,

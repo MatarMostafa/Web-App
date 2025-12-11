@@ -26,9 +26,6 @@ interface EditCustomerSubAccountDialogProps {
 interface SubAccountFormData {
   name: string;
   email: string;
-  canCreateOrders: boolean;
-  canEditOrders: boolean;
-  canViewReports: boolean;
   isActive: boolean;
 }
 
@@ -43,9 +40,6 @@ export default function EditCustomerSubAccountDialog({
   const [formData, setFormData] = useState<SubAccountFormData>({
     name: "",
     email: "",
-    canCreateOrders: true,
-    canEditOrders: true,
-    canViewReports: false,
     isActive: true,
   });
   const [loading, setLoading] = useState(false);
@@ -54,10 +48,7 @@ export default function EditCustomerSubAccountDialog({
     if (subAccount) {
       setFormData({
         name: subAccount.name,
-        email: subAccount.email,
-        canCreateOrders: subAccount.canCreateOrders,
-        canEditOrders: subAccount.canEditOrders,
-        canViewReports: subAccount.canViewReports,
+        email: subAccount.user?.email || "",
         isActive: subAccount.isActive,
       });
     }
@@ -78,20 +69,14 @@ export default function EditCustomerSubAccountDialog({
       return;
     }
 
-    if (!formData.email.trim()) {
-      toast.error(t("customerPortal.subAccounts.form.emailRequired"));
-      return;
-    }
+
 
     try {
       setLoading(true);
 
       const updateData: UpdateSubAccountData = {
         name: formData.name,
-        email: formData.email,
-        canCreateOrders: formData.canCreateOrders,
-        canEditOrders: formData.canEditOrders,
-        canViewReports: formData.canViewReports,
+        email: formData.email || undefined,
         isActive: formData.isActive,
       };
 
@@ -136,7 +121,7 @@ export default function EditCustomerSubAccountDialog({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="email">{t("customerPortal.subAccounts.form.email")} *</Label>
+              <Label htmlFor="email">{t("customerPortal.subAccounts.form.email")}</Label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
@@ -145,7 +130,6 @@ export default function EditCustomerSubAccountDialog({
                   value={formData.email}
                   onChange={(e) => handleInputChange("email", e.target.value)}
                   placeholder={t("customerPortal.subAccounts.form.emailPlaceholder")}
-                  required
                   className="pl-10 rounded-lg"
                 />
               </div>
@@ -173,68 +157,7 @@ export default function EditCustomerSubAccountDialog({
             </div>
           </div>
 
-          {/* Permissions */}
-          <div className="space-y-4">
-            <h3 className="text-sm font-medium text-foreground">
-              {t("customerPortal.subAccounts.form.permissions")}
-            </h3>
 
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label htmlFor="canCreateOrders">
-                    {t("customerPortal.subAccounts.form.canCreateOrders")}
-                  </Label>
-                  <p className="text-sm text-muted-foreground">
-                    {t("customerPortal.subAccounts.form.canCreateOrdersDesc")}
-                  </p>
-                </div>
-                <Switch
-                  id="canCreateOrders"
-                  checked={formData.canCreateOrders}
-                  onCheckedChange={(checked) =>
-                    handleInputChange("canCreateOrders", checked)
-                  }
-                />
-              </div>
-
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label htmlFor="canEditOrders">
-                    {t("customerPortal.subAccounts.form.canEditOrders")}
-                  </Label>
-                  <p className="text-sm text-muted-foreground">
-                    {t("customerPortal.subAccounts.form.canEditOrdersDesc")}
-                  </p>
-                </div>
-                <Switch
-                  id="canEditOrders"
-                  checked={formData.canEditOrders}
-                  onCheckedChange={(checked) =>
-                    handleInputChange("canEditOrders", checked)
-                  }
-                />
-              </div>
-
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label htmlFor="canViewReports">
-                    {t("customerPortal.subAccounts.form.canViewReports")}
-                  </Label>
-                  <p className="text-sm text-muted-foreground">
-                    {t("customerPortal.subAccounts.form.canViewReportsDesc")}
-                  </p>
-                </div>
-                <Switch
-                  id="canViewReports"
-                  checked={formData.canViewReports}
-                  onCheckedChange={(checked) =>
-                    handleInputChange("canViewReports", checked)
-                  }
-                />
-              </div>
-            </div>
-          </div>
 
           {/* Submit Buttons */}
           <div className="flex gap-3 pt-4 border-t">

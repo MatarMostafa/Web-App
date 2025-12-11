@@ -29,7 +29,7 @@ export default function CustomerDashboardLayout({
       return;
     }
 
-    if (session.user.role !== "CUSTOMER") {
+    if (session.user.role !== "CUSTOMER" && session.user.role !== "CUSTOMER_SUB_USER") {
       // Redirect non-customers to appropriate dashboard
       if (session.user.role === "ADMIN") {
         router.push("/dashboard-admin");
@@ -50,7 +50,7 @@ export default function CustomerDashboardLayout({
     );
   }
 
-  if (!session || session.user.role !== "CUSTOMER") {
+  if (!session || (session.user.role !== "CUSTOMER" && session.user.role !== "CUSTOMER_SUB_USER")) {
     return null;
   }
 

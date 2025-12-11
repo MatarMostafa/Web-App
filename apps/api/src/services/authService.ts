@@ -213,7 +213,8 @@ export const login = async (identifier: string, password: string) => {
     where: { email: identifier },
     include: {
       employee: true,
-      customer: true
+      customer: true,
+      subAccount: true
     }
   });
   
@@ -224,7 +225,8 @@ export const login = async (identifier: string, password: string) => {
       where: { username: identifier },
       include: {
         employee: true,
-        customer: true
+        customer: true,
+        subAccount: true
       }
     });
     console.log('User found by username:', !!user);
@@ -243,6 +245,11 @@ export const login = async (identifier: string, password: string) => {
   // Check if customer is blocked before password validation
   if (user.customer && !user.customer.isActive) {
     throw new Error("Ihr Kundenkonto wurde deaktiviert. Bitte wenden Sie sich an den Support.");
+  }
+  
+  // Check if sub-account is blocked before password validation
+  if (user.subAccount && !user.subAccount.isActive) {
+    throw new Error("Ihr Unterkonto wurde deaktiviert. Bitte wenden Sie sich an den Administrator.");
   }
   
   
