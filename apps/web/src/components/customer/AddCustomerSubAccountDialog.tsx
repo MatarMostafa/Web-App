@@ -17,7 +17,7 @@ import { Input } from "@/components/ui";
 import { Label } from "@/components/ui";
 import { Switch } from "@/components/ui";
 
-import { User, Mail, Loader2 } from "lucide-react";
+import { User, Mail, Key, Loader2 } from "lucide-react";
 
 interface AddCustomerSubAccountDialogProps {
   trigger?: React.ReactNode;
@@ -27,10 +27,9 @@ interface AddCustomerSubAccountDialogProps {
 
 interface SubAccountFormData {
   name: string;
+  username: string;
+  password: string;
   email: string;
-  canCreateOrders: boolean;
-  canEditOrders: boolean;
-  canViewReports: boolean;
 }
 
 export default function AddCustomerSubAccountDialog({
@@ -47,17 +46,16 @@ export default function AddCustomerSubAccountDialog({
 
   const [formData, setFormData] = useState<SubAccountFormData>({
     name: "",
+    username: "",
+    password: "",
     email: "",
-    canCreateOrders: true,
-    canEditOrders: true,
-    canViewReports: false,
   });
   const [loading, setLoading] = useState(false);
   const [showCredentialsModal, setShowCredentialsModal] = useState(false);
   const [createdCredentials, setCreatedCredentials] = useState<{
     name: string;
-    email: string;
-    tempPassword: string;
+    username: string;
+    password: string;
   } | null>(null);
 
   const handleInputChange = (field: keyof SubAccountFormData, value: any) => {
@@ -70,11 +68,21 @@ export default function AddCustomerSubAccountDialog({
   const resetForm = () => {
     setFormData({
       name: "",
+      username: "",
+      password: "",
       email: "",
-      canCreateOrders: true,
-      canEditOrders: true,
-      canViewReports: false,
     });
+  };
+
+  const getErrorMessage = (error: string) => {
+    const errorMap: Record<string, string> = {
+      USERNAME_EXISTS: t("customerPortal.subAccounts.errors.usernameExists"),
+      EMAIL_EXISTS: t("customerPortal.subAccounts.errors.emailExists"),
+      CUSTOMER_NOT_FOUND: t("customerPortal.subAccounts.errors.customerNotFound"),
+      SUB_ACCOUNT_NOT_FOUND: t("customerPortal.subAccounts.errors.subAccountNotFound"),
+      FAILED_TO_CREATE: t("customerPortal.subAccounts.createError"),
+    };
+    return errorMap[error] || error;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -85,8 +93,13 @@ export default function AddCustomerSubAccountDialog({
       return;
     }
 
-    if (!formData.email.trim()) {
-      toast.error(t("customerPortal.subAccounts.form.emailRequired"));
+    if (!formData.username.trim()) {
+      toast.error(t("customerPortal.subAccounts.form.usernameRequired"));
+      return;
+    }
+
+    if (!formData.password.trim()) {
+      toast.error(t("customerPortal.subAccounts.form.passwordRequired"));
       return;
     }
 
@@ -95,26 +108,28 @@ export default function AddCustomerSubAccountDialog({
 
       const subAccountData: CreateSubAccountData = {
         name: formData.name,
-        email: formData.email,
-        canCreateOrders: formData.canCreateOrders,
-        canEditOrders: formData.canEditOrders,
-        canViewReports: formData.canViewReports,
+        username: formData.username,
+        password: formData.password,
+        email: formData.email || undefined,
       };
 
-      const result = await createSubAccount(subAccountData);
+      await createSubAccount(subAccountData);
+      
+      toast.success(t("customerPortal.subAccounts.createSuccess"));
       
       // Show credentials modal
       setCreatedCredentials({
         name: formData.name,
-        email: formData.email,
-        tempPassword: result.tempPassword,
+        username: formData.username,
+        password: formData.password,
       });
       setShowCredentialsModal(true);
       
       setIsOpen(false);
       resetForm();
     } catch (error) {
-      console.error("Sub-account creation failed:", error);
+      const errorMessage = error instanceof Error ? getErrorMessage(error.message) : t("customerPortal.subAccounts.createError");
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -159,8 +174,40 @@ export default function AddCustomerSubAccountDialog({
                 />
               </div>
 
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="username">{t("customerPortal.subAccounts.form.username")} *</Label>
+                  <div className="relative">
+                    <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="username"
+                      value={formData.username}
+                      onChange={(e) => handleInputChange("username", e.target.value)}
+                      placeholder={t("customerPortal.subAccounts.form.usernamePlaceholder")}
+                      required
+                      className="pl-10 rounded-lg"
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="password">{t("customerPortal.subAccounts.form.password")} *</Label>
+                  <div className="relative">
+                    <Key className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="password"
+                      type="password"
+                      value={formData.password}
+                      onChange={(e) => handleInputChange("password", e.target.value)}
+                      placeholder={t("customerPortal.subAccounts.form.passwordPlaceholder")}
+                      required
+                      className="pl-10 rounded-lg"
+                    />
+                  </div>
+                </div>
+              </div>
+
               <div className="space-y-2">
-                <Label htmlFor="email">{t("customerPortal.subAccounts.form.email")} *</Label>
+                <Label htmlFor="email">{t("customerPortal.subAccounts.form.email")}</Label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
@@ -169,75 +216,13 @@ export default function AddCustomerSubAccountDialog({
                     value={formData.email}
                     onChange={(e) => handleInputChange("email", e.target.value)}
                     placeholder={t("customerPortal.subAccounts.form.emailPlaceholder")}
-                    required
                     className="pl-10 rounded-lg"
                   />
                 </div>
               </div>
             </div>
 
-            {/* Permissions */}
-            <div className="space-y-4">
-              <h3 className="text-sm font-medium text-foreground">
-                {t("customerPortal.subAccounts.form.permissions")}
-              </h3>
 
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <Label htmlFor="canCreateOrders">
-                      {t("customerPortal.subAccounts.form.canCreateOrders")}
-                    </Label>
-                    <p className="text-sm text-muted-foreground">
-                      {t("customerPortal.subAccounts.form.canCreateOrdersDesc")}
-                    </p>
-                  </div>
-                  <Switch
-                    id="canCreateOrders"
-                    checked={formData.canCreateOrders}
-                    onCheckedChange={(checked) =>
-                      handleInputChange("canCreateOrders", checked)
-                    }
-                  />
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <div>
-                    <Label htmlFor="canEditOrders">
-                      {t("customerPortal.subAccounts.form.canEditOrders")}
-                    </Label>
-                    <p className="text-sm text-muted-foreground">
-                      {t("customerPortal.subAccounts.form.canEditOrdersDesc")}
-                    </p>
-                  </div>
-                  <Switch
-                    id="canEditOrders"
-                    checked={formData.canEditOrders}
-                    onCheckedChange={(checked) =>
-                      handleInputChange("canEditOrders", checked)
-                    }
-                  />
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <div>
-                    <Label htmlFor="canViewReports">
-                      {t("customerPortal.subAccounts.form.canViewReports")}
-                    </Label>
-                    <p className="text-sm text-muted-foreground">
-                      {t("customerPortal.subAccounts.form.canViewReportsDesc")}
-                    </p>
-                  </div>
-                  <Switch
-                    id="canViewReports"
-                    checked={formData.canViewReports}
-                    onCheckedChange={(checked) =>
-                      handleInputChange("canViewReports", checked)
-                    }
-                  />
-                </div>
-              </div>
-            </div>
 
             {/* Submit Buttons */}
             <div className="flex gap-3 pt-4 border-t">
@@ -275,8 +260,8 @@ export default function AddCustomerSubAccountDialog({
           open={showCredentialsModal}
           onOpenChange={setShowCredentialsModal}
           name={createdCredentials.name}
-          email={createdCredentials.email}
-          tempPassword={createdCredentials.tempPassword}
+          username={createdCredentials.username}
+          password={createdCredentials.password}
         />
       )}
     </>

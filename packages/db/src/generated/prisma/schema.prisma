@@ -333,7 +333,6 @@ model Customer {
 model SubAccount {
   id       String  @id @default(cuid())
   name     String
-  email    String  @unique
   code     String?
   isActive Boolean @default(true)
 
@@ -356,7 +355,7 @@ model SubAccount {
   createdBy String?
   updatedBy String?
 
-  @@unique([customerId, email])
+  @@unique([customerId, name])
   @@map("sub_accounts")
 }
 

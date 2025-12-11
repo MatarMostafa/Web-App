@@ -7,11 +7,18 @@ import { Badge } from "@/components/ui/badge";
 import { Package, Calendar, Clock, Building } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { useTranslation } from "@/hooks/useTranslation";
+import { useSession } from "next-auth/react";
 
 export default function CustomerDashboard() {
   const { t } = useTranslation();
+  const { data: session } = useSession();
   const { orders, profile, loading, fetchOrders, fetchProfile } = useCustomerStore();
   const [recentOrders, setRecentOrders] = useState<any[]>([]);
+  
+  const isSubUser = session?.user?.role === "CUSTOMER_SUB_USER";
+  const displayName = isSubUser 
+    ? session?.user?.subAccount?.name || session?.user?.name
+    : profile?.companyName;
 
   useEffect(() => {
     fetchOrders();
@@ -73,10 +80,13 @@ export default function CustomerDashboard() {
       {/* Welcome Header */}
       <div>
         <h1 className="text-3xl font-bold text-foreground">
-          {t('customerPortal.dashboard.welcome')}{profile ? `, ${profile.companyName}` : ''}!
+          {t('customerPortal.dashboard.welcome')}{displayName ? `, ${displayName}` : ''}!
         </h1>
         <p className="text-muted-foreground mt-1">
-          {t('customerPortal.dashboard.overview')}
+          {isSubUser 
+            ? t('customerPortal.dashboard.subUserOverview')
+            : t('customerPortal.dashboard.overview')
+          }
         </p>
       </div>
 

@@ -773,7 +773,12 @@ export const notifyCustomerOrderStatusChanged = async (orderId: string, newStatu
     where: { id: orderId },
     include: {
       customer: {
-        include: { user: true }
+        include: { 
+          user: true,
+          subAccounts: {
+            include: { user: true }
+          }
+        }
       }
     }
   });
@@ -784,7 +789,8 @@ export const notifyCustomerOrderStatusChanged = async (orderId: string, newStatu
     userFound: !!order?.customer?.user,
     customerId: order?.customer?.id,
     userId: order?.customer?.user?.id,
-    orderNumber: order?.orderNumber
+    orderNumber: order?.orderNumber,
+    subAccountsCount: order?.customer?.subAccounts?.length || 0
   });
 
   if (!order?.customer?.user) {
@@ -792,40 +798,49 @@ export const notifyCustomerOrderStatusChanged = async (orderId: string, newStatu
     return;
   }
 
-  const statusMessage = await getStatusMessageTranslation(order.customer.user.id, newStatus);
-  
-  const translation = await getNotificationTranslation(
-    order.customer.user.id,
-    'customer',
-    'orderStatusChanged',
-    {
-      orderNumber: order.orderNumber,
-      status: statusMessage
-    }
+  // Collect all recipients (main customer + sub-accounts)
+  const recipients = [order.customer.user.id];
+  if (order.customer.subAccounts) {
+    order.customer.subAccounts.forEach(subAccount => {
+      if (subAccount.user) {
+        recipients.push(subAccount.user.id);
+      }
+    });
+  }
+
+  console.log("📧 Sending notifications to recipients:", recipients);
+
+  // Send to each recipient with their language preference
+  await Promise.all(
+    recipients.map(async (userId) => {
+      const statusMessage = await getStatusMessageTranslation(userId, newStatus);
+      
+      const translation = await getNotificationTranslation(
+        userId,
+        'customer',
+        'orderStatusChanged',
+        {
+          orderNumber: order.orderNumber,
+          status: statusMessage
+        }
+      );
+
+      return createNotification({
+        templateKey: "CUSTOMER_ORDER_STATUS_CHANGED",
+        title: translation.title,
+        body: translation.body,
+        data: {
+          category: "order",
+          orderId: order.id,
+          orderNumber: order.orderNumber,
+          newStatus,
+          status: statusMessage
+        },
+        recipients: [{ userId }],
+        createdBy
+      });
+    })
   );
-
-  console.log("📧 Creating customer notification:", {
-    userId: order.customer.user.id,
-    title: translation.title,
-    body: translation.body
-  });
-
-  const result = await createNotification({
-    templateKey: "CUSTOMER_ORDER_STATUS_CHANGED",
-    title: translation.title,
-    body: translation.body,
-    data: {
-      category: "order",
-      orderId: order.id,
-      orderNumber: order.orderNumber,
-      newStatus,
-      status: statusMessage
-    },
-    recipients: [{ userId: order.customer.user.id }],
-    createdBy
-  });
-  
-  console.log("✅ Customer notification result:", result);
 };
 
 export const notifyCustomerOrderCompleted = async (orderId: string, createdBy?: string) => {
@@ -833,34 +848,54 @@ export const notifyCustomerOrderCompleted = async (orderId: string, createdBy?: 
     where: { id: orderId },
     include: {
       customer: {
-        include: { user: true }
+        include: { 
+          user: true,
+          subAccounts: {
+            include: { user: true }
+          }
+        }
       }
     }
   });
 
   if (!order?.customer?.user) return;
-  
-  const translation = await getNotificationTranslation(
-    order.customer.user.id,
-    'customer',
-    'orderCompleted',
-    {
-      orderNumber: order.orderNumber
-    }
-  );
 
-  await createNotification({
-    templateKey: "CUSTOMER_ORDER_COMPLETED",
-    title: translation.title,
-    body: translation.body,
-    data: {
-      category: "order",
-      orderId: order.id,
-      orderNumber: order.orderNumber
-    },
-    recipients: [{ userId: order.customer.user.id }],
-    createdBy
-  });
+  // Collect all recipients (main customer + sub-accounts)
+  const recipients = [order.customer.user.id];
+  if (order.customer.subAccounts) {
+    order.customer.subAccounts.forEach(subAccount => {
+      if (subAccount.user) {
+        recipients.push(subAccount.user.id);
+      }
+    });
+  }
+
+  // Send to each recipient with their language preference
+  await Promise.all(
+    recipients.map(async (userId) => {
+      const translation = await getNotificationTranslation(
+        userId,
+        'customer',
+        'orderCompleted',
+        {
+          orderNumber: order.orderNumber
+        }
+      );
+
+      return createNotification({
+        templateKey: "CUSTOMER_ORDER_COMPLETED",
+        title: translation.title,
+        body: translation.body,
+        data: {
+          category: "order",
+          orderId: order.id,
+          orderNumber: order.orderNumber
+        },
+        recipients: [{ userId }],
+        createdBy
+      });
+    })
+  );
 };
 
 export const notifyCustomerOrderCancelled = async (orderId: string, reason?: string, createdBy?: string) => {
@@ -868,36 +903,56 @@ export const notifyCustomerOrderCancelled = async (orderId: string, reason?: str
     where: { id: orderId },
     include: {
       customer: {
-        include: { user: true }
+        include: { 
+          user: true,
+          subAccounts: {
+            include: { user: true }
+          }
+        }
       }
     }
   });
 
   if (!order?.customer?.user) return;
-  
-  const translation = await getNotificationTranslation(
-    order.customer.user.id,
-    'customer',
-    'orderCancelled',
-    {
-      orderNumber: order.orderNumber,
-      reason: reason ? ` Reason: ${reason}` : ''
-    }
-  );
 
-  await createNotification({
-    templateKey: "CUSTOMER_ORDER_CANCELLED",
-    title: translation.title,
-    body: translation.body,
-    data: {
-      category: "order",
-      orderId: order.id,
-      orderNumber: order.orderNumber,
-      reason
-    },
-    recipients: [{ userId: order.customer.user.id }],
-    createdBy
-  });
+  // Collect all recipients (main customer + sub-accounts)
+  const recipients = [order.customer.user.id];
+  if (order.customer.subAccounts) {
+    order.customer.subAccounts.forEach(subAccount => {
+      if (subAccount.user) {
+        recipients.push(subAccount.user.id);
+      }
+    });
+  }
+
+  // Send to each recipient with their language preference
+  await Promise.all(
+    recipients.map(async (userId) => {
+      const translation = await getNotificationTranslation(
+        userId,
+        'customer',
+        'orderCancelled',
+        {
+          orderNumber: order.orderNumber,
+          reason: reason ? ` Reason: ${reason}` : ''
+        }
+      );
+
+      return createNotification({
+        templateKey: "CUSTOMER_ORDER_CANCELLED",
+        title: translation.title,
+        body: translation.body,
+        data: {
+          category: "order",
+          orderId: order.id,
+          orderNumber: order.orderNumber,
+          reason
+        },
+        recipients: [{ userId }],
+        createdBy
+      });
+    })
+  );
 };
 
 export const notifyCustomerOrderCreated = async (orderId: string, createdBy?: string) => {
@@ -907,7 +962,12 @@ export const notifyCustomerOrderCreated = async (orderId: string, createdBy?: st
     where: { id: orderId },
     include: {
       customer: {
-        include: { user: true }
+        include: { 
+          user: true,
+          subAccounts: {
+            include: { user: true }
+          }
+        }
       }
     }
   });
@@ -918,45 +978,55 @@ export const notifyCustomerOrderCreated = async (orderId: string, createdBy?: st
     userFound: !!order?.customer?.user,
     customerId: order?.customer?.id,
     userId: order?.customer?.user?.id,
-    orderNumber: order?.orderNumber
+    orderNumber: order?.orderNumber,
+    subAccountsCount: order?.customer?.subAccounts?.length || 0
   });
 
   if (!order?.customer?.user) {
     console.log("❌ No customer user found for order:", orderId);
     return;
   }
-  
-  const translation = await getNotificationTranslation(
-    order.customer.user.id,
-    'customer',
-    'orderCreated',
-    {
-      orderNumber: order.orderNumber,
-      scheduledDate: new Date(order.scheduledDate).toLocaleDateString()
-    }
+
+  // Collect all recipients (main customer + sub-accounts)
+  const recipients = [order.customer.user.id];
+  if (order.customer.subAccounts) {
+    order.customer.subAccounts.forEach(subAccount => {
+      if (subAccount.user) {
+        recipients.push(subAccount.user.id);
+      }
+    });
+  }
+
+  console.log("📧 Sending notifications to recipients:", recipients);
+
+  // Send to each recipient with their language preference
+  await Promise.all(
+    recipients.map(async (userId) => {
+      const translation = await getNotificationTranslation(
+        userId,
+        'customer',
+        'orderCreated',
+        {
+          orderNumber: order.orderNumber,
+          scheduledDate: new Date(order.scheduledDate).toLocaleDateString()
+        }
+      );
+
+      return createNotification({
+        templateKey: "CUSTOMER_ORDER_CREATED",
+        title: translation.title,
+        body: translation.body,
+        data: {
+          category: "order",
+          orderId: order.id,
+          orderNumber: order.orderNumber,
+          scheduledDate: new Date(order.scheduledDate).toLocaleDateString()
+        },
+        recipients: [{ userId }],
+        createdBy
+      });
+    })
   );
-
-  console.log("📧 Creating customer order creation notification:", {
-    userId: order.customer.user.id,
-    title: translation.title,
-    body: translation.body
-  });
-
-  const result = await createNotification({
-    templateKey: "CUSTOMER_ORDER_CREATED",
-    title: translation.title,
-    body: translation.body,
-    data: {
-      category: "order",
-      orderId: order.id,
-      orderNumber: order.orderNumber,
-      scheduledDate: new Date(order.scheduledDate).toLocaleDateString()
-    },
-    recipients: [{ userId: order.customer.user.id }],
-    createdBy
-  });
-  
-  console.log("✅ Customer order creation notification result:", result);
 };
 
 export const notifyCustomerOrderScheduleChanged = async (orderId: string, newDate: Date, createdBy?: string) => {
@@ -964,36 +1034,56 @@ export const notifyCustomerOrderScheduleChanged = async (orderId: string, newDat
     where: { id: orderId },
     include: {
       customer: {
-        include: { user: true }
+        include: { 
+          user: true,
+          subAccounts: {
+            include: { user: true }
+          }
+        }
       }
     }
   });
 
   if (!order?.customer?.user) return;
-  
-  const translation = await getNotificationTranslation(
-    order.customer.user.id,
-    'customer',
-    'orderScheduleChanged',
-    {
-      orderNumber: order.orderNumber,
-      newDate: newDate.toLocaleDateString()
-    }
-  );
 
-  await createNotification({
-    templateKey: "CUSTOMER_ORDER_SCHEDULE_CHANGED",
-    title: translation.title,
-    body: translation.body,
-    data: {
-      category: "order",
-      orderId: order.id,
-      orderNumber: order.orderNumber,
-      newDate: newDate.toISOString()
-    },
-    recipients: [{ userId: order.customer.user.id }],
-    createdBy
-  });
+  // Collect all recipients (main customer + sub-accounts)
+  const recipients = [order.customer.user.id];
+  if (order.customer.subAccounts) {
+    order.customer.subAccounts.forEach(subAccount => {
+      if (subAccount.user) {
+        recipients.push(subAccount.user.id);
+      }
+    });
+  }
+
+  // Send to each recipient with their language preference
+  await Promise.all(
+    recipients.map(async (userId) => {
+      const translation = await getNotificationTranslation(
+        userId,
+        'customer',
+        'orderScheduleChanged',
+        {
+          orderNumber: order.orderNumber,
+          newDate: newDate.toLocaleDateString()
+        }
+      );
+
+      return createNotification({
+        templateKey: "CUSTOMER_ORDER_SCHEDULE_CHANGED",
+        title: translation.title,
+        body: translation.body,
+        data: {
+          category: "order",
+          orderId: order.id,
+          orderNumber: order.orderNumber,
+          newDate: newDate.toISOString()
+        },
+        recipients: [{ userId }],
+        createdBy
+      });
+    })
+  );
 };
 
 /**

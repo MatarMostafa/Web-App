@@ -6,6 +6,7 @@ import { Search, Plus, Users } from "lucide-react";
 import CustomerSubAccountTableView from "@/components/customer/CustomerSubAccountTableView";
 import AddCustomerSubAccountDialog from "@/components/customer/AddCustomerSubAccountDialog";
 import EditCustomerSubAccountDialog from "@/components/customer/EditCustomerSubAccountDialog";
+import ResetSubAccountPasswordDialog from "@/components/customer/ResetSubAccountPasswordDialog";
 import { useCustomerSubAccountStore } from "@/store/customerSubAccountStore";
 import { SubAccount } from "@/types/subAccount";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -16,6 +17,10 @@ const CustomerSubAccountsPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [editingSubAccount, setEditingSubAccount] = useState<SubAccount | null>(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [resetPasswordState, setResetPasswordState] = useState<{
+    isOpen: boolean;
+    subAccount: SubAccount | null;
+  }>({ isOpen: false, subAccount: null });
 
   useEffect(() => {
     fetchSubAccounts();
@@ -24,7 +29,7 @@ const CustomerSubAccountsPage = () => {
   const filteredSubAccounts = subAccounts.filter(
     (subAccount) =>
       subAccount.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      subAccount.email.toLowerCase().includes(searchQuery.toLowerCase())
+      (subAccount.user?.email && subAccount.user.email.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
   const handleEdit = (subAccount: SubAccount) => {
@@ -36,6 +41,10 @@ const CustomerSubAccountsPage = () => {
     if (confirm(t("customerPortal.subAccounts.confirmDelete"))) {
       await deleteSubAccount(id);
     }
+  };
+
+  const handleResetPassword = (subAccount: SubAccount) => {
+    setResetPasswordState({ isOpen: true, subAccount });
   };
 
   return (
@@ -75,6 +84,7 @@ const CustomerSubAccountsPage = () => {
         loading={loading}
         onEdit={handleEdit}
         onDelete={handleDelete}
+        onResetPassword={handleResetPassword}
       />
 
       {editingSubAccount && (
@@ -85,6 +95,16 @@ const CustomerSubAccountsPage = () => {
             setEditDialogOpen(open);
             if (!open) setEditingSubAccount(null);
           }}
+        />
+      )}
+
+      {resetPasswordState.subAccount && (
+        <ResetSubAccountPasswordDialog
+          open={resetPasswordState.isOpen}
+          onOpenChange={(open) => {
+            setResetPasswordState({ isOpen: open, subAccount: open ? resetPasswordState.subAccount : null });
+          }}
+          subAccount={resetPasswordState.subAccount}
         />
       )}
 

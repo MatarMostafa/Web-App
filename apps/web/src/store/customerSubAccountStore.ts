@@ -9,9 +9,10 @@ interface CustomerSubAccountState {
   error: string | null;
 
   fetchSubAccounts: () => Promise<void>;
-  createSubAccount: (data: CreateSubAccountData) => Promise<{ subAccount: SubAccount; tempPassword: string }>;
+  createSubAccount: (data: CreateSubAccountData) => Promise<SubAccount>;
   updateSubAccount: (id: string, data: UpdateSubAccountData) => Promise<void>;
   deleteSubAccount: (id: string) => Promise<void>;
+  resetSubAccountPassword: (id: string, newPassword: string) => Promise<void>;
   clearError: () => void;
 }
 
@@ -42,7 +43,6 @@ export const useCustomerSubAccountStore = create<CustomerSubAccountState>((set, 
       const response = await apiClient.post<{
         success: boolean;
         data: SubAccount;
-        tempPassword: string;
       }>("/api/sub-accounts", data);
       
       if (response.success) {
@@ -50,16 +50,15 @@ export const useCustomerSubAccountStore = create<CustomerSubAccountState>((set, 
           subAccounts: [...state.subAccounts, response.data],
           loading: false
         }));
-        toast.success("Sub-account created successfully!");
-        return { subAccount: response.data, tempPassword: response.tempPassword };
+        return response.data;
       } else {
-        throw new Error("Failed to create sub-account");
+        throw new Error("FAILED_TO_CREATE");
       }
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Failed to create sub-account";
+      const errorMessage = error instanceof Error ? error.message : "FAILED_TO_CREATE";
+      console.log('Store error message:', errorMessage);
       set({ error: errorMessage, loading: false });
-      toast.error(errorMessage);
-      throw error;
+      throw error; // Throw the original error, not a new one
     }
   },
 
@@ -99,6 +98,19 @@ export const useCustomerSubAccountStore = create<CustomerSubAccountState>((set, 
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Failed to delete sub-account";
       set({ error: errorMessage, loading: false });
+      toast.error(errorMessage);
+      throw error;
+    }
+  },
+
+  resetSubAccountPassword: async (id: string, newPassword: string) => {
+    try {
+      await apiClient.put(`/api/sub-accounts/${id}/reset-password`, {
+        newPassword,
+      });
+      toast.success("Password reset successfully");
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Failed to reset password";
       toast.error(errorMessage);
       throw error;
     }
