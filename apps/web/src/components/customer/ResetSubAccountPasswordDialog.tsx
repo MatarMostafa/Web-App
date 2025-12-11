@@ -13,19 +13,27 @@ import { apiClient } from "@/lib/api-client";
 import toast from "react-hot-toast";
 import { useTranslation } from "@/hooks/useTranslation";
 import { SubAccount } from "@/types/subAccount";
+import { useSubAccountStore } from "@/store/subAccountStore";
+import { useCustomerSubAccountStore } from "@/store/customerSubAccountStore";
 
 interface ResetSubAccountPasswordDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   subAccount: SubAccount;
+  onSuccess?: () => void;
+  isAdmin?: boolean;
 }
 
 export default function ResetSubAccountPasswordDialog({
   open,
   onOpenChange,
   subAccount,
+  onSuccess,
+  isAdmin = false,
 }: ResetSubAccountPasswordDialogProps) {
   const { t } = useTranslation();
+  const { resetSubAccountPassword: adminResetPassword } = useSubAccountStore();
+  const { resetSubAccountPassword: customerResetPassword } = useCustomerSubAccountStore();
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -61,13 +69,16 @@ export default function ResetSubAccountPasswordDialog({
 
     setLoading(true);
     try {
-      await apiClient.put(`/api/sub-accounts/${subAccount.id}/reset-password`, {
-        newPassword: password
-      });
+      if (isAdmin) {
+        await adminResetPassword(subAccount.id, password);
+      } else {
+        await customerResetPassword(subAccount.id, password);
+      }
       
       toast.success(t("customerPortal.subAccounts.resetPassword.resetSuccess", { name: subAccount.name }));
       onOpenChange(false);
       setPassword("");
+      onSuccess?.();
     } catch (error: any) {
       toast.error(error.message || t("customerPortal.subAccounts.resetPassword.resetFailed"));
     } finally {

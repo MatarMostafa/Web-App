@@ -710,6 +710,57 @@
         "packaging": "Packaging"
       }
     },
+    "customerDetails": {
+      "loading": "Loading Customer",
+      "notFound": "Customer not found",
+      "hasAccount": "Has Account",
+      "memberSince": "Member since",
+      "tabs": {
+        "overview": "Overview",
+        "orders": "Orders",
+        "subAccounts": "Sub-Accounts",
+        "activity": "Activity"
+      },
+      "overview": {
+        "title": "Customer Overview",
+        "totalOrders": "Total Orders",
+        "subAccounts": "Sub-Accounts",
+        "recentActivity": "Recent Activity"
+      },
+      "orders": {
+        "title": "Customer Orders",
+        "noOrders": "No orders found",
+        "noOrdersDesc": "This customer has no orders yet"
+      },
+      "subAccounts": {
+        "title": "Sub-Accounts Management",
+        "addSubAccount": "Add Sub-Account",
+        "searchPlaceholder": "Search sub-accounts by name or email...",
+        "confirmDelete": "Are you sure you want to delete this sub-account?",
+        "noSubAccounts": "No sub-accounts found",
+        "noSubAccountsDesc": "This customer has no sub-accounts yet",
+        "table": {
+          "name": "Name",
+          "email": "Email",
+          "username": "Username",
+          "status": "Status",
+          "created": "Created",
+          "actions": "Actions",
+          "active": "Active",
+          "inactive": "Inactive",
+          "loading": "Loading sub-accounts...",
+          "noSubAccounts": "No sub-accounts found",
+          "editSubAccount": "Edit Sub-Account",
+          "resetPassword": "Reset Password",
+          "deleteSubAccount": "Delete Sub-Account"
+        }
+      },
+      "activity": {
+        "title": "Customer Activity",
+        "noActivity": "No activity found",
+        "noActivityDesc": "Customer activity will appear here"
+      }
+    },
     "customers": {
       "title": "Customers",
       "subtitle": "Manage your organization's customers",

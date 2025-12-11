@@ -85,19 +85,17 @@ const CustomerTableView: React.FC<CustomerTableViewProps> = ({
                 <TableRow key={customer.id} className="hover:bg-muted/50">
                   {/* Company Name */}
                   <TableCell>
-                    <div
-                      className="flex items-center space-x-3 cursor-pointer hover:bg-muted/50 p-2 rounded-md transition-colors"
-                      onClick={() =>
-                        router.push(`/dashboard-admin/customers/${customer.id}`)
-                      }
-                    >
+                    <div className="flex items-center space-x-3">
                       <Avatar className="h-8 w-8">
                         <AvatarFallback className="text-xs">
                           {getInitials(customer.companyName)}
                         </AvatarFallback>
                       </Avatar>
                       <div>
-                        <p className="font-medium text-primary hover:underline">
+                        <p 
+                          className="font-medium text-primary hover:underline cursor-pointer"
+                          onClick={() => router.push(`/dashboard-admin/customers/${customer.id}`)}
+                        >
                           {customer.companyName}
                         </p>
                       </div>
