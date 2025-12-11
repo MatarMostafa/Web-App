@@ -153,25 +153,28 @@ router.post(
   async (req: AuthRequest, res) => {
     try {
       const { customerId } = req.params;
-      const { name, email, canCreateOrders, canEditOrders, canViewReports } = req.body;
+      const { name, username, password, email } = req.body;
 
       const result = await subAccountService.createSubAccount({
         name,
+        username,
+        password,
         email,
         customerId,
-        canCreateOrders,
-        canEditOrders,
-        canViewReports,
         createdBy: req.user?.id,
       });
 
       res.status(201).json({
         success: true,
-        data: result.subAccount,
-        tempPassword: result.tempPassword,
+        data: result,
       });
     } catch (error: any) {
-      res.status(400).json({ success: false, message: error.message });
+      const errorMessage = error instanceof Error ? error.message : "FAILED_TO_CREATE";
+      res.status(400).json({
+        success: false,
+        message: errorMessage,
+        error: errorMessage
+      });
     }
   }
 );
@@ -183,20 +186,21 @@ router.put(
   async (req: AuthRequest, res) => {
     try {
       const { id } = req.params;
-      const { name, email, canCreateOrders, canEditOrders, canViewReports, isActive } = req.body;
+      const { name, email, isActive } = req.body;
 
       const updatedSubAccount = await subAccountService.updateSubAccount(id, {
         name,
         email,
-        canCreateOrders,
-        canEditOrders,
-        canViewReports,
         isActive,
       });
 
       res.json({ success: true, data: updatedSubAccount });
     } catch (error: any) {
-      res.status(400).json({ success: false, message: error.message });
+      console.error("Update sub-account error:", error);
+      res.status(500).json({
+        message: "Failed to update sub-account",
+        error: error instanceof Error ? error.message : String(error)
+      });
     }
   }
 );
@@ -214,6 +218,31 @@ router.delete(
       console.error("Delete sub-account error:", error);
       res.status(500).json({
         message: "Failed to delete sub-account",
+        error: error instanceof Error ? error.message : String(error)
+      });
+    }
+  }
+);
+
+router.put(
+  "/sub-accounts/:id/reset-password",
+  authMiddleware,
+  roleMiddleware(["ADMIN", "SUPER_ADMIN"]),
+  async (req: AuthRequest, res) => {
+    try {
+      const { id } = req.params;
+      const { newPassword } = req.body;
+      
+      if (!newPassword || newPassword.length < 8) {
+        return res.status(400).json({ message: "Password must be at least 8 characters long" });
+      }
+
+      await subAccountService.resetSubAccountPassword(id, newPassword);
+      res.json({ message: "Password reset successfully" });
+    } catch (error) {
+      console.error("Reset sub-account password error:", error);
+      res.status(500).json({
+        message: "Failed to reset password",
         error: error instanceof Error ? error.message : String(error)
       });
     }

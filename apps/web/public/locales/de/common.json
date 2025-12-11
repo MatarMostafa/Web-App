@@ -711,6 +711,57 @@
         "packaging": "Verpacken"
       }
     },
+    "customerDetails": {
+      "loading": "Kunde wird geladen",
+      "notFound": "Kunde nicht gefunden",
+      "hasAccount": "Hat Konto",
+      "memberSince": "Mitglied seit",
+      "tabs": {
+        "overview": "Übersicht",
+        "orders": "Aufträge",
+        "subAccounts": "Unterkonten",
+        "activity": "Aktivität"
+      },
+      "overview": {
+        "title": "Kundenübersicht",
+        "totalOrders": "Gesamtaufträge",
+        "subAccounts": "Unterkonten",
+        "recentActivity": "Letzte Aktivität"
+      },
+      "orders": {
+        "title": "Kundenaufträge",
+        "noOrders": "Keine Aufträge gefunden",
+        "noOrdersDesc": "Dieser Kunde hat noch keine Aufträge"
+      },
+      "subAccounts": {
+        "title": "Unterkonto-Verwaltung",
+        "addSubAccount": "Unterkonto hinzufügen",
+        "searchPlaceholder": "Unterkonten nach Name oder E-Mail suchen...",
+        "confirmDelete": "Sind Sie sicher, dass Sie dieses Unterkonto löschen möchten?",
+        "noSubAccounts": "Keine Unterkonten gefunden",
+        "noSubAccountsDesc": "Dieser Kunde hat noch keine Unterkonten",
+        "table": {
+          "name": "Name",
+          "email": "E-Mail",
+          "username": "Benutzername",
+          "status": "Status",
+          "created": "Erstellt",
+          "actions": "Aktionen",
+          "active": "Aktiv",
+          "inactive": "Inaktiv",
+          "loading": "Unterkonten werden geladen...",
+          "noSubAccounts": "Keine Unterkonten gefunden",
+          "editSubAccount": "Unterkonto bearbeiten",
+          "resetPassword": "Passwort zurücksetzen",
+          "deleteSubAccount": "Unterkonto löschen"
+        }
+      },
+      "activity": {
+        "title": "Kundenaktivität",
+        "noActivity": "Keine Aktivität gefunden",
+        "noActivityDesc": "Kundenaktivität wird hier angezeigt"
+      }
+    },
     "customers": {
       "title": "Kunden",
       "subtitle": "Verwalten Sie die Kunden Ihrer Organisation",
