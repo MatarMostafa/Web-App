@@ -117,6 +117,7 @@ export const getCustomerProfileService = async (userId: string) => {
       contactPhone: user.customer.contactPhone,
       address: user.customer.address,
       industry: user.customer.industry,
+      taxNumber: user.customer.taxNumber,
       user: {
         email: user.email,
         username: user.username,
@@ -133,6 +134,7 @@ export const getCustomerProfileService = async (userId: string) => {
       contactPhone: user.subAccount.customer.contactPhone,
       address: user.subAccount.customer.address,
       industry: user.subAccount.customer.industry,
+      taxNumber: user.subAccount.customer.taxNumber,
       user: {
         email: user.email,
         username: user.username,
@@ -208,6 +210,19 @@ export const getCustomerByIdService = async (customerId: string) => {
           isActive: true,
         },
       },
+      subAccounts: {
+        include: {
+          user: {
+            select: {
+              id: true,
+              username: true,
+              email: true,
+              isActive: true,
+            },
+          },
+        },
+        orderBy: { createdAt: 'desc' },
+      },
       orders: {
         orderBy: { createdAt: 'desc' },
         take: 10,
@@ -215,6 +230,7 @@ export const getCustomerByIdService = async (customerId: string) => {
       _count: {
         select: {
           orders: true,
+          subAccounts: true,
         },
       },
     },
