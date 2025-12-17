@@ -30,7 +30,15 @@ export const getCurrentWeekOrders = async (userId: string) => {
         },
       },
       include: {
-        order: true,
+        order: {
+          include: {
+            customerActivities: {
+              include: {
+                activity: true
+              }
+            }
+          }
+        },
       },
     });
 
@@ -71,7 +79,15 @@ export const getArchivedOrders = async (userId: string) => {
         },
       },
       include: {
-        order: true,
+        order: {
+          include: {
+            customerActivities: {
+              include: {
+                activity: true
+              }
+            }
+          }
+        },
       },
       take: 50,
     });
