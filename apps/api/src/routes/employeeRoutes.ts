@@ -7,6 +7,9 @@ import {
   createEmployee,
   updateEmployee,
   deleteEmployee,
+  exportEmployeeAssignments,
+  exportEmployeeWorkStats,
+  exportCombinedEmployeeData,
 } from "../controllers/employeeController";
 import { prisma } from "@repo/db";
 
@@ -278,6 +281,30 @@ router.get(
       });
     }
   }
+);
+
+// Export employee assignments as CSV
+router.get(
+  "/export/assignments",
+  authMiddleware,
+  roleMiddleware(["ADMIN", "HR_MANAGER"]),
+  exportEmployeeAssignments
+);
+
+// Export employee work statistics as CSV
+router.get(
+  "/export/work-stats",
+  authMiddleware,
+  roleMiddleware(["ADMIN", "HR_MANAGER"]),
+  exportEmployeeWorkStats
+);
+
+// Export combined employee data as CSV
+router.get(
+  "/export/combined",
+  authMiddleware,
+  roleMiddleware(["ADMIN", "HR_MANAGER"]),
+  exportCombinedEmployeeData
 );
 
 export default router;

@@ -69,6 +69,21 @@ export type Qualification = $Result.DefaultSelection<Prisma.$QualificationPayloa
  */
 export type EmployeeQualification = $Result.DefaultSelection<Prisma.$EmployeeQualificationPayload>
 /**
+ * Model Activity
+ * 
+ */
+export type Activity = $Result.DefaultSelection<Prisma.$ActivityPayload>
+/**
+ * Model CustomerPrice
+ * 
+ */
+export type CustomerPrice = $Result.DefaultSelection<Prisma.$CustomerPricePayload>
+/**
+ * Model CustomerActivity
+ * 
+ */
+export type CustomerActivity = $Result.DefaultSelection<Prisma.$CustomerActivityPayload>
+/**
  * Model OrderQualification
  * 
  */
@@ -575,6 +590,36 @@ export class PrismaClient<
   get employeeQualification(): Prisma.EmployeeQualificationDelegate<ExtArgs, ClientOptions>;
 
   /**
+   * `prisma.activity`: Exposes CRUD operations for the **Activity** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Activities
+    * const activities = await prisma.activity.findMany()
+    * ```
+    */
+  get activity(): Prisma.ActivityDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.customerPrice`: Exposes CRUD operations for the **CustomerPrice** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more CustomerPrices
+    * const customerPrices = await prisma.customerPrice.findMany()
+    * ```
+    */
+  get customerPrice(): Prisma.CustomerPriceDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.customerActivity`: Exposes CRUD operations for the **CustomerActivity** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more CustomerActivities
+    * const customerActivities = await prisma.customerActivity.findMany()
+    * ```
+    */
+  get customerActivity(): Prisma.CustomerActivityDelegate<ExtArgs, ClientOptions>;
+
+  /**
    * `prisma.orderQualification`: Exposes CRUD operations for the **OrderQualification** model.
     * Example usage:
     * ```ts
@@ -811,8 +856,8 @@ export namespace Prisma {
   export import Exact = $Public.Exact
 
   /**
-   * Prisma Client JS version: 6.18.0
-   * Query Engine version: 34b5a692b7bd79939a9a2c3ef97d816e749cda2f
+   * Prisma Client JS version: 6.19.0
+   * Query Engine version: 2ba551f319ab1df4bc874a89965d8b3641056773
    */
   export type PrismaVersion = {
     client: string
@@ -1205,6 +1250,9 @@ export namespace Prisma {
     Order: 'Order',
     Qualification: 'Qualification',
     EmployeeQualification: 'EmployeeQualification',
+    Activity: 'Activity',
+    CustomerPrice: 'CustomerPrice',
+    CustomerActivity: 'CustomerActivity',
     OrderQualification: 'OrderQualification',
     Assignment: 'Assignment',
     OrderAssignment: 'OrderAssignment',
@@ -1241,7 +1289,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "employee" | "employeePerformance" | "performanceThreshold" | "department" | "position" | "customer" | "subAccount" | "order" | "qualification" | "employeeQualification" | "orderQualification" | "assignment" | "orderAssignment" | "absence" | "rating" | "workStatistic" | "notificationTemplate" | "notification" | "notificationRecipient" | "notificationOutbox" | "notificationPreference" | "orderNote" | "file" | "settingsChangeRequest" | "team" | "teamMember" | "systemConfig" | "auditLog"
+      modelProps: "user" | "employee" | "employeePerformance" | "performanceThreshold" | "department" | "position" | "customer" | "subAccount" | "order" | "qualification" | "employeeQualification" | "activity" | "customerPrice" | "customerActivity" | "orderQualification" | "assignment" | "orderAssignment" | "absence" | "rating" | "workStatistic" | "notificationTemplate" | "notification" | "notificationRecipient" | "notificationOutbox" | "notificationPreference" | "orderNote" | "file" | "settingsChangeRequest" | "team" | "teamMember" | "systemConfig" | "auditLog"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -2056,6 +2104,228 @@ export namespace Prisma {
           count: {
             args: Prisma.EmployeeQualificationCountArgs<ExtArgs>
             result: $Utils.Optional<EmployeeQualificationCountAggregateOutputType> | number
+          }
+        }
+      }
+      Activity: {
+        payload: Prisma.$ActivityPayload<ExtArgs>
+        fields: Prisma.ActivityFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ActivityFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ActivityPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ActivityFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ActivityPayload>
+          }
+          findFirst: {
+            args: Prisma.ActivityFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ActivityPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ActivityFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ActivityPayload>
+          }
+          findMany: {
+            args: Prisma.ActivityFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ActivityPayload>[]
+          }
+          create: {
+            args: Prisma.ActivityCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ActivityPayload>
+          }
+          createMany: {
+            args: Prisma.ActivityCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.ActivityCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ActivityPayload>[]
+          }
+          delete: {
+            args: Prisma.ActivityDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ActivityPayload>
+          }
+          update: {
+            args: Prisma.ActivityUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ActivityPayload>
+          }
+          deleteMany: {
+            args: Prisma.ActivityDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ActivityUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.ActivityUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ActivityPayload>[]
+          }
+          upsert: {
+            args: Prisma.ActivityUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ActivityPayload>
+          }
+          aggregate: {
+            args: Prisma.ActivityAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateActivity>
+          }
+          groupBy: {
+            args: Prisma.ActivityGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ActivityGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ActivityCountArgs<ExtArgs>
+            result: $Utils.Optional<ActivityCountAggregateOutputType> | number
+          }
+        }
+      }
+      CustomerPrice: {
+        payload: Prisma.$CustomerPricePayload<ExtArgs>
+        fields: Prisma.CustomerPriceFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.CustomerPriceFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CustomerPricePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.CustomerPriceFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CustomerPricePayload>
+          }
+          findFirst: {
+            args: Prisma.CustomerPriceFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CustomerPricePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.CustomerPriceFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CustomerPricePayload>
+          }
+          findMany: {
+            args: Prisma.CustomerPriceFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CustomerPricePayload>[]
+          }
+          create: {
+            args: Prisma.CustomerPriceCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CustomerPricePayload>
+          }
+          createMany: {
+            args: Prisma.CustomerPriceCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.CustomerPriceCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CustomerPricePayload>[]
+          }
+          delete: {
+            args: Prisma.CustomerPriceDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CustomerPricePayload>
+          }
+          update: {
+            args: Prisma.CustomerPriceUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CustomerPricePayload>
+          }
+          deleteMany: {
+            args: Prisma.CustomerPriceDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.CustomerPriceUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.CustomerPriceUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CustomerPricePayload>[]
+          }
+          upsert: {
+            args: Prisma.CustomerPriceUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CustomerPricePayload>
+          }
+          aggregate: {
+            args: Prisma.CustomerPriceAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateCustomerPrice>
+          }
+          groupBy: {
+            args: Prisma.CustomerPriceGroupByArgs<ExtArgs>
+            result: $Utils.Optional<CustomerPriceGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.CustomerPriceCountArgs<ExtArgs>
+            result: $Utils.Optional<CustomerPriceCountAggregateOutputType> | number
+          }
+        }
+      }
+      CustomerActivity: {
+        payload: Prisma.$CustomerActivityPayload<ExtArgs>
+        fields: Prisma.CustomerActivityFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.CustomerActivityFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CustomerActivityPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.CustomerActivityFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CustomerActivityPayload>
+          }
+          findFirst: {
+            args: Prisma.CustomerActivityFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CustomerActivityPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.CustomerActivityFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CustomerActivityPayload>
+          }
+          findMany: {
+            args: Prisma.CustomerActivityFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CustomerActivityPayload>[]
+          }
+          create: {
+            args: Prisma.CustomerActivityCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CustomerActivityPayload>
+          }
+          createMany: {
+            args: Prisma.CustomerActivityCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.CustomerActivityCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CustomerActivityPayload>[]
+          }
+          delete: {
+            args: Prisma.CustomerActivityDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CustomerActivityPayload>
+          }
+          update: {
+            args: Prisma.CustomerActivityUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CustomerActivityPayload>
+          }
+          deleteMany: {
+            args: Prisma.CustomerActivityDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.CustomerActivityUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.CustomerActivityUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CustomerActivityPayload>[]
+          }
+          upsert: {
+            args: Prisma.CustomerActivityUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CustomerActivityPayload>
+          }
+          aggregate: {
+            args: Prisma.CustomerActivityAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateCustomerActivity>
+          }
+          groupBy: {
+            args: Prisma.CustomerActivityGroupByArgs<ExtArgs>
+            result: $Utils.Optional<CustomerActivityGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.CustomerActivityCountArgs<ExtArgs>
+            result: $Utils.Optional<CustomerActivityCountAggregateOutputType> | number
           }
         }
       }
@@ -3498,6 +3768,9 @@ export namespace Prisma {
     order?: OrderOmit
     qualification?: QualificationOmit
     employeeQualification?: EmployeeQualificationOmit
+    activity?: ActivityOmit
+    customerPrice?: CustomerPriceOmit
+    customerActivity?: CustomerActivityOmit
     orderQualification?: OrderQualificationOmit
     assignment?: AssignmentOmit
     orderAssignment?: OrderAssignmentOmit
@@ -3858,12 +4131,16 @@ export namespace Prisma {
     subAccounts: number
     orders: number
     ratings: number
+    customerPrices: number
+    customerActivities: number
   }
 
   export type CustomerCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     subAccounts?: boolean | CustomerCountOutputTypeCountSubAccountsArgs
     orders?: boolean | CustomerCountOutputTypeCountOrdersArgs
     ratings?: boolean | CustomerCountOutputTypeCountRatingsArgs
+    customerPrices?: boolean | CustomerCountOutputTypeCountCustomerPricesArgs
+    customerActivities?: boolean | CustomerCountOutputTypeCountCustomerActivitiesArgs
   }
 
   // Custom InputTypes
@@ -3898,6 +4175,20 @@ export namespace Prisma {
     where?: RatingWhereInput
   }
 
+  /**
+   * CustomerCountOutputType without action
+   */
+  export type CustomerCountOutputTypeCountCustomerPricesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CustomerPriceWhereInput
+  }
+
+  /**
+   * CustomerCountOutputType without action
+   */
+  export type CustomerCountOutputTypeCountCustomerActivitiesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CustomerActivityWhereInput
+  }
+
 
   /**
    * Count Type OrderCountOutputType
@@ -3910,6 +4201,7 @@ export namespace Prisma {
     ratings: number
     files: number
     notes: number
+    customerActivities: number
   }
 
   export type OrderCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -3919,6 +4211,7 @@ export namespace Prisma {
     ratings?: boolean | OrderCountOutputTypeCountRatingsArgs
     files?: boolean | OrderCountOutputTypeCountFilesArgs
     notes?: boolean | OrderCountOutputTypeCountNotesArgs
+    customerActivities?: boolean | OrderCountOutputTypeCountCustomerActivitiesArgs
   }
 
   // Custom InputTypes
@@ -3974,6 +4267,13 @@ export namespace Prisma {
     where?: OrderNoteWhereInput
   }
 
+  /**
+   * OrderCountOutputType without action
+   */
+  export type OrderCountOutputTypeCountCustomerActivitiesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CustomerActivityWhereInput
+  }
+
 
   /**
    * Count Type QualificationCountOutputType
@@ -4012,6 +4312,55 @@ export namespace Prisma {
    */
   export type QualificationCountOutputTypeCountOrderQualificationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: OrderQualificationWhereInput
+  }
+
+
+  /**
+   * Count Type ActivityCountOutputType
+   */
+
+  export type ActivityCountOutputType = {
+    customerPrices: number
+    orderQualifications: number
+    customerActivities: number
+  }
+
+  export type ActivityCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    customerPrices?: boolean | ActivityCountOutputTypeCountCustomerPricesArgs
+    orderQualifications?: boolean | ActivityCountOutputTypeCountOrderQualificationsArgs
+    customerActivities?: boolean | ActivityCountOutputTypeCountCustomerActivitiesArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * ActivityCountOutputType without action
+   */
+  export type ActivityCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ActivityCountOutputType
+     */
+    select?: ActivityCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * ActivityCountOutputType without action
+   */
+  export type ActivityCountOutputTypeCountCustomerPricesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CustomerPriceWhereInput
+  }
+
+  /**
+   * ActivityCountOutputType without action
+   */
+  export type ActivityCountOutputTypeCountOrderQualificationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: OrderQualificationWhereInput
+  }
+
+  /**
+   * ActivityCountOutputType without action
+   */
+  export type ActivityCountOutputTypeCountCustomerActivitiesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CustomerActivityWhereInput
   }
 
 
@@ -12327,6 +12676,8 @@ export namespace Prisma {
     subAccounts?: boolean | Customer$subAccountsArgs<ExtArgs>
     orders?: boolean | Customer$ordersArgs<ExtArgs>
     ratings?: boolean | Customer$ratingsArgs<ExtArgs>
+    customerPrices?: boolean | Customer$customerPricesArgs<ExtArgs>
+    customerActivities?: boolean | Customer$customerActivitiesArgs<ExtArgs>
     _count?: boolean | CustomerCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["customer"]>
 
@@ -12380,6 +12731,8 @@ export namespace Prisma {
     subAccounts?: boolean | Customer$subAccountsArgs<ExtArgs>
     orders?: boolean | Customer$ordersArgs<ExtArgs>
     ratings?: boolean | Customer$ratingsArgs<ExtArgs>
+    customerPrices?: boolean | Customer$customerPricesArgs<ExtArgs>
+    customerActivities?: boolean | Customer$customerActivitiesArgs<ExtArgs>
     _count?: boolean | CustomerCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type CustomerIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -12396,6 +12749,8 @@ export namespace Prisma {
       subAccounts: Prisma.$SubAccountPayload<ExtArgs>[]
       orders: Prisma.$OrderPayload<ExtArgs>[]
       ratings: Prisma.$RatingPayload<ExtArgs>[]
+      customerPrices: Prisma.$CustomerPricePayload<ExtArgs>[]
+      customerActivities: Prisma.$CustomerActivityPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -12807,6 +13162,8 @@ export namespace Prisma {
     subAccounts<T extends Customer$subAccountsArgs<ExtArgs> = {}>(args?: Subset<T, Customer$subAccountsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SubAccountPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     orders<T extends Customer$ordersArgs<ExtArgs> = {}>(args?: Subset<T, Customer$ordersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     ratings<T extends Customer$ratingsArgs<ExtArgs> = {}>(args?: Subset<T, Customer$ratingsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RatingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    customerPrices<T extends Customer$customerPricesArgs<ExtArgs> = {}>(args?: Subset<T, Customer$customerPricesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CustomerPricePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    customerActivities<T extends Customer$customerActivitiesArgs<ExtArgs> = {}>(args?: Subset<T, Customer$customerActivitiesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CustomerActivityPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -13331,6 +13688,54 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: RatingScalarFieldEnum | RatingScalarFieldEnum[]
+  }
+
+  /**
+   * Customer.customerPrices
+   */
+  export type Customer$customerPricesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CustomerPrice
+     */
+    select?: CustomerPriceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CustomerPrice
+     */
+    omit?: CustomerPriceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CustomerPriceInclude<ExtArgs> | null
+    where?: CustomerPriceWhereInput
+    orderBy?: CustomerPriceOrderByWithRelationInput | CustomerPriceOrderByWithRelationInput[]
+    cursor?: CustomerPriceWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: CustomerPriceScalarFieldEnum | CustomerPriceScalarFieldEnum[]
+  }
+
+  /**
+   * Customer.customerActivities
+   */
+  export type Customer$customerActivitiesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CustomerActivity
+     */
+    select?: CustomerActivitySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CustomerActivity
+     */
+    omit?: CustomerActivityOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CustomerActivityInclude<ExtArgs> | null
+    where?: CustomerActivityWhereInput
+    orderBy?: CustomerActivityOrderByWithRelationInput | CustomerActivityOrderByWithRelationInput[]
+    cursor?: CustomerActivityWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: CustomerActivityScalarFieldEnum | CustomerActivityScalarFieldEnum[]
   }
 
   /**
@@ -14802,6 +15207,7 @@ export namespace Prisma {
     ratings?: boolean | Order$ratingsArgs<ExtArgs>
     files?: boolean | Order$filesArgs<ExtArgs>
     notes?: boolean | Order$notesArgs<ExtArgs>
+    customerActivities?: boolean | Order$customerActivitiesArgs<ExtArgs>
     _count?: boolean | OrderCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["order"]>
 
@@ -14897,6 +15303,7 @@ export namespace Prisma {
     ratings?: boolean | Order$ratingsArgs<ExtArgs>
     files?: boolean | Order$filesArgs<ExtArgs>
     notes?: boolean | Order$notesArgs<ExtArgs>
+    customerActivities?: boolean | Order$customerActivitiesArgs<ExtArgs>
     _count?: boolean | OrderCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type OrderIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -14919,6 +15326,7 @@ export namespace Prisma {
       ratings: Prisma.$RatingPayload<ExtArgs>[]
       files: Prisma.$FilePayload<ExtArgs>[]
       notes: Prisma.$OrderNotePayload<ExtArgs>[]
+      customerActivities: Prisma.$CustomerActivityPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -15346,6 +15754,7 @@ export namespace Prisma {
     ratings<T extends Order$ratingsArgs<ExtArgs> = {}>(args?: Subset<T, Order$ratingsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RatingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     files<T extends Order$filesArgs<ExtArgs> = {}>(args?: Subset<T, Order$filesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FilePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     notes<T extends Order$notesArgs<ExtArgs> = {}>(args?: Subset<T, Order$notesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderNotePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    customerActivities<T extends Order$customerActivitiesArgs<ExtArgs> = {}>(args?: Subset<T, Order$customerActivitiesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CustomerActivityPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -15954,6 +16363,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: OrderNoteScalarFieldEnum | OrderNoteScalarFieldEnum[]
+  }
+
+  /**
+   * Order.customerActivities
+   */
+  export type Order$customerActivitiesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CustomerActivity
+     */
+    select?: CustomerActivitySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CustomerActivity
+     */
+    omit?: CustomerActivityOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CustomerActivityInclude<ExtArgs> | null
+    where?: CustomerActivityWhereInput
+    orderBy?: CustomerActivityOrderByWithRelationInput | CustomerActivityOrderByWithRelationInput[]
+    cursor?: CustomerActivityWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: CustomerActivityScalarFieldEnum | CustomerActivityScalarFieldEnum[]
   }
 
   /**
@@ -18325,6 +18758,3583 @@ export namespace Prisma {
 
 
   /**
+   * Model Activity
+   */
+
+  export type AggregateActivity = {
+    _count: ActivityCountAggregateOutputType | null
+    _avg: ActivityAvgAggregateOutputType | null
+    _sum: ActivitySumAggregateOutputType | null
+    _min: ActivityMinAggregateOutputType | null
+    _max: ActivityMaxAggregateOutputType | null
+  }
+
+  export type ActivityAvgAggregateOutputType = {
+    defaultPrice: Decimal | null
+  }
+
+  export type ActivitySumAggregateOutputType = {
+    defaultPrice: Decimal | null
+  }
+
+  export type ActivityMinAggregateOutputType = {
+    id: string | null
+    name: string | null
+    code: string | null
+    description: string | null
+    defaultPrice: Decimal | null
+    unit: string | null
+    isActive: boolean | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type ActivityMaxAggregateOutputType = {
+    id: string | null
+    name: string | null
+    code: string | null
+    description: string | null
+    defaultPrice: Decimal | null
+    unit: string | null
+    isActive: boolean | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type ActivityCountAggregateOutputType = {
+    id: number
+    name: number
+    code: number
+    description: number
+    defaultPrice: number
+    unit: number
+    isActive: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type ActivityAvgAggregateInputType = {
+    defaultPrice?: true
+  }
+
+  export type ActivitySumAggregateInputType = {
+    defaultPrice?: true
+  }
+
+  export type ActivityMinAggregateInputType = {
+    id?: true
+    name?: true
+    code?: true
+    description?: true
+    defaultPrice?: true
+    unit?: true
+    isActive?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type ActivityMaxAggregateInputType = {
+    id?: true
+    name?: true
+    code?: true
+    description?: true
+    defaultPrice?: true
+    unit?: true
+    isActive?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type ActivityCountAggregateInputType = {
+    id?: true
+    name?: true
+    code?: true
+    description?: true
+    defaultPrice?: true
+    unit?: true
+    isActive?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type ActivityAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Activity to aggregate.
+     */
+    where?: ActivityWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Activities to fetch.
+     */
+    orderBy?: ActivityOrderByWithRelationInput | ActivityOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ActivityWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Activities from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Activities.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Activities
+    **/
+    _count?: true | ActivityCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: ActivityAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: ActivitySumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ActivityMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ActivityMaxAggregateInputType
+  }
+
+  export type GetActivityAggregateType<T extends ActivityAggregateArgs> = {
+        [P in keyof T & keyof AggregateActivity]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateActivity[P]>
+      : GetScalarType<T[P], AggregateActivity[P]>
+  }
+
+
+
+
+  export type ActivityGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ActivityWhereInput
+    orderBy?: ActivityOrderByWithAggregationInput | ActivityOrderByWithAggregationInput[]
+    by: ActivityScalarFieldEnum[] | ActivityScalarFieldEnum
+    having?: ActivityScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ActivityCountAggregateInputType | true
+    _avg?: ActivityAvgAggregateInputType
+    _sum?: ActivitySumAggregateInputType
+    _min?: ActivityMinAggregateInputType
+    _max?: ActivityMaxAggregateInputType
+  }
+
+  export type ActivityGroupByOutputType = {
+    id: string
+    name: string
+    code: string | null
+    description: string | null
+    defaultPrice: Decimal
+    unit: string
+    isActive: boolean
+    createdAt: Date
+    updatedAt: Date
+    _count: ActivityCountAggregateOutputType | null
+    _avg: ActivityAvgAggregateOutputType | null
+    _sum: ActivitySumAggregateOutputType | null
+    _min: ActivityMinAggregateOutputType | null
+    _max: ActivityMaxAggregateOutputType | null
+  }
+
+  type GetActivityGroupByPayload<T extends ActivityGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ActivityGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ActivityGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ActivityGroupByOutputType[P]>
+            : GetScalarType<T[P], ActivityGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ActivitySelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    code?: boolean
+    description?: boolean
+    defaultPrice?: boolean
+    unit?: boolean
+    isActive?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    customerPrices?: boolean | Activity$customerPricesArgs<ExtArgs>
+    orderQualifications?: boolean | Activity$orderQualificationsArgs<ExtArgs>
+    customerActivities?: boolean | Activity$customerActivitiesArgs<ExtArgs>
+    _count?: boolean | ActivityCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["activity"]>
+
+  export type ActivitySelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    code?: boolean
+    description?: boolean
+    defaultPrice?: boolean
+    unit?: boolean
+    isActive?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["activity"]>
+
+  export type ActivitySelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    code?: boolean
+    description?: boolean
+    defaultPrice?: boolean
+    unit?: boolean
+    isActive?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["activity"]>
+
+  export type ActivitySelectScalar = {
+    id?: boolean
+    name?: boolean
+    code?: boolean
+    description?: boolean
+    defaultPrice?: boolean
+    unit?: boolean
+    isActive?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type ActivityOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "code" | "description" | "defaultPrice" | "unit" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["activity"]>
+  export type ActivityInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    customerPrices?: boolean | Activity$customerPricesArgs<ExtArgs>
+    orderQualifications?: boolean | Activity$orderQualificationsArgs<ExtArgs>
+    customerActivities?: boolean | Activity$customerActivitiesArgs<ExtArgs>
+    _count?: boolean | ActivityCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type ActivityIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+  export type ActivityIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+
+  export type $ActivityPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Activity"
+    objects: {
+      customerPrices: Prisma.$CustomerPricePayload<ExtArgs>[]
+      orderQualifications: Prisma.$OrderQualificationPayload<ExtArgs>[]
+      customerActivities: Prisma.$CustomerActivityPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      name: string
+      code: string | null
+      description: string | null
+      defaultPrice: Prisma.Decimal
+      unit: string
+      isActive: boolean
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["activity"]>
+    composites: {}
+  }
+
+  type ActivityGetPayload<S extends boolean | null | undefined | ActivityDefaultArgs> = $Result.GetResult<Prisma.$ActivityPayload, S>
+
+  type ActivityCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<ActivityFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: ActivityCountAggregateInputType | true
+    }
+
+  export interface ActivityDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Activity'], meta: { name: 'Activity' } }
+    /**
+     * Find zero or one Activity that matches the filter.
+     * @param {ActivityFindUniqueArgs} args - Arguments to find a Activity
+     * @example
+     * // Get one Activity
+     * const activity = await prisma.activity.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ActivityFindUniqueArgs>(args: SelectSubset<T, ActivityFindUniqueArgs<ExtArgs>>): Prisma__ActivityClient<$Result.GetResult<Prisma.$ActivityPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Activity that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {ActivityFindUniqueOrThrowArgs} args - Arguments to find a Activity
+     * @example
+     * // Get one Activity
+     * const activity = await prisma.activity.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ActivityFindUniqueOrThrowArgs>(args: SelectSubset<T, ActivityFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ActivityClient<$Result.GetResult<Prisma.$ActivityPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Activity that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ActivityFindFirstArgs} args - Arguments to find a Activity
+     * @example
+     * // Get one Activity
+     * const activity = await prisma.activity.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ActivityFindFirstArgs>(args?: SelectSubset<T, ActivityFindFirstArgs<ExtArgs>>): Prisma__ActivityClient<$Result.GetResult<Prisma.$ActivityPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Activity that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ActivityFindFirstOrThrowArgs} args - Arguments to find a Activity
+     * @example
+     * // Get one Activity
+     * const activity = await prisma.activity.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ActivityFindFirstOrThrowArgs>(args?: SelectSubset<T, ActivityFindFirstOrThrowArgs<ExtArgs>>): Prisma__ActivityClient<$Result.GetResult<Prisma.$ActivityPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Activities that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ActivityFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Activities
+     * const activities = await prisma.activity.findMany()
+     * 
+     * // Get first 10 Activities
+     * const activities = await prisma.activity.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const activityWithIdOnly = await prisma.activity.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ActivityFindManyArgs>(args?: SelectSubset<T, ActivityFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ActivityPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Activity.
+     * @param {ActivityCreateArgs} args - Arguments to create a Activity.
+     * @example
+     * // Create one Activity
+     * const Activity = await prisma.activity.create({
+     *   data: {
+     *     // ... data to create a Activity
+     *   }
+     * })
+     * 
+     */
+    create<T extends ActivityCreateArgs>(args: SelectSubset<T, ActivityCreateArgs<ExtArgs>>): Prisma__ActivityClient<$Result.GetResult<Prisma.$ActivityPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Activities.
+     * @param {ActivityCreateManyArgs} args - Arguments to create many Activities.
+     * @example
+     * // Create many Activities
+     * const activity = await prisma.activity.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ActivityCreateManyArgs>(args?: SelectSubset<T, ActivityCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Activities and returns the data saved in the database.
+     * @param {ActivityCreateManyAndReturnArgs} args - Arguments to create many Activities.
+     * @example
+     * // Create many Activities
+     * const activity = await prisma.activity.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Activities and only return the `id`
+     * const activityWithIdOnly = await prisma.activity.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends ActivityCreateManyAndReturnArgs>(args?: SelectSubset<T, ActivityCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ActivityPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Activity.
+     * @param {ActivityDeleteArgs} args - Arguments to delete one Activity.
+     * @example
+     * // Delete one Activity
+     * const Activity = await prisma.activity.delete({
+     *   where: {
+     *     // ... filter to delete one Activity
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ActivityDeleteArgs>(args: SelectSubset<T, ActivityDeleteArgs<ExtArgs>>): Prisma__ActivityClient<$Result.GetResult<Prisma.$ActivityPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Activity.
+     * @param {ActivityUpdateArgs} args - Arguments to update one Activity.
+     * @example
+     * // Update one Activity
+     * const activity = await prisma.activity.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ActivityUpdateArgs>(args: SelectSubset<T, ActivityUpdateArgs<ExtArgs>>): Prisma__ActivityClient<$Result.GetResult<Prisma.$ActivityPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Activities.
+     * @param {ActivityDeleteManyArgs} args - Arguments to filter Activities to delete.
+     * @example
+     * // Delete a few Activities
+     * const { count } = await prisma.activity.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ActivityDeleteManyArgs>(args?: SelectSubset<T, ActivityDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Activities.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ActivityUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Activities
+     * const activity = await prisma.activity.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ActivityUpdateManyArgs>(args: SelectSubset<T, ActivityUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Activities and returns the data updated in the database.
+     * @param {ActivityUpdateManyAndReturnArgs} args - Arguments to update many Activities.
+     * @example
+     * // Update many Activities
+     * const activity = await prisma.activity.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Activities and only return the `id`
+     * const activityWithIdOnly = await prisma.activity.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends ActivityUpdateManyAndReturnArgs>(args: SelectSubset<T, ActivityUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ActivityPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Activity.
+     * @param {ActivityUpsertArgs} args - Arguments to update or create a Activity.
+     * @example
+     * // Update or create a Activity
+     * const activity = await prisma.activity.upsert({
+     *   create: {
+     *     // ... data to create a Activity
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Activity we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ActivityUpsertArgs>(args: SelectSubset<T, ActivityUpsertArgs<ExtArgs>>): Prisma__ActivityClient<$Result.GetResult<Prisma.$ActivityPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Activities.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ActivityCountArgs} args - Arguments to filter Activities to count.
+     * @example
+     * // Count the number of Activities
+     * const count = await prisma.activity.count({
+     *   where: {
+     *     // ... the filter for the Activities we want to count
+     *   }
+     * })
+    **/
+    count<T extends ActivityCountArgs>(
+      args?: Subset<T, ActivityCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ActivityCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Activity.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ActivityAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ActivityAggregateArgs>(args: Subset<T, ActivityAggregateArgs>): Prisma.PrismaPromise<GetActivityAggregateType<T>>
+
+    /**
+     * Group by Activity.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ActivityGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ActivityGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ActivityGroupByArgs['orderBy'] }
+        : { orderBy?: ActivityGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ActivityGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetActivityGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Activity model
+   */
+  readonly fields: ActivityFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Activity.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ActivityClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    customerPrices<T extends Activity$customerPricesArgs<ExtArgs> = {}>(args?: Subset<T, Activity$customerPricesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CustomerPricePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    orderQualifications<T extends Activity$orderQualificationsArgs<ExtArgs> = {}>(args?: Subset<T, Activity$orderQualificationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderQualificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    customerActivities<T extends Activity$customerActivitiesArgs<ExtArgs> = {}>(args?: Subset<T, Activity$customerActivitiesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CustomerActivityPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Activity model
+   */
+  interface ActivityFieldRefs {
+    readonly id: FieldRef<"Activity", 'String'>
+    readonly name: FieldRef<"Activity", 'String'>
+    readonly code: FieldRef<"Activity", 'String'>
+    readonly description: FieldRef<"Activity", 'String'>
+    readonly defaultPrice: FieldRef<"Activity", 'Decimal'>
+    readonly unit: FieldRef<"Activity", 'String'>
+    readonly isActive: FieldRef<"Activity", 'Boolean'>
+    readonly createdAt: FieldRef<"Activity", 'DateTime'>
+    readonly updatedAt: FieldRef<"Activity", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Activity findUnique
+   */
+  export type ActivityFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Activity
+     */
+    select?: ActivitySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Activity
+     */
+    omit?: ActivityOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ActivityInclude<ExtArgs> | null
+    /**
+     * Filter, which Activity to fetch.
+     */
+    where: ActivityWhereUniqueInput
+  }
+
+  /**
+   * Activity findUniqueOrThrow
+   */
+  export type ActivityFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Activity
+     */
+    select?: ActivitySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Activity
+     */
+    omit?: ActivityOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ActivityInclude<ExtArgs> | null
+    /**
+     * Filter, which Activity to fetch.
+     */
+    where: ActivityWhereUniqueInput
+  }
+
+  /**
+   * Activity findFirst
+   */
+  export type ActivityFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Activity
+     */
+    select?: ActivitySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Activity
+     */
+    omit?: ActivityOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ActivityInclude<ExtArgs> | null
+    /**
+     * Filter, which Activity to fetch.
+     */
+    where?: ActivityWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Activities to fetch.
+     */
+    orderBy?: ActivityOrderByWithRelationInput | ActivityOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Activities.
+     */
+    cursor?: ActivityWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Activities from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Activities.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Activities.
+     */
+    distinct?: ActivityScalarFieldEnum | ActivityScalarFieldEnum[]
+  }
+
+  /**
+   * Activity findFirstOrThrow
+   */
+  export type ActivityFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Activity
+     */
+    select?: ActivitySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Activity
+     */
+    omit?: ActivityOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ActivityInclude<ExtArgs> | null
+    /**
+     * Filter, which Activity to fetch.
+     */
+    where?: ActivityWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Activities to fetch.
+     */
+    orderBy?: ActivityOrderByWithRelationInput | ActivityOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Activities.
+     */
+    cursor?: ActivityWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Activities from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Activities.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Activities.
+     */
+    distinct?: ActivityScalarFieldEnum | ActivityScalarFieldEnum[]
+  }
+
+  /**
+   * Activity findMany
+   */
+  export type ActivityFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Activity
+     */
+    select?: ActivitySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Activity
+     */
+    omit?: ActivityOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ActivityInclude<ExtArgs> | null
+    /**
+     * Filter, which Activities to fetch.
+     */
+    where?: ActivityWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Activities to fetch.
+     */
+    orderBy?: ActivityOrderByWithRelationInput | ActivityOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Activities.
+     */
+    cursor?: ActivityWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Activities from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Activities.
+     */
+    skip?: number
+    distinct?: ActivityScalarFieldEnum | ActivityScalarFieldEnum[]
+  }
+
+  /**
+   * Activity create
+   */
+  export type ActivityCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Activity
+     */
+    select?: ActivitySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Activity
+     */
+    omit?: ActivityOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ActivityInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Activity.
+     */
+    data: XOR<ActivityCreateInput, ActivityUncheckedCreateInput>
+  }
+
+  /**
+   * Activity createMany
+   */
+  export type ActivityCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Activities.
+     */
+    data: ActivityCreateManyInput | ActivityCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Activity createManyAndReturn
+   */
+  export type ActivityCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Activity
+     */
+    select?: ActivitySelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Activity
+     */
+    omit?: ActivityOmit<ExtArgs> | null
+    /**
+     * The data used to create many Activities.
+     */
+    data: ActivityCreateManyInput | ActivityCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Activity update
+   */
+  export type ActivityUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Activity
+     */
+    select?: ActivitySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Activity
+     */
+    omit?: ActivityOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ActivityInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Activity.
+     */
+    data: XOR<ActivityUpdateInput, ActivityUncheckedUpdateInput>
+    /**
+     * Choose, which Activity to update.
+     */
+    where: ActivityWhereUniqueInput
+  }
+
+  /**
+   * Activity updateMany
+   */
+  export type ActivityUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Activities.
+     */
+    data: XOR<ActivityUpdateManyMutationInput, ActivityUncheckedUpdateManyInput>
+    /**
+     * Filter which Activities to update
+     */
+    where?: ActivityWhereInput
+    /**
+     * Limit how many Activities to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Activity updateManyAndReturn
+   */
+  export type ActivityUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Activity
+     */
+    select?: ActivitySelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Activity
+     */
+    omit?: ActivityOmit<ExtArgs> | null
+    /**
+     * The data used to update Activities.
+     */
+    data: XOR<ActivityUpdateManyMutationInput, ActivityUncheckedUpdateManyInput>
+    /**
+     * Filter which Activities to update
+     */
+    where?: ActivityWhereInput
+    /**
+     * Limit how many Activities to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Activity upsert
+   */
+  export type ActivityUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Activity
+     */
+    select?: ActivitySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Activity
+     */
+    omit?: ActivityOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ActivityInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Activity to update in case it exists.
+     */
+    where: ActivityWhereUniqueInput
+    /**
+     * In case the Activity found by the `where` argument doesn't exist, create a new Activity with this data.
+     */
+    create: XOR<ActivityCreateInput, ActivityUncheckedCreateInput>
+    /**
+     * In case the Activity was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ActivityUpdateInput, ActivityUncheckedUpdateInput>
+  }
+
+  /**
+   * Activity delete
+   */
+  export type ActivityDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Activity
+     */
+    select?: ActivitySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Activity
+     */
+    omit?: ActivityOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ActivityInclude<ExtArgs> | null
+    /**
+     * Filter which Activity to delete.
+     */
+    where: ActivityWhereUniqueInput
+  }
+
+  /**
+   * Activity deleteMany
+   */
+  export type ActivityDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Activities to delete
+     */
+    where?: ActivityWhereInput
+    /**
+     * Limit how many Activities to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Activity.customerPrices
+   */
+  export type Activity$customerPricesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CustomerPrice
+     */
+    select?: CustomerPriceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CustomerPrice
+     */
+    omit?: CustomerPriceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CustomerPriceInclude<ExtArgs> | null
+    where?: CustomerPriceWhereInput
+    orderBy?: CustomerPriceOrderByWithRelationInput | CustomerPriceOrderByWithRelationInput[]
+    cursor?: CustomerPriceWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: CustomerPriceScalarFieldEnum | CustomerPriceScalarFieldEnum[]
+  }
+
+  /**
+   * Activity.orderQualifications
+   */
+  export type Activity$orderQualificationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderQualification
+     */
+    select?: OrderQualificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderQualification
+     */
+    omit?: OrderQualificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderQualificationInclude<ExtArgs> | null
+    where?: OrderQualificationWhereInput
+    orderBy?: OrderQualificationOrderByWithRelationInput | OrderQualificationOrderByWithRelationInput[]
+    cursor?: OrderQualificationWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: OrderQualificationScalarFieldEnum | OrderQualificationScalarFieldEnum[]
+  }
+
+  /**
+   * Activity.customerActivities
+   */
+  export type Activity$customerActivitiesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CustomerActivity
+     */
+    select?: CustomerActivitySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CustomerActivity
+     */
+    omit?: CustomerActivityOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CustomerActivityInclude<ExtArgs> | null
+    where?: CustomerActivityWhereInput
+    orderBy?: CustomerActivityOrderByWithRelationInput | CustomerActivityOrderByWithRelationInput[]
+    cursor?: CustomerActivityWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: CustomerActivityScalarFieldEnum | CustomerActivityScalarFieldEnum[]
+  }
+
+  /**
+   * Activity without action
+   */
+  export type ActivityDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Activity
+     */
+    select?: ActivitySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Activity
+     */
+    omit?: ActivityOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ActivityInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model CustomerPrice
+   */
+
+  export type AggregateCustomerPrice = {
+    _count: CustomerPriceCountAggregateOutputType | null
+    _avg: CustomerPriceAvgAggregateOutputType | null
+    _sum: CustomerPriceSumAggregateOutputType | null
+    _min: CustomerPriceMinAggregateOutputType | null
+    _max: CustomerPriceMaxAggregateOutputType | null
+  }
+
+  export type CustomerPriceAvgAggregateOutputType = {
+    price: Decimal | null
+  }
+
+  export type CustomerPriceSumAggregateOutputType = {
+    price: Decimal | null
+  }
+
+  export type CustomerPriceMinAggregateOutputType = {
+    id: string | null
+    customerId: string | null
+    activityId: string | null
+    price: Decimal | null
+    currency: string | null
+    effectiveFrom: Date | null
+    effectiveTo: Date | null
+    isActive: boolean | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type CustomerPriceMaxAggregateOutputType = {
+    id: string | null
+    customerId: string | null
+    activityId: string | null
+    price: Decimal | null
+    currency: string | null
+    effectiveFrom: Date | null
+    effectiveTo: Date | null
+    isActive: boolean | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type CustomerPriceCountAggregateOutputType = {
+    id: number
+    customerId: number
+    activityId: number
+    price: number
+    currency: number
+    effectiveFrom: number
+    effectiveTo: number
+    isActive: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type CustomerPriceAvgAggregateInputType = {
+    price?: true
+  }
+
+  export type CustomerPriceSumAggregateInputType = {
+    price?: true
+  }
+
+  export type CustomerPriceMinAggregateInputType = {
+    id?: true
+    customerId?: true
+    activityId?: true
+    price?: true
+    currency?: true
+    effectiveFrom?: true
+    effectiveTo?: true
+    isActive?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type CustomerPriceMaxAggregateInputType = {
+    id?: true
+    customerId?: true
+    activityId?: true
+    price?: true
+    currency?: true
+    effectiveFrom?: true
+    effectiveTo?: true
+    isActive?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type CustomerPriceCountAggregateInputType = {
+    id?: true
+    customerId?: true
+    activityId?: true
+    price?: true
+    currency?: true
+    effectiveFrom?: true
+    effectiveTo?: true
+    isActive?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type CustomerPriceAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which CustomerPrice to aggregate.
+     */
+    where?: CustomerPriceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CustomerPrices to fetch.
+     */
+    orderBy?: CustomerPriceOrderByWithRelationInput | CustomerPriceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: CustomerPriceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CustomerPrices from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CustomerPrices.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned CustomerPrices
+    **/
+    _count?: true | CustomerPriceCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: CustomerPriceAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: CustomerPriceSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: CustomerPriceMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: CustomerPriceMaxAggregateInputType
+  }
+
+  export type GetCustomerPriceAggregateType<T extends CustomerPriceAggregateArgs> = {
+        [P in keyof T & keyof AggregateCustomerPrice]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateCustomerPrice[P]>
+      : GetScalarType<T[P], AggregateCustomerPrice[P]>
+  }
+
+
+
+
+  export type CustomerPriceGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CustomerPriceWhereInput
+    orderBy?: CustomerPriceOrderByWithAggregationInput | CustomerPriceOrderByWithAggregationInput[]
+    by: CustomerPriceScalarFieldEnum[] | CustomerPriceScalarFieldEnum
+    having?: CustomerPriceScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: CustomerPriceCountAggregateInputType | true
+    _avg?: CustomerPriceAvgAggregateInputType
+    _sum?: CustomerPriceSumAggregateInputType
+    _min?: CustomerPriceMinAggregateInputType
+    _max?: CustomerPriceMaxAggregateInputType
+  }
+
+  export type CustomerPriceGroupByOutputType = {
+    id: string
+    customerId: string
+    activityId: string
+    price: Decimal
+    currency: string
+    effectiveFrom: Date
+    effectiveTo: Date | null
+    isActive: boolean
+    createdAt: Date
+    updatedAt: Date
+    _count: CustomerPriceCountAggregateOutputType | null
+    _avg: CustomerPriceAvgAggregateOutputType | null
+    _sum: CustomerPriceSumAggregateOutputType | null
+    _min: CustomerPriceMinAggregateOutputType | null
+    _max: CustomerPriceMaxAggregateOutputType | null
+  }
+
+  type GetCustomerPriceGroupByPayload<T extends CustomerPriceGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<CustomerPriceGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof CustomerPriceGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], CustomerPriceGroupByOutputType[P]>
+            : GetScalarType<T[P], CustomerPriceGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type CustomerPriceSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    customerId?: boolean
+    activityId?: boolean
+    price?: boolean
+    currency?: boolean
+    effectiveFrom?: boolean
+    effectiveTo?: boolean
+    isActive?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    customer?: boolean | CustomerDefaultArgs<ExtArgs>
+    activity?: boolean | ActivityDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["customerPrice"]>
+
+  export type CustomerPriceSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    customerId?: boolean
+    activityId?: boolean
+    price?: boolean
+    currency?: boolean
+    effectiveFrom?: boolean
+    effectiveTo?: boolean
+    isActive?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    customer?: boolean | CustomerDefaultArgs<ExtArgs>
+    activity?: boolean | ActivityDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["customerPrice"]>
+
+  export type CustomerPriceSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    customerId?: boolean
+    activityId?: boolean
+    price?: boolean
+    currency?: boolean
+    effectiveFrom?: boolean
+    effectiveTo?: boolean
+    isActive?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    customer?: boolean | CustomerDefaultArgs<ExtArgs>
+    activity?: boolean | ActivityDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["customerPrice"]>
+
+  export type CustomerPriceSelectScalar = {
+    id?: boolean
+    customerId?: boolean
+    activityId?: boolean
+    price?: boolean
+    currency?: boolean
+    effectiveFrom?: boolean
+    effectiveTo?: boolean
+    isActive?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type CustomerPriceOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "customerId" | "activityId" | "price" | "currency" | "effectiveFrom" | "effectiveTo" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["customerPrice"]>
+  export type CustomerPriceInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    customer?: boolean | CustomerDefaultArgs<ExtArgs>
+    activity?: boolean | ActivityDefaultArgs<ExtArgs>
+  }
+  export type CustomerPriceIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    customer?: boolean | CustomerDefaultArgs<ExtArgs>
+    activity?: boolean | ActivityDefaultArgs<ExtArgs>
+  }
+  export type CustomerPriceIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    customer?: boolean | CustomerDefaultArgs<ExtArgs>
+    activity?: boolean | ActivityDefaultArgs<ExtArgs>
+  }
+
+  export type $CustomerPricePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "CustomerPrice"
+    objects: {
+      customer: Prisma.$CustomerPayload<ExtArgs>
+      activity: Prisma.$ActivityPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      customerId: string
+      activityId: string
+      price: Prisma.Decimal
+      currency: string
+      effectiveFrom: Date
+      effectiveTo: Date | null
+      isActive: boolean
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["customerPrice"]>
+    composites: {}
+  }
+
+  type CustomerPriceGetPayload<S extends boolean | null | undefined | CustomerPriceDefaultArgs> = $Result.GetResult<Prisma.$CustomerPricePayload, S>
+
+  type CustomerPriceCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<CustomerPriceFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: CustomerPriceCountAggregateInputType | true
+    }
+
+  export interface CustomerPriceDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['CustomerPrice'], meta: { name: 'CustomerPrice' } }
+    /**
+     * Find zero or one CustomerPrice that matches the filter.
+     * @param {CustomerPriceFindUniqueArgs} args - Arguments to find a CustomerPrice
+     * @example
+     * // Get one CustomerPrice
+     * const customerPrice = await prisma.customerPrice.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends CustomerPriceFindUniqueArgs>(args: SelectSubset<T, CustomerPriceFindUniqueArgs<ExtArgs>>): Prisma__CustomerPriceClient<$Result.GetResult<Prisma.$CustomerPricePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one CustomerPrice that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {CustomerPriceFindUniqueOrThrowArgs} args - Arguments to find a CustomerPrice
+     * @example
+     * // Get one CustomerPrice
+     * const customerPrice = await prisma.customerPrice.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends CustomerPriceFindUniqueOrThrowArgs>(args: SelectSubset<T, CustomerPriceFindUniqueOrThrowArgs<ExtArgs>>): Prisma__CustomerPriceClient<$Result.GetResult<Prisma.$CustomerPricePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first CustomerPrice that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CustomerPriceFindFirstArgs} args - Arguments to find a CustomerPrice
+     * @example
+     * // Get one CustomerPrice
+     * const customerPrice = await prisma.customerPrice.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends CustomerPriceFindFirstArgs>(args?: SelectSubset<T, CustomerPriceFindFirstArgs<ExtArgs>>): Prisma__CustomerPriceClient<$Result.GetResult<Prisma.$CustomerPricePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first CustomerPrice that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CustomerPriceFindFirstOrThrowArgs} args - Arguments to find a CustomerPrice
+     * @example
+     * // Get one CustomerPrice
+     * const customerPrice = await prisma.customerPrice.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends CustomerPriceFindFirstOrThrowArgs>(args?: SelectSubset<T, CustomerPriceFindFirstOrThrowArgs<ExtArgs>>): Prisma__CustomerPriceClient<$Result.GetResult<Prisma.$CustomerPricePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more CustomerPrices that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CustomerPriceFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all CustomerPrices
+     * const customerPrices = await prisma.customerPrice.findMany()
+     * 
+     * // Get first 10 CustomerPrices
+     * const customerPrices = await prisma.customerPrice.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const customerPriceWithIdOnly = await prisma.customerPrice.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends CustomerPriceFindManyArgs>(args?: SelectSubset<T, CustomerPriceFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CustomerPricePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a CustomerPrice.
+     * @param {CustomerPriceCreateArgs} args - Arguments to create a CustomerPrice.
+     * @example
+     * // Create one CustomerPrice
+     * const CustomerPrice = await prisma.customerPrice.create({
+     *   data: {
+     *     // ... data to create a CustomerPrice
+     *   }
+     * })
+     * 
+     */
+    create<T extends CustomerPriceCreateArgs>(args: SelectSubset<T, CustomerPriceCreateArgs<ExtArgs>>): Prisma__CustomerPriceClient<$Result.GetResult<Prisma.$CustomerPricePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many CustomerPrices.
+     * @param {CustomerPriceCreateManyArgs} args - Arguments to create many CustomerPrices.
+     * @example
+     * // Create many CustomerPrices
+     * const customerPrice = await prisma.customerPrice.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends CustomerPriceCreateManyArgs>(args?: SelectSubset<T, CustomerPriceCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many CustomerPrices and returns the data saved in the database.
+     * @param {CustomerPriceCreateManyAndReturnArgs} args - Arguments to create many CustomerPrices.
+     * @example
+     * // Create many CustomerPrices
+     * const customerPrice = await prisma.customerPrice.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many CustomerPrices and only return the `id`
+     * const customerPriceWithIdOnly = await prisma.customerPrice.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends CustomerPriceCreateManyAndReturnArgs>(args?: SelectSubset<T, CustomerPriceCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CustomerPricePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a CustomerPrice.
+     * @param {CustomerPriceDeleteArgs} args - Arguments to delete one CustomerPrice.
+     * @example
+     * // Delete one CustomerPrice
+     * const CustomerPrice = await prisma.customerPrice.delete({
+     *   where: {
+     *     // ... filter to delete one CustomerPrice
+     *   }
+     * })
+     * 
+     */
+    delete<T extends CustomerPriceDeleteArgs>(args: SelectSubset<T, CustomerPriceDeleteArgs<ExtArgs>>): Prisma__CustomerPriceClient<$Result.GetResult<Prisma.$CustomerPricePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one CustomerPrice.
+     * @param {CustomerPriceUpdateArgs} args - Arguments to update one CustomerPrice.
+     * @example
+     * // Update one CustomerPrice
+     * const customerPrice = await prisma.customerPrice.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends CustomerPriceUpdateArgs>(args: SelectSubset<T, CustomerPriceUpdateArgs<ExtArgs>>): Prisma__CustomerPriceClient<$Result.GetResult<Prisma.$CustomerPricePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more CustomerPrices.
+     * @param {CustomerPriceDeleteManyArgs} args - Arguments to filter CustomerPrices to delete.
+     * @example
+     * // Delete a few CustomerPrices
+     * const { count } = await prisma.customerPrice.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends CustomerPriceDeleteManyArgs>(args?: SelectSubset<T, CustomerPriceDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more CustomerPrices.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CustomerPriceUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many CustomerPrices
+     * const customerPrice = await prisma.customerPrice.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends CustomerPriceUpdateManyArgs>(args: SelectSubset<T, CustomerPriceUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more CustomerPrices and returns the data updated in the database.
+     * @param {CustomerPriceUpdateManyAndReturnArgs} args - Arguments to update many CustomerPrices.
+     * @example
+     * // Update many CustomerPrices
+     * const customerPrice = await prisma.customerPrice.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more CustomerPrices and only return the `id`
+     * const customerPriceWithIdOnly = await prisma.customerPrice.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends CustomerPriceUpdateManyAndReturnArgs>(args: SelectSubset<T, CustomerPriceUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CustomerPricePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one CustomerPrice.
+     * @param {CustomerPriceUpsertArgs} args - Arguments to update or create a CustomerPrice.
+     * @example
+     * // Update or create a CustomerPrice
+     * const customerPrice = await prisma.customerPrice.upsert({
+     *   create: {
+     *     // ... data to create a CustomerPrice
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the CustomerPrice we want to update
+     *   }
+     * })
+     */
+    upsert<T extends CustomerPriceUpsertArgs>(args: SelectSubset<T, CustomerPriceUpsertArgs<ExtArgs>>): Prisma__CustomerPriceClient<$Result.GetResult<Prisma.$CustomerPricePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of CustomerPrices.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CustomerPriceCountArgs} args - Arguments to filter CustomerPrices to count.
+     * @example
+     * // Count the number of CustomerPrices
+     * const count = await prisma.customerPrice.count({
+     *   where: {
+     *     // ... the filter for the CustomerPrices we want to count
+     *   }
+     * })
+    **/
+    count<T extends CustomerPriceCountArgs>(
+      args?: Subset<T, CustomerPriceCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], CustomerPriceCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a CustomerPrice.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CustomerPriceAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends CustomerPriceAggregateArgs>(args: Subset<T, CustomerPriceAggregateArgs>): Prisma.PrismaPromise<GetCustomerPriceAggregateType<T>>
+
+    /**
+     * Group by CustomerPrice.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CustomerPriceGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends CustomerPriceGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: CustomerPriceGroupByArgs['orderBy'] }
+        : { orderBy?: CustomerPriceGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, CustomerPriceGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetCustomerPriceGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the CustomerPrice model
+   */
+  readonly fields: CustomerPriceFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for CustomerPrice.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__CustomerPriceClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    customer<T extends CustomerDefaultArgs<ExtArgs> = {}>(args?: Subset<T, CustomerDefaultArgs<ExtArgs>>): Prisma__CustomerClient<$Result.GetResult<Prisma.$CustomerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    activity<T extends ActivityDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ActivityDefaultArgs<ExtArgs>>): Prisma__ActivityClient<$Result.GetResult<Prisma.$ActivityPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the CustomerPrice model
+   */
+  interface CustomerPriceFieldRefs {
+    readonly id: FieldRef<"CustomerPrice", 'String'>
+    readonly customerId: FieldRef<"CustomerPrice", 'String'>
+    readonly activityId: FieldRef<"CustomerPrice", 'String'>
+    readonly price: FieldRef<"CustomerPrice", 'Decimal'>
+    readonly currency: FieldRef<"CustomerPrice", 'String'>
+    readonly effectiveFrom: FieldRef<"CustomerPrice", 'DateTime'>
+    readonly effectiveTo: FieldRef<"CustomerPrice", 'DateTime'>
+    readonly isActive: FieldRef<"CustomerPrice", 'Boolean'>
+    readonly createdAt: FieldRef<"CustomerPrice", 'DateTime'>
+    readonly updatedAt: FieldRef<"CustomerPrice", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * CustomerPrice findUnique
+   */
+  export type CustomerPriceFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CustomerPrice
+     */
+    select?: CustomerPriceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CustomerPrice
+     */
+    omit?: CustomerPriceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CustomerPriceInclude<ExtArgs> | null
+    /**
+     * Filter, which CustomerPrice to fetch.
+     */
+    where: CustomerPriceWhereUniqueInput
+  }
+
+  /**
+   * CustomerPrice findUniqueOrThrow
+   */
+  export type CustomerPriceFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CustomerPrice
+     */
+    select?: CustomerPriceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CustomerPrice
+     */
+    omit?: CustomerPriceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CustomerPriceInclude<ExtArgs> | null
+    /**
+     * Filter, which CustomerPrice to fetch.
+     */
+    where: CustomerPriceWhereUniqueInput
+  }
+
+  /**
+   * CustomerPrice findFirst
+   */
+  export type CustomerPriceFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CustomerPrice
+     */
+    select?: CustomerPriceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CustomerPrice
+     */
+    omit?: CustomerPriceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CustomerPriceInclude<ExtArgs> | null
+    /**
+     * Filter, which CustomerPrice to fetch.
+     */
+    where?: CustomerPriceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CustomerPrices to fetch.
+     */
+    orderBy?: CustomerPriceOrderByWithRelationInput | CustomerPriceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for CustomerPrices.
+     */
+    cursor?: CustomerPriceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CustomerPrices from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CustomerPrices.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of CustomerPrices.
+     */
+    distinct?: CustomerPriceScalarFieldEnum | CustomerPriceScalarFieldEnum[]
+  }
+
+  /**
+   * CustomerPrice findFirstOrThrow
+   */
+  export type CustomerPriceFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CustomerPrice
+     */
+    select?: CustomerPriceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CustomerPrice
+     */
+    omit?: CustomerPriceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CustomerPriceInclude<ExtArgs> | null
+    /**
+     * Filter, which CustomerPrice to fetch.
+     */
+    where?: CustomerPriceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CustomerPrices to fetch.
+     */
+    orderBy?: CustomerPriceOrderByWithRelationInput | CustomerPriceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for CustomerPrices.
+     */
+    cursor?: CustomerPriceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CustomerPrices from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CustomerPrices.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of CustomerPrices.
+     */
+    distinct?: CustomerPriceScalarFieldEnum | CustomerPriceScalarFieldEnum[]
+  }
+
+  /**
+   * CustomerPrice findMany
+   */
+  export type CustomerPriceFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CustomerPrice
+     */
+    select?: CustomerPriceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CustomerPrice
+     */
+    omit?: CustomerPriceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CustomerPriceInclude<ExtArgs> | null
+    /**
+     * Filter, which CustomerPrices to fetch.
+     */
+    where?: CustomerPriceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CustomerPrices to fetch.
+     */
+    orderBy?: CustomerPriceOrderByWithRelationInput | CustomerPriceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing CustomerPrices.
+     */
+    cursor?: CustomerPriceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CustomerPrices from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CustomerPrices.
+     */
+    skip?: number
+    distinct?: CustomerPriceScalarFieldEnum | CustomerPriceScalarFieldEnum[]
+  }
+
+  /**
+   * CustomerPrice create
+   */
+  export type CustomerPriceCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CustomerPrice
+     */
+    select?: CustomerPriceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CustomerPrice
+     */
+    omit?: CustomerPriceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CustomerPriceInclude<ExtArgs> | null
+    /**
+     * The data needed to create a CustomerPrice.
+     */
+    data: XOR<CustomerPriceCreateInput, CustomerPriceUncheckedCreateInput>
+  }
+
+  /**
+   * CustomerPrice createMany
+   */
+  export type CustomerPriceCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many CustomerPrices.
+     */
+    data: CustomerPriceCreateManyInput | CustomerPriceCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * CustomerPrice createManyAndReturn
+   */
+  export type CustomerPriceCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CustomerPrice
+     */
+    select?: CustomerPriceSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the CustomerPrice
+     */
+    omit?: CustomerPriceOmit<ExtArgs> | null
+    /**
+     * The data used to create many CustomerPrices.
+     */
+    data: CustomerPriceCreateManyInput | CustomerPriceCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CustomerPriceIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * CustomerPrice update
+   */
+  export type CustomerPriceUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CustomerPrice
+     */
+    select?: CustomerPriceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CustomerPrice
+     */
+    omit?: CustomerPriceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CustomerPriceInclude<ExtArgs> | null
+    /**
+     * The data needed to update a CustomerPrice.
+     */
+    data: XOR<CustomerPriceUpdateInput, CustomerPriceUncheckedUpdateInput>
+    /**
+     * Choose, which CustomerPrice to update.
+     */
+    where: CustomerPriceWhereUniqueInput
+  }
+
+  /**
+   * CustomerPrice updateMany
+   */
+  export type CustomerPriceUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update CustomerPrices.
+     */
+    data: XOR<CustomerPriceUpdateManyMutationInput, CustomerPriceUncheckedUpdateManyInput>
+    /**
+     * Filter which CustomerPrices to update
+     */
+    where?: CustomerPriceWhereInput
+    /**
+     * Limit how many CustomerPrices to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * CustomerPrice updateManyAndReturn
+   */
+  export type CustomerPriceUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CustomerPrice
+     */
+    select?: CustomerPriceSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the CustomerPrice
+     */
+    omit?: CustomerPriceOmit<ExtArgs> | null
+    /**
+     * The data used to update CustomerPrices.
+     */
+    data: XOR<CustomerPriceUpdateManyMutationInput, CustomerPriceUncheckedUpdateManyInput>
+    /**
+     * Filter which CustomerPrices to update
+     */
+    where?: CustomerPriceWhereInput
+    /**
+     * Limit how many CustomerPrices to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CustomerPriceIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * CustomerPrice upsert
+   */
+  export type CustomerPriceUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CustomerPrice
+     */
+    select?: CustomerPriceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CustomerPrice
+     */
+    omit?: CustomerPriceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CustomerPriceInclude<ExtArgs> | null
+    /**
+     * The filter to search for the CustomerPrice to update in case it exists.
+     */
+    where: CustomerPriceWhereUniqueInput
+    /**
+     * In case the CustomerPrice found by the `where` argument doesn't exist, create a new CustomerPrice with this data.
+     */
+    create: XOR<CustomerPriceCreateInput, CustomerPriceUncheckedCreateInput>
+    /**
+     * In case the CustomerPrice was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<CustomerPriceUpdateInput, CustomerPriceUncheckedUpdateInput>
+  }
+
+  /**
+   * CustomerPrice delete
+   */
+  export type CustomerPriceDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CustomerPrice
+     */
+    select?: CustomerPriceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CustomerPrice
+     */
+    omit?: CustomerPriceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CustomerPriceInclude<ExtArgs> | null
+    /**
+     * Filter which CustomerPrice to delete.
+     */
+    where: CustomerPriceWhereUniqueInput
+  }
+
+  /**
+   * CustomerPrice deleteMany
+   */
+  export type CustomerPriceDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which CustomerPrices to delete
+     */
+    where?: CustomerPriceWhereInput
+    /**
+     * Limit how many CustomerPrices to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * CustomerPrice without action
+   */
+  export type CustomerPriceDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CustomerPrice
+     */
+    select?: CustomerPriceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CustomerPrice
+     */
+    omit?: CustomerPriceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CustomerPriceInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model CustomerActivity
+   */
+
+  export type AggregateCustomerActivity = {
+    _count: CustomerActivityCountAggregateOutputType | null
+    _avg: CustomerActivityAvgAggregateOutputType | null
+    _sum: CustomerActivitySumAggregateOutputType | null
+    _min: CustomerActivityMinAggregateOutputType | null
+    _max: CustomerActivityMaxAggregateOutputType | null
+  }
+
+  export type CustomerActivityAvgAggregateOutputType = {
+    quantity: number | null
+    unitPrice: Decimal | null
+    lineTotal: Decimal | null
+  }
+
+  export type CustomerActivitySumAggregateOutputType = {
+    quantity: number | null
+    unitPrice: Decimal | null
+    lineTotal: Decimal | null
+  }
+
+  export type CustomerActivityMinAggregateOutputType = {
+    id: string | null
+    customerId: string | null
+    activityId: string | null
+    orderId: string | null
+    quantity: number | null
+    unitPrice: Decimal | null
+    lineTotal: Decimal | null
+    isActive: boolean | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type CustomerActivityMaxAggregateOutputType = {
+    id: string | null
+    customerId: string | null
+    activityId: string | null
+    orderId: string | null
+    quantity: number | null
+    unitPrice: Decimal | null
+    lineTotal: Decimal | null
+    isActive: boolean | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type CustomerActivityCountAggregateOutputType = {
+    id: number
+    customerId: number
+    activityId: number
+    orderId: number
+    quantity: number
+    unitPrice: number
+    lineTotal: number
+    isActive: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type CustomerActivityAvgAggregateInputType = {
+    quantity?: true
+    unitPrice?: true
+    lineTotal?: true
+  }
+
+  export type CustomerActivitySumAggregateInputType = {
+    quantity?: true
+    unitPrice?: true
+    lineTotal?: true
+  }
+
+  export type CustomerActivityMinAggregateInputType = {
+    id?: true
+    customerId?: true
+    activityId?: true
+    orderId?: true
+    quantity?: true
+    unitPrice?: true
+    lineTotal?: true
+    isActive?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type CustomerActivityMaxAggregateInputType = {
+    id?: true
+    customerId?: true
+    activityId?: true
+    orderId?: true
+    quantity?: true
+    unitPrice?: true
+    lineTotal?: true
+    isActive?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type CustomerActivityCountAggregateInputType = {
+    id?: true
+    customerId?: true
+    activityId?: true
+    orderId?: true
+    quantity?: true
+    unitPrice?: true
+    lineTotal?: true
+    isActive?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type CustomerActivityAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which CustomerActivity to aggregate.
+     */
+    where?: CustomerActivityWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CustomerActivities to fetch.
+     */
+    orderBy?: CustomerActivityOrderByWithRelationInput | CustomerActivityOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: CustomerActivityWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CustomerActivities from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CustomerActivities.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned CustomerActivities
+    **/
+    _count?: true | CustomerActivityCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: CustomerActivityAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: CustomerActivitySumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: CustomerActivityMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: CustomerActivityMaxAggregateInputType
+  }
+
+  export type GetCustomerActivityAggregateType<T extends CustomerActivityAggregateArgs> = {
+        [P in keyof T & keyof AggregateCustomerActivity]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateCustomerActivity[P]>
+      : GetScalarType<T[P], AggregateCustomerActivity[P]>
+  }
+
+
+
+
+  export type CustomerActivityGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CustomerActivityWhereInput
+    orderBy?: CustomerActivityOrderByWithAggregationInput | CustomerActivityOrderByWithAggregationInput[]
+    by: CustomerActivityScalarFieldEnum[] | CustomerActivityScalarFieldEnum
+    having?: CustomerActivityScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: CustomerActivityCountAggregateInputType | true
+    _avg?: CustomerActivityAvgAggregateInputType
+    _sum?: CustomerActivitySumAggregateInputType
+    _min?: CustomerActivityMinAggregateInputType
+    _max?: CustomerActivityMaxAggregateInputType
+  }
+
+  export type CustomerActivityGroupByOutputType = {
+    id: string
+    customerId: string
+    activityId: string
+    orderId: string | null
+    quantity: number
+    unitPrice: Decimal | null
+    lineTotal: Decimal | null
+    isActive: boolean
+    createdAt: Date
+    updatedAt: Date
+    _count: CustomerActivityCountAggregateOutputType | null
+    _avg: CustomerActivityAvgAggregateOutputType | null
+    _sum: CustomerActivitySumAggregateOutputType | null
+    _min: CustomerActivityMinAggregateOutputType | null
+    _max: CustomerActivityMaxAggregateOutputType | null
+  }
+
+  type GetCustomerActivityGroupByPayload<T extends CustomerActivityGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<CustomerActivityGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof CustomerActivityGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], CustomerActivityGroupByOutputType[P]>
+            : GetScalarType<T[P], CustomerActivityGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type CustomerActivitySelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    customerId?: boolean
+    activityId?: boolean
+    orderId?: boolean
+    quantity?: boolean
+    unitPrice?: boolean
+    lineTotal?: boolean
+    isActive?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    customer?: boolean | CustomerDefaultArgs<ExtArgs>
+    activity?: boolean | ActivityDefaultArgs<ExtArgs>
+    order?: boolean | CustomerActivity$orderArgs<ExtArgs>
+  }, ExtArgs["result"]["customerActivity"]>
+
+  export type CustomerActivitySelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    customerId?: boolean
+    activityId?: boolean
+    orderId?: boolean
+    quantity?: boolean
+    unitPrice?: boolean
+    lineTotal?: boolean
+    isActive?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    customer?: boolean | CustomerDefaultArgs<ExtArgs>
+    activity?: boolean | ActivityDefaultArgs<ExtArgs>
+    order?: boolean | CustomerActivity$orderArgs<ExtArgs>
+  }, ExtArgs["result"]["customerActivity"]>
+
+  export type CustomerActivitySelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    customerId?: boolean
+    activityId?: boolean
+    orderId?: boolean
+    quantity?: boolean
+    unitPrice?: boolean
+    lineTotal?: boolean
+    isActive?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    customer?: boolean | CustomerDefaultArgs<ExtArgs>
+    activity?: boolean | ActivityDefaultArgs<ExtArgs>
+    order?: boolean | CustomerActivity$orderArgs<ExtArgs>
+  }, ExtArgs["result"]["customerActivity"]>
+
+  export type CustomerActivitySelectScalar = {
+    id?: boolean
+    customerId?: boolean
+    activityId?: boolean
+    orderId?: boolean
+    quantity?: boolean
+    unitPrice?: boolean
+    lineTotal?: boolean
+    isActive?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type CustomerActivityOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "customerId" | "activityId" | "orderId" | "quantity" | "unitPrice" | "lineTotal" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["customerActivity"]>
+  export type CustomerActivityInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    customer?: boolean | CustomerDefaultArgs<ExtArgs>
+    activity?: boolean | ActivityDefaultArgs<ExtArgs>
+    order?: boolean | CustomerActivity$orderArgs<ExtArgs>
+  }
+  export type CustomerActivityIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    customer?: boolean | CustomerDefaultArgs<ExtArgs>
+    activity?: boolean | ActivityDefaultArgs<ExtArgs>
+    order?: boolean | CustomerActivity$orderArgs<ExtArgs>
+  }
+  export type CustomerActivityIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    customer?: boolean | CustomerDefaultArgs<ExtArgs>
+    activity?: boolean | ActivityDefaultArgs<ExtArgs>
+    order?: boolean | CustomerActivity$orderArgs<ExtArgs>
+  }
+
+  export type $CustomerActivityPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "CustomerActivity"
+    objects: {
+      customer: Prisma.$CustomerPayload<ExtArgs>
+      activity: Prisma.$ActivityPayload<ExtArgs>
+      order: Prisma.$OrderPayload<ExtArgs> | null
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      customerId: string
+      activityId: string
+      orderId: string | null
+      quantity: number
+      unitPrice: Prisma.Decimal | null
+      lineTotal: Prisma.Decimal | null
+      isActive: boolean
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["customerActivity"]>
+    composites: {}
+  }
+
+  type CustomerActivityGetPayload<S extends boolean | null | undefined | CustomerActivityDefaultArgs> = $Result.GetResult<Prisma.$CustomerActivityPayload, S>
+
+  type CustomerActivityCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<CustomerActivityFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: CustomerActivityCountAggregateInputType | true
+    }
+
+  export interface CustomerActivityDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['CustomerActivity'], meta: { name: 'CustomerActivity' } }
+    /**
+     * Find zero or one CustomerActivity that matches the filter.
+     * @param {CustomerActivityFindUniqueArgs} args - Arguments to find a CustomerActivity
+     * @example
+     * // Get one CustomerActivity
+     * const customerActivity = await prisma.customerActivity.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends CustomerActivityFindUniqueArgs>(args: SelectSubset<T, CustomerActivityFindUniqueArgs<ExtArgs>>): Prisma__CustomerActivityClient<$Result.GetResult<Prisma.$CustomerActivityPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one CustomerActivity that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {CustomerActivityFindUniqueOrThrowArgs} args - Arguments to find a CustomerActivity
+     * @example
+     * // Get one CustomerActivity
+     * const customerActivity = await prisma.customerActivity.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends CustomerActivityFindUniqueOrThrowArgs>(args: SelectSubset<T, CustomerActivityFindUniqueOrThrowArgs<ExtArgs>>): Prisma__CustomerActivityClient<$Result.GetResult<Prisma.$CustomerActivityPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first CustomerActivity that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CustomerActivityFindFirstArgs} args - Arguments to find a CustomerActivity
+     * @example
+     * // Get one CustomerActivity
+     * const customerActivity = await prisma.customerActivity.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends CustomerActivityFindFirstArgs>(args?: SelectSubset<T, CustomerActivityFindFirstArgs<ExtArgs>>): Prisma__CustomerActivityClient<$Result.GetResult<Prisma.$CustomerActivityPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first CustomerActivity that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CustomerActivityFindFirstOrThrowArgs} args - Arguments to find a CustomerActivity
+     * @example
+     * // Get one CustomerActivity
+     * const customerActivity = await prisma.customerActivity.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends CustomerActivityFindFirstOrThrowArgs>(args?: SelectSubset<T, CustomerActivityFindFirstOrThrowArgs<ExtArgs>>): Prisma__CustomerActivityClient<$Result.GetResult<Prisma.$CustomerActivityPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more CustomerActivities that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CustomerActivityFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all CustomerActivities
+     * const customerActivities = await prisma.customerActivity.findMany()
+     * 
+     * // Get first 10 CustomerActivities
+     * const customerActivities = await prisma.customerActivity.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const customerActivityWithIdOnly = await prisma.customerActivity.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends CustomerActivityFindManyArgs>(args?: SelectSubset<T, CustomerActivityFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CustomerActivityPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a CustomerActivity.
+     * @param {CustomerActivityCreateArgs} args - Arguments to create a CustomerActivity.
+     * @example
+     * // Create one CustomerActivity
+     * const CustomerActivity = await prisma.customerActivity.create({
+     *   data: {
+     *     // ... data to create a CustomerActivity
+     *   }
+     * })
+     * 
+     */
+    create<T extends CustomerActivityCreateArgs>(args: SelectSubset<T, CustomerActivityCreateArgs<ExtArgs>>): Prisma__CustomerActivityClient<$Result.GetResult<Prisma.$CustomerActivityPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many CustomerActivities.
+     * @param {CustomerActivityCreateManyArgs} args - Arguments to create many CustomerActivities.
+     * @example
+     * // Create many CustomerActivities
+     * const customerActivity = await prisma.customerActivity.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends CustomerActivityCreateManyArgs>(args?: SelectSubset<T, CustomerActivityCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many CustomerActivities and returns the data saved in the database.
+     * @param {CustomerActivityCreateManyAndReturnArgs} args - Arguments to create many CustomerActivities.
+     * @example
+     * // Create many CustomerActivities
+     * const customerActivity = await prisma.customerActivity.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many CustomerActivities and only return the `id`
+     * const customerActivityWithIdOnly = await prisma.customerActivity.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends CustomerActivityCreateManyAndReturnArgs>(args?: SelectSubset<T, CustomerActivityCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CustomerActivityPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a CustomerActivity.
+     * @param {CustomerActivityDeleteArgs} args - Arguments to delete one CustomerActivity.
+     * @example
+     * // Delete one CustomerActivity
+     * const CustomerActivity = await prisma.customerActivity.delete({
+     *   where: {
+     *     // ... filter to delete one CustomerActivity
+     *   }
+     * })
+     * 
+     */
+    delete<T extends CustomerActivityDeleteArgs>(args: SelectSubset<T, CustomerActivityDeleteArgs<ExtArgs>>): Prisma__CustomerActivityClient<$Result.GetResult<Prisma.$CustomerActivityPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one CustomerActivity.
+     * @param {CustomerActivityUpdateArgs} args - Arguments to update one CustomerActivity.
+     * @example
+     * // Update one CustomerActivity
+     * const customerActivity = await prisma.customerActivity.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends CustomerActivityUpdateArgs>(args: SelectSubset<T, CustomerActivityUpdateArgs<ExtArgs>>): Prisma__CustomerActivityClient<$Result.GetResult<Prisma.$CustomerActivityPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more CustomerActivities.
+     * @param {CustomerActivityDeleteManyArgs} args - Arguments to filter CustomerActivities to delete.
+     * @example
+     * // Delete a few CustomerActivities
+     * const { count } = await prisma.customerActivity.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends CustomerActivityDeleteManyArgs>(args?: SelectSubset<T, CustomerActivityDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more CustomerActivities.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CustomerActivityUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many CustomerActivities
+     * const customerActivity = await prisma.customerActivity.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends CustomerActivityUpdateManyArgs>(args: SelectSubset<T, CustomerActivityUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more CustomerActivities and returns the data updated in the database.
+     * @param {CustomerActivityUpdateManyAndReturnArgs} args - Arguments to update many CustomerActivities.
+     * @example
+     * // Update many CustomerActivities
+     * const customerActivity = await prisma.customerActivity.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more CustomerActivities and only return the `id`
+     * const customerActivityWithIdOnly = await prisma.customerActivity.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends CustomerActivityUpdateManyAndReturnArgs>(args: SelectSubset<T, CustomerActivityUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CustomerActivityPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one CustomerActivity.
+     * @param {CustomerActivityUpsertArgs} args - Arguments to update or create a CustomerActivity.
+     * @example
+     * // Update or create a CustomerActivity
+     * const customerActivity = await prisma.customerActivity.upsert({
+     *   create: {
+     *     // ... data to create a CustomerActivity
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the CustomerActivity we want to update
+     *   }
+     * })
+     */
+    upsert<T extends CustomerActivityUpsertArgs>(args: SelectSubset<T, CustomerActivityUpsertArgs<ExtArgs>>): Prisma__CustomerActivityClient<$Result.GetResult<Prisma.$CustomerActivityPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of CustomerActivities.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CustomerActivityCountArgs} args - Arguments to filter CustomerActivities to count.
+     * @example
+     * // Count the number of CustomerActivities
+     * const count = await prisma.customerActivity.count({
+     *   where: {
+     *     // ... the filter for the CustomerActivities we want to count
+     *   }
+     * })
+    **/
+    count<T extends CustomerActivityCountArgs>(
+      args?: Subset<T, CustomerActivityCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], CustomerActivityCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a CustomerActivity.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CustomerActivityAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends CustomerActivityAggregateArgs>(args: Subset<T, CustomerActivityAggregateArgs>): Prisma.PrismaPromise<GetCustomerActivityAggregateType<T>>
+
+    /**
+     * Group by CustomerActivity.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CustomerActivityGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends CustomerActivityGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: CustomerActivityGroupByArgs['orderBy'] }
+        : { orderBy?: CustomerActivityGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, CustomerActivityGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetCustomerActivityGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the CustomerActivity model
+   */
+  readonly fields: CustomerActivityFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for CustomerActivity.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__CustomerActivityClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    customer<T extends CustomerDefaultArgs<ExtArgs> = {}>(args?: Subset<T, CustomerDefaultArgs<ExtArgs>>): Prisma__CustomerClient<$Result.GetResult<Prisma.$CustomerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    activity<T extends ActivityDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ActivityDefaultArgs<ExtArgs>>): Prisma__ActivityClient<$Result.GetResult<Prisma.$ActivityPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    order<T extends CustomerActivity$orderArgs<ExtArgs> = {}>(args?: Subset<T, CustomerActivity$orderArgs<ExtArgs>>): Prisma__OrderClient<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the CustomerActivity model
+   */
+  interface CustomerActivityFieldRefs {
+    readonly id: FieldRef<"CustomerActivity", 'String'>
+    readonly customerId: FieldRef<"CustomerActivity", 'String'>
+    readonly activityId: FieldRef<"CustomerActivity", 'String'>
+    readonly orderId: FieldRef<"CustomerActivity", 'String'>
+    readonly quantity: FieldRef<"CustomerActivity", 'Int'>
+    readonly unitPrice: FieldRef<"CustomerActivity", 'Decimal'>
+    readonly lineTotal: FieldRef<"CustomerActivity", 'Decimal'>
+    readonly isActive: FieldRef<"CustomerActivity", 'Boolean'>
+    readonly createdAt: FieldRef<"CustomerActivity", 'DateTime'>
+    readonly updatedAt: FieldRef<"CustomerActivity", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * CustomerActivity findUnique
+   */
+  export type CustomerActivityFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CustomerActivity
+     */
+    select?: CustomerActivitySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CustomerActivity
+     */
+    omit?: CustomerActivityOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CustomerActivityInclude<ExtArgs> | null
+    /**
+     * Filter, which CustomerActivity to fetch.
+     */
+    where: CustomerActivityWhereUniqueInput
+  }
+
+  /**
+   * CustomerActivity findUniqueOrThrow
+   */
+  export type CustomerActivityFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CustomerActivity
+     */
+    select?: CustomerActivitySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CustomerActivity
+     */
+    omit?: CustomerActivityOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CustomerActivityInclude<ExtArgs> | null
+    /**
+     * Filter, which CustomerActivity to fetch.
+     */
+    where: CustomerActivityWhereUniqueInput
+  }
+
+  /**
+   * CustomerActivity findFirst
+   */
+  export type CustomerActivityFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CustomerActivity
+     */
+    select?: CustomerActivitySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CustomerActivity
+     */
+    omit?: CustomerActivityOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CustomerActivityInclude<ExtArgs> | null
+    /**
+     * Filter, which CustomerActivity to fetch.
+     */
+    where?: CustomerActivityWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CustomerActivities to fetch.
+     */
+    orderBy?: CustomerActivityOrderByWithRelationInput | CustomerActivityOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for CustomerActivities.
+     */
+    cursor?: CustomerActivityWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CustomerActivities from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CustomerActivities.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of CustomerActivities.
+     */
+    distinct?: CustomerActivityScalarFieldEnum | CustomerActivityScalarFieldEnum[]
+  }
+
+  /**
+   * CustomerActivity findFirstOrThrow
+   */
+  export type CustomerActivityFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CustomerActivity
+     */
+    select?: CustomerActivitySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CustomerActivity
+     */
+    omit?: CustomerActivityOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CustomerActivityInclude<ExtArgs> | null
+    /**
+     * Filter, which CustomerActivity to fetch.
+     */
+    where?: CustomerActivityWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CustomerActivities to fetch.
+     */
+    orderBy?: CustomerActivityOrderByWithRelationInput | CustomerActivityOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for CustomerActivities.
+     */
+    cursor?: CustomerActivityWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CustomerActivities from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CustomerActivities.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of CustomerActivities.
+     */
+    distinct?: CustomerActivityScalarFieldEnum | CustomerActivityScalarFieldEnum[]
+  }
+
+  /**
+   * CustomerActivity findMany
+   */
+  export type CustomerActivityFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CustomerActivity
+     */
+    select?: CustomerActivitySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CustomerActivity
+     */
+    omit?: CustomerActivityOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CustomerActivityInclude<ExtArgs> | null
+    /**
+     * Filter, which CustomerActivities to fetch.
+     */
+    where?: CustomerActivityWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CustomerActivities to fetch.
+     */
+    orderBy?: CustomerActivityOrderByWithRelationInput | CustomerActivityOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing CustomerActivities.
+     */
+    cursor?: CustomerActivityWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CustomerActivities from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CustomerActivities.
+     */
+    skip?: number
+    distinct?: CustomerActivityScalarFieldEnum | CustomerActivityScalarFieldEnum[]
+  }
+
+  /**
+   * CustomerActivity create
+   */
+  export type CustomerActivityCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CustomerActivity
+     */
+    select?: CustomerActivitySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CustomerActivity
+     */
+    omit?: CustomerActivityOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CustomerActivityInclude<ExtArgs> | null
+    /**
+     * The data needed to create a CustomerActivity.
+     */
+    data: XOR<CustomerActivityCreateInput, CustomerActivityUncheckedCreateInput>
+  }
+
+  /**
+   * CustomerActivity createMany
+   */
+  export type CustomerActivityCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many CustomerActivities.
+     */
+    data: CustomerActivityCreateManyInput | CustomerActivityCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * CustomerActivity createManyAndReturn
+   */
+  export type CustomerActivityCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CustomerActivity
+     */
+    select?: CustomerActivitySelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the CustomerActivity
+     */
+    omit?: CustomerActivityOmit<ExtArgs> | null
+    /**
+     * The data used to create many CustomerActivities.
+     */
+    data: CustomerActivityCreateManyInput | CustomerActivityCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CustomerActivityIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * CustomerActivity update
+   */
+  export type CustomerActivityUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CustomerActivity
+     */
+    select?: CustomerActivitySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CustomerActivity
+     */
+    omit?: CustomerActivityOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CustomerActivityInclude<ExtArgs> | null
+    /**
+     * The data needed to update a CustomerActivity.
+     */
+    data: XOR<CustomerActivityUpdateInput, CustomerActivityUncheckedUpdateInput>
+    /**
+     * Choose, which CustomerActivity to update.
+     */
+    where: CustomerActivityWhereUniqueInput
+  }
+
+  /**
+   * CustomerActivity updateMany
+   */
+  export type CustomerActivityUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update CustomerActivities.
+     */
+    data: XOR<CustomerActivityUpdateManyMutationInput, CustomerActivityUncheckedUpdateManyInput>
+    /**
+     * Filter which CustomerActivities to update
+     */
+    where?: CustomerActivityWhereInput
+    /**
+     * Limit how many CustomerActivities to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * CustomerActivity updateManyAndReturn
+   */
+  export type CustomerActivityUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CustomerActivity
+     */
+    select?: CustomerActivitySelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the CustomerActivity
+     */
+    omit?: CustomerActivityOmit<ExtArgs> | null
+    /**
+     * The data used to update CustomerActivities.
+     */
+    data: XOR<CustomerActivityUpdateManyMutationInput, CustomerActivityUncheckedUpdateManyInput>
+    /**
+     * Filter which CustomerActivities to update
+     */
+    where?: CustomerActivityWhereInput
+    /**
+     * Limit how many CustomerActivities to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CustomerActivityIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * CustomerActivity upsert
+   */
+  export type CustomerActivityUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CustomerActivity
+     */
+    select?: CustomerActivitySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CustomerActivity
+     */
+    omit?: CustomerActivityOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CustomerActivityInclude<ExtArgs> | null
+    /**
+     * The filter to search for the CustomerActivity to update in case it exists.
+     */
+    where: CustomerActivityWhereUniqueInput
+    /**
+     * In case the CustomerActivity found by the `where` argument doesn't exist, create a new CustomerActivity with this data.
+     */
+    create: XOR<CustomerActivityCreateInput, CustomerActivityUncheckedCreateInput>
+    /**
+     * In case the CustomerActivity was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<CustomerActivityUpdateInput, CustomerActivityUncheckedUpdateInput>
+  }
+
+  /**
+   * CustomerActivity delete
+   */
+  export type CustomerActivityDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CustomerActivity
+     */
+    select?: CustomerActivitySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CustomerActivity
+     */
+    omit?: CustomerActivityOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CustomerActivityInclude<ExtArgs> | null
+    /**
+     * Filter which CustomerActivity to delete.
+     */
+    where: CustomerActivityWhereUniqueInput
+  }
+
+  /**
+   * CustomerActivity deleteMany
+   */
+  export type CustomerActivityDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which CustomerActivities to delete
+     */
+    where?: CustomerActivityWhereInput
+    /**
+     * Limit how many CustomerActivities to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * CustomerActivity.order
+   */
+  export type CustomerActivity$orderArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Order
+     */
+    select?: OrderSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Order
+     */
+    omit?: OrderOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderInclude<ExtArgs> | null
+    where?: OrderWhereInput
+  }
+
+  /**
+   * CustomerActivity without action
+   */
+  export type CustomerActivityDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CustomerActivity
+     */
+    select?: CustomerActivitySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CustomerActivity
+     */
+    omit?: CustomerActivityOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CustomerActivityInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Model OrderQualification
    */
 
@@ -18338,68 +22348,110 @@ export namespace Prisma {
 
   export type OrderQualificationAvgAggregateOutputType = {
     minProficiency: number | null
+    unitPrice: Decimal | null
+    quantity: number | null
+    lineTotal: Decimal | null
   }
 
   export type OrderQualificationSumAggregateOutputType = {
     minProficiency: number | null
+    unitPrice: Decimal | null
+    quantity: number | null
+    lineTotal: Decimal | null
   }
 
   export type OrderQualificationMinAggregateOutputType = {
     id: string | null
     orderId: string | null
     qualificationId: string | null
+    activityId: string | null
     required: boolean | null
     minProficiency: number | null
+    unit: string | null
+    unitPrice: Decimal | null
+    quantity: number | null
+    lineTotal: Decimal | null
   }
 
   export type OrderQualificationMaxAggregateOutputType = {
     id: string | null
     orderId: string | null
     qualificationId: string | null
+    activityId: string | null
     required: boolean | null
     minProficiency: number | null
+    unit: string | null
+    unitPrice: Decimal | null
+    quantity: number | null
+    lineTotal: Decimal | null
   }
 
   export type OrderQualificationCountAggregateOutputType = {
     id: number
     orderId: number
     qualificationId: number
+    activityId: number
     required: number
     minProficiency: number
+    unit: number
+    unitPrice: number
+    quantity: number
+    lineTotal: number
     _all: number
   }
 
 
   export type OrderQualificationAvgAggregateInputType = {
     minProficiency?: true
+    unitPrice?: true
+    quantity?: true
+    lineTotal?: true
   }
 
   export type OrderQualificationSumAggregateInputType = {
     minProficiency?: true
+    unitPrice?: true
+    quantity?: true
+    lineTotal?: true
   }
 
   export type OrderQualificationMinAggregateInputType = {
     id?: true
     orderId?: true
     qualificationId?: true
+    activityId?: true
     required?: true
     minProficiency?: true
+    unit?: true
+    unitPrice?: true
+    quantity?: true
+    lineTotal?: true
   }
 
   export type OrderQualificationMaxAggregateInputType = {
     id?: true
     orderId?: true
     qualificationId?: true
+    activityId?: true
     required?: true
     minProficiency?: true
+    unit?: true
+    unitPrice?: true
+    quantity?: true
+    lineTotal?: true
   }
 
   export type OrderQualificationCountAggregateInputType = {
     id?: true
     orderId?: true
     qualificationId?: true
+    activityId?: true
     required?: true
     minProficiency?: true
+    unit?: true
+    unitPrice?: true
+    quantity?: true
+    lineTotal?: true
     _all?: true
   }
 
@@ -18493,8 +22545,13 @@ export namespace Prisma {
     id: string
     orderId: string
     qualificationId: string
+    activityId: string | null
     required: boolean
     minProficiency: number
+    unit: string | null
+    unitPrice: Decimal | null
+    quantity: number
+    lineTotal: Decimal | null
     _count: OrderQualificationCountAggregateOutputType | null
     _avg: OrderQualificationAvgAggregateOutputType | null
     _sum: OrderQualificationSumAggregateOutputType | null
@@ -18520,52 +22577,78 @@ export namespace Prisma {
     id?: boolean
     orderId?: boolean
     qualificationId?: boolean
+    activityId?: boolean
     required?: boolean
     minProficiency?: boolean
+    unit?: boolean
+    unitPrice?: boolean
+    quantity?: boolean
+    lineTotal?: boolean
     order?: boolean | OrderDefaultArgs<ExtArgs>
     qualification?: boolean | QualificationDefaultArgs<ExtArgs>
+    activity?: boolean | OrderQualification$activityArgs<ExtArgs>
   }, ExtArgs["result"]["orderQualification"]>
 
   export type OrderQualificationSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     orderId?: boolean
     qualificationId?: boolean
+    activityId?: boolean
     required?: boolean
     minProficiency?: boolean
+    unit?: boolean
+    unitPrice?: boolean
+    quantity?: boolean
+    lineTotal?: boolean
     order?: boolean | OrderDefaultArgs<ExtArgs>
     qualification?: boolean | QualificationDefaultArgs<ExtArgs>
+    activity?: boolean | OrderQualification$activityArgs<ExtArgs>
   }, ExtArgs["result"]["orderQualification"]>
 
   export type OrderQualificationSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     orderId?: boolean
     qualificationId?: boolean
+    activityId?: boolean
     required?: boolean
     minProficiency?: boolean
+    unit?: boolean
+    unitPrice?: boolean
+    quantity?: boolean
+    lineTotal?: boolean
     order?: boolean | OrderDefaultArgs<ExtArgs>
     qualification?: boolean | QualificationDefaultArgs<ExtArgs>
+    activity?: boolean | OrderQualification$activityArgs<ExtArgs>
   }, ExtArgs["result"]["orderQualification"]>
 
   export type OrderQualificationSelectScalar = {
     id?: boolean
     orderId?: boolean
     qualificationId?: boolean
+    activityId?: boolean
     required?: boolean
     minProficiency?: boolean
+    unit?: boolean
+    unitPrice?: boolean
+    quantity?: boolean
+    lineTotal?: boolean
   }
 
-  export type OrderQualificationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "orderId" | "qualificationId" | "required" | "minProficiency", ExtArgs["result"]["orderQualification"]>
+  export type OrderQualificationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "orderId" | "qualificationId" | "activityId" | "required" | "minProficiency" | "unit" | "unitPrice" | "quantity" | "lineTotal", ExtArgs["result"]["orderQualification"]>
   export type OrderQualificationInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     order?: boolean | OrderDefaultArgs<ExtArgs>
     qualification?: boolean | QualificationDefaultArgs<ExtArgs>
+    activity?: boolean | OrderQualification$activityArgs<ExtArgs>
   }
   export type OrderQualificationIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     order?: boolean | OrderDefaultArgs<ExtArgs>
     qualification?: boolean | QualificationDefaultArgs<ExtArgs>
+    activity?: boolean | OrderQualification$activityArgs<ExtArgs>
   }
   export type OrderQualificationIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     order?: boolean | OrderDefaultArgs<ExtArgs>
     qualification?: boolean | QualificationDefaultArgs<ExtArgs>
+    activity?: boolean | OrderQualification$activityArgs<ExtArgs>
   }
 
   export type $OrderQualificationPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -18573,13 +22656,19 @@ export namespace Prisma {
     objects: {
       order: Prisma.$OrderPayload<ExtArgs>
       qualification: Prisma.$QualificationPayload<ExtArgs>
+      activity: Prisma.$ActivityPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
       orderId: string
       qualificationId: string
+      activityId: string | null
       required: boolean
       minProficiency: number
+      unit: string | null
+      unitPrice: Prisma.Decimal | null
+      quantity: number
+      lineTotal: Prisma.Decimal | null
     }, ExtArgs["result"]["orderQualification"]>
     composites: {}
   }
@@ -18976,6 +23065,7 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     order<T extends OrderDefaultArgs<ExtArgs> = {}>(args?: Subset<T, OrderDefaultArgs<ExtArgs>>): Prisma__OrderClient<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     qualification<T extends QualificationDefaultArgs<ExtArgs> = {}>(args?: Subset<T, QualificationDefaultArgs<ExtArgs>>): Prisma__QualificationClient<$Result.GetResult<Prisma.$QualificationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    activity<T extends OrderQualification$activityArgs<ExtArgs> = {}>(args?: Subset<T, OrderQualification$activityArgs<ExtArgs>>): Prisma__ActivityClient<$Result.GetResult<Prisma.$ActivityPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -19008,8 +23098,13 @@ export namespace Prisma {
     readonly id: FieldRef<"OrderQualification", 'String'>
     readonly orderId: FieldRef<"OrderQualification", 'String'>
     readonly qualificationId: FieldRef<"OrderQualification", 'String'>
+    readonly activityId: FieldRef<"OrderQualification", 'String'>
     readonly required: FieldRef<"OrderQualification", 'Boolean'>
     readonly minProficiency: FieldRef<"OrderQualification", 'Int'>
+    readonly unit: FieldRef<"OrderQualification", 'String'>
+    readonly unitPrice: FieldRef<"OrderQualification", 'Decimal'>
+    readonly quantity: FieldRef<"OrderQualification", 'Int'>
+    readonly lineTotal: FieldRef<"OrderQualification", 'Decimal'>
   }
     
 
@@ -19403,6 +23498,25 @@ export namespace Prisma {
      * Limit how many OrderQualifications to delete.
      */
     limit?: number
+  }
+
+  /**
+   * OrderQualification.activity
+   */
+  export type OrderQualification$activityArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Activity
+     */
+    select?: ActivitySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Activity
+     */
+    omit?: ActivityOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ActivityInclude<ExtArgs> | null
+    where?: ActivityWhereInput
   }
 
   /**
@@ -39216,12 +43330,64 @@ export namespace Prisma {
   export type EmployeeQualificationScalarFieldEnum = (typeof EmployeeQualificationScalarFieldEnum)[keyof typeof EmployeeQualificationScalarFieldEnum]
 
 
+  export const ActivityScalarFieldEnum: {
+    id: 'id',
+    name: 'name',
+    code: 'code',
+    description: 'description',
+    defaultPrice: 'defaultPrice',
+    unit: 'unit',
+    isActive: 'isActive',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type ActivityScalarFieldEnum = (typeof ActivityScalarFieldEnum)[keyof typeof ActivityScalarFieldEnum]
+
+
+  export const CustomerPriceScalarFieldEnum: {
+    id: 'id',
+    customerId: 'customerId',
+    activityId: 'activityId',
+    price: 'price',
+    currency: 'currency',
+    effectiveFrom: 'effectiveFrom',
+    effectiveTo: 'effectiveTo',
+    isActive: 'isActive',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type CustomerPriceScalarFieldEnum = (typeof CustomerPriceScalarFieldEnum)[keyof typeof CustomerPriceScalarFieldEnum]
+
+
+  export const CustomerActivityScalarFieldEnum: {
+    id: 'id',
+    customerId: 'customerId',
+    activityId: 'activityId',
+    orderId: 'orderId',
+    quantity: 'quantity',
+    unitPrice: 'unitPrice',
+    lineTotal: 'lineTotal',
+    isActive: 'isActive',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type CustomerActivityScalarFieldEnum = (typeof CustomerActivityScalarFieldEnum)[keyof typeof CustomerActivityScalarFieldEnum]
+
+
   export const OrderQualificationScalarFieldEnum: {
     id: 'id',
     orderId: 'orderId',
     qualificationId: 'qualificationId',
+    activityId: 'activityId',
     required: 'required',
-    minProficiency: 'minProficiency'
+    minProficiency: 'minProficiency',
+    unit: 'unit',
+    unitPrice: 'unitPrice',
+    quantity: 'quantity',
+    lineTotal: 'lineTotal'
   };
 
   export type OrderQualificationScalarFieldEnum = (typeof OrderQualificationScalarFieldEnum)[keyof typeof OrderQualificationScalarFieldEnum]
@@ -40534,6 +44700,8 @@ export namespace Prisma {
     subAccounts?: SubAccountListRelationFilter
     orders?: OrderListRelationFilter
     ratings?: RatingListRelationFilter
+    customerPrices?: CustomerPriceListRelationFilter
+    customerActivities?: CustomerActivityListRelationFilter
   }
 
   export type CustomerOrderByWithRelationInput = {
@@ -40552,6 +44720,8 @@ export namespace Prisma {
     subAccounts?: SubAccountOrderByRelationAggregateInput
     orders?: OrderOrderByRelationAggregateInput
     ratings?: RatingOrderByRelationAggregateInput
+    customerPrices?: CustomerPriceOrderByRelationAggregateInput
+    customerActivities?: CustomerActivityOrderByRelationAggregateInput
   }
 
   export type CustomerWhereUniqueInput = Prisma.AtLeast<{
@@ -40573,6 +44743,8 @@ export namespace Prisma {
     subAccounts?: SubAccountListRelationFilter
     orders?: OrderListRelationFilter
     ratings?: RatingListRelationFilter
+    customerPrices?: CustomerPriceListRelationFilter
+    customerActivities?: CustomerActivityListRelationFilter
   }, "id" | "taxNumber" | "userId">
 
   export type CustomerOrderByWithAggregationInput = {
@@ -40710,6 +44882,7 @@ export namespace Prisma {
     ratings?: RatingListRelationFilter
     files?: FileListRelationFilter
     notes?: OrderNoteListRelationFilter
+    customerActivities?: CustomerActivityListRelationFilter
   }
 
   export type OrderOrderByWithRelationInput = {
@@ -40744,6 +44917,7 @@ export namespace Prisma {
     ratings?: RatingOrderByRelationAggregateInput
     files?: FileOrderByRelationAggregateInput
     notes?: OrderNoteOrderByRelationAggregateInput
+    customerActivities?: CustomerActivityOrderByRelationAggregateInput
   }
 
   export type OrderWhereUniqueInput = Prisma.AtLeast<{
@@ -40781,6 +44955,7 @@ export namespace Prisma {
     ratings?: RatingListRelationFilter
     files?: FileListRelationFilter
     notes?: OrderNoteListRelationFilter
+    customerActivities?: CustomerActivityListRelationFilter
   }, "id" | "orderNumber">
 
   export type OrderOrderByWithAggregationInput = {
@@ -41009,6 +45184,264 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"EmployeeQualification"> | Date | string
   }
 
+  export type ActivityWhereInput = {
+    AND?: ActivityWhereInput | ActivityWhereInput[]
+    OR?: ActivityWhereInput[]
+    NOT?: ActivityWhereInput | ActivityWhereInput[]
+    id?: StringFilter<"Activity"> | string
+    name?: StringFilter<"Activity"> | string
+    code?: StringNullableFilter<"Activity"> | string | null
+    description?: StringNullableFilter<"Activity"> | string | null
+    defaultPrice?: DecimalFilter<"Activity"> | Decimal | DecimalJsLike | number | string
+    unit?: StringFilter<"Activity"> | string
+    isActive?: BoolFilter<"Activity"> | boolean
+    createdAt?: DateTimeFilter<"Activity"> | Date | string
+    updatedAt?: DateTimeFilter<"Activity"> | Date | string
+    customerPrices?: CustomerPriceListRelationFilter
+    orderQualifications?: OrderQualificationListRelationFilter
+    customerActivities?: CustomerActivityListRelationFilter
+  }
+
+  export type ActivityOrderByWithRelationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    code?: SortOrderInput | SortOrder
+    description?: SortOrderInput | SortOrder
+    defaultPrice?: SortOrder
+    unit?: SortOrder
+    isActive?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    customerPrices?: CustomerPriceOrderByRelationAggregateInput
+    orderQualifications?: OrderQualificationOrderByRelationAggregateInput
+    customerActivities?: CustomerActivityOrderByRelationAggregateInput
+  }
+
+  export type ActivityWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    name?: string
+    code?: string
+    AND?: ActivityWhereInput | ActivityWhereInput[]
+    OR?: ActivityWhereInput[]
+    NOT?: ActivityWhereInput | ActivityWhereInput[]
+    description?: StringNullableFilter<"Activity"> | string | null
+    defaultPrice?: DecimalFilter<"Activity"> | Decimal | DecimalJsLike | number | string
+    unit?: StringFilter<"Activity"> | string
+    isActive?: BoolFilter<"Activity"> | boolean
+    createdAt?: DateTimeFilter<"Activity"> | Date | string
+    updatedAt?: DateTimeFilter<"Activity"> | Date | string
+    customerPrices?: CustomerPriceListRelationFilter
+    orderQualifications?: OrderQualificationListRelationFilter
+    customerActivities?: CustomerActivityListRelationFilter
+  }, "id" | "name" | "code">
+
+  export type ActivityOrderByWithAggregationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    code?: SortOrderInput | SortOrder
+    description?: SortOrderInput | SortOrder
+    defaultPrice?: SortOrder
+    unit?: SortOrder
+    isActive?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: ActivityCountOrderByAggregateInput
+    _avg?: ActivityAvgOrderByAggregateInput
+    _max?: ActivityMaxOrderByAggregateInput
+    _min?: ActivityMinOrderByAggregateInput
+    _sum?: ActivitySumOrderByAggregateInput
+  }
+
+  export type ActivityScalarWhereWithAggregatesInput = {
+    AND?: ActivityScalarWhereWithAggregatesInput | ActivityScalarWhereWithAggregatesInput[]
+    OR?: ActivityScalarWhereWithAggregatesInput[]
+    NOT?: ActivityScalarWhereWithAggregatesInput | ActivityScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Activity"> | string
+    name?: StringWithAggregatesFilter<"Activity"> | string
+    code?: StringNullableWithAggregatesFilter<"Activity"> | string | null
+    description?: StringNullableWithAggregatesFilter<"Activity"> | string | null
+    defaultPrice?: DecimalWithAggregatesFilter<"Activity"> | Decimal | DecimalJsLike | number | string
+    unit?: StringWithAggregatesFilter<"Activity"> | string
+    isActive?: BoolWithAggregatesFilter<"Activity"> | boolean
+    createdAt?: DateTimeWithAggregatesFilter<"Activity"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Activity"> | Date | string
+  }
+
+  export type CustomerPriceWhereInput = {
+    AND?: CustomerPriceWhereInput | CustomerPriceWhereInput[]
+    OR?: CustomerPriceWhereInput[]
+    NOT?: CustomerPriceWhereInput | CustomerPriceWhereInput[]
+    id?: StringFilter<"CustomerPrice"> | string
+    customerId?: StringFilter<"CustomerPrice"> | string
+    activityId?: StringFilter<"CustomerPrice"> | string
+    price?: DecimalFilter<"CustomerPrice"> | Decimal | DecimalJsLike | number | string
+    currency?: StringFilter<"CustomerPrice"> | string
+    effectiveFrom?: DateTimeFilter<"CustomerPrice"> | Date | string
+    effectiveTo?: DateTimeNullableFilter<"CustomerPrice"> | Date | string | null
+    isActive?: BoolFilter<"CustomerPrice"> | boolean
+    createdAt?: DateTimeFilter<"CustomerPrice"> | Date | string
+    updatedAt?: DateTimeFilter<"CustomerPrice"> | Date | string
+    customer?: XOR<CustomerScalarRelationFilter, CustomerWhereInput>
+    activity?: XOR<ActivityScalarRelationFilter, ActivityWhereInput>
+  }
+
+  export type CustomerPriceOrderByWithRelationInput = {
+    id?: SortOrder
+    customerId?: SortOrder
+    activityId?: SortOrder
+    price?: SortOrder
+    currency?: SortOrder
+    effectiveFrom?: SortOrder
+    effectiveTo?: SortOrderInput | SortOrder
+    isActive?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    customer?: CustomerOrderByWithRelationInput
+    activity?: ActivityOrderByWithRelationInput
+  }
+
+  export type CustomerPriceWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    customerId_activityId_effectiveFrom?: CustomerPriceCustomerIdActivityIdEffectiveFromCompoundUniqueInput
+    AND?: CustomerPriceWhereInput | CustomerPriceWhereInput[]
+    OR?: CustomerPriceWhereInput[]
+    NOT?: CustomerPriceWhereInput | CustomerPriceWhereInput[]
+    customerId?: StringFilter<"CustomerPrice"> | string
+    activityId?: StringFilter<"CustomerPrice"> | string
+    price?: DecimalFilter<"CustomerPrice"> | Decimal | DecimalJsLike | number | string
+    currency?: StringFilter<"CustomerPrice"> | string
+    effectiveFrom?: DateTimeFilter<"CustomerPrice"> | Date | string
+    effectiveTo?: DateTimeNullableFilter<"CustomerPrice"> | Date | string | null
+    isActive?: BoolFilter<"CustomerPrice"> | boolean
+    createdAt?: DateTimeFilter<"CustomerPrice"> | Date | string
+    updatedAt?: DateTimeFilter<"CustomerPrice"> | Date | string
+    customer?: XOR<CustomerScalarRelationFilter, CustomerWhereInput>
+    activity?: XOR<ActivityScalarRelationFilter, ActivityWhereInput>
+  }, "id" | "customerId_activityId_effectiveFrom">
+
+  export type CustomerPriceOrderByWithAggregationInput = {
+    id?: SortOrder
+    customerId?: SortOrder
+    activityId?: SortOrder
+    price?: SortOrder
+    currency?: SortOrder
+    effectiveFrom?: SortOrder
+    effectiveTo?: SortOrderInput | SortOrder
+    isActive?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: CustomerPriceCountOrderByAggregateInput
+    _avg?: CustomerPriceAvgOrderByAggregateInput
+    _max?: CustomerPriceMaxOrderByAggregateInput
+    _min?: CustomerPriceMinOrderByAggregateInput
+    _sum?: CustomerPriceSumOrderByAggregateInput
+  }
+
+  export type CustomerPriceScalarWhereWithAggregatesInput = {
+    AND?: CustomerPriceScalarWhereWithAggregatesInput | CustomerPriceScalarWhereWithAggregatesInput[]
+    OR?: CustomerPriceScalarWhereWithAggregatesInput[]
+    NOT?: CustomerPriceScalarWhereWithAggregatesInput | CustomerPriceScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"CustomerPrice"> | string
+    customerId?: StringWithAggregatesFilter<"CustomerPrice"> | string
+    activityId?: StringWithAggregatesFilter<"CustomerPrice"> | string
+    price?: DecimalWithAggregatesFilter<"CustomerPrice"> | Decimal | DecimalJsLike | number | string
+    currency?: StringWithAggregatesFilter<"CustomerPrice"> | string
+    effectiveFrom?: DateTimeWithAggregatesFilter<"CustomerPrice"> | Date | string
+    effectiveTo?: DateTimeNullableWithAggregatesFilter<"CustomerPrice"> | Date | string | null
+    isActive?: BoolWithAggregatesFilter<"CustomerPrice"> | boolean
+    createdAt?: DateTimeWithAggregatesFilter<"CustomerPrice"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"CustomerPrice"> | Date | string
+  }
+
+  export type CustomerActivityWhereInput = {
+    AND?: CustomerActivityWhereInput | CustomerActivityWhereInput[]
+    OR?: CustomerActivityWhereInput[]
+    NOT?: CustomerActivityWhereInput | CustomerActivityWhereInput[]
+    id?: StringFilter<"CustomerActivity"> | string
+    customerId?: StringFilter<"CustomerActivity"> | string
+    activityId?: StringFilter<"CustomerActivity"> | string
+    orderId?: StringNullableFilter<"CustomerActivity"> | string | null
+    quantity?: IntFilter<"CustomerActivity"> | number
+    unitPrice?: DecimalNullableFilter<"CustomerActivity"> | Decimal | DecimalJsLike | number | string | null
+    lineTotal?: DecimalNullableFilter<"CustomerActivity"> | Decimal | DecimalJsLike | number | string | null
+    isActive?: BoolFilter<"CustomerActivity"> | boolean
+    createdAt?: DateTimeFilter<"CustomerActivity"> | Date | string
+    updatedAt?: DateTimeFilter<"CustomerActivity"> | Date | string
+    customer?: XOR<CustomerScalarRelationFilter, CustomerWhereInput>
+    activity?: XOR<ActivityScalarRelationFilter, ActivityWhereInput>
+    order?: XOR<OrderNullableScalarRelationFilter, OrderWhereInput> | null
+  }
+
+  export type CustomerActivityOrderByWithRelationInput = {
+    id?: SortOrder
+    customerId?: SortOrder
+    activityId?: SortOrder
+    orderId?: SortOrderInput | SortOrder
+    quantity?: SortOrder
+    unitPrice?: SortOrderInput | SortOrder
+    lineTotal?: SortOrderInput | SortOrder
+    isActive?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    customer?: CustomerOrderByWithRelationInput
+    activity?: ActivityOrderByWithRelationInput
+    order?: OrderOrderByWithRelationInput
+  }
+
+  export type CustomerActivityWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    customerId_activityId_orderId?: CustomerActivityCustomerIdActivityIdOrderIdCompoundUniqueInput
+    AND?: CustomerActivityWhereInput | CustomerActivityWhereInput[]
+    OR?: CustomerActivityWhereInput[]
+    NOT?: CustomerActivityWhereInput | CustomerActivityWhereInput[]
+    customerId?: StringFilter<"CustomerActivity"> | string
+    activityId?: StringFilter<"CustomerActivity"> | string
+    orderId?: StringNullableFilter<"CustomerActivity"> | string | null
+    quantity?: IntFilter<"CustomerActivity"> | number
+    unitPrice?: DecimalNullableFilter<"CustomerActivity"> | Decimal | DecimalJsLike | number | string | null
+    lineTotal?: DecimalNullableFilter<"CustomerActivity"> | Decimal | DecimalJsLike | number | string | null
+    isActive?: BoolFilter<"CustomerActivity"> | boolean
+    createdAt?: DateTimeFilter<"CustomerActivity"> | Date | string
+    updatedAt?: DateTimeFilter<"CustomerActivity"> | Date | string
+    customer?: XOR<CustomerScalarRelationFilter, CustomerWhereInput>
+    activity?: XOR<ActivityScalarRelationFilter, ActivityWhereInput>
+    order?: XOR<OrderNullableScalarRelationFilter, OrderWhereInput> | null
+  }, "id" | "customerId_activityId_orderId">
+
+  export type CustomerActivityOrderByWithAggregationInput = {
+    id?: SortOrder
+    customerId?: SortOrder
+    activityId?: SortOrder
+    orderId?: SortOrderInput | SortOrder
+    quantity?: SortOrder
+    unitPrice?: SortOrderInput | SortOrder
+    lineTotal?: SortOrderInput | SortOrder
+    isActive?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: CustomerActivityCountOrderByAggregateInput
+    _avg?: CustomerActivityAvgOrderByAggregateInput
+    _max?: CustomerActivityMaxOrderByAggregateInput
+    _min?: CustomerActivityMinOrderByAggregateInput
+    _sum?: CustomerActivitySumOrderByAggregateInput
+  }
+
+  export type CustomerActivityScalarWhereWithAggregatesInput = {
+    AND?: CustomerActivityScalarWhereWithAggregatesInput | CustomerActivityScalarWhereWithAggregatesInput[]
+    OR?: CustomerActivityScalarWhereWithAggregatesInput[]
+    NOT?: CustomerActivityScalarWhereWithAggregatesInput | CustomerActivityScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"CustomerActivity"> | string
+    customerId?: StringWithAggregatesFilter<"CustomerActivity"> | string
+    activityId?: StringWithAggregatesFilter<"CustomerActivity"> | string
+    orderId?: StringNullableWithAggregatesFilter<"CustomerActivity"> | string | null
+    quantity?: IntWithAggregatesFilter<"CustomerActivity"> | number
+    unitPrice?: DecimalNullableWithAggregatesFilter<"CustomerActivity"> | Decimal | DecimalJsLike | number | string | null
+    lineTotal?: DecimalNullableWithAggregatesFilter<"CustomerActivity"> | Decimal | DecimalJsLike | number | string | null
+    isActive?: BoolWithAggregatesFilter<"CustomerActivity"> | boolean
+    createdAt?: DateTimeWithAggregatesFilter<"CustomerActivity"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"CustomerActivity"> | Date | string
+  }
+
   export type OrderQualificationWhereInput = {
     AND?: OrderQualificationWhereInput | OrderQualificationWhereInput[]
     OR?: OrderQualificationWhereInput[]
@@ -41016,20 +45449,32 @@ export namespace Prisma {
     id?: StringFilter<"OrderQualification"> | string
     orderId?: StringFilter<"OrderQualification"> | string
     qualificationId?: StringFilter<"OrderQualification"> | string
+    activityId?: StringNullableFilter<"OrderQualification"> | string | null
     required?: BoolFilter<"OrderQualification"> | boolean
     minProficiency?: IntFilter<"OrderQualification"> | number
+    unit?: StringNullableFilter<"OrderQualification"> | string | null
+    unitPrice?: DecimalNullableFilter<"OrderQualification"> | Decimal | DecimalJsLike | number | string | null
+    quantity?: IntFilter<"OrderQualification"> | number
+    lineTotal?: DecimalNullableFilter<"OrderQualification"> | Decimal | DecimalJsLike | number | string | null
     order?: XOR<OrderScalarRelationFilter, OrderWhereInput>
     qualification?: XOR<QualificationScalarRelationFilter, QualificationWhereInput>
+    activity?: XOR<ActivityNullableScalarRelationFilter, ActivityWhereInput> | null
   }
 
   export type OrderQualificationOrderByWithRelationInput = {
     id?: SortOrder
     orderId?: SortOrder
     qualificationId?: SortOrder
+    activityId?: SortOrderInput | SortOrder
     required?: SortOrder
     minProficiency?: SortOrder
+    unit?: SortOrderInput | SortOrder
+    unitPrice?: SortOrderInput | SortOrder
+    quantity?: SortOrder
+    lineTotal?: SortOrderInput | SortOrder
     order?: OrderOrderByWithRelationInput
     qualification?: QualificationOrderByWithRelationInput
+    activity?: ActivityOrderByWithRelationInput
   }
 
   export type OrderQualificationWhereUniqueInput = Prisma.AtLeast<{
@@ -41040,18 +45485,29 @@ export namespace Prisma {
     NOT?: OrderQualificationWhereInput | OrderQualificationWhereInput[]
     orderId?: StringFilter<"OrderQualification"> | string
     qualificationId?: StringFilter<"OrderQualification"> | string
+    activityId?: StringNullableFilter<"OrderQualification"> | string | null
     required?: BoolFilter<"OrderQualification"> | boolean
     minProficiency?: IntFilter<"OrderQualification"> | number
+    unit?: StringNullableFilter<"OrderQualification"> | string | null
+    unitPrice?: DecimalNullableFilter<"OrderQualification"> | Decimal | DecimalJsLike | number | string | null
+    quantity?: IntFilter<"OrderQualification"> | number
+    lineTotal?: DecimalNullableFilter<"OrderQualification"> | Decimal | DecimalJsLike | number | string | null
     order?: XOR<OrderScalarRelationFilter, OrderWhereInput>
     qualification?: XOR<QualificationScalarRelationFilter, QualificationWhereInput>
+    activity?: XOR<ActivityNullableScalarRelationFilter, ActivityWhereInput> | null
   }, "id" | "orderId_qualificationId">
 
   export type OrderQualificationOrderByWithAggregationInput = {
     id?: SortOrder
     orderId?: SortOrder
     qualificationId?: SortOrder
+    activityId?: SortOrderInput | SortOrder
     required?: SortOrder
     minProficiency?: SortOrder
+    unit?: SortOrderInput | SortOrder
+    unitPrice?: SortOrderInput | SortOrder
+    quantity?: SortOrder
+    lineTotal?: SortOrderInput | SortOrder
     _count?: OrderQualificationCountOrderByAggregateInput
     _avg?: OrderQualificationAvgOrderByAggregateInput
     _max?: OrderQualificationMaxOrderByAggregateInput
@@ -41066,8 +45522,13 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"OrderQualification"> | string
     orderId?: StringWithAggregatesFilter<"OrderQualification"> | string
     qualificationId?: StringWithAggregatesFilter<"OrderQualification"> | string
+    activityId?: StringNullableWithAggregatesFilter<"OrderQualification"> | string | null
     required?: BoolWithAggregatesFilter<"OrderQualification"> | boolean
     minProficiency?: IntWithAggregatesFilter<"OrderQualification"> | number
+    unit?: StringNullableWithAggregatesFilter<"OrderQualification"> | string | null
+    unitPrice?: DecimalNullableWithAggregatesFilter<"OrderQualification"> | Decimal | DecimalJsLike | number | string | null
+    quantity?: IntWithAggregatesFilter<"OrderQualification"> | number
+    lineTotal?: DecimalNullableWithAggregatesFilter<"OrderQualification"> | Decimal | DecimalJsLike | number | string | null
   }
 
   export type AssignmentWhereInput = {
@@ -43323,6 +47784,8 @@ export namespace Prisma {
     subAccounts?: SubAccountCreateNestedManyWithoutCustomerInput
     orders?: OrderCreateNestedManyWithoutCustomerInput
     ratings?: RatingCreateNestedManyWithoutCustomerInput
+    customerPrices?: CustomerPriceCreateNestedManyWithoutCustomerInput
+    customerActivities?: CustomerActivityCreateNestedManyWithoutCustomerInput
   }
 
   export type CustomerUncheckedCreateInput = {
@@ -43340,6 +47803,8 @@ export namespace Prisma {
     subAccounts?: SubAccountUncheckedCreateNestedManyWithoutCustomerInput
     orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
     ratings?: RatingUncheckedCreateNestedManyWithoutCustomerInput
+    customerPrices?: CustomerPriceUncheckedCreateNestedManyWithoutCustomerInput
+    customerActivities?: CustomerActivityUncheckedCreateNestedManyWithoutCustomerInput
   }
 
   export type CustomerUpdateInput = {
@@ -43357,6 +47822,8 @@ export namespace Prisma {
     subAccounts?: SubAccountUpdateManyWithoutCustomerNestedInput
     orders?: OrderUpdateManyWithoutCustomerNestedInput
     ratings?: RatingUpdateManyWithoutCustomerNestedInput
+    customerPrices?: CustomerPriceUpdateManyWithoutCustomerNestedInput
+    customerActivities?: CustomerActivityUpdateManyWithoutCustomerNestedInput
   }
 
   export type CustomerUncheckedUpdateInput = {
@@ -43374,6 +47841,8 @@ export namespace Prisma {
     subAccounts?: SubAccountUncheckedUpdateManyWithoutCustomerNestedInput
     orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
     ratings?: RatingUncheckedUpdateManyWithoutCustomerNestedInput
+    customerPrices?: CustomerPriceUncheckedUpdateManyWithoutCustomerNestedInput
+    customerActivities?: CustomerActivityUncheckedUpdateManyWithoutCustomerNestedInput
   }
 
   export type CustomerCreateManyInput = {
@@ -43516,6 +47985,7 @@ export namespace Prisma {
     ratings?: RatingCreateNestedManyWithoutOrderInput
     files?: FileCreateNestedManyWithoutOrderInput
     notes?: OrderNoteCreateNestedManyWithoutOrderInput
+    customerActivities?: CustomerActivityCreateNestedManyWithoutOrderInput
   }
 
   export type OrderUncheckedCreateInput = {
@@ -43548,6 +48018,7 @@ export namespace Prisma {
     ratings?: RatingUncheckedCreateNestedManyWithoutOrderInput
     files?: FileUncheckedCreateNestedManyWithoutOrderInput
     notes?: OrderNoteUncheckedCreateNestedManyWithoutOrderInput
+    customerActivities?: CustomerActivityUncheckedCreateNestedManyWithoutOrderInput
   }
 
   export type OrderUpdateInput = {
@@ -43580,6 +48051,7 @@ export namespace Prisma {
     ratings?: RatingUpdateManyWithoutOrderNestedInput
     files?: FileUpdateManyWithoutOrderNestedInput
     notes?: OrderNoteUpdateManyWithoutOrderNestedInput
+    customerActivities?: CustomerActivityUpdateManyWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateInput = {
@@ -43612,6 +48084,7 @@ export namespace Prisma {
     ratings?: RatingUncheckedUpdateManyWithoutOrderNestedInput
     files?: FileUncheckedUpdateManyWithoutOrderNestedInput
     notes?: OrderNoteUncheckedUpdateManyWithoutOrderNestedInput
+    customerActivities?: CustomerActivityUncheckedUpdateManyWithoutOrderNestedInput
   }
 
   export type OrderCreateManyInput = {
@@ -43871,58 +48344,365 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type ActivityCreateInput = {
+    id?: string
+    name: string
+    code?: string | null
+    description?: string | null
+    defaultPrice: Decimal | DecimalJsLike | number | string
+    unit?: string
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    customerPrices?: CustomerPriceCreateNestedManyWithoutActivityInput
+    orderQualifications?: OrderQualificationCreateNestedManyWithoutActivityInput
+    customerActivities?: CustomerActivityCreateNestedManyWithoutActivityInput
+  }
+
+  export type ActivityUncheckedCreateInput = {
+    id?: string
+    name: string
+    code?: string | null
+    description?: string | null
+    defaultPrice: Decimal | DecimalJsLike | number | string
+    unit?: string
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    customerPrices?: CustomerPriceUncheckedCreateNestedManyWithoutActivityInput
+    orderQualifications?: OrderQualificationUncheckedCreateNestedManyWithoutActivityInput
+    customerActivities?: CustomerActivityUncheckedCreateNestedManyWithoutActivityInput
+  }
+
+  export type ActivityUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    defaultPrice?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    unit?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    customerPrices?: CustomerPriceUpdateManyWithoutActivityNestedInput
+    orderQualifications?: OrderQualificationUpdateManyWithoutActivityNestedInput
+    customerActivities?: CustomerActivityUpdateManyWithoutActivityNestedInput
+  }
+
+  export type ActivityUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    defaultPrice?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    unit?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    customerPrices?: CustomerPriceUncheckedUpdateManyWithoutActivityNestedInput
+    orderQualifications?: OrderQualificationUncheckedUpdateManyWithoutActivityNestedInput
+    customerActivities?: CustomerActivityUncheckedUpdateManyWithoutActivityNestedInput
+  }
+
+  export type ActivityCreateManyInput = {
+    id?: string
+    name: string
+    code?: string | null
+    description?: string | null
+    defaultPrice: Decimal | DecimalJsLike | number | string
+    unit?: string
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ActivityUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    defaultPrice?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    unit?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ActivityUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    defaultPrice?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    unit?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CustomerPriceCreateInput = {
+    id?: string
+    price: Decimal | DecimalJsLike | number | string
+    currency?: string
+    effectiveFrom: Date | string
+    effectiveTo?: Date | string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    customer: CustomerCreateNestedOneWithoutCustomerPricesInput
+    activity: ActivityCreateNestedOneWithoutCustomerPricesInput
+  }
+
+  export type CustomerPriceUncheckedCreateInput = {
+    id?: string
+    customerId: string
+    activityId: string
+    price: Decimal | DecimalJsLike | number | string
+    currency?: string
+    effectiveFrom: Date | string
+    effectiveTo?: Date | string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type CustomerPriceUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    currency?: StringFieldUpdateOperationsInput | string
+    effectiveFrom?: DateTimeFieldUpdateOperationsInput | Date | string
+    effectiveTo?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    customer?: CustomerUpdateOneRequiredWithoutCustomerPricesNestedInput
+    activity?: ActivityUpdateOneRequiredWithoutCustomerPricesNestedInput
+  }
+
+  export type CustomerPriceUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    customerId?: StringFieldUpdateOperationsInput | string
+    activityId?: StringFieldUpdateOperationsInput | string
+    price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    currency?: StringFieldUpdateOperationsInput | string
+    effectiveFrom?: DateTimeFieldUpdateOperationsInput | Date | string
+    effectiveTo?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CustomerPriceCreateManyInput = {
+    id?: string
+    customerId: string
+    activityId: string
+    price: Decimal | DecimalJsLike | number | string
+    currency?: string
+    effectiveFrom: Date | string
+    effectiveTo?: Date | string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type CustomerPriceUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    currency?: StringFieldUpdateOperationsInput | string
+    effectiveFrom?: DateTimeFieldUpdateOperationsInput | Date | string
+    effectiveTo?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CustomerPriceUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    customerId?: StringFieldUpdateOperationsInput | string
+    activityId?: StringFieldUpdateOperationsInput | string
+    price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    currency?: StringFieldUpdateOperationsInput | string
+    effectiveFrom?: DateTimeFieldUpdateOperationsInput | Date | string
+    effectiveTo?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CustomerActivityCreateInput = {
+    id?: string
+    quantity?: number
+    unitPrice?: Decimal | DecimalJsLike | number | string | null
+    lineTotal?: Decimal | DecimalJsLike | number | string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    customer: CustomerCreateNestedOneWithoutCustomerActivitiesInput
+    activity: ActivityCreateNestedOneWithoutCustomerActivitiesInput
+    order?: OrderCreateNestedOneWithoutCustomerActivitiesInput
+  }
+
+  export type CustomerActivityUncheckedCreateInput = {
+    id?: string
+    customerId: string
+    activityId: string
+    orderId?: string | null
+    quantity?: number
+    unitPrice?: Decimal | DecimalJsLike | number | string | null
+    lineTotal?: Decimal | DecimalJsLike | number | string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type CustomerActivityUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    quantity?: IntFieldUpdateOperationsInput | number
+    unitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    lineTotal?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    customer?: CustomerUpdateOneRequiredWithoutCustomerActivitiesNestedInput
+    activity?: ActivityUpdateOneRequiredWithoutCustomerActivitiesNestedInput
+    order?: OrderUpdateOneWithoutCustomerActivitiesNestedInput
+  }
+
+  export type CustomerActivityUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    customerId?: StringFieldUpdateOperationsInput | string
+    activityId?: StringFieldUpdateOperationsInput | string
+    orderId?: NullableStringFieldUpdateOperationsInput | string | null
+    quantity?: IntFieldUpdateOperationsInput | number
+    unitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    lineTotal?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CustomerActivityCreateManyInput = {
+    id?: string
+    customerId: string
+    activityId: string
+    orderId?: string | null
+    quantity?: number
+    unitPrice?: Decimal | DecimalJsLike | number | string | null
+    lineTotal?: Decimal | DecimalJsLike | number | string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type CustomerActivityUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    quantity?: IntFieldUpdateOperationsInput | number
+    unitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    lineTotal?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CustomerActivityUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    customerId?: StringFieldUpdateOperationsInput | string
+    activityId?: StringFieldUpdateOperationsInput | string
+    orderId?: NullableStringFieldUpdateOperationsInput | string | null
+    quantity?: IntFieldUpdateOperationsInput | number
+    unitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    lineTotal?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type OrderQualificationCreateInput = {
     id?: string
     required?: boolean
     minProficiency?: number
+    unit?: string | null
+    unitPrice?: Decimal | DecimalJsLike | number | string | null
+    quantity?: number
+    lineTotal?: Decimal | DecimalJsLike | number | string | null
     order: OrderCreateNestedOneWithoutQualificationsInput
     qualification: QualificationCreateNestedOneWithoutOrderQualificationsInput
+    activity?: ActivityCreateNestedOneWithoutOrderQualificationsInput
   }
 
   export type OrderQualificationUncheckedCreateInput = {
     id?: string
     orderId: string
     qualificationId: string
+    activityId?: string | null
     required?: boolean
     minProficiency?: number
+    unit?: string | null
+    unitPrice?: Decimal | DecimalJsLike | number | string | null
+    quantity?: number
+    lineTotal?: Decimal | DecimalJsLike | number | string | null
   }
 
   export type OrderQualificationUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     required?: BoolFieldUpdateOperationsInput | boolean
     minProficiency?: IntFieldUpdateOperationsInput | number
+    unit?: NullableStringFieldUpdateOperationsInput | string | null
+    unitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    quantity?: IntFieldUpdateOperationsInput | number
+    lineTotal?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     order?: OrderUpdateOneRequiredWithoutQualificationsNestedInput
     qualification?: QualificationUpdateOneRequiredWithoutOrderQualificationsNestedInput
+    activity?: ActivityUpdateOneWithoutOrderQualificationsNestedInput
   }
 
   export type OrderQualificationUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     orderId?: StringFieldUpdateOperationsInput | string
     qualificationId?: StringFieldUpdateOperationsInput | string
+    activityId?: NullableStringFieldUpdateOperationsInput | string | null
     required?: BoolFieldUpdateOperationsInput | boolean
     minProficiency?: IntFieldUpdateOperationsInput | number
+    unit?: NullableStringFieldUpdateOperationsInput | string | null
+    unitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    quantity?: IntFieldUpdateOperationsInput | number
+    lineTotal?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
   }
 
   export type OrderQualificationCreateManyInput = {
     id?: string
     orderId: string
     qualificationId: string
+    activityId?: string | null
     required?: boolean
     minProficiency?: number
+    unit?: string | null
+    unitPrice?: Decimal | DecimalJsLike | number | string | null
+    quantity?: number
+    lineTotal?: Decimal | DecimalJsLike | number | string | null
   }
 
   export type OrderQualificationUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     required?: BoolFieldUpdateOperationsInput | boolean
     minProficiency?: IntFieldUpdateOperationsInput | number
+    unit?: NullableStringFieldUpdateOperationsInput | string | null
+    unitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    quantity?: IntFieldUpdateOperationsInput | number
+    lineTotal?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
   }
 
   export type OrderQualificationUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     orderId?: StringFieldUpdateOperationsInput | string
     qualificationId?: StringFieldUpdateOperationsInput | string
+    activityId?: NullableStringFieldUpdateOperationsInput | string | null
     required?: BoolFieldUpdateOperationsInput | boolean
     minProficiency?: IntFieldUpdateOperationsInput | number
+    unit?: NullableStringFieldUpdateOperationsInput | string | null
+    unitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    quantity?: IntFieldUpdateOperationsInput | number
+    lineTotal?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
   }
 
   export type AssignmentCreateInput = {
@@ -46417,11 +51197,31 @@ export namespace Prisma {
     none?: OrderWhereInput
   }
 
+  export type CustomerPriceListRelationFilter = {
+    every?: CustomerPriceWhereInput
+    some?: CustomerPriceWhereInput
+    none?: CustomerPriceWhereInput
+  }
+
+  export type CustomerActivityListRelationFilter = {
+    every?: CustomerActivityWhereInput
+    some?: CustomerActivityWhereInput
+    none?: CustomerActivityWhereInput
+  }
+
   export type SubAccountOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
   export type OrderOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type CustomerPriceOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type CustomerActivityOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -46759,9 +51559,178 @@ export namespace Prisma {
     proficiencyLevel?: SortOrder
   }
 
+  export type ActivityCountOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    code?: SortOrder
+    description?: SortOrder
+    defaultPrice?: SortOrder
+    unit?: SortOrder
+    isActive?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ActivityAvgOrderByAggregateInput = {
+    defaultPrice?: SortOrder
+  }
+
+  export type ActivityMaxOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    code?: SortOrder
+    description?: SortOrder
+    defaultPrice?: SortOrder
+    unit?: SortOrder
+    isActive?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ActivityMinOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    code?: SortOrder
+    description?: SortOrder
+    defaultPrice?: SortOrder
+    unit?: SortOrder
+    isActive?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ActivitySumOrderByAggregateInput = {
+    defaultPrice?: SortOrder
+  }
+
+  export type ActivityScalarRelationFilter = {
+    is?: ActivityWhereInput
+    isNot?: ActivityWhereInput
+  }
+
+  export type CustomerPriceCustomerIdActivityIdEffectiveFromCompoundUniqueInput = {
+    customerId: string
+    activityId: string
+    effectiveFrom: Date | string
+  }
+
+  export type CustomerPriceCountOrderByAggregateInput = {
+    id?: SortOrder
+    customerId?: SortOrder
+    activityId?: SortOrder
+    price?: SortOrder
+    currency?: SortOrder
+    effectiveFrom?: SortOrder
+    effectiveTo?: SortOrder
+    isActive?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type CustomerPriceAvgOrderByAggregateInput = {
+    price?: SortOrder
+  }
+
+  export type CustomerPriceMaxOrderByAggregateInput = {
+    id?: SortOrder
+    customerId?: SortOrder
+    activityId?: SortOrder
+    price?: SortOrder
+    currency?: SortOrder
+    effectiveFrom?: SortOrder
+    effectiveTo?: SortOrder
+    isActive?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type CustomerPriceMinOrderByAggregateInput = {
+    id?: SortOrder
+    customerId?: SortOrder
+    activityId?: SortOrder
+    price?: SortOrder
+    currency?: SortOrder
+    effectiveFrom?: SortOrder
+    effectiveTo?: SortOrder
+    isActive?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type CustomerPriceSumOrderByAggregateInput = {
+    price?: SortOrder
+  }
+
+  export type OrderNullableScalarRelationFilter = {
+    is?: OrderWhereInput | null
+    isNot?: OrderWhereInput | null
+  }
+
+  export type CustomerActivityCustomerIdActivityIdOrderIdCompoundUniqueInput = {
+    customerId: string
+    activityId: string
+    orderId: string
+  }
+
+  export type CustomerActivityCountOrderByAggregateInput = {
+    id?: SortOrder
+    customerId?: SortOrder
+    activityId?: SortOrder
+    orderId?: SortOrder
+    quantity?: SortOrder
+    unitPrice?: SortOrder
+    lineTotal?: SortOrder
+    isActive?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type CustomerActivityAvgOrderByAggregateInput = {
+    quantity?: SortOrder
+    unitPrice?: SortOrder
+    lineTotal?: SortOrder
+  }
+
+  export type CustomerActivityMaxOrderByAggregateInput = {
+    id?: SortOrder
+    customerId?: SortOrder
+    activityId?: SortOrder
+    orderId?: SortOrder
+    quantity?: SortOrder
+    unitPrice?: SortOrder
+    lineTotal?: SortOrder
+    isActive?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type CustomerActivityMinOrderByAggregateInput = {
+    id?: SortOrder
+    customerId?: SortOrder
+    activityId?: SortOrder
+    orderId?: SortOrder
+    quantity?: SortOrder
+    unitPrice?: SortOrder
+    lineTotal?: SortOrder
+    isActive?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type CustomerActivitySumOrderByAggregateInput = {
+    quantity?: SortOrder
+    unitPrice?: SortOrder
+    lineTotal?: SortOrder
+  }
+
   export type OrderScalarRelationFilter = {
     is?: OrderWhereInput
     isNot?: OrderWhereInput
+  }
+
+  export type ActivityNullableScalarRelationFilter = {
+    is?: ActivityWhereInput | null
+    isNot?: ActivityWhereInput | null
   }
 
   export type OrderQualificationOrderIdQualificationIdCompoundUniqueInput = {
@@ -46773,32 +51742,53 @@ export namespace Prisma {
     id?: SortOrder
     orderId?: SortOrder
     qualificationId?: SortOrder
+    activityId?: SortOrder
     required?: SortOrder
     minProficiency?: SortOrder
+    unit?: SortOrder
+    unitPrice?: SortOrder
+    quantity?: SortOrder
+    lineTotal?: SortOrder
   }
 
   export type OrderQualificationAvgOrderByAggregateInput = {
     minProficiency?: SortOrder
+    unitPrice?: SortOrder
+    quantity?: SortOrder
+    lineTotal?: SortOrder
   }
 
   export type OrderQualificationMaxOrderByAggregateInput = {
     id?: SortOrder
     orderId?: SortOrder
     qualificationId?: SortOrder
+    activityId?: SortOrder
     required?: SortOrder
     minProficiency?: SortOrder
+    unit?: SortOrder
+    unitPrice?: SortOrder
+    quantity?: SortOrder
+    lineTotal?: SortOrder
   }
 
   export type OrderQualificationMinOrderByAggregateInput = {
     id?: SortOrder
     orderId?: SortOrder
     qualificationId?: SortOrder
+    activityId?: SortOrder
     required?: SortOrder
     minProficiency?: SortOrder
+    unit?: SortOrder
+    unitPrice?: SortOrder
+    quantity?: SortOrder
+    lineTotal?: SortOrder
   }
 
   export type OrderQualificationSumOrderByAggregateInput = {
     minProficiency?: SortOrder
+    unitPrice?: SortOrder
+    quantity?: SortOrder
+    lineTotal?: SortOrder
   }
 
   export type EnumAssignmentStatusFilter<$PrismaModel = never> = {
@@ -46813,11 +51803,6 @@ export namespace Prisma {
     in?: $Enums.AssignmentTier[] | ListEnumAssignmentTierFieldRefInput<$PrismaModel>
     notIn?: $Enums.AssignmentTier[] | ListEnumAssignmentTierFieldRefInput<$PrismaModel>
     not?: NestedEnumAssignmentTierFilter<$PrismaModel> | $Enums.AssignmentTier
-  }
-
-  export type OrderNullableScalarRelationFilter = {
-    is?: OrderWhereInput | null
-    isNot?: OrderWhereInput | null
   }
 
   export type AssignmentCountOrderByAggregateInput = {
@@ -48933,6 +53918,20 @@ export namespace Prisma {
     connect?: RatingWhereUniqueInput | RatingWhereUniqueInput[]
   }
 
+  export type CustomerPriceCreateNestedManyWithoutCustomerInput = {
+    create?: XOR<CustomerPriceCreateWithoutCustomerInput, CustomerPriceUncheckedCreateWithoutCustomerInput> | CustomerPriceCreateWithoutCustomerInput[] | CustomerPriceUncheckedCreateWithoutCustomerInput[]
+    connectOrCreate?: CustomerPriceCreateOrConnectWithoutCustomerInput | CustomerPriceCreateOrConnectWithoutCustomerInput[]
+    createMany?: CustomerPriceCreateManyCustomerInputEnvelope
+    connect?: CustomerPriceWhereUniqueInput | CustomerPriceWhereUniqueInput[]
+  }
+
+  export type CustomerActivityCreateNestedManyWithoutCustomerInput = {
+    create?: XOR<CustomerActivityCreateWithoutCustomerInput, CustomerActivityUncheckedCreateWithoutCustomerInput> | CustomerActivityCreateWithoutCustomerInput[] | CustomerActivityUncheckedCreateWithoutCustomerInput[]
+    connectOrCreate?: CustomerActivityCreateOrConnectWithoutCustomerInput | CustomerActivityCreateOrConnectWithoutCustomerInput[]
+    createMany?: CustomerActivityCreateManyCustomerInputEnvelope
+    connect?: CustomerActivityWhereUniqueInput | CustomerActivityWhereUniqueInput[]
+  }
+
   export type SubAccountUncheckedCreateNestedManyWithoutCustomerInput = {
     create?: XOR<SubAccountCreateWithoutCustomerInput, SubAccountUncheckedCreateWithoutCustomerInput> | SubAccountCreateWithoutCustomerInput[] | SubAccountUncheckedCreateWithoutCustomerInput[]
     connectOrCreate?: SubAccountCreateOrConnectWithoutCustomerInput | SubAccountCreateOrConnectWithoutCustomerInput[]
@@ -48952,6 +53951,20 @@ export namespace Prisma {
     connectOrCreate?: RatingCreateOrConnectWithoutCustomerInput | RatingCreateOrConnectWithoutCustomerInput[]
     createMany?: RatingCreateManyCustomerInputEnvelope
     connect?: RatingWhereUniqueInput | RatingWhereUniqueInput[]
+  }
+
+  export type CustomerPriceUncheckedCreateNestedManyWithoutCustomerInput = {
+    create?: XOR<CustomerPriceCreateWithoutCustomerInput, CustomerPriceUncheckedCreateWithoutCustomerInput> | CustomerPriceCreateWithoutCustomerInput[] | CustomerPriceUncheckedCreateWithoutCustomerInput[]
+    connectOrCreate?: CustomerPriceCreateOrConnectWithoutCustomerInput | CustomerPriceCreateOrConnectWithoutCustomerInput[]
+    createMany?: CustomerPriceCreateManyCustomerInputEnvelope
+    connect?: CustomerPriceWhereUniqueInput | CustomerPriceWhereUniqueInput[]
+  }
+
+  export type CustomerActivityUncheckedCreateNestedManyWithoutCustomerInput = {
+    create?: XOR<CustomerActivityCreateWithoutCustomerInput, CustomerActivityUncheckedCreateWithoutCustomerInput> | CustomerActivityCreateWithoutCustomerInput[] | CustomerActivityUncheckedCreateWithoutCustomerInput[]
+    connectOrCreate?: CustomerActivityCreateOrConnectWithoutCustomerInput | CustomerActivityCreateOrConnectWithoutCustomerInput[]
+    createMany?: CustomerActivityCreateManyCustomerInputEnvelope
+    connect?: CustomerActivityWhereUniqueInput | CustomerActivityWhereUniqueInput[]
   }
 
   export type UserUpdateOneWithoutCustomerNestedInput = {
@@ -49006,6 +54019,34 @@ export namespace Prisma {
     deleteMany?: RatingScalarWhereInput | RatingScalarWhereInput[]
   }
 
+  export type CustomerPriceUpdateManyWithoutCustomerNestedInput = {
+    create?: XOR<CustomerPriceCreateWithoutCustomerInput, CustomerPriceUncheckedCreateWithoutCustomerInput> | CustomerPriceCreateWithoutCustomerInput[] | CustomerPriceUncheckedCreateWithoutCustomerInput[]
+    connectOrCreate?: CustomerPriceCreateOrConnectWithoutCustomerInput | CustomerPriceCreateOrConnectWithoutCustomerInput[]
+    upsert?: CustomerPriceUpsertWithWhereUniqueWithoutCustomerInput | CustomerPriceUpsertWithWhereUniqueWithoutCustomerInput[]
+    createMany?: CustomerPriceCreateManyCustomerInputEnvelope
+    set?: CustomerPriceWhereUniqueInput | CustomerPriceWhereUniqueInput[]
+    disconnect?: CustomerPriceWhereUniqueInput | CustomerPriceWhereUniqueInput[]
+    delete?: CustomerPriceWhereUniqueInput | CustomerPriceWhereUniqueInput[]
+    connect?: CustomerPriceWhereUniqueInput | CustomerPriceWhereUniqueInput[]
+    update?: CustomerPriceUpdateWithWhereUniqueWithoutCustomerInput | CustomerPriceUpdateWithWhereUniqueWithoutCustomerInput[]
+    updateMany?: CustomerPriceUpdateManyWithWhereWithoutCustomerInput | CustomerPriceUpdateManyWithWhereWithoutCustomerInput[]
+    deleteMany?: CustomerPriceScalarWhereInput | CustomerPriceScalarWhereInput[]
+  }
+
+  export type CustomerActivityUpdateManyWithoutCustomerNestedInput = {
+    create?: XOR<CustomerActivityCreateWithoutCustomerInput, CustomerActivityUncheckedCreateWithoutCustomerInput> | CustomerActivityCreateWithoutCustomerInput[] | CustomerActivityUncheckedCreateWithoutCustomerInput[]
+    connectOrCreate?: CustomerActivityCreateOrConnectWithoutCustomerInput | CustomerActivityCreateOrConnectWithoutCustomerInput[]
+    upsert?: CustomerActivityUpsertWithWhereUniqueWithoutCustomerInput | CustomerActivityUpsertWithWhereUniqueWithoutCustomerInput[]
+    createMany?: CustomerActivityCreateManyCustomerInputEnvelope
+    set?: CustomerActivityWhereUniqueInput | CustomerActivityWhereUniqueInput[]
+    disconnect?: CustomerActivityWhereUniqueInput | CustomerActivityWhereUniqueInput[]
+    delete?: CustomerActivityWhereUniqueInput | CustomerActivityWhereUniqueInput[]
+    connect?: CustomerActivityWhereUniqueInput | CustomerActivityWhereUniqueInput[]
+    update?: CustomerActivityUpdateWithWhereUniqueWithoutCustomerInput | CustomerActivityUpdateWithWhereUniqueWithoutCustomerInput[]
+    updateMany?: CustomerActivityUpdateManyWithWhereWithoutCustomerInput | CustomerActivityUpdateManyWithWhereWithoutCustomerInput[]
+    deleteMany?: CustomerActivityScalarWhereInput | CustomerActivityScalarWhereInput[]
+  }
+
   export type SubAccountUncheckedUpdateManyWithoutCustomerNestedInput = {
     create?: XOR<SubAccountCreateWithoutCustomerInput, SubAccountUncheckedCreateWithoutCustomerInput> | SubAccountCreateWithoutCustomerInput[] | SubAccountUncheckedCreateWithoutCustomerInput[]
     connectOrCreate?: SubAccountCreateOrConnectWithoutCustomerInput | SubAccountCreateOrConnectWithoutCustomerInput[]
@@ -49046,6 +54087,34 @@ export namespace Prisma {
     update?: RatingUpdateWithWhereUniqueWithoutCustomerInput | RatingUpdateWithWhereUniqueWithoutCustomerInput[]
     updateMany?: RatingUpdateManyWithWhereWithoutCustomerInput | RatingUpdateManyWithWhereWithoutCustomerInput[]
     deleteMany?: RatingScalarWhereInput | RatingScalarWhereInput[]
+  }
+
+  export type CustomerPriceUncheckedUpdateManyWithoutCustomerNestedInput = {
+    create?: XOR<CustomerPriceCreateWithoutCustomerInput, CustomerPriceUncheckedCreateWithoutCustomerInput> | CustomerPriceCreateWithoutCustomerInput[] | CustomerPriceUncheckedCreateWithoutCustomerInput[]
+    connectOrCreate?: CustomerPriceCreateOrConnectWithoutCustomerInput | CustomerPriceCreateOrConnectWithoutCustomerInput[]
+    upsert?: CustomerPriceUpsertWithWhereUniqueWithoutCustomerInput | CustomerPriceUpsertWithWhereUniqueWithoutCustomerInput[]
+    createMany?: CustomerPriceCreateManyCustomerInputEnvelope
+    set?: CustomerPriceWhereUniqueInput | CustomerPriceWhereUniqueInput[]
+    disconnect?: CustomerPriceWhereUniqueInput | CustomerPriceWhereUniqueInput[]
+    delete?: CustomerPriceWhereUniqueInput | CustomerPriceWhereUniqueInput[]
+    connect?: CustomerPriceWhereUniqueInput | CustomerPriceWhereUniqueInput[]
+    update?: CustomerPriceUpdateWithWhereUniqueWithoutCustomerInput | CustomerPriceUpdateWithWhereUniqueWithoutCustomerInput[]
+    updateMany?: CustomerPriceUpdateManyWithWhereWithoutCustomerInput | CustomerPriceUpdateManyWithWhereWithoutCustomerInput[]
+    deleteMany?: CustomerPriceScalarWhereInput | CustomerPriceScalarWhereInput[]
+  }
+
+  export type CustomerActivityUncheckedUpdateManyWithoutCustomerNestedInput = {
+    create?: XOR<CustomerActivityCreateWithoutCustomerInput, CustomerActivityUncheckedCreateWithoutCustomerInput> | CustomerActivityCreateWithoutCustomerInput[] | CustomerActivityUncheckedCreateWithoutCustomerInput[]
+    connectOrCreate?: CustomerActivityCreateOrConnectWithoutCustomerInput | CustomerActivityCreateOrConnectWithoutCustomerInput[]
+    upsert?: CustomerActivityUpsertWithWhereUniqueWithoutCustomerInput | CustomerActivityUpsertWithWhereUniqueWithoutCustomerInput[]
+    createMany?: CustomerActivityCreateManyCustomerInputEnvelope
+    set?: CustomerActivityWhereUniqueInput | CustomerActivityWhereUniqueInput[]
+    disconnect?: CustomerActivityWhereUniqueInput | CustomerActivityWhereUniqueInput[]
+    delete?: CustomerActivityWhereUniqueInput | CustomerActivityWhereUniqueInput[]
+    connect?: CustomerActivityWhereUniqueInput | CustomerActivityWhereUniqueInput[]
+    update?: CustomerActivityUpdateWithWhereUniqueWithoutCustomerInput | CustomerActivityUpdateWithWhereUniqueWithoutCustomerInput[]
+    updateMany?: CustomerActivityUpdateManyWithWhereWithoutCustomerInput | CustomerActivityUpdateManyWithWhereWithoutCustomerInput[]
+    deleteMany?: CustomerActivityScalarWhereInput | CustomerActivityScalarWhereInput[]
   }
 
   export type CustomerCreateNestedOneWithoutSubAccountsInput = {
@@ -49116,6 +54185,13 @@ export namespace Prisma {
     connect?: OrderNoteWhereUniqueInput | OrderNoteWhereUniqueInput[]
   }
 
+  export type CustomerActivityCreateNestedManyWithoutOrderInput = {
+    create?: XOR<CustomerActivityCreateWithoutOrderInput, CustomerActivityUncheckedCreateWithoutOrderInput> | CustomerActivityCreateWithoutOrderInput[] | CustomerActivityUncheckedCreateWithoutOrderInput[]
+    connectOrCreate?: CustomerActivityCreateOrConnectWithoutOrderInput | CustomerActivityCreateOrConnectWithoutOrderInput[]
+    createMany?: CustomerActivityCreateManyOrderInputEnvelope
+    connect?: CustomerActivityWhereUniqueInput | CustomerActivityWhereUniqueInput[]
+  }
+
   export type OrderQualificationUncheckedCreateNestedManyWithoutOrderInput = {
     create?: XOR<OrderQualificationCreateWithoutOrderInput, OrderQualificationUncheckedCreateWithoutOrderInput> | OrderQualificationCreateWithoutOrderInput[] | OrderQualificationUncheckedCreateWithoutOrderInput[]
     connectOrCreate?: OrderQualificationCreateOrConnectWithoutOrderInput | OrderQualificationCreateOrConnectWithoutOrderInput[]
@@ -49156,6 +54232,13 @@ export namespace Prisma {
     connectOrCreate?: OrderNoteCreateOrConnectWithoutOrderInput | OrderNoteCreateOrConnectWithoutOrderInput[]
     createMany?: OrderNoteCreateManyOrderInputEnvelope
     connect?: OrderNoteWhereUniqueInput | OrderNoteWhereUniqueInput[]
+  }
+
+  export type CustomerActivityUncheckedCreateNestedManyWithoutOrderInput = {
+    create?: XOR<CustomerActivityCreateWithoutOrderInput, CustomerActivityUncheckedCreateWithoutOrderInput> | CustomerActivityCreateWithoutOrderInput[] | CustomerActivityUncheckedCreateWithoutOrderInput[]
+    connectOrCreate?: CustomerActivityCreateOrConnectWithoutOrderInput | CustomerActivityCreateOrConnectWithoutOrderInput[]
+    createMany?: CustomerActivityCreateManyOrderInputEnvelope
+    connect?: CustomerActivityWhereUniqueInput | CustomerActivityWhereUniqueInput[]
   }
 
   export type NullableIntFieldUpdateOperationsInput = {
@@ -49272,6 +54355,20 @@ export namespace Prisma {
     deleteMany?: OrderNoteScalarWhereInput | OrderNoteScalarWhereInput[]
   }
 
+  export type CustomerActivityUpdateManyWithoutOrderNestedInput = {
+    create?: XOR<CustomerActivityCreateWithoutOrderInput, CustomerActivityUncheckedCreateWithoutOrderInput> | CustomerActivityCreateWithoutOrderInput[] | CustomerActivityUncheckedCreateWithoutOrderInput[]
+    connectOrCreate?: CustomerActivityCreateOrConnectWithoutOrderInput | CustomerActivityCreateOrConnectWithoutOrderInput[]
+    upsert?: CustomerActivityUpsertWithWhereUniqueWithoutOrderInput | CustomerActivityUpsertWithWhereUniqueWithoutOrderInput[]
+    createMany?: CustomerActivityCreateManyOrderInputEnvelope
+    set?: CustomerActivityWhereUniqueInput | CustomerActivityWhereUniqueInput[]
+    disconnect?: CustomerActivityWhereUniqueInput | CustomerActivityWhereUniqueInput[]
+    delete?: CustomerActivityWhereUniqueInput | CustomerActivityWhereUniqueInput[]
+    connect?: CustomerActivityWhereUniqueInput | CustomerActivityWhereUniqueInput[]
+    update?: CustomerActivityUpdateWithWhereUniqueWithoutOrderInput | CustomerActivityUpdateWithWhereUniqueWithoutOrderInput[]
+    updateMany?: CustomerActivityUpdateManyWithWhereWithoutOrderInput | CustomerActivityUpdateManyWithWhereWithoutOrderInput[]
+    deleteMany?: CustomerActivityScalarWhereInput | CustomerActivityScalarWhereInput[]
+  }
+
   export type OrderQualificationUncheckedUpdateManyWithoutOrderNestedInput = {
     create?: XOR<OrderQualificationCreateWithoutOrderInput, OrderQualificationUncheckedCreateWithoutOrderInput> | OrderQualificationCreateWithoutOrderInput[] | OrderQualificationUncheckedCreateWithoutOrderInput[]
     connectOrCreate?: OrderQualificationCreateOrConnectWithoutOrderInput | OrderQualificationCreateOrConnectWithoutOrderInput[]
@@ -49354,6 +54451,20 @@ export namespace Prisma {
     update?: OrderNoteUpdateWithWhereUniqueWithoutOrderInput | OrderNoteUpdateWithWhereUniqueWithoutOrderInput[]
     updateMany?: OrderNoteUpdateManyWithWhereWithoutOrderInput | OrderNoteUpdateManyWithWhereWithoutOrderInput[]
     deleteMany?: OrderNoteScalarWhereInput | OrderNoteScalarWhereInput[]
+  }
+
+  export type CustomerActivityUncheckedUpdateManyWithoutOrderNestedInput = {
+    create?: XOR<CustomerActivityCreateWithoutOrderInput, CustomerActivityUncheckedCreateWithoutOrderInput> | CustomerActivityCreateWithoutOrderInput[] | CustomerActivityUncheckedCreateWithoutOrderInput[]
+    connectOrCreate?: CustomerActivityCreateOrConnectWithoutOrderInput | CustomerActivityCreateOrConnectWithoutOrderInput[]
+    upsert?: CustomerActivityUpsertWithWhereUniqueWithoutOrderInput | CustomerActivityUpsertWithWhereUniqueWithoutOrderInput[]
+    createMany?: CustomerActivityCreateManyOrderInputEnvelope
+    set?: CustomerActivityWhereUniqueInput | CustomerActivityWhereUniqueInput[]
+    disconnect?: CustomerActivityWhereUniqueInput | CustomerActivityWhereUniqueInput[]
+    delete?: CustomerActivityWhereUniqueInput | CustomerActivityWhereUniqueInput[]
+    connect?: CustomerActivityWhereUniqueInput | CustomerActivityWhereUniqueInput[]
+    update?: CustomerActivityUpdateWithWhereUniqueWithoutOrderInput | CustomerActivityUpdateWithWhereUniqueWithoutOrderInput[]
+    updateMany?: CustomerActivityUpdateManyWithWhereWithoutOrderInput | CustomerActivityUpdateManyWithWhereWithoutOrderInput[]
+    deleteMany?: CustomerActivityScalarWhereInput | CustomerActivityScalarWhereInput[]
   }
 
   export type EmployeeQualificationCreateNestedManyWithoutQualificationInput = {
@@ -49468,6 +54579,204 @@ export namespace Prisma {
     update?: XOR<XOR<QualificationUpdateToOneWithWhereWithoutEmployeeQualificationsInput, QualificationUpdateWithoutEmployeeQualificationsInput>, QualificationUncheckedUpdateWithoutEmployeeQualificationsInput>
   }
 
+  export type CustomerPriceCreateNestedManyWithoutActivityInput = {
+    create?: XOR<CustomerPriceCreateWithoutActivityInput, CustomerPriceUncheckedCreateWithoutActivityInput> | CustomerPriceCreateWithoutActivityInput[] | CustomerPriceUncheckedCreateWithoutActivityInput[]
+    connectOrCreate?: CustomerPriceCreateOrConnectWithoutActivityInput | CustomerPriceCreateOrConnectWithoutActivityInput[]
+    createMany?: CustomerPriceCreateManyActivityInputEnvelope
+    connect?: CustomerPriceWhereUniqueInput | CustomerPriceWhereUniqueInput[]
+  }
+
+  export type OrderQualificationCreateNestedManyWithoutActivityInput = {
+    create?: XOR<OrderQualificationCreateWithoutActivityInput, OrderQualificationUncheckedCreateWithoutActivityInput> | OrderQualificationCreateWithoutActivityInput[] | OrderQualificationUncheckedCreateWithoutActivityInput[]
+    connectOrCreate?: OrderQualificationCreateOrConnectWithoutActivityInput | OrderQualificationCreateOrConnectWithoutActivityInput[]
+    createMany?: OrderQualificationCreateManyActivityInputEnvelope
+    connect?: OrderQualificationWhereUniqueInput | OrderQualificationWhereUniqueInput[]
+  }
+
+  export type CustomerActivityCreateNestedManyWithoutActivityInput = {
+    create?: XOR<CustomerActivityCreateWithoutActivityInput, CustomerActivityUncheckedCreateWithoutActivityInput> | CustomerActivityCreateWithoutActivityInput[] | CustomerActivityUncheckedCreateWithoutActivityInput[]
+    connectOrCreate?: CustomerActivityCreateOrConnectWithoutActivityInput | CustomerActivityCreateOrConnectWithoutActivityInput[]
+    createMany?: CustomerActivityCreateManyActivityInputEnvelope
+    connect?: CustomerActivityWhereUniqueInput | CustomerActivityWhereUniqueInput[]
+  }
+
+  export type CustomerPriceUncheckedCreateNestedManyWithoutActivityInput = {
+    create?: XOR<CustomerPriceCreateWithoutActivityInput, CustomerPriceUncheckedCreateWithoutActivityInput> | CustomerPriceCreateWithoutActivityInput[] | CustomerPriceUncheckedCreateWithoutActivityInput[]
+    connectOrCreate?: CustomerPriceCreateOrConnectWithoutActivityInput | CustomerPriceCreateOrConnectWithoutActivityInput[]
+    createMany?: CustomerPriceCreateManyActivityInputEnvelope
+    connect?: CustomerPriceWhereUniqueInput | CustomerPriceWhereUniqueInput[]
+  }
+
+  export type OrderQualificationUncheckedCreateNestedManyWithoutActivityInput = {
+    create?: XOR<OrderQualificationCreateWithoutActivityInput, OrderQualificationUncheckedCreateWithoutActivityInput> | OrderQualificationCreateWithoutActivityInput[] | OrderQualificationUncheckedCreateWithoutActivityInput[]
+    connectOrCreate?: OrderQualificationCreateOrConnectWithoutActivityInput | OrderQualificationCreateOrConnectWithoutActivityInput[]
+    createMany?: OrderQualificationCreateManyActivityInputEnvelope
+    connect?: OrderQualificationWhereUniqueInput | OrderQualificationWhereUniqueInput[]
+  }
+
+  export type CustomerActivityUncheckedCreateNestedManyWithoutActivityInput = {
+    create?: XOR<CustomerActivityCreateWithoutActivityInput, CustomerActivityUncheckedCreateWithoutActivityInput> | CustomerActivityCreateWithoutActivityInput[] | CustomerActivityUncheckedCreateWithoutActivityInput[]
+    connectOrCreate?: CustomerActivityCreateOrConnectWithoutActivityInput | CustomerActivityCreateOrConnectWithoutActivityInput[]
+    createMany?: CustomerActivityCreateManyActivityInputEnvelope
+    connect?: CustomerActivityWhereUniqueInput | CustomerActivityWhereUniqueInput[]
+  }
+
+  export type CustomerPriceUpdateManyWithoutActivityNestedInput = {
+    create?: XOR<CustomerPriceCreateWithoutActivityInput, CustomerPriceUncheckedCreateWithoutActivityInput> | CustomerPriceCreateWithoutActivityInput[] | CustomerPriceUncheckedCreateWithoutActivityInput[]
+    connectOrCreate?: CustomerPriceCreateOrConnectWithoutActivityInput | CustomerPriceCreateOrConnectWithoutActivityInput[]
+    upsert?: CustomerPriceUpsertWithWhereUniqueWithoutActivityInput | CustomerPriceUpsertWithWhereUniqueWithoutActivityInput[]
+    createMany?: CustomerPriceCreateManyActivityInputEnvelope
+    set?: CustomerPriceWhereUniqueInput | CustomerPriceWhereUniqueInput[]
+    disconnect?: CustomerPriceWhereUniqueInput | CustomerPriceWhereUniqueInput[]
+    delete?: CustomerPriceWhereUniqueInput | CustomerPriceWhereUniqueInput[]
+    connect?: CustomerPriceWhereUniqueInput | CustomerPriceWhereUniqueInput[]
+    update?: CustomerPriceUpdateWithWhereUniqueWithoutActivityInput | CustomerPriceUpdateWithWhereUniqueWithoutActivityInput[]
+    updateMany?: CustomerPriceUpdateManyWithWhereWithoutActivityInput | CustomerPriceUpdateManyWithWhereWithoutActivityInput[]
+    deleteMany?: CustomerPriceScalarWhereInput | CustomerPriceScalarWhereInput[]
+  }
+
+  export type OrderQualificationUpdateManyWithoutActivityNestedInput = {
+    create?: XOR<OrderQualificationCreateWithoutActivityInput, OrderQualificationUncheckedCreateWithoutActivityInput> | OrderQualificationCreateWithoutActivityInput[] | OrderQualificationUncheckedCreateWithoutActivityInput[]
+    connectOrCreate?: OrderQualificationCreateOrConnectWithoutActivityInput | OrderQualificationCreateOrConnectWithoutActivityInput[]
+    upsert?: OrderQualificationUpsertWithWhereUniqueWithoutActivityInput | OrderQualificationUpsertWithWhereUniqueWithoutActivityInput[]
+    createMany?: OrderQualificationCreateManyActivityInputEnvelope
+    set?: OrderQualificationWhereUniqueInput | OrderQualificationWhereUniqueInput[]
+    disconnect?: OrderQualificationWhereUniqueInput | OrderQualificationWhereUniqueInput[]
+    delete?: OrderQualificationWhereUniqueInput | OrderQualificationWhereUniqueInput[]
+    connect?: OrderQualificationWhereUniqueInput | OrderQualificationWhereUniqueInput[]
+    update?: OrderQualificationUpdateWithWhereUniqueWithoutActivityInput | OrderQualificationUpdateWithWhereUniqueWithoutActivityInput[]
+    updateMany?: OrderQualificationUpdateManyWithWhereWithoutActivityInput | OrderQualificationUpdateManyWithWhereWithoutActivityInput[]
+    deleteMany?: OrderQualificationScalarWhereInput | OrderQualificationScalarWhereInput[]
+  }
+
+  export type CustomerActivityUpdateManyWithoutActivityNestedInput = {
+    create?: XOR<CustomerActivityCreateWithoutActivityInput, CustomerActivityUncheckedCreateWithoutActivityInput> | CustomerActivityCreateWithoutActivityInput[] | CustomerActivityUncheckedCreateWithoutActivityInput[]
+    connectOrCreate?: CustomerActivityCreateOrConnectWithoutActivityInput | CustomerActivityCreateOrConnectWithoutActivityInput[]
+    upsert?: CustomerActivityUpsertWithWhereUniqueWithoutActivityInput | CustomerActivityUpsertWithWhereUniqueWithoutActivityInput[]
+    createMany?: CustomerActivityCreateManyActivityInputEnvelope
+    set?: CustomerActivityWhereUniqueInput | CustomerActivityWhereUniqueInput[]
+    disconnect?: CustomerActivityWhereUniqueInput | CustomerActivityWhereUniqueInput[]
+    delete?: CustomerActivityWhereUniqueInput | CustomerActivityWhereUniqueInput[]
+    connect?: CustomerActivityWhereUniqueInput | CustomerActivityWhereUniqueInput[]
+    update?: CustomerActivityUpdateWithWhereUniqueWithoutActivityInput | CustomerActivityUpdateWithWhereUniqueWithoutActivityInput[]
+    updateMany?: CustomerActivityUpdateManyWithWhereWithoutActivityInput | CustomerActivityUpdateManyWithWhereWithoutActivityInput[]
+    deleteMany?: CustomerActivityScalarWhereInput | CustomerActivityScalarWhereInput[]
+  }
+
+  export type CustomerPriceUncheckedUpdateManyWithoutActivityNestedInput = {
+    create?: XOR<CustomerPriceCreateWithoutActivityInput, CustomerPriceUncheckedCreateWithoutActivityInput> | CustomerPriceCreateWithoutActivityInput[] | CustomerPriceUncheckedCreateWithoutActivityInput[]
+    connectOrCreate?: CustomerPriceCreateOrConnectWithoutActivityInput | CustomerPriceCreateOrConnectWithoutActivityInput[]
+    upsert?: CustomerPriceUpsertWithWhereUniqueWithoutActivityInput | CustomerPriceUpsertWithWhereUniqueWithoutActivityInput[]
+    createMany?: CustomerPriceCreateManyActivityInputEnvelope
+    set?: CustomerPriceWhereUniqueInput | CustomerPriceWhereUniqueInput[]
+    disconnect?: CustomerPriceWhereUniqueInput | CustomerPriceWhereUniqueInput[]
+    delete?: CustomerPriceWhereUniqueInput | CustomerPriceWhereUniqueInput[]
+    connect?: CustomerPriceWhereUniqueInput | CustomerPriceWhereUniqueInput[]
+    update?: CustomerPriceUpdateWithWhereUniqueWithoutActivityInput | CustomerPriceUpdateWithWhereUniqueWithoutActivityInput[]
+    updateMany?: CustomerPriceUpdateManyWithWhereWithoutActivityInput | CustomerPriceUpdateManyWithWhereWithoutActivityInput[]
+    deleteMany?: CustomerPriceScalarWhereInput | CustomerPriceScalarWhereInput[]
+  }
+
+  export type OrderQualificationUncheckedUpdateManyWithoutActivityNestedInput = {
+    create?: XOR<OrderQualificationCreateWithoutActivityInput, OrderQualificationUncheckedCreateWithoutActivityInput> | OrderQualificationCreateWithoutActivityInput[] | OrderQualificationUncheckedCreateWithoutActivityInput[]
+    connectOrCreate?: OrderQualificationCreateOrConnectWithoutActivityInput | OrderQualificationCreateOrConnectWithoutActivityInput[]
+    upsert?: OrderQualificationUpsertWithWhereUniqueWithoutActivityInput | OrderQualificationUpsertWithWhereUniqueWithoutActivityInput[]
+    createMany?: OrderQualificationCreateManyActivityInputEnvelope
+    set?: OrderQualificationWhereUniqueInput | OrderQualificationWhereUniqueInput[]
+    disconnect?: OrderQualificationWhereUniqueInput | OrderQualificationWhereUniqueInput[]
+    delete?: OrderQualificationWhereUniqueInput | OrderQualificationWhereUniqueInput[]
+    connect?: OrderQualificationWhereUniqueInput | OrderQualificationWhereUniqueInput[]
+    update?: OrderQualificationUpdateWithWhereUniqueWithoutActivityInput | OrderQualificationUpdateWithWhereUniqueWithoutActivityInput[]
+    updateMany?: OrderQualificationUpdateManyWithWhereWithoutActivityInput | OrderQualificationUpdateManyWithWhereWithoutActivityInput[]
+    deleteMany?: OrderQualificationScalarWhereInput | OrderQualificationScalarWhereInput[]
+  }
+
+  export type CustomerActivityUncheckedUpdateManyWithoutActivityNestedInput = {
+    create?: XOR<CustomerActivityCreateWithoutActivityInput, CustomerActivityUncheckedCreateWithoutActivityInput> | CustomerActivityCreateWithoutActivityInput[] | CustomerActivityUncheckedCreateWithoutActivityInput[]
+    connectOrCreate?: CustomerActivityCreateOrConnectWithoutActivityInput | CustomerActivityCreateOrConnectWithoutActivityInput[]
+    upsert?: CustomerActivityUpsertWithWhereUniqueWithoutActivityInput | CustomerActivityUpsertWithWhereUniqueWithoutActivityInput[]
+    createMany?: CustomerActivityCreateManyActivityInputEnvelope
+    set?: CustomerActivityWhereUniqueInput | CustomerActivityWhereUniqueInput[]
+    disconnect?: CustomerActivityWhereUniqueInput | CustomerActivityWhereUniqueInput[]
+    delete?: CustomerActivityWhereUniqueInput | CustomerActivityWhereUniqueInput[]
+    connect?: CustomerActivityWhereUniqueInput | CustomerActivityWhereUniqueInput[]
+    update?: CustomerActivityUpdateWithWhereUniqueWithoutActivityInput | CustomerActivityUpdateWithWhereUniqueWithoutActivityInput[]
+    updateMany?: CustomerActivityUpdateManyWithWhereWithoutActivityInput | CustomerActivityUpdateManyWithWhereWithoutActivityInput[]
+    deleteMany?: CustomerActivityScalarWhereInput | CustomerActivityScalarWhereInput[]
+  }
+
+  export type CustomerCreateNestedOneWithoutCustomerPricesInput = {
+    create?: XOR<CustomerCreateWithoutCustomerPricesInput, CustomerUncheckedCreateWithoutCustomerPricesInput>
+    connectOrCreate?: CustomerCreateOrConnectWithoutCustomerPricesInput
+    connect?: CustomerWhereUniqueInput
+  }
+
+  export type ActivityCreateNestedOneWithoutCustomerPricesInput = {
+    create?: XOR<ActivityCreateWithoutCustomerPricesInput, ActivityUncheckedCreateWithoutCustomerPricesInput>
+    connectOrCreate?: ActivityCreateOrConnectWithoutCustomerPricesInput
+    connect?: ActivityWhereUniqueInput
+  }
+
+  export type CustomerUpdateOneRequiredWithoutCustomerPricesNestedInput = {
+    create?: XOR<CustomerCreateWithoutCustomerPricesInput, CustomerUncheckedCreateWithoutCustomerPricesInput>
+    connectOrCreate?: CustomerCreateOrConnectWithoutCustomerPricesInput
+    upsert?: CustomerUpsertWithoutCustomerPricesInput
+    connect?: CustomerWhereUniqueInput
+    update?: XOR<XOR<CustomerUpdateToOneWithWhereWithoutCustomerPricesInput, CustomerUpdateWithoutCustomerPricesInput>, CustomerUncheckedUpdateWithoutCustomerPricesInput>
+  }
+
+  export type ActivityUpdateOneRequiredWithoutCustomerPricesNestedInput = {
+    create?: XOR<ActivityCreateWithoutCustomerPricesInput, ActivityUncheckedCreateWithoutCustomerPricesInput>
+    connectOrCreate?: ActivityCreateOrConnectWithoutCustomerPricesInput
+    upsert?: ActivityUpsertWithoutCustomerPricesInput
+    connect?: ActivityWhereUniqueInput
+    update?: XOR<XOR<ActivityUpdateToOneWithWhereWithoutCustomerPricesInput, ActivityUpdateWithoutCustomerPricesInput>, ActivityUncheckedUpdateWithoutCustomerPricesInput>
+  }
+
+  export type CustomerCreateNestedOneWithoutCustomerActivitiesInput = {
+    create?: XOR<CustomerCreateWithoutCustomerActivitiesInput, CustomerUncheckedCreateWithoutCustomerActivitiesInput>
+    connectOrCreate?: CustomerCreateOrConnectWithoutCustomerActivitiesInput
+    connect?: CustomerWhereUniqueInput
+  }
+
+  export type ActivityCreateNestedOneWithoutCustomerActivitiesInput = {
+    create?: XOR<ActivityCreateWithoutCustomerActivitiesInput, ActivityUncheckedCreateWithoutCustomerActivitiesInput>
+    connectOrCreate?: ActivityCreateOrConnectWithoutCustomerActivitiesInput
+    connect?: ActivityWhereUniqueInput
+  }
+
+  export type OrderCreateNestedOneWithoutCustomerActivitiesInput = {
+    create?: XOR<OrderCreateWithoutCustomerActivitiesInput, OrderUncheckedCreateWithoutCustomerActivitiesInput>
+    connectOrCreate?: OrderCreateOrConnectWithoutCustomerActivitiesInput
+    connect?: OrderWhereUniqueInput
+  }
+
+  export type CustomerUpdateOneRequiredWithoutCustomerActivitiesNestedInput = {
+    create?: XOR<CustomerCreateWithoutCustomerActivitiesInput, CustomerUncheckedCreateWithoutCustomerActivitiesInput>
+    connectOrCreate?: CustomerCreateOrConnectWithoutCustomerActivitiesInput
+    upsert?: CustomerUpsertWithoutCustomerActivitiesInput
+    connect?: CustomerWhereUniqueInput
+    update?: XOR<XOR<CustomerUpdateToOneWithWhereWithoutCustomerActivitiesInput, CustomerUpdateWithoutCustomerActivitiesInput>, CustomerUncheckedUpdateWithoutCustomerActivitiesInput>
+  }
+
+  export type ActivityUpdateOneRequiredWithoutCustomerActivitiesNestedInput = {
+    create?: XOR<ActivityCreateWithoutCustomerActivitiesInput, ActivityUncheckedCreateWithoutCustomerActivitiesInput>
+    connectOrCreate?: ActivityCreateOrConnectWithoutCustomerActivitiesInput
+    upsert?: ActivityUpsertWithoutCustomerActivitiesInput
+    connect?: ActivityWhereUniqueInput
+    update?: XOR<XOR<ActivityUpdateToOneWithWhereWithoutCustomerActivitiesInput, ActivityUpdateWithoutCustomerActivitiesInput>, ActivityUncheckedUpdateWithoutCustomerActivitiesInput>
+  }
+
+  export type OrderUpdateOneWithoutCustomerActivitiesNestedInput = {
+    create?: XOR<OrderCreateWithoutCustomerActivitiesInput, OrderUncheckedCreateWithoutCustomerActivitiesInput>
+    connectOrCreate?: OrderCreateOrConnectWithoutCustomerActivitiesInput
+    upsert?: OrderUpsertWithoutCustomerActivitiesInput
+    disconnect?: OrderWhereInput | boolean
+    delete?: OrderWhereInput | boolean
+    connect?: OrderWhereUniqueInput
+    update?: XOR<XOR<OrderUpdateToOneWithWhereWithoutCustomerActivitiesInput, OrderUpdateWithoutCustomerActivitiesInput>, OrderUncheckedUpdateWithoutCustomerActivitiesInput>
+  }
+
   export type OrderCreateNestedOneWithoutQualificationsInput = {
     create?: XOR<OrderCreateWithoutQualificationsInput, OrderUncheckedCreateWithoutQualificationsInput>
     connectOrCreate?: OrderCreateOrConnectWithoutQualificationsInput
@@ -49478,6 +54787,12 @@ export namespace Prisma {
     create?: XOR<QualificationCreateWithoutOrderQualificationsInput, QualificationUncheckedCreateWithoutOrderQualificationsInput>
     connectOrCreate?: QualificationCreateOrConnectWithoutOrderQualificationsInput
     connect?: QualificationWhereUniqueInput
+  }
+
+  export type ActivityCreateNestedOneWithoutOrderQualificationsInput = {
+    create?: XOR<ActivityCreateWithoutOrderQualificationsInput, ActivityUncheckedCreateWithoutOrderQualificationsInput>
+    connectOrCreate?: ActivityCreateOrConnectWithoutOrderQualificationsInput
+    connect?: ActivityWhereUniqueInput
   }
 
   export type OrderUpdateOneRequiredWithoutQualificationsNestedInput = {
@@ -49494,6 +54809,16 @@ export namespace Prisma {
     upsert?: QualificationUpsertWithoutOrderQualificationsInput
     connect?: QualificationWhereUniqueInput
     update?: XOR<XOR<QualificationUpdateToOneWithWhereWithoutOrderQualificationsInput, QualificationUpdateWithoutOrderQualificationsInput>, QualificationUncheckedUpdateWithoutOrderQualificationsInput>
+  }
+
+  export type ActivityUpdateOneWithoutOrderQualificationsNestedInput = {
+    create?: XOR<ActivityCreateWithoutOrderQualificationsInput, ActivityUncheckedCreateWithoutOrderQualificationsInput>
+    connectOrCreate?: ActivityCreateOrConnectWithoutOrderQualificationsInput
+    upsert?: ActivityUpsertWithoutOrderQualificationsInput
+    disconnect?: ActivityWhereInput | boolean
+    delete?: ActivityWhereInput | boolean
+    connect?: ActivityWhereUniqueInput
+    update?: XOR<XOR<ActivityUpdateToOneWithWhereWithoutOrderQualificationsInput, ActivityUpdateWithoutOrderQualificationsInput>, ActivityUncheckedUpdateWithoutOrderQualificationsInput>
   }
 
   export type OrderCreateNestedOneWithoutEmployeeAssignmentsInput = {
@@ -50751,6 +56076,8 @@ export namespace Prisma {
     subAccounts?: SubAccountCreateNestedManyWithoutCustomerInput
     orders?: OrderCreateNestedManyWithoutCustomerInput
     ratings?: RatingCreateNestedManyWithoutCustomerInput
+    customerPrices?: CustomerPriceCreateNestedManyWithoutCustomerInput
+    customerActivities?: CustomerActivityCreateNestedManyWithoutCustomerInput
   }
 
   export type CustomerUncheckedCreateWithoutUserInput = {
@@ -50767,6 +56094,8 @@ export namespace Prisma {
     subAccounts?: SubAccountUncheckedCreateNestedManyWithoutCustomerInput
     orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
     ratings?: RatingUncheckedCreateNestedManyWithoutCustomerInput
+    customerPrices?: CustomerPriceUncheckedCreateNestedManyWithoutCustomerInput
+    customerActivities?: CustomerActivityUncheckedCreateNestedManyWithoutCustomerInput
   }
 
   export type CustomerCreateOrConnectWithoutUserInput = {
@@ -51143,6 +56472,8 @@ export namespace Prisma {
     subAccounts?: SubAccountUpdateManyWithoutCustomerNestedInput
     orders?: OrderUpdateManyWithoutCustomerNestedInput
     ratings?: RatingUpdateManyWithoutCustomerNestedInput
+    customerPrices?: CustomerPriceUpdateManyWithoutCustomerNestedInput
+    customerActivities?: CustomerActivityUpdateManyWithoutCustomerNestedInput
   }
 
   export type CustomerUncheckedUpdateWithoutUserInput = {
@@ -51159,6 +56490,8 @@ export namespace Prisma {
     subAccounts?: SubAccountUncheckedUpdateManyWithoutCustomerNestedInput
     orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
     ratings?: RatingUncheckedUpdateManyWithoutCustomerNestedInput
+    customerPrices?: CustomerPriceUncheckedUpdateManyWithoutCustomerNestedInput
+    customerActivities?: CustomerActivityUncheckedUpdateManyWithoutCustomerNestedInput
   }
 
   export type EmployeePerformanceUpsertWithWhereUniqueWithoutManualOverrideByInput = {
@@ -53508,6 +58841,7 @@ export namespace Prisma {
     ratings?: RatingCreateNestedManyWithoutOrderInput
     files?: FileCreateNestedManyWithoutOrderInput
     notes?: OrderNoteCreateNestedManyWithoutOrderInput
+    customerActivities?: CustomerActivityCreateNestedManyWithoutOrderInput
   }
 
   export type OrderUncheckedCreateWithoutCustomerInput = {
@@ -53539,6 +58873,7 @@ export namespace Prisma {
     ratings?: RatingUncheckedCreateNestedManyWithoutOrderInput
     files?: FileUncheckedCreateNestedManyWithoutOrderInput
     notes?: OrderNoteUncheckedCreateNestedManyWithoutOrderInput
+    customerActivities?: CustomerActivityUncheckedCreateNestedManyWithoutOrderInput
   }
 
   export type OrderCreateOrConnectWithoutCustomerInput = {
@@ -53586,6 +58921,74 @@ export namespace Prisma {
 
   export type RatingCreateManyCustomerInputEnvelope = {
     data: RatingCreateManyCustomerInput | RatingCreateManyCustomerInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type CustomerPriceCreateWithoutCustomerInput = {
+    id?: string
+    price: Decimal | DecimalJsLike | number | string
+    currency?: string
+    effectiveFrom: Date | string
+    effectiveTo?: Date | string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    activity: ActivityCreateNestedOneWithoutCustomerPricesInput
+  }
+
+  export type CustomerPriceUncheckedCreateWithoutCustomerInput = {
+    id?: string
+    activityId: string
+    price: Decimal | DecimalJsLike | number | string
+    currency?: string
+    effectiveFrom: Date | string
+    effectiveTo?: Date | string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type CustomerPriceCreateOrConnectWithoutCustomerInput = {
+    where: CustomerPriceWhereUniqueInput
+    create: XOR<CustomerPriceCreateWithoutCustomerInput, CustomerPriceUncheckedCreateWithoutCustomerInput>
+  }
+
+  export type CustomerPriceCreateManyCustomerInputEnvelope = {
+    data: CustomerPriceCreateManyCustomerInput | CustomerPriceCreateManyCustomerInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type CustomerActivityCreateWithoutCustomerInput = {
+    id?: string
+    quantity?: number
+    unitPrice?: Decimal | DecimalJsLike | number | string | null
+    lineTotal?: Decimal | DecimalJsLike | number | string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    activity: ActivityCreateNestedOneWithoutCustomerActivitiesInput
+    order?: OrderCreateNestedOneWithoutCustomerActivitiesInput
+  }
+
+  export type CustomerActivityUncheckedCreateWithoutCustomerInput = {
+    id?: string
+    activityId: string
+    orderId?: string | null
+    quantity?: number
+    unitPrice?: Decimal | DecimalJsLike | number | string | null
+    lineTotal?: Decimal | DecimalJsLike | number | string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type CustomerActivityCreateOrConnectWithoutCustomerInput = {
+    where: CustomerActivityWhereUniqueInput
+    create: XOR<CustomerActivityCreateWithoutCustomerInput, CustomerActivityUncheckedCreateWithoutCustomerInput>
+  }
+
+  export type CustomerActivityCreateManyCustomerInputEnvelope = {
+    data: CustomerActivityCreateManyCustomerInput | CustomerActivityCreateManyCustomerInput[]
     skipDuplicates?: boolean
   }
 
@@ -53748,6 +59151,70 @@ export namespace Prisma {
     data: XOR<RatingUpdateManyMutationInput, RatingUncheckedUpdateManyWithoutCustomerInput>
   }
 
+  export type CustomerPriceUpsertWithWhereUniqueWithoutCustomerInput = {
+    where: CustomerPriceWhereUniqueInput
+    update: XOR<CustomerPriceUpdateWithoutCustomerInput, CustomerPriceUncheckedUpdateWithoutCustomerInput>
+    create: XOR<CustomerPriceCreateWithoutCustomerInput, CustomerPriceUncheckedCreateWithoutCustomerInput>
+  }
+
+  export type CustomerPriceUpdateWithWhereUniqueWithoutCustomerInput = {
+    where: CustomerPriceWhereUniqueInput
+    data: XOR<CustomerPriceUpdateWithoutCustomerInput, CustomerPriceUncheckedUpdateWithoutCustomerInput>
+  }
+
+  export type CustomerPriceUpdateManyWithWhereWithoutCustomerInput = {
+    where: CustomerPriceScalarWhereInput
+    data: XOR<CustomerPriceUpdateManyMutationInput, CustomerPriceUncheckedUpdateManyWithoutCustomerInput>
+  }
+
+  export type CustomerPriceScalarWhereInput = {
+    AND?: CustomerPriceScalarWhereInput | CustomerPriceScalarWhereInput[]
+    OR?: CustomerPriceScalarWhereInput[]
+    NOT?: CustomerPriceScalarWhereInput | CustomerPriceScalarWhereInput[]
+    id?: StringFilter<"CustomerPrice"> | string
+    customerId?: StringFilter<"CustomerPrice"> | string
+    activityId?: StringFilter<"CustomerPrice"> | string
+    price?: DecimalFilter<"CustomerPrice"> | Decimal | DecimalJsLike | number | string
+    currency?: StringFilter<"CustomerPrice"> | string
+    effectiveFrom?: DateTimeFilter<"CustomerPrice"> | Date | string
+    effectiveTo?: DateTimeNullableFilter<"CustomerPrice"> | Date | string | null
+    isActive?: BoolFilter<"CustomerPrice"> | boolean
+    createdAt?: DateTimeFilter<"CustomerPrice"> | Date | string
+    updatedAt?: DateTimeFilter<"CustomerPrice"> | Date | string
+  }
+
+  export type CustomerActivityUpsertWithWhereUniqueWithoutCustomerInput = {
+    where: CustomerActivityWhereUniqueInput
+    update: XOR<CustomerActivityUpdateWithoutCustomerInput, CustomerActivityUncheckedUpdateWithoutCustomerInput>
+    create: XOR<CustomerActivityCreateWithoutCustomerInput, CustomerActivityUncheckedCreateWithoutCustomerInput>
+  }
+
+  export type CustomerActivityUpdateWithWhereUniqueWithoutCustomerInput = {
+    where: CustomerActivityWhereUniqueInput
+    data: XOR<CustomerActivityUpdateWithoutCustomerInput, CustomerActivityUncheckedUpdateWithoutCustomerInput>
+  }
+
+  export type CustomerActivityUpdateManyWithWhereWithoutCustomerInput = {
+    where: CustomerActivityScalarWhereInput
+    data: XOR<CustomerActivityUpdateManyMutationInput, CustomerActivityUncheckedUpdateManyWithoutCustomerInput>
+  }
+
+  export type CustomerActivityScalarWhereInput = {
+    AND?: CustomerActivityScalarWhereInput | CustomerActivityScalarWhereInput[]
+    OR?: CustomerActivityScalarWhereInput[]
+    NOT?: CustomerActivityScalarWhereInput | CustomerActivityScalarWhereInput[]
+    id?: StringFilter<"CustomerActivity"> | string
+    customerId?: StringFilter<"CustomerActivity"> | string
+    activityId?: StringFilter<"CustomerActivity"> | string
+    orderId?: StringNullableFilter<"CustomerActivity"> | string | null
+    quantity?: IntFilter<"CustomerActivity"> | number
+    unitPrice?: DecimalNullableFilter<"CustomerActivity"> | Decimal | DecimalJsLike | number | string | null
+    lineTotal?: DecimalNullableFilter<"CustomerActivity"> | Decimal | DecimalJsLike | number | string | null
+    isActive?: BoolFilter<"CustomerActivity"> | boolean
+    createdAt?: DateTimeFilter<"CustomerActivity"> | Date | string
+    updatedAt?: DateTimeFilter<"CustomerActivity"> | Date | string
+  }
+
   export type CustomerCreateWithoutSubAccountsInput = {
     id?: string
     companyName: string
@@ -53762,6 +59229,8 @@ export namespace Prisma {
     user?: UserCreateNestedOneWithoutCustomerInput
     orders?: OrderCreateNestedManyWithoutCustomerInput
     ratings?: RatingCreateNestedManyWithoutCustomerInput
+    customerPrices?: CustomerPriceCreateNestedManyWithoutCustomerInput
+    customerActivities?: CustomerActivityCreateNestedManyWithoutCustomerInput
   }
 
   export type CustomerUncheckedCreateWithoutSubAccountsInput = {
@@ -53778,6 +59247,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
     ratings?: RatingUncheckedCreateNestedManyWithoutCustomerInput
+    customerPrices?: CustomerPriceUncheckedCreateNestedManyWithoutCustomerInput
+    customerActivities?: CustomerActivityUncheckedCreateNestedManyWithoutCustomerInput
   }
 
   export type CustomerCreateOrConnectWithoutSubAccountsInput = {
@@ -53810,6 +59281,8 @@ export namespace Prisma {
     user?: UserUpdateOneWithoutCustomerNestedInput
     orders?: OrderUpdateManyWithoutCustomerNestedInput
     ratings?: RatingUpdateManyWithoutCustomerNestedInput
+    customerPrices?: CustomerPriceUpdateManyWithoutCustomerNestedInput
+    customerActivities?: CustomerActivityUpdateManyWithoutCustomerNestedInput
   }
 
   export type CustomerUncheckedUpdateWithoutSubAccountsInput = {
@@ -53826,6 +59299,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
     ratings?: RatingUncheckedUpdateManyWithoutCustomerNestedInput
+    customerPrices?: CustomerPriceUncheckedUpdateManyWithoutCustomerNestedInput
+    customerActivities?: CustomerActivityUncheckedUpdateManyWithoutCustomerNestedInput
   }
 
   export type CustomerCreateWithoutOrdersInput = {
@@ -53842,6 +59317,8 @@ export namespace Prisma {
     user?: UserCreateNestedOneWithoutCustomerInput
     subAccounts?: SubAccountCreateNestedManyWithoutCustomerInput
     ratings?: RatingCreateNestedManyWithoutCustomerInput
+    customerPrices?: CustomerPriceCreateNestedManyWithoutCustomerInput
+    customerActivities?: CustomerActivityCreateNestedManyWithoutCustomerInput
   }
 
   export type CustomerUncheckedCreateWithoutOrdersInput = {
@@ -53858,6 +59335,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     subAccounts?: SubAccountUncheckedCreateNestedManyWithoutCustomerInput
     ratings?: RatingUncheckedCreateNestedManyWithoutCustomerInput
+    customerPrices?: CustomerPriceUncheckedCreateNestedManyWithoutCustomerInput
+    customerActivities?: CustomerActivityUncheckedCreateNestedManyWithoutCustomerInput
   }
 
   export type CustomerCreateOrConnectWithoutOrdersInput = {
@@ -53896,14 +59375,24 @@ export namespace Prisma {
     id?: string
     required?: boolean
     minProficiency?: number
+    unit?: string | null
+    unitPrice?: Decimal | DecimalJsLike | number | string | null
+    quantity?: number
+    lineTotal?: Decimal | DecimalJsLike | number | string | null
     qualification: QualificationCreateNestedOneWithoutOrderQualificationsInput
+    activity?: ActivityCreateNestedOneWithoutOrderQualificationsInput
   }
 
   export type OrderQualificationUncheckedCreateWithoutOrderInput = {
     id?: string
     qualificationId: string
+    activityId?: string | null
     required?: boolean
     minProficiency?: number
+    unit?: string | null
+    unitPrice?: Decimal | DecimalJsLike | number | string | null
+    quantity?: number
+    lineTotal?: Decimal | DecimalJsLike | number | string | null
   }
 
   export type OrderQualificationCreateOrConnectWithoutOrderInput = {
@@ -54108,6 +59597,40 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type CustomerActivityCreateWithoutOrderInput = {
+    id?: string
+    quantity?: number
+    unitPrice?: Decimal | DecimalJsLike | number | string | null
+    lineTotal?: Decimal | DecimalJsLike | number | string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    customer: CustomerCreateNestedOneWithoutCustomerActivitiesInput
+    activity: ActivityCreateNestedOneWithoutCustomerActivitiesInput
+  }
+
+  export type CustomerActivityUncheckedCreateWithoutOrderInput = {
+    id?: string
+    customerId: string
+    activityId: string
+    quantity?: number
+    unitPrice?: Decimal | DecimalJsLike | number | string | null
+    lineTotal?: Decimal | DecimalJsLike | number | string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type CustomerActivityCreateOrConnectWithoutOrderInput = {
+    where: CustomerActivityWhereUniqueInput
+    create: XOR<CustomerActivityCreateWithoutOrderInput, CustomerActivityUncheckedCreateWithoutOrderInput>
+  }
+
+  export type CustomerActivityCreateManyOrderInputEnvelope = {
+    data: CustomerActivityCreateManyOrderInput | CustomerActivityCreateManyOrderInput[]
+    skipDuplicates?: boolean
+  }
+
   export type CustomerUpsertWithoutOrdersInput = {
     update: XOR<CustomerUpdateWithoutOrdersInput, CustomerUncheckedUpdateWithoutOrdersInput>
     create: XOR<CustomerCreateWithoutOrdersInput, CustomerUncheckedCreateWithoutOrdersInput>
@@ -54133,6 +59656,8 @@ export namespace Prisma {
     user?: UserUpdateOneWithoutCustomerNestedInput
     subAccounts?: SubAccountUpdateManyWithoutCustomerNestedInput
     ratings?: RatingUpdateManyWithoutCustomerNestedInput
+    customerPrices?: CustomerPriceUpdateManyWithoutCustomerNestedInput
+    customerActivities?: CustomerActivityUpdateManyWithoutCustomerNestedInput
   }
 
   export type CustomerUncheckedUpdateWithoutOrdersInput = {
@@ -54149,6 +59674,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     subAccounts?: SubAccountUncheckedUpdateManyWithoutCustomerNestedInput
     ratings?: RatingUncheckedUpdateManyWithoutCustomerNestedInput
+    customerPrices?: CustomerPriceUncheckedUpdateManyWithoutCustomerNestedInput
+    customerActivities?: CustomerActivityUncheckedUpdateManyWithoutCustomerNestedInput
   }
 
   export type TeamUpsertWithoutOrdersInput = {
@@ -54207,8 +59734,13 @@ export namespace Prisma {
     id?: StringFilter<"OrderQualification"> | string
     orderId?: StringFilter<"OrderQualification"> | string
     qualificationId?: StringFilter<"OrderQualification"> | string
+    activityId?: StringNullableFilter<"OrderQualification"> | string | null
     required?: BoolFilter<"OrderQualification"> | boolean
     minProficiency?: IntFilter<"OrderQualification"> | number
+    unit?: StringNullableFilter<"OrderQualification"> | string | null
+    unitPrice?: DecimalNullableFilter<"OrderQualification"> | Decimal | DecimalJsLike | number | string | null
+    quantity?: IntFilter<"OrderQualification"> | number
+    lineTotal?: DecimalNullableFilter<"OrderQualification"> | Decimal | DecimalJsLike | number | string | null
   }
 
   export type OrderAssignmentUpsertWithWhereUniqueWithoutOrderInput = {
@@ -54291,6 +59823,22 @@ export namespace Prisma {
     data: XOR<OrderNoteUpdateManyMutationInput, OrderNoteUncheckedUpdateManyWithoutOrderInput>
   }
 
+  export type CustomerActivityUpsertWithWhereUniqueWithoutOrderInput = {
+    where: CustomerActivityWhereUniqueInput
+    update: XOR<CustomerActivityUpdateWithoutOrderInput, CustomerActivityUncheckedUpdateWithoutOrderInput>
+    create: XOR<CustomerActivityCreateWithoutOrderInput, CustomerActivityUncheckedCreateWithoutOrderInput>
+  }
+
+  export type CustomerActivityUpdateWithWhereUniqueWithoutOrderInput = {
+    where: CustomerActivityWhereUniqueInput
+    data: XOR<CustomerActivityUpdateWithoutOrderInput, CustomerActivityUncheckedUpdateWithoutOrderInput>
+  }
+
+  export type CustomerActivityUpdateManyWithWhereWithoutOrderInput = {
+    where: CustomerActivityScalarWhereInput
+    data: XOR<CustomerActivityUpdateManyMutationInput, CustomerActivityUncheckedUpdateManyWithoutOrderInput>
+  }
+
   export type EmployeeQualificationCreateWithoutQualificationInput = {
     id?: string
     acquiredDate?: Date | string
@@ -54329,14 +59877,24 @@ export namespace Prisma {
     id?: string
     required?: boolean
     minProficiency?: number
+    unit?: string | null
+    unitPrice?: Decimal | DecimalJsLike | number | string | null
+    quantity?: number
+    lineTotal?: Decimal | DecimalJsLike | number | string | null
     order: OrderCreateNestedOneWithoutQualificationsInput
+    activity?: ActivityCreateNestedOneWithoutOrderQualificationsInput
   }
 
   export type OrderQualificationUncheckedCreateWithoutQualificationInput = {
     id?: string
     orderId: string
+    activityId?: string | null
     required?: boolean
     minProficiency?: number
+    unit?: string | null
+    unitPrice?: Decimal | DecimalJsLike | number | string | null
+    quantity?: number
+    lineTotal?: Decimal | DecimalJsLike | number | string | null
   }
 
   export type OrderQualificationCreateOrConnectWithoutQualificationInput = {
@@ -54621,6 +60179,620 @@ export namespace Prisma {
     orderQualifications?: OrderQualificationUncheckedUpdateManyWithoutQualificationNestedInput
   }
 
+  export type CustomerPriceCreateWithoutActivityInput = {
+    id?: string
+    price: Decimal | DecimalJsLike | number | string
+    currency?: string
+    effectiveFrom: Date | string
+    effectiveTo?: Date | string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    customer: CustomerCreateNestedOneWithoutCustomerPricesInput
+  }
+
+  export type CustomerPriceUncheckedCreateWithoutActivityInput = {
+    id?: string
+    customerId: string
+    price: Decimal | DecimalJsLike | number | string
+    currency?: string
+    effectiveFrom: Date | string
+    effectiveTo?: Date | string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type CustomerPriceCreateOrConnectWithoutActivityInput = {
+    where: CustomerPriceWhereUniqueInput
+    create: XOR<CustomerPriceCreateWithoutActivityInput, CustomerPriceUncheckedCreateWithoutActivityInput>
+  }
+
+  export type CustomerPriceCreateManyActivityInputEnvelope = {
+    data: CustomerPriceCreateManyActivityInput | CustomerPriceCreateManyActivityInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type OrderQualificationCreateWithoutActivityInput = {
+    id?: string
+    required?: boolean
+    minProficiency?: number
+    unit?: string | null
+    unitPrice?: Decimal | DecimalJsLike | number | string | null
+    quantity?: number
+    lineTotal?: Decimal | DecimalJsLike | number | string | null
+    order: OrderCreateNestedOneWithoutQualificationsInput
+    qualification: QualificationCreateNestedOneWithoutOrderQualificationsInput
+  }
+
+  export type OrderQualificationUncheckedCreateWithoutActivityInput = {
+    id?: string
+    orderId: string
+    qualificationId: string
+    required?: boolean
+    minProficiency?: number
+    unit?: string | null
+    unitPrice?: Decimal | DecimalJsLike | number | string | null
+    quantity?: number
+    lineTotal?: Decimal | DecimalJsLike | number | string | null
+  }
+
+  export type OrderQualificationCreateOrConnectWithoutActivityInput = {
+    where: OrderQualificationWhereUniqueInput
+    create: XOR<OrderQualificationCreateWithoutActivityInput, OrderQualificationUncheckedCreateWithoutActivityInput>
+  }
+
+  export type OrderQualificationCreateManyActivityInputEnvelope = {
+    data: OrderQualificationCreateManyActivityInput | OrderQualificationCreateManyActivityInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type CustomerActivityCreateWithoutActivityInput = {
+    id?: string
+    quantity?: number
+    unitPrice?: Decimal | DecimalJsLike | number | string | null
+    lineTotal?: Decimal | DecimalJsLike | number | string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    customer: CustomerCreateNestedOneWithoutCustomerActivitiesInput
+    order?: OrderCreateNestedOneWithoutCustomerActivitiesInput
+  }
+
+  export type CustomerActivityUncheckedCreateWithoutActivityInput = {
+    id?: string
+    customerId: string
+    orderId?: string | null
+    quantity?: number
+    unitPrice?: Decimal | DecimalJsLike | number | string | null
+    lineTotal?: Decimal | DecimalJsLike | number | string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type CustomerActivityCreateOrConnectWithoutActivityInput = {
+    where: CustomerActivityWhereUniqueInput
+    create: XOR<CustomerActivityCreateWithoutActivityInput, CustomerActivityUncheckedCreateWithoutActivityInput>
+  }
+
+  export type CustomerActivityCreateManyActivityInputEnvelope = {
+    data: CustomerActivityCreateManyActivityInput | CustomerActivityCreateManyActivityInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type CustomerPriceUpsertWithWhereUniqueWithoutActivityInput = {
+    where: CustomerPriceWhereUniqueInput
+    update: XOR<CustomerPriceUpdateWithoutActivityInput, CustomerPriceUncheckedUpdateWithoutActivityInput>
+    create: XOR<CustomerPriceCreateWithoutActivityInput, CustomerPriceUncheckedCreateWithoutActivityInput>
+  }
+
+  export type CustomerPriceUpdateWithWhereUniqueWithoutActivityInput = {
+    where: CustomerPriceWhereUniqueInput
+    data: XOR<CustomerPriceUpdateWithoutActivityInput, CustomerPriceUncheckedUpdateWithoutActivityInput>
+  }
+
+  export type CustomerPriceUpdateManyWithWhereWithoutActivityInput = {
+    where: CustomerPriceScalarWhereInput
+    data: XOR<CustomerPriceUpdateManyMutationInput, CustomerPriceUncheckedUpdateManyWithoutActivityInput>
+  }
+
+  export type OrderQualificationUpsertWithWhereUniqueWithoutActivityInput = {
+    where: OrderQualificationWhereUniqueInput
+    update: XOR<OrderQualificationUpdateWithoutActivityInput, OrderQualificationUncheckedUpdateWithoutActivityInput>
+    create: XOR<OrderQualificationCreateWithoutActivityInput, OrderQualificationUncheckedCreateWithoutActivityInput>
+  }
+
+  export type OrderQualificationUpdateWithWhereUniqueWithoutActivityInput = {
+    where: OrderQualificationWhereUniqueInput
+    data: XOR<OrderQualificationUpdateWithoutActivityInput, OrderQualificationUncheckedUpdateWithoutActivityInput>
+  }
+
+  export type OrderQualificationUpdateManyWithWhereWithoutActivityInput = {
+    where: OrderQualificationScalarWhereInput
+    data: XOR<OrderQualificationUpdateManyMutationInput, OrderQualificationUncheckedUpdateManyWithoutActivityInput>
+  }
+
+  export type CustomerActivityUpsertWithWhereUniqueWithoutActivityInput = {
+    where: CustomerActivityWhereUniqueInput
+    update: XOR<CustomerActivityUpdateWithoutActivityInput, CustomerActivityUncheckedUpdateWithoutActivityInput>
+    create: XOR<CustomerActivityCreateWithoutActivityInput, CustomerActivityUncheckedCreateWithoutActivityInput>
+  }
+
+  export type CustomerActivityUpdateWithWhereUniqueWithoutActivityInput = {
+    where: CustomerActivityWhereUniqueInput
+    data: XOR<CustomerActivityUpdateWithoutActivityInput, CustomerActivityUncheckedUpdateWithoutActivityInput>
+  }
+
+  export type CustomerActivityUpdateManyWithWhereWithoutActivityInput = {
+    where: CustomerActivityScalarWhereInput
+    data: XOR<CustomerActivityUpdateManyMutationInput, CustomerActivityUncheckedUpdateManyWithoutActivityInput>
+  }
+
+  export type CustomerCreateWithoutCustomerPricesInput = {
+    id?: string
+    companyName: string
+    contactEmail?: string | null
+    contactPhone?: string | null
+    address?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: boolean
+    industry?: string | null
+    taxNumber?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user?: UserCreateNestedOneWithoutCustomerInput
+    subAccounts?: SubAccountCreateNestedManyWithoutCustomerInput
+    orders?: OrderCreateNestedManyWithoutCustomerInput
+    ratings?: RatingCreateNestedManyWithoutCustomerInput
+    customerActivities?: CustomerActivityCreateNestedManyWithoutCustomerInput
+  }
+
+  export type CustomerUncheckedCreateWithoutCustomerPricesInput = {
+    id?: string
+    companyName: string
+    contactEmail?: string | null
+    contactPhone?: string | null
+    address?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: boolean
+    industry?: string | null
+    taxNumber?: string | null
+    userId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    subAccounts?: SubAccountUncheckedCreateNestedManyWithoutCustomerInput
+    orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
+    ratings?: RatingUncheckedCreateNestedManyWithoutCustomerInput
+    customerActivities?: CustomerActivityUncheckedCreateNestedManyWithoutCustomerInput
+  }
+
+  export type CustomerCreateOrConnectWithoutCustomerPricesInput = {
+    where: CustomerWhereUniqueInput
+    create: XOR<CustomerCreateWithoutCustomerPricesInput, CustomerUncheckedCreateWithoutCustomerPricesInput>
+  }
+
+  export type ActivityCreateWithoutCustomerPricesInput = {
+    id?: string
+    name: string
+    code?: string | null
+    description?: string | null
+    defaultPrice: Decimal | DecimalJsLike | number | string
+    unit?: string
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    orderQualifications?: OrderQualificationCreateNestedManyWithoutActivityInput
+    customerActivities?: CustomerActivityCreateNestedManyWithoutActivityInput
+  }
+
+  export type ActivityUncheckedCreateWithoutCustomerPricesInput = {
+    id?: string
+    name: string
+    code?: string | null
+    description?: string | null
+    defaultPrice: Decimal | DecimalJsLike | number | string
+    unit?: string
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    orderQualifications?: OrderQualificationUncheckedCreateNestedManyWithoutActivityInput
+    customerActivities?: CustomerActivityUncheckedCreateNestedManyWithoutActivityInput
+  }
+
+  export type ActivityCreateOrConnectWithoutCustomerPricesInput = {
+    where: ActivityWhereUniqueInput
+    create: XOR<ActivityCreateWithoutCustomerPricesInput, ActivityUncheckedCreateWithoutCustomerPricesInput>
+  }
+
+  export type CustomerUpsertWithoutCustomerPricesInput = {
+    update: XOR<CustomerUpdateWithoutCustomerPricesInput, CustomerUncheckedUpdateWithoutCustomerPricesInput>
+    create: XOR<CustomerCreateWithoutCustomerPricesInput, CustomerUncheckedCreateWithoutCustomerPricesInput>
+    where?: CustomerWhereInput
+  }
+
+  export type CustomerUpdateToOneWithWhereWithoutCustomerPricesInput = {
+    where?: CustomerWhereInput
+    data: XOR<CustomerUpdateWithoutCustomerPricesInput, CustomerUncheckedUpdateWithoutCustomerPricesInput>
+  }
+
+  export type CustomerUpdateWithoutCustomerPricesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    companyName?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    contactPhone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    industry?: NullableStringFieldUpdateOperationsInput | string | null
+    taxNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneWithoutCustomerNestedInput
+    subAccounts?: SubAccountUpdateManyWithoutCustomerNestedInput
+    orders?: OrderUpdateManyWithoutCustomerNestedInput
+    ratings?: RatingUpdateManyWithoutCustomerNestedInput
+    customerActivities?: CustomerActivityUpdateManyWithoutCustomerNestedInput
+  }
+
+  export type CustomerUncheckedUpdateWithoutCustomerPricesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    companyName?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    contactPhone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    industry?: NullableStringFieldUpdateOperationsInput | string | null
+    taxNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    subAccounts?: SubAccountUncheckedUpdateManyWithoutCustomerNestedInput
+    orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
+    ratings?: RatingUncheckedUpdateManyWithoutCustomerNestedInput
+    customerActivities?: CustomerActivityUncheckedUpdateManyWithoutCustomerNestedInput
+  }
+
+  export type ActivityUpsertWithoutCustomerPricesInput = {
+    update: XOR<ActivityUpdateWithoutCustomerPricesInput, ActivityUncheckedUpdateWithoutCustomerPricesInput>
+    create: XOR<ActivityCreateWithoutCustomerPricesInput, ActivityUncheckedCreateWithoutCustomerPricesInput>
+    where?: ActivityWhereInput
+  }
+
+  export type ActivityUpdateToOneWithWhereWithoutCustomerPricesInput = {
+    where?: ActivityWhereInput
+    data: XOR<ActivityUpdateWithoutCustomerPricesInput, ActivityUncheckedUpdateWithoutCustomerPricesInput>
+  }
+
+  export type ActivityUpdateWithoutCustomerPricesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    defaultPrice?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    unit?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    orderQualifications?: OrderQualificationUpdateManyWithoutActivityNestedInput
+    customerActivities?: CustomerActivityUpdateManyWithoutActivityNestedInput
+  }
+
+  export type ActivityUncheckedUpdateWithoutCustomerPricesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    defaultPrice?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    unit?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    orderQualifications?: OrderQualificationUncheckedUpdateManyWithoutActivityNestedInput
+    customerActivities?: CustomerActivityUncheckedUpdateManyWithoutActivityNestedInput
+  }
+
+  export type CustomerCreateWithoutCustomerActivitiesInput = {
+    id?: string
+    companyName: string
+    contactEmail?: string | null
+    contactPhone?: string | null
+    address?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: boolean
+    industry?: string | null
+    taxNumber?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user?: UserCreateNestedOneWithoutCustomerInput
+    subAccounts?: SubAccountCreateNestedManyWithoutCustomerInput
+    orders?: OrderCreateNestedManyWithoutCustomerInput
+    ratings?: RatingCreateNestedManyWithoutCustomerInput
+    customerPrices?: CustomerPriceCreateNestedManyWithoutCustomerInput
+  }
+
+  export type CustomerUncheckedCreateWithoutCustomerActivitiesInput = {
+    id?: string
+    companyName: string
+    contactEmail?: string | null
+    contactPhone?: string | null
+    address?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: boolean
+    industry?: string | null
+    taxNumber?: string | null
+    userId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    subAccounts?: SubAccountUncheckedCreateNestedManyWithoutCustomerInput
+    orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
+    ratings?: RatingUncheckedCreateNestedManyWithoutCustomerInput
+    customerPrices?: CustomerPriceUncheckedCreateNestedManyWithoutCustomerInput
+  }
+
+  export type CustomerCreateOrConnectWithoutCustomerActivitiesInput = {
+    where: CustomerWhereUniqueInput
+    create: XOR<CustomerCreateWithoutCustomerActivitiesInput, CustomerUncheckedCreateWithoutCustomerActivitiesInput>
+  }
+
+  export type ActivityCreateWithoutCustomerActivitiesInput = {
+    id?: string
+    name: string
+    code?: string | null
+    description?: string | null
+    defaultPrice: Decimal | DecimalJsLike | number | string
+    unit?: string
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    customerPrices?: CustomerPriceCreateNestedManyWithoutActivityInput
+    orderQualifications?: OrderQualificationCreateNestedManyWithoutActivityInput
+  }
+
+  export type ActivityUncheckedCreateWithoutCustomerActivitiesInput = {
+    id?: string
+    name: string
+    code?: string | null
+    description?: string | null
+    defaultPrice: Decimal | DecimalJsLike | number | string
+    unit?: string
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    customerPrices?: CustomerPriceUncheckedCreateNestedManyWithoutActivityInput
+    orderQualifications?: OrderQualificationUncheckedCreateNestedManyWithoutActivityInput
+  }
+
+  export type ActivityCreateOrConnectWithoutCustomerActivitiesInput = {
+    where: ActivityWhereUniqueInput
+    create: XOR<ActivityCreateWithoutCustomerActivitiesInput, ActivityUncheckedCreateWithoutCustomerActivitiesInput>
+  }
+
+  export type OrderCreateWithoutCustomerActivitiesInput = {
+    id?: string
+    orderNumber: string
+    title?: string | null
+    description?: string | null
+    scheduledDate: Date | string
+    startTime?: Date | string | null
+    endTime?: Date | string | null
+    duration?: number | null
+    location?: string | null
+    requiredEmployees?: number
+    priority?: number
+    specialInstructions?: string | null
+    status?: $Enums.OrderStatus
+    isArchived?: boolean
+    archivedAt?: Date | string | null
+    estimatedHours?: Decimal | DecimalJsLike | number | string | null
+    actualHours?: Decimal | DecimalJsLike | number | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    createdBy?: string | null
+    updatedBy?: string | null
+    customer: CustomerCreateNestedOneWithoutOrdersInput
+    team?: TeamCreateNestedOneWithoutOrdersInput
+    qualifications?: OrderQualificationCreateNestedManyWithoutOrderInput
+    orderAssignments?: OrderAssignmentCreateNestedManyWithoutOrderInput
+    employeeAssignments?: AssignmentCreateNestedManyWithoutOrderInput
+    ratings?: RatingCreateNestedManyWithoutOrderInput
+    files?: FileCreateNestedManyWithoutOrderInput
+    notes?: OrderNoteCreateNestedManyWithoutOrderInput
+  }
+
+  export type OrderUncheckedCreateWithoutCustomerActivitiesInput = {
+    id?: string
+    orderNumber: string
+    title?: string | null
+    description?: string | null
+    scheduledDate: Date | string
+    startTime?: Date | string | null
+    endTime?: Date | string | null
+    duration?: number | null
+    location?: string | null
+    requiredEmployees?: number
+    priority?: number
+    specialInstructions?: string | null
+    status?: $Enums.OrderStatus
+    isArchived?: boolean
+    archivedAt?: Date | string | null
+    estimatedHours?: Decimal | DecimalJsLike | number | string | null
+    actualHours?: Decimal | DecimalJsLike | number | string | null
+    customerId: string
+    teamId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    createdBy?: string | null
+    updatedBy?: string | null
+    qualifications?: OrderQualificationUncheckedCreateNestedManyWithoutOrderInput
+    orderAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutOrderInput
+    employeeAssignments?: AssignmentUncheckedCreateNestedManyWithoutOrderInput
+    ratings?: RatingUncheckedCreateNestedManyWithoutOrderInput
+    files?: FileUncheckedCreateNestedManyWithoutOrderInput
+    notes?: OrderNoteUncheckedCreateNestedManyWithoutOrderInput
+  }
+
+  export type OrderCreateOrConnectWithoutCustomerActivitiesInput = {
+    where: OrderWhereUniqueInput
+    create: XOR<OrderCreateWithoutCustomerActivitiesInput, OrderUncheckedCreateWithoutCustomerActivitiesInput>
+  }
+
+  export type CustomerUpsertWithoutCustomerActivitiesInput = {
+    update: XOR<CustomerUpdateWithoutCustomerActivitiesInput, CustomerUncheckedUpdateWithoutCustomerActivitiesInput>
+    create: XOR<CustomerCreateWithoutCustomerActivitiesInput, CustomerUncheckedCreateWithoutCustomerActivitiesInput>
+    where?: CustomerWhereInput
+  }
+
+  export type CustomerUpdateToOneWithWhereWithoutCustomerActivitiesInput = {
+    where?: CustomerWhereInput
+    data: XOR<CustomerUpdateWithoutCustomerActivitiesInput, CustomerUncheckedUpdateWithoutCustomerActivitiesInput>
+  }
+
+  export type CustomerUpdateWithoutCustomerActivitiesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    companyName?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    contactPhone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    industry?: NullableStringFieldUpdateOperationsInput | string | null
+    taxNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneWithoutCustomerNestedInput
+    subAccounts?: SubAccountUpdateManyWithoutCustomerNestedInput
+    orders?: OrderUpdateManyWithoutCustomerNestedInput
+    ratings?: RatingUpdateManyWithoutCustomerNestedInput
+    customerPrices?: CustomerPriceUpdateManyWithoutCustomerNestedInput
+  }
+
+  export type CustomerUncheckedUpdateWithoutCustomerActivitiesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    companyName?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    contactPhone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    industry?: NullableStringFieldUpdateOperationsInput | string | null
+    taxNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    subAccounts?: SubAccountUncheckedUpdateManyWithoutCustomerNestedInput
+    orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
+    ratings?: RatingUncheckedUpdateManyWithoutCustomerNestedInput
+    customerPrices?: CustomerPriceUncheckedUpdateManyWithoutCustomerNestedInput
+  }
+
+  export type ActivityUpsertWithoutCustomerActivitiesInput = {
+    update: XOR<ActivityUpdateWithoutCustomerActivitiesInput, ActivityUncheckedUpdateWithoutCustomerActivitiesInput>
+    create: XOR<ActivityCreateWithoutCustomerActivitiesInput, ActivityUncheckedCreateWithoutCustomerActivitiesInput>
+    where?: ActivityWhereInput
+  }
+
+  export type ActivityUpdateToOneWithWhereWithoutCustomerActivitiesInput = {
+    where?: ActivityWhereInput
+    data: XOR<ActivityUpdateWithoutCustomerActivitiesInput, ActivityUncheckedUpdateWithoutCustomerActivitiesInput>
+  }
+
+  export type ActivityUpdateWithoutCustomerActivitiesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    defaultPrice?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    unit?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    customerPrices?: CustomerPriceUpdateManyWithoutActivityNestedInput
+    orderQualifications?: OrderQualificationUpdateManyWithoutActivityNestedInput
+  }
+
+  export type ActivityUncheckedUpdateWithoutCustomerActivitiesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    defaultPrice?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    unit?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    customerPrices?: CustomerPriceUncheckedUpdateManyWithoutActivityNestedInput
+    orderQualifications?: OrderQualificationUncheckedUpdateManyWithoutActivityNestedInput
+  }
+
+  export type OrderUpsertWithoutCustomerActivitiesInput = {
+    update: XOR<OrderUpdateWithoutCustomerActivitiesInput, OrderUncheckedUpdateWithoutCustomerActivitiesInput>
+    create: XOR<OrderCreateWithoutCustomerActivitiesInput, OrderUncheckedCreateWithoutCustomerActivitiesInput>
+    where?: OrderWhereInput
+  }
+
+  export type OrderUpdateToOneWithWhereWithoutCustomerActivitiesInput = {
+    where?: OrderWhereInput
+    data: XOR<OrderUpdateWithoutCustomerActivitiesInput, OrderUncheckedUpdateWithoutCustomerActivitiesInput>
+  }
+
+  export type OrderUpdateWithoutCustomerActivitiesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orderNumber?: StringFieldUpdateOperationsInput | string
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    scheduledDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    startTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    endTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    duration?: NullableIntFieldUpdateOperationsInput | number | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    requiredEmployees?: IntFieldUpdateOperationsInput | number
+    priority?: IntFieldUpdateOperationsInput | number
+    specialInstructions?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    isArchived?: BoolFieldUpdateOperationsInput | boolean
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    estimatedHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    actualHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    customer?: CustomerUpdateOneRequiredWithoutOrdersNestedInput
+    team?: TeamUpdateOneWithoutOrdersNestedInput
+    qualifications?: OrderQualificationUpdateManyWithoutOrderNestedInput
+    orderAssignments?: OrderAssignmentUpdateManyWithoutOrderNestedInput
+    employeeAssignments?: AssignmentUpdateManyWithoutOrderNestedInput
+    ratings?: RatingUpdateManyWithoutOrderNestedInput
+    files?: FileUpdateManyWithoutOrderNestedInput
+    notes?: OrderNoteUpdateManyWithoutOrderNestedInput
+  }
+
+  export type OrderUncheckedUpdateWithoutCustomerActivitiesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orderNumber?: StringFieldUpdateOperationsInput | string
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    scheduledDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    startTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    endTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    duration?: NullableIntFieldUpdateOperationsInput | number | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    requiredEmployees?: IntFieldUpdateOperationsInput | number
+    priority?: IntFieldUpdateOperationsInput | number
+    specialInstructions?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    isArchived?: BoolFieldUpdateOperationsInput | boolean
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    estimatedHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    actualHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    customerId?: StringFieldUpdateOperationsInput | string
+    teamId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    qualifications?: OrderQualificationUncheckedUpdateManyWithoutOrderNestedInput
+    orderAssignments?: OrderAssignmentUncheckedUpdateManyWithoutOrderNestedInput
+    employeeAssignments?: AssignmentUncheckedUpdateManyWithoutOrderNestedInput
+    ratings?: RatingUncheckedUpdateManyWithoutOrderNestedInput
+    files?: FileUncheckedUpdateManyWithoutOrderNestedInput
+    notes?: OrderNoteUncheckedUpdateManyWithoutOrderNestedInput
+  }
+
   export type OrderCreateWithoutQualificationsInput = {
     id?: string
     orderNumber: string
@@ -54650,6 +60822,7 @@ export namespace Prisma {
     ratings?: RatingCreateNestedManyWithoutOrderInput
     files?: FileCreateNestedManyWithoutOrderInput
     notes?: OrderNoteCreateNestedManyWithoutOrderInput
+    customerActivities?: CustomerActivityCreateNestedManyWithoutOrderInput
   }
 
   export type OrderUncheckedCreateWithoutQualificationsInput = {
@@ -54681,6 +60854,7 @@ export namespace Prisma {
     ratings?: RatingUncheckedCreateNestedManyWithoutOrderInput
     files?: FileUncheckedCreateNestedManyWithoutOrderInput
     notes?: OrderNoteUncheckedCreateNestedManyWithoutOrderInput
+    customerActivities?: CustomerActivityUncheckedCreateNestedManyWithoutOrderInput
   }
 
   export type OrderCreateOrConnectWithoutQualificationsInput = {
@@ -54717,6 +60891,39 @@ export namespace Prisma {
   export type QualificationCreateOrConnectWithoutOrderQualificationsInput = {
     where: QualificationWhereUniqueInput
     create: XOR<QualificationCreateWithoutOrderQualificationsInput, QualificationUncheckedCreateWithoutOrderQualificationsInput>
+  }
+
+  export type ActivityCreateWithoutOrderQualificationsInput = {
+    id?: string
+    name: string
+    code?: string | null
+    description?: string | null
+    defaultPrice: Decimal | DecimalJsLike | number | string
+    unit?: string
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    customerPrices?: CustomerPriceCreateNestedManyWithoutActivityInput
+    customerActivities?: CustomerActivityCreateNestedManyWithoutActivityInput
+  }
+
+  export type ActivityUncheckedCreateWithoutOrderQualificationsInput = {
+    id?: string
+    name: string
+    code?: string | null
+    description?: string | null
+    defaultPrice: Decimal | DecimalJsLike | number | string
+    unit?: string
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    customerPrices?: CustomerPriceUncheckedCreateNestedManyWithoutActivityInput
+    customerActivities?: CustomerActivityUncheckedCreateNestedManyWithoutActivityInput
+  }
+
+  export type ActivityCreateOrConnectWithoutOrderQualificationsInput = {
+    where: ActivityWhereUniqueInput
+    create: XOR<ActivityCreateWithoutOrderQualificationsInput, ActivityUncheckedCreateWithoutOrderQualificationsInput>
   }
 
   export type OrderUpsertWithoutQualificationsInput = {
@@ -54759,6 +60966,7 @@ export namespace Prisma {
     ratings?: RatingUpdateManyWithoutOrderNestedInput
     files?: FileUpdateManyWithoutOrderNestedInput
     notes?: OrderNoteUpdateManyWithoutOrderNestedInput
+    customerActivities?: CustomerActivityUpdateManyWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateWithoutQualificationsInput = {
@@ -54790,6 +60998,7 @@ export namespace Prisma {
     ratings?: RatingUncheckedUpdateManyWithoutOrderNestedInput
     files?: FileUncheckedUpdateManyWithoutOrderNestedInput
     notes?: OrderNoteUncheckedUpdateManyWithoutOrderNestedInput
+    customerActivities?: CustomerActivityUncheckedUpdateManyWithoutOrderNestedInput
   }
 
   export type QualificationUpsertWithoutOrderQualificationsInput = {
@@ -54829,6 +61038,45 @@ export namespace Prisma {
     employeeQualifications?: EmployeeQualificationUncheckedUpdateManyWithoutQualificationNestedInput
   }
 
+  export type ActivityUpsertWithoutOrderQualificationsInput = {
+    update: XOR<ActivityUpdateWithoutOrderQualificationsInput, ActivityUncheckedUpdateWithoutOrderQualificationsInput>
+    create: XOR<ActivityCreateWithoutOrderQualificationsInput, ActivityUncheckedCreateWithoutOrderQualificationsInput>
+    where?: ActivityWhereInput
+  }
+
+  export type ActivityUpdateToOneWithWhereWithoutOrderQualificationsInput = {
+    where?: ActivityWhereInput
+    data: XOR<ActivityUpdateWithoutOrderQualificationsInput, ActivityUncheckedUpdateWithoutOrderQualificationsInput>
+  }
+
+  export type ActivityUpdateWithoutOrderQualificationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    defaultPrice?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    unit?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    customerPrices?: CustomerPriceUpdateManyWithoutActivityNestedInput
+    customerActivities?: CustomerActivityUpdateManyWithoutActivityNestedInput
+  }
+
+  export type ActivityUncheckedUpdateWithoutOrderQualificationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    defaultPrice?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    unit?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    customerPrices?: CustomerPriceUncheckedUpdateManyWithoutActivityNestedInput
+    customerActivities?: CustomerActivityUncheckedUpdateManyWithoutActivityNestedInput
+  }
+
   export type OrderCreateWithoutEmployeeAssignmentsInput = {
     id?: string
     orderNumber: string
@@ -54858,6 +61106,7 @@ export namespace Prisma {
     ratings?: RatingCreateNestedManyWithoutOrderInput
     files?: FileCreateNestedManyWithoutOrderInput
     notes?: OrderNoteCreateNestedManyWithoutOrderInput
+    customerActivities?: CustomerActivityCreateNestedManyWithoutOrderInput
   }
 
   export type OrderUncheckedCreateWithoutEmployeeAssignmentsInput = {
@@ -54889,6 +61138,7 @@ export namespace Prisma {
     ratings?: RatingUncheckedCreateNestedManyWithoutOrderInput
     files?: FileUncheckedCreateNestedManyWithoutOrderInput
     notes?: OrderNoteUncheckedCreateNestedManyWithoutOrderInput
+    customerActivities?: CustomerActivityUncheckedCreateNestedManyWithoutOrderInput
   }
 
   export type OrderCreateOrConnectWithoutEmployeeAssignmentsInput = {
@@ -55067,6 +61317,7 @@ export namespace Prisma {
     ratings?: RatingUpdateManyWithoutOrderNestedInput
     files?: FileUpdateManyWithoutOrderNestedInput
     notes?: OrderNoteUpdateManyWithoutOrderNestedInput
+    customerActivities?: CustomerActivityUpdateManyWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateWithoutEmployeeAssignmentsInput = {
@@ -55098,6 +61349,7 @@ export namespace Prisma {
     ratings?: RatingUncheckedUpdateManyWithoutOrderNestedInput
     files?: FileUncheckedUpdateManyWithoutOrderNestedInput
     notes?: OrderNoteUncheckedUpdateManyWithoutOrderNestedInput
+    customerActivities?: CustomerActivityUncheckedUpdateManyWithoutOrderNestedInput
   }
 
   export type EmployeeUpsertWithoutAssignmentsInput = {
@@ -55234,6 +61486,7 @@ export namespace Prisma {
     ratings?: RatingCreateNestedManyWithoutOrderInput
     files?: FileCreateNestedManyWithoutOrderInput
     notes?: OrderNoteCreateNestedManyWithoutOrderInput
+    customerActivities?: CustomerActivityCreateNestedManyWithoutOrderInput
   }
 
   export type OrderUncheckedCreateWithoutOrderAssignmentsInput = {
@@ -55265,6 +61518,7 @@ export namespace Prisma {
     ratings?: RatingUncheckedCreateNestedManyWithoutOrderInput
     files?: FileUncheckedCreateNestedManyWithoutOrderInput
     notes?: OrderNoteUncheckedCreateNestedManyWithoutOrderInput
+    customerActivities?: CustomerActivityUncheckedCreateNestedManyWithoutOrderInput
   }
 
   export type OrderCreateOrConnectWithoutOrderAssignmentsInput = {
@@ -55395,6 +61649,7 @@ export namespace Prisma {
     ratings?: RatingUpdateManyWithoutOrderNestedInput
     files?: FileUpdateManyWithoutOrderNestedInput
     notes?: OrderNoteUpdateManyWithoutOrderNestedInput
+    customerActivities?: CustomerActivityUpdateManyWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateWithoutOrderAssignmentsInput = {
@@ -55426,6 +61681,7 @@ export namespace Prisma {
     ratings?: RatingUncheckedUpdateManyWithoutOrderNestedInput
     files?: FileUncheckedUpdateManyWithoutOrderNestedInput
     notes?: OrderNoteUncheckedUpdateManyWithoutOrderNestedInput
+    customerActivities?: CustomerActivityUncheckedUpdateManyWithoutOrderNestedInput
   }
 
   export type EmployeeUpsertWithoutOrderAssignmentsInput = {
@@ -55718,6 +61974,7 @@ export namespace Prisma {
     employeeAssignments?: AssignmentCreateNestedManyWithoutOrderInput
     files?: FileCreateNestedManyWithoutOrderInput
     notes?: OrderNoteCreateNestedManyWithoutOrderInput
+    customerActivities?: CustomerActivityCreateNestedManyWithoutOrderInput
   }
 
   export type OrderUncheckedCreateWithoutRatingsInput = {
@@ -55749,6 +62006,7 @@ export namespace Prisma {
     employeeAssignments?: AssignmentUncheckedCreateNestedManyWithoutOrderInput
     files?: FileUncheckedCreateNestedManyWithoutOrderInput
     notes?: OrderNoteUncheckedCreateNestedManyWithoutOrderInput
+    customerActivities?: CustomerActivityUncheckedCreateNestedManyWithoutOrderInput
   }
 
   export type OrderCreateOrConnectWithoutRatingsInput = {
@@ -55853,6 +62111,8 @@ export namespace Prisma {
     user?: UserCreateNestedOneWithoutCustomerInput
     subAccounts?: SubAccountCreateNestedManyWithoutCustomerInput
     orders?: OrderCreateNestedManyWithoutCustomerInput
+    customerPrices?: CustomerPriceCreateNestedManyWithoutCustomerInput
+    customerActivities?: CustomerActivityCreateNestedManyWithoutCustomerInput
   }
 
   export type CustomerUncheckedCreateWithoutRatingsInput = {
@@ -55869,6 +62129,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     subAccounts?: SubAccountUncheckedCreateNestedManyWithoutCustomerInput
     orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
+    customerPrices?: CustomerPriceUncheckedCreateNestedManyWithoutCustomerInput
+    customerActivities?: CustomerActivityUncheckedCreateNestedManyWithoutCustomerInput
   }
 
   export type CustomerCreateOrConnectWithoutRatingsInput = {
@@ -55916,6 +62178,7 @@ export namespace Prisma {
     employeeAssignments?: AssignmentUpdateManyWithoutOrderNestedInput
     files?: FileUpdateManyWithoutOrderNestedInput
     notes?: OrderNoteUpdateManyWithoutOrderNestedInput
+    customerActivities?: CustomerActivityUpdateManyWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateWithoutRatingsInput = {
@@ -55947,6 +62210,7 @@ export namespace Prisma {
     employeeAssignments?: AssignmentUncheckedUpdateManyWithoutOrderNestedInput
     files?: FileUncheckedUpdateManyWithoutOrderNestedInput
     notes?: OrderNoteUncheckedUpdateManyWithoutOrderNestedInput
+    customerActivities?: CustomerActivityUncheckedUpdateManyWithoutOrderNestedInput
   }
 
   export type EmployeeUpsertWithoutRatingsInput = {
@@ -56063,6 +62327,8 @@ export namespace Prisma {
     user?: UserUpdateOneWithoutCustomerNestedInput
     subAccounts?: SubAccountUpdateManyWithoutCustomerNestedInput
     orders?: OrderUpdateManyWithoutCustomerNestedInput
+    customerPrices?: CustomerPriceUpdateManyWithoutCustomerNestedInput
+    customerActivities?: CustomerActivityUpdateManyWithoutCustomerNestedInput
   }
 
   export type CustomerUncheckedUpdateWithoutRatingsInput = {
@@ -56079,6 +62345,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     subAccounts?: SubAccountUncheckedUpdateManyWithoutCustomerNestedInput
     orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
+    customerPrices?: CustomerPriceUncheckedUpdateManyWithoutCustomerNestedInput
+    customerActivities?: CustomerActivityUncheckedUpdateManyWithoutCustomerNestedInput
   }
 
   export type EmployeeCreateWithoutWorkStatisticsInput = {
@@ -56803,6 +63071,7 @@ export namespace Prisma {
     employeeAssignments?: AssignmentCreateNestedManyWithoutOrderInput
     ratings?: RatingCreateNestedManyWithoutOrderInput
     files?: FileCreateNestedManyWithoutOrderInput
+    customerActivities?: CustomerActivityCreateNestedManyWithoutOrderInput
   }
 
   export type OrderUncheckedCreateWithoutNotesInput = {
@@ -56834,6 +63103,7 @@ export namespace Prisma {
     employeeAssignments?: AssignmentUncheckedCreateNestedManyWithoutOrderInput
     ratings?: RatingUncheckedCreateNestedManyWithoutOrderInput
     files?: FileUncheckedCreateNestedManyWithoutOrderInput
+    customerActivities?: CustomerActivityUncheckedCreateNestedManyWithoutOrderInput
   }
 
   export type OrderCreateOrConnectWithoutNotesInput = {
@@ -56944,6 +63214,7 @@ export namespace Prisma {
     employeeAssignments?: AssignmentUpdateManyWithoutOrderNestedInput
     ratings?: RatingUpdateManyWithoutOrderNestedInput
     files?: FileUpdateManyWithoutOrderNestedInput
+    customerActivities?: CustomerActivityUpdateManyWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateWithoutNotesInput = {
@@ -56975,6 +63246,7 @@ export namespace Prisma {
     employeeAssignments?: AssignmentUncheckedUpdateManyWithoutOrderNestedInput
     ratings?: RatingUncheckedUpdateManyWithoutOrderNestedInput
     files?: FileUncheckedUpdateManyWithoutOrderNestedInput
+    customerActivities?: CustomerActivityUncheckedUpdateManyWithoutOrderNestedInput
   }
 
   export type UserUpsertWithoutOrderNotesInput = {
@@ -57158,6 +63430,7 @@ export namespace Prisma {
     employeeAssignments?: AssignmentCreateNestedManyWithoutOrderInput
     ratings?: RatingCreateNestedManyWithoutOrderInput
     notes?: OrderNoteCreateNestedManyWithoutOrderInput
+    customerActivities?: CustomerActivityCreateNestedManyWithoutOrderInput
   }
 
   export type OrderUncheckedCreateWithoutFilesInput = {
@@ -57189,6 +63462,7 @@ export namespace Prisma {
     employeeAssignments?: AssignmentUncheckedCreateNestedManyWithoutOrderInput
     ratings?: RatingUncheckedCreateNestedManyWithoutOrderInput
     notes?: OrderNoteUncheckedCreateNestedManyWithoutOrderInput
+    customerActivities?: CustomerActivityUncheckedCreateNestedManyWithoutOrderInput
   }
 
   export type OrderCreateOrConnectWithoutFilesInput = {
@@ -57366,6 +63640,7 @@ export namespace Prisma {
     employeeAssignments?: AssignmentUpdateManyWithoutOrderNestedInput
     ratings?: RatingUpdateManyWithoutOrderNestedInput
     notes?: OrderNoteUpdateManyWithoutOrderNestedInput
+    customerActivities?: CustomerActivityUpdateManyWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateWithoutFilesInput = {
@@ -57397,6 +63672,7 @@ export namespace Prisma {
     employeeAssignments?: AssignmentUncheckedUpdateManyWithoutOrderNestedInput
     ratings?: RatingUncheckedUpdateManyWithoutOrderNestedInput
     notes?: OrderNoteUncheckedUpdateManyWithoutOrderNestedInput
+    customerActivities?: CustomerActivityUncheckedUpdateManyWithoutOrderNestedInput
   }
 
   export type AssignmentUpsertWithoutFilesInput = {
@@ -57716,6 +63992,7 @@ export namespace Prisma {
     ratings?: RatingCreateNestedManyWithoutOrderInput
     files?: FileCreateNestedManyWithoutOrderInput
     notes?: OrderNoteCreateNestedManyWithoutOrderInput
+    customerActivities?: CustomerActivityCreateNestedManyWithoutOrderInput
   }
 
   export type OrderUncheckedCreateWithoutTeamInput = {
@@ -57747,6 +64024,7 @@ export namespace Prisma {
     ratings?: RatingUncheckedCreateNestedManyWithoutOrderInput
     files?: FileUncheckedCreateNestedManyWithoutOrderInput
     notes?: OrderNoteUncheckedCreateNestedManyWithoutOrderInput
+    customerActivities?: CustomerActivityUncheckedCreateNestedManyWithoutOrderInput
   }
 
   export type OrderCreateOrConnectWithoutTeamInput = {
@@ -59404,6 +65682,30 @@ export namespace Prisma {
     updatedAt?: Date | string
   }
 
+  export type CustomerPriceCreateManyCustomerInput = {
+    id?: string
+    activityId: string
+    price: Decimal | DecimalJsLike | number | string
+    currency?: string
+    effectiveFrom: Date | string
+    effectiveTo?: Date | string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type CustomerActivityCreateManyCustomerInput = {
+    id?: string
+    activityId: string
+    orderId?: string | null
+    quantity?: number
+    unitPrice?: Decimal | DecimalJsLike | number | string | null
+    lineTotal?: Decimal | DecimalJsLike | number | string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
   export type SubAccountUpdateWithoutCustomerInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
@@ -59460,6 +65762,7 @@ export namespace Prisma {
     ratings?: RatingUpdateManyWithoutOrderNestedInput
     files?: FileUpdateManyWithoutOrderNestedInput
     notes?: OrderNoteUpdateManyWithoutOrderNestedInput
+    customerActivities?: CustomerActivityUpdateManyWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateWithoutCustomerInput = {
@@ -59491,6 +65794,7 @@ export namespace Prisma {
     ratings?: RatingUncheckedUpdateManyWithoutOrderNestedInput
     files?: FileUncheckedUpdateManyWithoutOrderNestedInput
     notes?: OrderNoteUncheckedUpdateManyWithoutOrderNestedInput
+    customerActivities?: CustomerActivityUncheckedUpdateManyWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateManyWithoutCustomerInput = {
@@ -59560,11 +65864,88 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type CustomerPriceUpdateWithoutCustomerInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    currency?: StringFieldUpdateOperationsInput | string
+    effectiveFrom?: DateTimeFieldUpdateOperationsInput | Date | string
+    effectiveTo?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    activity?: ActivityUpdateOneRequiredWithoutCustomerPricesNestedInput
+  }
+
+  export type CustomerPriceUncheckedUpdateWithoutCustomerInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    activityId?: StringFieldUpdateOperationsInput | string
+    price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    currency?: StringFieldUpdateOperationsInput | string
+    effectiveFrom?: DateTimeFieldUpdateOperationsInput | Date | string
+    effectiveTo?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CustomerPriceUncheckedUpdateManyWithoutCustomerInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    activityId?: StringFieldUpdateOperationsInput | string
+    price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    currency?: StringFieldUpdateOperationsInput | string
+    effectiveFrom?: DateTimeFieldUpdateOperationsInput | Date | string
+    effectiveTo?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CustomerActivityUpdateWithoutCustomerInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    quantity?: IntFieldUpdateOperationsInput | number
+    unitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    lineTotal?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    activity?: ActivityUpdateOneRequiredWithoutCustomerActivitiesNestedInput
+    order?: OrderUpdateOneWithoutCustomerActivitiesNestedInput
+  }
+
+  export type CustomerActivityUncheckedUpdateWithoutCustomerInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    activityId?: StringFieldUpdateOperationsInput | string
+    orderId?: NullableStringFieldUpdateOperationsInput | string | null
+    quantity?: IntFieldUpdateOperationsInput | number
+    unitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    lineTotal?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CustomerActivityUncheckedUpdateManyWithoutCustomerInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    activityId?: StringFieldUpdateOperationsInput | string
+    orderId?: NullableStringFieldUpdateOperationsInput | string | null
+    quantity?: IntFieldUpdateOperationsInput | number
+    unitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    lineTotal?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type OrderQualificationCreateManyOrderInput = {
     id?: string
     qualificationId: string
+    activityId?: string | null
     required?: boolean
     minProficiency?: number
+    unit?: string | null
+    unitPrice?: Decimal | DecimalJsLike | number | string | null
+    quantity?: number
+    lineTotal?: Decimal | DecimalJsLike | number | string | null
   }
 
   export type OrderAssignmentCreateManyOrderInput = {
@@ -59637,25 +66018,52 @@ export namespace Prisma {
     updatedAt?: Date | string
   }
 
+  export type CustomerActivityCreateManyOrderInput = {
+    id?: string
+    customerId: string
+    activityId: string
+    quantity?: number
+    unitPrice?: Decimal | DecimalJsLike | number | string | null
+    lineTotal?: Decimal | DecimalJsLike | number | string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
   export type OrderQualificationUpdateWithoutOrderInput = {
     id?: StringFieldUpdateOperationsInput | string
     required?: BoolFieldUpdateOperationsInput | boolean
     minProficiency?: IntFieldUpdateOperationsInput | number
+    unit?: NullableStringFieldUpdateOperationsInput | string | null
+    unitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    quantity?: IntFieldUpdateOperationsInput | number
+    lineTotal?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     qualification?: QualificationUpdateOneRequiredWithoutOrderQualificationsNestedInput
+    activity?: ActivityUpdateOneWithoutOrderQualificationsNestedInput
   }
 
   export type OrderQualificationUncheckedUpdateWithoutOrderInput = {
     id?: StringFieldUpdateOperationsInput | string
     qualificationId?: StringFieldUpdateOperationsInput | string
+    activityId?: NullableStringFieldUpdateOperationsInput | string | null
     required?: BoolFieldUpdateOperationsInput | boolean
     minProficiency?: IntFieldUpdateOperationsInput | number
+    unit?: NullableStringFieldUpdateOperationsInput | string | null
+    unitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    quantity?: IntFieldUpdateOperationsInput | number
+    lineTotal?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
   }
 
   export type OrderQualificationUncheckedUpdateManyWithoutOrderInput = {
     id?: StringFieldUpdateOperationsInput | string
     qualificationId?: StringFieldUpdateOperationsInput | string
+    activityId?: NullableStringFieldUpdateOperationsInput | string | null
     required?: BoolFieldUpdateOperationsInput | boolean
     minProficiency?: IntFieldUpdateOperationsInput | number
+    unit?: NullableStringFieldUpdateOperationsInput | string | null
+    unitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    quantity?: IntFieldUpdateOperationsInput | number
+    lineTotal?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
   }
 
   export type OrderAssignmentUpdateWithoutOrderInput = {
@@ -59870,6 +66278,42 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type CustomerActivityUpdateWithoutOrderInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    quantity?: IntFieldUpdateOperationsInput | number
+    unitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    lineTotal?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    customer?: CustomerUpdateOneRequiredWithoutCustomerActivitiesNestedInput
+    activity?: ActivityUpdateOneRequiredWithoutCustomerActivitiesNestedInput
+  }
+
+  export type CustomerActivityUncheckedUpdateWithoutOrderInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    customerId?: StringFieldUpdateOperationsInput | string
+    activityId?: StringFieldUpdateOperationsInput | string
+    quantity?: IntFieldUpdateOperationsInput | number
+    unitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    lineTotal?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CustomerActivityUncheckedUpdateManyWithoutOrderInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    customerId?: StringFieldUpdateOperationsInput | string
+    activityId?: StringFieldUpdateOperationsInput | string
+    quantity?: IntFieldUpdateOperationsInput | number
+    unitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    lineTotal?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type EmployeeQualificationCreateManyQualificationInput = {
     id?: string
     employeeId: string
@@ -59885,8 +66329,13 @@ export namespace Prisma {
   export type OrderQualificationCreateManyQualificationInput = {
     id?: string
     orderId: string
+    activityId?: string | null
     required?: boolean
     minProficiency?: number
+    unit?: string | null
+    unitPrice?: Decimal | DecimalJsLike | number | string | null
+    quantity?: number
+    lineTotal?: Decimal | DecimalJsLike | number | string | null
   }
 
   export type EmployeeQualificationUpdateWithoutQualificationInput = {
@@ -59929,21 +66378,180 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     required?: BoolFieldUpdateOperationsInput | boolean
     minProficiency?: IntFieldUpdateOperationsInput | number
+    unit?: NullableStringFieldUpdateOperationsInput | string | null
+    unitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    quantity?: IntFieldUpdateOperationsInput | number
+    lineTotal?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     order?: OrderUpdateOneRequiredWithoutQualificationsNestedInput
+    activity?: ActivityUpdateOneWithoutOrderQualificationsNestedInput
   }
 
   export type OrderQualificationUncheckedUpdateWithoutQualificationInput = {
     id?: StringFieldUpdateOperationsInput | string
     orderId?: StringFieldUpdateOperationsInput | string
+    activityId?: NullableStringFieldUpdateOperationsInput | string | null
     required?: BoolFieldUpdateOperationsInput | boolean
     minProficiency?: IntFieldUpdateOperationsInput | number
+    unit?: NullableStringFieldUpdateOperationsInput | string | null
+    unitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    quantity?: IntFieldUpdateOperationsInput | number
+    lineTotal?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
   }
 
   export type OrderQualificationUncheckedUpdateManyWithoutQualificationInput = {
     id?: StringFieldUpdateOperationsInput | string
     orderId?: StringFieldUpdateOperationsInput | string
+    activityId?: NullableStringFieldUpdateOperationsInput | string | null
     required?: BoolFieldUpdateOperationsInput | boolean
     minProficiency?: IntFieldUpdateOperationsInput | number
+    unit?: NullableStringFieldUpdateOperationsInput | string | null
+    unitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    quantity?: IntFieldUpdateOperationsInput | number
+    lineTotal?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+  }
+
+  export type CustomerPriceCreateManyActivityInput = {
+    id?: string
+    customerId: string
+    price: Decimal | DecimalJsLike | number | string
+    currency?: string
+    effectiveFrom: Date | string
+    effectiveTo?: Date | string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type OrderQualificationCreateManyActivityInput = {
+    id?: string
+    orderId: string
+    qualificationId: string
+    required?: boolean
+    minProficiency?: number
+    unit?: string | null
+    unitPrice?: Decimal | DecimalJsLike | number | string | null
+    quantity?: number
+    lineTotal?: Decimal | DecimalJsLike | number | string | null
+  }
+
+  export type CustomerActivityCreateManyActivityInput = {
+    id?: string
+    customerId: string
+    orderId?: string | null
+    quantity?: number
+    unitPrice?: Decimal | DecimalJsLike | number | string | null
+    lineTotal?: Decimal | DecimalJsLike | number | string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type CustomerPriceUpdateWithoutActivityInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    currency?: StringFieldUpdateOperationsInput | string
+    effectiveFrom?: DateTimeFieldUpdateOperationsInput | Date | string
+    effectiveTo?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    customer?: CustomerUpdateOneRequiredWithoutCustomerPricesNestedInput
+  }
+
+  export type CustomerPriceUncheckedUpdateWithoutActivityInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    customerId?: StringFieldUpdateOperationsInput | string
+    price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    currency?: StringFieldUpdateOperationsInput | string
+    effectiveFrom?: DateTimeFieldUpdateOperationsInput | Date | string
+    effectiveTo?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CustomerPriceUncheckedUpdateManyWithoutActivityInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    customerId?: StringFieldUpdateOperationsInput | string
+    price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    currency?: StringFieldUpdateOperationsInput | string
+    effectiveFrom?: DateTimeFieldUpdateOperationsInput | Date | string
+    effectiveTo?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type OrderQualificationUpdateWithoutActivityInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    required?: BoolFieldUpdateOperationsInput | boolean
+    minProficiency?: IntFieldUpdateOperationsInput | number
+    unit?: NullableStringFieldUpdateOperationsInput | string | null
+    unitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    quantity?: IntFieldUpdateOperationsInput | number
+    lineTotal?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    order?: OrderUpdateOneRequiredWithoutQualificationsNestedInput
+    qualification?: QualificationUpdateOneRequiredWithoutOrderQualificationsNestedInput
+  }
+
+  export type OrderQualificationUncheckedUpdateWithoutActivityInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orderId?: StringFieldUpdateOperationsInput | string
+    qualificationId?: StringFieldUpdateOperationsInput | string
+    required?: BoolFieldUpdateOperationsInput | boolean
+    minProficiency?: IntFieldUpdateOperationsInput | number
+    unit?: NullableStringFieldUpdateOperationsInput | string | null
+    unitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    quantity?: IntFieldUpdateOperationsInput | number
+    lineTotal?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+  }
+
+  export type OrderQualificationUncheckedUpdateManyWithoutActivityInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orderId?: StringFieldUpdateOperationsInput | string
+    qualificationId?: StringFieldUpdateOperationsInput | string
+    required?: BoolFieldUpdateOperationsInput | boolean
+    minProficiency?: IntFieldUpdateOperationsInput | number
+    unit?: NullableStringFieldUpdateOperationsInput | string | null
+    unitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    quantity?: IntFieldUpdateOperationsInput | number
+    lineTotal?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+  }
+
+  export type CustomerActivityUpdateWithoutActivityInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    quantity?: IntFieldUpdateOperationsInput | number
+    unitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    lineTotal?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    customer?: CustomerUpdateOneRequiredWithoutCustomerActivitiesNestedInput
+    order?: OrderUpdateOneWithoutCustomerActivitiesNestedInput
+  }
+
+  export type CustomerActivityUncheckedUpdateWithoutActivityInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    customerId?: StringFieldUpdateOperationsInput | string
+    orderId?: NullableStringFieldUpdateOperationsInput | string | null
+    quantity?: IntFieldUpdateOperationsInput | number
+    unitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    lineTotal?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CustomerActivityUncheckedUpdateManyWithoutActivityInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    customerId?: StringFieldUpdateOperationsInput | string
+    orderId?: NullableStringFieldUpdateOperationsInput | string | null
+    quantity?: IntFieldUpdateOperationsInput | number
+    unitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    lineTotal?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type FileCreateManyAssignmentInput = {
@@ -60200,6 +66808,7 @@ export namespace Prisma {
     ratings?: RatingUpdateManyWithoutOrderNestedInput
     files?: FileUpdateManyWithoutOrderNestedInput
     notes?: OrderNoteUpdateManyWithoutOrderNestedInput
+    customerActivities?: CustomerActivityUpdateManyWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateWithoutTeamInput = {
@@ -60231,6 +66840,7 @@ export namespace Prisma {
     ratings?: RatingUncheckedUpdateManyWithoutOrderNestedInput
     files?: FileUncheckedUpdateManyWithoutOrderNestedInput
     notes?: OrderNoteUncheckedUpdateManyWithoutOrderNestedInput
+    customerActivities?: CustomerActivityUncheckedUpdateManyWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateManyWithoutTeamInput = {
