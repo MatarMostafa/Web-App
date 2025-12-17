@@ -135,7 +135,7 @@ router.get(
   "/customers/:customerId/sub-accounts",
   authMiddleware,
   roleMiddleware(["ADMIN", "SUPER_ADMIN"]),
-  async (req: AuthRequest, res) => {
+  async (req, res) => {
     try {
       const { customerId } = req.params;
       const subAccounts = await subAccountService.getSubAccountsByCustomer(customerId);
@@ -150,7 +150,8 @@ router.post(
   "/customers/:customerId/sub-accounts",
   authMiddleware,
   roleMiddleware(["ADMIN", "SUPER_ADMIN"]),
-  async (req: AuthRequest, res) => {
+  async (req, res) => {
+    const authReq = req as AuthRequest;
     try {
       const { customerId } = req.params;
       const { name, username, password, email } = req.body;
@@ -161,7 +162,7 @@ router.post(
         password,
         email,
         customerId,
-        createdBy: req.user?.id,
+        createdBy: authReq.user?.id,
       });
 
       res.status(201).json({
@@ -183,7 +184,7 @@ router.put(
   "/sub-accounts/:id",
   authMiddleware,
   roleMiddleware(["ADMIN", "SUPER_ADMIN"]),
-  async (req: AuthRequest, res) => {
+  async (req, res) => {
     try {
       const { id } = req.params;
       const { name, email, isActive } = req.body;
@@ -209,7 +210,7 @@ router.delete(
   "/sub-accounts/:id",
   authMiddleware,
   roleMiddleware(["ADMIN", "SUPER_ADMIN"]),
-  async (req: AuthRequest, res) => {
+  async (req, res) => {
     try {
       const { id } = req.params;
       await subAccountService.deleteSubAccount(id);
@@ -228,7 +229,7 @@ router.put(
   "/sub-accounts/:id/reset-password",
   authMiddleware,
   roleMiddleware(["ADMIN", "SUPER_ADMIN"]),
-  async (req: AuthRequest, res) => {
+  async (req, res) => {
     try {
       const { id } = req.params;
       const { newPassword } = req.body;

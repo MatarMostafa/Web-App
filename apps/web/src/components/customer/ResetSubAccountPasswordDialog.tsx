@@ -101,7 +101,7 @@ export default function ResetSubAccountPasswordDialog({
           </DialogTitle>
           <div className="text-sm text-gray-600 mt-2">
             <div><strong>{t('common.name')}:</strong> {subAccount.name}</div>
-            <div><strong>{t('common.username')}:</strong> {subAccount.user?.username}</div>
+            <div><strong>{t('common.email')}:</strong> {subAccount.user?.email}</div>
           </div>
         </DialogHeader>
 

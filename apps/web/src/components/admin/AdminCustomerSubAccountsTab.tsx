@@ -36,8 +36,7 @@ const AdminCustomerSubAccountsTab: React.FC<AdminCustomerSubAccountsTabProps> = 
   const filteredSubAccounts = subAccounts.filter(
     (subAccount) =>
       subAccount.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (subAccount.user?.email && subAccount.user.email.toLowerCase().includes(searchQuery.toLowerCase())) ||
-      (subAccount.user?.username && subAccount.user.username.toLowerCase().includes(searchQuery.toLowerCase()))
+      (subAccount.user?.email && subAccount.user.email.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
   const handleEdit = (subAccount: SubAccount) => {
