@@ -315,3 +315,18 @@ export const deleteOrderRating = async (req: Request, res: Response) => {
     });
   }
 };
+
+// -------------------- Order Activities --------------------
+export const getOrderActivities = async (req: Request, res: Response) => {
+  try {
+    const activities = await orderService.getOrderActivitiesService(req.params.orderId);
+    res.json({ success: true, data: activities });
+  } catch (error) {
+    console.error("Get order activities error:", error);
+    res.status(500).json({ 
+      success: false,
+      message: "Fehler beim Abrufen der Auftragsaktivitäten", 
+      error: error instanceof Error ? error.message : String(error)
+    });
+  }
+};

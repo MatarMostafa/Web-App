@@ -56,6 +56,7 @@ export const OrderDetailPage: React.FC<OrderDetailPageProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [assignedStaffCount, setAssignedStaffCount] = useState<number>(0);
   const [dataFetched, setDataFetched] = useState(false);
+  const [orderActivities, setOrderActivities] = useState<any[]>([]);
 
   const { orders, fetchOrders, getOrderEmployeeNames } = useOrderStore();
   const { employeeAssignments, fetchEmployeeAssignments } = useEmployeeOrderStore();
@@ -72,6 +73,13 @@ export const OrderDetailPage: React.FC<OrderDetailPageProps> = ({
       });
     }
   }, [orderId, userRole, fetchOrders, fetchEmployeeAssignments]);
+
+  // Set activities from order data
+  useEffect(() => {
+    if (order && (order as any).customerActivities) {
+      setOrderActivities((order as any).customerActivities);
+    }
+  }, [order]);
 
   // Update order when stores change
   useEffect(() => {
@@ -241,6 +249,58 @@ export const OrderDetailPage: React.FC<OrderDetailPageProps> = ({
           )}
         </CardContent>
       </Card>
+
+      {/* Activities */}
+      {orderActivities.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Activities & Pricing</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {orderActivities.map((customerActivity, index) => (
+                <div key={index} className="flex items-center justify-between p-3 bg-muted rounded-lg">
+                  <div>
+                    <p className="font-medium">
+                      {customerActivity.activity?.name || 'Unknown Activity'}
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      Quantity: {customerActivity.quantity || 1}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    {customerActivity.unitPrice && (
+                      <>
+                        <p className="font-medium">€{Number(customerActivity.unitPrice).toFixed(2)}</p>
+                        {customerActivity.lineTotal && (
+                          <p className="text-sm text-muted-foreground">
+                            Total: €{Number(customerActivity.lineTotal).toFixed(2)}
+                          </p>
+                        )}
+                      </>
+                    )}
+                  </div>
+                </div>
+              ))}
+              {orderActivities.some(ca => ca.lineTotal) && (
+                <div className="border-t pt-3 mt-3">
+                  <div className="flex justify-between items-center font-semibold">
+                    <span>Total Order Value:</span>
+                    <span>€{orderActivities.reduce((sum, ca) => sum + (Number(ca.lineTotal) || 0), 0).toFixed(2)}</span>
+                  </div>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+      {orderActivities.length === 0 && (
+        <Card>
+          <CardContent className="p-6 text-center text-muted-foreground">
+            No activities assigned to this order
+          </CardContent>
+        </Card>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left Column - Timeline */}

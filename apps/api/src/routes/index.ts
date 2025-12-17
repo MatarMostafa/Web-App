@@ -18,6 +18,7 @@ import absenceRoutes from "./absenceRoutes";
 import settingsRoutes from "./settingsRoutes";
 import teamRoutes from "./teamRoutes";
 import teamLeaderRoutes from "./teamLeaderRoutes";
+import customerPricingRoutes from "./customerPricingRoutes";
 
 const router = express.Router();
 
@@ -68,5 +69,8 @@ router.use("/teams", teamRoutes);
 
 // Team Leader routes
 router.use("/team-leader", teamLeaderRoutes);
+
+// Customer Pricing routes
+router.use("/pricing", customerPricingRoutes);
 
 export default router;
