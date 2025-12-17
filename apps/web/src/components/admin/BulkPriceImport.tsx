@@ -7,7 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import api from '@/lib/api';
+import { apiClient } from '@/lib/api-client';
 
 interface BulkPriceImportProps {
   customerId: string;
@@ -46,7 +46,7 @@ export default function BulkPriceImport({ customerId, onImportComplete }: BulkPr
         const [activityId, price, effectiveFrom, effectiveTo] = line.split(',');
         
         try {
-          await api.post(`/pricing/customers/${customerId}/prices`, {
+          await apiClient.post(`/pricing/customers/${customerId}/prices`, {
             activityId: activityId.trim(),
             price: parseFloat(price),
             effectiveFrom: new Date(effectiveFrom.trim()).toISOString(),
