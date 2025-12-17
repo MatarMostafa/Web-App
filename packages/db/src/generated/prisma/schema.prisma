@@ -336,11 +336,6 @@ model SubAccount {
   code     String?
   isActive Boolean @default(true)
 
-  // Permissions
-  canCreateOrders Boolean @default(true)
-  canEditOrders   Boolean @default(true)
-  canViewReports  Boolean @default(false)
-
   // Relations
   customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
   customerId String
