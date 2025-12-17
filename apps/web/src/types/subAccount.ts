@@ -11,6 +11,7 @@ export interface SubAccount {
   updatedBy?: string;
   user?: {
     id: string;
+    username: string;
     email: string;
     role: string;
     isActive: boolean;
