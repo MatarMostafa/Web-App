@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import api from '@/lib/api';
+import { apiClient } from '@/lib/api-client';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 
 interface Order {
@@ -35,8 +35,8 @@ export default function AnalyticsPage() {
 
   const fetchOrders = async () => {
     try {
-      const { data } = await api.get('/orders');
-      setOrders(data);
+      const data = await apiClient.get<Order[]>('/orders');
+      setOrders(data || []);
     } catch (error) {
       toast.error('Failed to load orders');
     }

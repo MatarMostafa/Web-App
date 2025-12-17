@@ -6,7 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import api from '@/lib/api';
+import { apiClient } from '@/lib/api-client';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 interface PriceHistoryProps {
@@ -41,8 +41,8 @@ export default function PriceHistory({ customerId }: PriceHistoryProps) {
 
   const fetchActivities = async () => {
     try {
-      const { data } = await api.get('/pricing/activities');
-      setActivities(data);
+      const data = await apiClient.get<Activity[]>('/pricing/activities');
+      setActivities(data || []);
     } catch (error) {
       toast.error('Failed to load activities');
     }
@@ -50,8 +50,8 @@ export default function PriceHistory({ customerId }: PriceHistoryProps) {
 
   const fetchHistory = async () => {
     try {
-      const { data } = await api.get(`/pricing/customers/${customerId}/prices`);
-      const filtered = data
+      const data = await apiClient.get<any[]>(`/pricing/customers/${customerId}/prices`);
+      const filtered = (data || [])
         .filter((p: any) => p.activityId === selectedActivity)
         .sort((a: any, b: any) => new Date(a.effectiveFrom).getTime() - new Date(b.effectiveFrom).getTime());
       setHistory(filtered);
