@@ -1320,7 +1320,6 @@
       "table": {
         "name": "Name",
         "email": "Email",
-
         "status": "Status",
         "lastLogin": "Last Login",
         "actions": "Actions",

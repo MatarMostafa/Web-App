@@ -1321,7 +1321,6 @@
       "table": {
         "name": "Name",
         "email": "E-Mail",
-
         "status": "Status",
         "lastLogin": "Letzte Anmeldung",
         "actions": "Aktionen",
