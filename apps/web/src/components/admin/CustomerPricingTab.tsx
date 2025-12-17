@@ -10,7 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
-import api from '@/lib/api';
+import { apiClient } from '@/lib/api-client';
 
 interface CustomerPricingTabProps {
   customerId: string;
@@ -53,8 +53,8 @@ export default function CustomerPricingTab({ customerId }: CustomerPricingTabPro
 
   const fetchPrices = async () => {
     try {
-      const { data } = await api.get(`/pricing/customers/${customerId}/prices`);
-      setPrices(data);
+      const data = await apiClient.get<any[]>(`/pricing/customers/${customerId}/prices`);
+      setPrices(data || []);
     } catch (error) {
       toast.error('Failed to load prices');
     }
@@ -62,8 +62,8 @@ export default function CustomerPricingTab({ customerId }: CustomerPricingTabPro
 
   const fetchActivities = async () => {
     try {
-      const { data } = await api.get('/pricing/activities');
-      setActivities(data);
+      const data = await apiClient.get<any[]>('/pricing/activities');
+      setActivities(data || []);
     } catch (error) {
       toast.error('Failed to load activities');
     }
@@ -72,7 +72,7 @@ export default function CustomerPricingTab({ customerId }: CustomerPricingTabPro
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await api.post(`/pricing/customers/${customerId}/prices`, {
+      await apiClient.post(`/pricing/customers/${customerId}/prices`, {
         ...formData,
         price: parseFloat(formData.price),
         effectiveFrom: new Date(formData.effectiveFrom).toISOString(),
@@ -90,7 +90,7 @@ export default function CustomerPricingTab({ customerId }: CustomerPricingTabPro
   const handleDelete = async (priceId: string) => {
     if (!confirm('Delete this price?')) return;
     try {
-      await api.delete(`/pricing/customers/${customerId}/prices/${priceId}`);
+      await apiClient.delete(`/pricing/customers/${customerId}/prices/${priceId}`);
       toast.success('Price deleted');
       fetchPrices();
     } catch (error) {
