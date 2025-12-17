@@ -237,7 +237,7 @@ export default function AddCustomerSubAccountDialog({
               </Button>
               <Button
                 type="submit"
-                className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg"
+                className="flex-1 bg-primary hover:bg-primary/90 rounded-lg"
                 disabled={loading}
               >
                 {loading ? (

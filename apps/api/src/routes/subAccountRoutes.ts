@@ -10,10 +10,11 @@ router.post(
   "/",
   authMiddleware,
   roleMiddleware(["CUSTOMER"]),
-  async (req: AuthRequest, res) => {
+  async (req, res) => {
+    const authReq = req as AuthRequest;
     try {
       const { name, username, password, email } = req.body;
-      const userId = req.user?.id;
+      const userId = authReq.user?.id;
       
       if (!userId) {
         return res.status(401).json({ message: "Unauthorized" });
@@ -59,9 +60,10 @@ router.get(
   "/",
   authMiddleware,
   roleMiddleware(["CUSTOMER"]),
-  async (req: AuthRequest, res) => {
+  async (req, res) => {
+    const authReq = req as AuthRequest;
     try {
-      const userId = req.user?.id;
+      const userId = authReq.user?.id;
       
       if (!userId) {
         return res.status(401).json({ message: "Unauthorized" });
@@ -94,11 +96,12 @@ router.put(
   "/:id",
   authMiddleware,
   roleMiddleware(["CUSTOMER"]),
-  async (req: AuthRequest, res) => {
+  async (req, res) => {
+    const authReq = req as AuthRequest;
     try {
       const { id } = req.params;
       const { name, email, isActive } = req.body;
-      const userId = req.user?.id;
+      const userId = authReq.user?.id;
       
       if (!userId) {
         return res.status(401).json({ message: "Unauthorized" });
@@ -142,10 +145,11 @@ router.delete(
   "/:id",
   authMiddleware,
   roleMiddleware(["CUSTOMER"]),
-  async (req: AuthRequest, res) => {
+  async (req, res) => {
+    const authReq = req as AuthRequest;
     try {
       const { id } = req.params;
-      const userId = req.user?.id;
+      const userId = authReq.user?.id;
       
       if (!userId) {
         return res.status(401).json({ message: "Unauthorized" });
@@ -184,11 +188,12 @@ router.put(
   "/:id/reset-password",
   authMiddleware,
   roleMiddleware(["CUSTOMER"]),
-  async (req: AuthRequest, res) => {
+  async (req, res) => {
+    const authReq = req as AuthRequest;
     try {
       const { id } = req.params;
       const { newPassword } = req.body;
-      const userId = req.user?.id;
+      const userId = authReq.user?.id;
       
       if (!userId) {
         return res.status(401).json({ message: "Unauthorized" });

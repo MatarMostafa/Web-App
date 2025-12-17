@@ -11,16 +11,16 @@ export interface AuthRequest extends Request {
     isActive: boolean;
     employee?: {
       isAvailable: boolean;
-    };
+    } | null;
     customer?: {
       id: string;
       isActive: boolean;
-    };
+    } | null;
     subAccount?: {
       id: string;
       customerId: string;
       isActive: boolean;
-    };
+    } | null;
   };
 }
 

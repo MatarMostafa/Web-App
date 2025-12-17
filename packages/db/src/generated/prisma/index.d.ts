@@ -13422,9 +13422,6 @@ export namespace Prisma {
     name: string | null
     code: string | null
     isActive: boolean | null
-    canCreateOrders: boolean | null
-    canEditOrders: boolean | null
-    canViewReports: boolean | null
     customerId: string | null
     userId: string | null
     createdAt: Date | null
@@ -13438,9 +13435,6 @@ export namespace Prisma {
     name: string | null
     code: string | null
     isActive: boolean | null
-    canCreateOrders: boolean | null
-    canEditOrders: boolean | null
-    canViewReports: boolean | null
     customerId: string | null
     userId: string | null
     createdAt: Date | null
@@ -13454,9 +13448,6 @@ export namespace Prisma {
     name: number
     code: number
     isActive: number
-    canCreateOrders: number
-    canEditOrders: number
-    canViewReports: number
     customerId: number
     userId: number
     createdAt: number
@@ -13472,9 +13463,6 @@ export namespace Prisma {
     name?: true
     code?: true
     isActive?: true
-    canCreateOrders?: true
-    canEditOrders?: true
-    canViewReports?: true
     customerId?: true
     userId?: true
     createdAt?: true
@@ -13488,9 +13476,6 @@ export namespace Prisma {
     name?: true
     code?: true
     isActive?: true
-    canCreateOrders?: true
-    canEditOrders?: true
-    canViewReports?: true
     customerId?: true
     userId?: true
     createdAt?: true
@@ -13504,9 +13489,6 @@ export namespace Prisma {
     name?: true
     code?: true
     isActive?: true
-    canCreateOrders?: true
-    canEditOrders?: true
-    canViewReports?: true
     customerId?: true
     userId?: true
     createdAt?: true
@@ -13593,9 +13575,6 @@ export namespace Prisma {
     name: string
     code: string | null
     isActive: boolean
-    canCreateOrders: boolean
-    canEditOrders: boolean
-    canViewReports: boolean
     customerId: string
     userId: string
     createdAt: Date
@@ -13626,9 +13605,6 @@ export namespace Prisma {
     name?: boolean
     code?: boolean
     isActive?: boolean
-    canCreateOrders?: boolean
-    canEditOrders?: boolean
-    canViewReports?: boolean
     customerId?: boolean
     userId?: boolean
     createdAt?: boolean
@@ -13646,9 +13622,6 @@ export namespace Prisma {
     name?: boolean
     code?: boolean
     isActive?: boolean
-    canCreateOrders?: boolean
-    canEditOrders?: boolean
-    canViewReports?: boolean
     customerId?: boolean
     userId?: boolean
     createdAt?: boolean
@@ -13664,9 +13637,6 @@ export namespace Prisma {
     name?: boolean
     code?: boolean
     isActive?: boolean
-    canCreateOrders?: boolean
-    canEditOrders?: boolean
-    canViewReports?: boolean
     customerId?: boolean
     userId?: boolean
     createdAt?: boolean
@@ -13682,9 +13652,6 @@ export namespace Prisma {
     name?: boolean
     code?: boolean
     isActive?: boolean
-    canCreateOrders?: boolean
-    canEditOrders?: boolean
-    canViewReports?: boolean
     customerId?: boolean
     userId?: boolean
     createdAt?: boolean
@@ -13693,7 +13660,7 @@ export namespace Prisma {
     updatedBy?: boolean
   }
 
-  export type SubAccountOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "code" | "isActive" | "canCreateOrders" | "canEditOrders" | "canViewReports" | "customerId" | "userId" | "createdAt" | "updatedAt" | "createdBy" | "updatedBy", ExtArgs["result"]["subAccount"]>
+  export type SubAccountOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "code" | "isActive" | "customerId" | "userId" | "createdAt" | "updatedAt" | "createdBy" | "updatedBy", ExtArgs["result"]["subAccount"]>
   export type SubAccountInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     customer?: boolean | CustomerDefaultArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -13721,9 +13688,6 @@ export namespace Prisma {
       name: string
       code: string | null
       isActive: boolean
-      canCreateOrders: boolean
-      canEditOrders: boolean
-      canViewReports: boolean
       customerId: string
       userId: string
       createdAt: Date
@@ -14160,9 +14124,6 @@ export namespace Prisma {
     readonly name: FieldRef<"SubAccount", 'String'>
     readonly code: FieldRef<"SubAccount", 'String'>
     readonly isActive: FieldRef<"SubAccount", 'Boolean'>
-    readonly canCreateOrders: FieldRef<"SubAccount", 'Boolean'>
-    readonly canEditOrders: FieldRef<"SubAccount", 'Boolean'>
-    readonly canViewReports: FieldRef<"SubAccount", 'Boolean'>
     readonly customerId: FieldRef<"SubAccount", 'String'>
     readonly userId: FieldRef<"SubAccount", 'String'>
     readonly createdAt: FieldRef<"SubAccount", 'DateTime'>
@@ -39359,9 +39320,6 @@ export namespace Prisma {
     name: 'name',
     code: 'code',
     isActive: 'isActive',
-    canCreateOrders: 'canCreateOrders',
-    canEditOrders: 'canEditOrders',
-    canViewReports: 'canViewReports',
     customerId: 'customerId',
     userId: 'userId',
     createdAt: 'createdAt',
@@ -40838,9 +40796,6 @@ export namespace Prisma {
     name?: StringFilter<"SubAccount"> | string
     code?: StringNullableFilter<"SubAccount"> | string | null
     isActive?: BoolFilter<"SubAccount"> | boolean
-    canCreateOrders?: BoolFilter<"SubAccount"> | boolean
-    canEditOrders?: BoolFilter<"SubAccount"> | boolean
-    canViewReports?: BoolFilter<"SubAccount"> | boolean
     customerId?: StringFilter<"SubAccount"> | string
     userId?: StringFilter<"SubAccount"> | string
     createdAt?: DateTimeFilter<"SubAccount"> | Date | string
@@ -40857,9 +40812,6 @@ export namespace Prisma {
     name?: SortOrder
     code?: SortOrderInput | SortOrder
     isActive?: SortOrder
-    canCreateOrders?: SortOrder
-    canEditOrders?: SortOrder
-    canViewReports?: SortOrder
     customerId?: SortOrder
     userId?: SortOrder
     createdAt?: SortOrder
@@ -40881,9 +40833,6 @@ export namespace Prisma {
     name?: StringFilter<"SubAccount"> | string
     code?: StringNullableFilter<"SubAccount"> | string | null
     isActive?: BoolFilter<"SubAccount"> | boolean
-    canCreateOrders?: BoolFilter<"SubAccount"> | boolean
-    canEditOrders?: BoolFilter<"SubAccount"> | boolean
-    canViewReports?: BoolFilter<"SubAccount"> | boolean
     customerId?: StringFilter<"SubAccount"> | string
     createdAt?: DateTimeFilter<"SubAccount"> | Date | string
     updatedAt?: DateTimeFilter<"SubAccount"> | Date | string
@@ -40899,9 +40848,6 @@ export namespace Prisma {
     name?: SortOrder
     code?: SortOrderInput | SortOrder
     isActive?: SortOrder
-    canCreateOrders?: SortOrder
-    canEditOrders?: SortOrder
-    canViewReports?: SortOrder
     customerId?: SortOrder
     userId?: SortOrder
     createdAt?: SortOrder
@@ -40921,9 +40867,6 @@ export namespace Prisma {
     name?: StringWithAggregatesFilter<"SubAccount"> | string
     code?: StringNullableWithAggregatesFilter<"SubAccount"> | string | null
     isActive?: BoolWithAggregatesFilter<"SubAccount"> | boolean
-    canCreateOrders?: BoolWithAggregatesFilter<"SubAccount"> | boolean
-    canEditOrders?: BoolWithAggregatesFilter<"SubAccount"> | boolean
-    canViewReports?: BoolWithAggregatesFilter<"SubAccount"> | boolean
     customerId?: StringWithAggregatesFilter<"SubAccount"> | string
     userId?: StringWithAggregatesFilter<"SubAccount"> | string
     createdAt?: DateTimeWithAggregatesFilter<"SubAccount"> | Date | string
@@ -43691,9 +43634,6 @@ export namespace Prisma {
     name: string
     code?: string | null
     isActive?: boolean
-    canCreateOrders?: boolean
-    canEditOrders?: boolean
-    canViewReports?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     createdBy?: string | null
@@ -43708,9 +43648,6 @@ export namespace Prisma {
     name: string
     code?: string | null
     isActive?: boolean
-    canCreateOrders?: boolean
-    canEditOrders?: boolean
-    canViewReports?: boolean
     customerId: string
     userId: string
     createdAt?: Date | string
@@ -43725,9 +43662,6 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     code?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
-    canCreateOrders?: BoolFieldUpdateOperationsInput | boolean
-    canEditOrders?: BoolFieldUpdateOperationsInput | boolean
-    canViewReports?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
@@ -43742,9 +43676,6 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     code?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
-    canCreateOrders?: BoolFieldUpdateOperationsInput | boolean
-    canEditOrders?: BoolFieldUpdateOperationsInput | boolean
-    canViewReports?: BoolFieldUpdateOperationsInput | boolean
     customerId?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -43759,9 +43690,6 @@ export namespace Prisma {
     name: string
     code?: string | null
     isActive?: boolean
-    canCreateOrders?: boolean
-    canEditOrders?: boolean
-    canViewReports?: boolean
     customerId: string
     userId: string
     createdAt?: Date | string
@@ -43775,9 +43703,6 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     code?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
-    canCreateOrders?: BoolFieldUpdateOperationsInput | boolean
-    canEditOrders?: BoolFieldUpdateOperationsInput | boolean
-    canViewReports?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
@@ -43789,9 +43714,6 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     code?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
-    canCreateOrders?: BoolFieldUpdateOperationsInput | boolean
-    canEditOrders?: BoolFieldUpdateOperationsInput | boolean
-    canViewReports?: BoolFieldUpdateOperationsInput | boolean
     customerId?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -46805,9 +46727,6 @@ export namespace Prisma {
     name?: SortOrder
     code?: SortOrder
     isActive?: SortOrder
-    canCreateOrders?: SortOrder
-    canEditOrders?: SortOrder
-    canViewReports?: SortOrder
     customerId?: SortOrder
     userId?: SortOrder
     createdAt?: SortOrder
@@ -46821,9 +46740,6 @@ export namespace Prisma {
     name?: SortOrder
     code?: SortOrder
     isActive?: SortOrder
-    canCreateOrders?: SortOrder
-    canEditOrders?: SortOrder
-    canViewReports?: SortOrder
     customerId?: SortOrder
     userId?: SortOrder
     createdAt?: SortOrder
@@ -46837,9 +46753,6 @@ export namespace Prisma {
     name?: SortOrder
     code?: SortOrder
     isActive?: SortOrder
-    canCreateOrders?: SortOrder
-    canEditOrders?: SortOrder
-    canViewReports?: SortOrder
     customerId?: SortOrder
     userId?: SortOrder
     createdAt?: SortOrder
@@ -51229,9 +51142,6 @@ export namespace Prisma {
     name: string
     code?: string | null
     isActive?: boolean
-    canCreateOrders?: boolean
-    canEditOrders?: boolean
-    canViewReports?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     createdBy?: string | null
@@ -51245,9 +51155,6 @@ export namespace Prisma {
     name: string
     code?: string | null
     isActive?: boolean
-    canCreateOrders?: boolean
-    canEditOrders?: boolean
-    canViewReports?: boolean
     customerId: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -51664,9 +51571,6 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     code?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
-    canCreateOrders?: BoolFieldUpdateOperationsInput | boolean
-    canEditOrders?: BoolFieldUpdateOperationsInput | boolean
-    canViewReports?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
@@ -51680,9 +51584,6 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     code?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
-    canCreateOrders?: BoolFieldUpdateOperationsInput | boolean
-    canEditOrders?: BoolFieldUpdateOperationsInput | boolean
-    canViewReports?: BoolFieldUpdateOperationsInput | boolean
     customerId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -54000,9 +53901,6 @@ export namespace Prisma {
     name: string
     code?: string | null
     isActive?: boolean
-    canCreateOrders?: boolean
-    canEditOrders?: boolean
-    canViewReports?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     createdBy?: string | null
@@ -54016,9 +53914,6 @@ export namespace Prisma {
     name: string
     code?: string | null
     isActive?: boolean
-    canCreateOrders?: boolean
-    canEditOrders?: boolean
-    canViewReports?: boolean
     userId: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -54244,9 +54139,6 @@ export namespace Prisma {
     name?: StringFilter<"SubAccount"> | string
     code?: StringNullableFilter<"SubAccount"> | string | null
     isActive?: BoolFilter<"SubAccount"> | boolean
-    canCreateOrders?: BoolFilter<"SubAccount"> | boolean
-    canEditOrders?: BoolFilter<"SubAccount"> | boolean
-    canViewReports?: BoolFilter<"SubAccount"> | boolean
     customerId?: StringFilter<"SubAccount"> | string
     userId?: StringFilter<"SubAccount"> | string
     createdAt?: DateTimeFilter<"SubAccount"> | Date | string
@@ -54665,9 +54557,6 @@ export namespace Prisma {
     name: string
     code?: string | null
     isActive?: boolean
-    canCreateOrders?: boolean
-    canEditOrders?: boolean
-    canViewReports?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     createdBy?: string | null
@@ -54681,9 +54570,6 @@ export namespace Prisma {
     name: string
     code?: string | null
     isActive?: boolean
-    canCreateOrders?: boolean
-    canEditOrders?: boolean
-    canViewReports?: boolean
     customerId: string
     userId: string
     createdAt?: Date | string
@@ -54999,9 +54885,6 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     code?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
-    canCreateOrders?: BoolFieldUpdateOperationsInput | boolean
-    canEditOrders?: BoolFieldUpdateOperationsInput | boolean
-    canViewReports?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
@@ -55015,9 +54898,6 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     code?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
-    canCreateOrders?: BoolFieldUpdateOperationsInput | boolean
-    canEditOrders?: BoolFieldUpdateOperationsInput | boolean
-    canViewReports?: BoolFieldUpdateOperationsInput | boolean
     customerId?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -60278,9 +60158,6 @@ export namespace Prisma {
     name: string
     code?: string | null
     isActive?: boolean
-    canCreateOrders?: boolean
-    canEditOrders?: boolean
-    canViewReports?: boolean
     userId: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -60333,9 +60210,6 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     code?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
-    canCreateOrders?: BoolFieldUpdateOperationsInput | boolean
-    canEditOrders?: BoolFieldUpdateOperationsInput | boolean
-    canViewReports?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
@@ -60349,9 +60223,6 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     code?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
-    canCreateOrders?: BoolFieldUpdateOperationsInput | boolean
-    canEditOrders?: BoolFieldUpdateOperationsInput | boolean
-    canViewReports?: BoolFieldUpdateOperationsInput | boolean
     userId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -60365,9 +60236,6 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     code?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
-    canCreateOrders?: BoolFieldUpdateOperationsInput | boolean
-    canEditOrders?: BoolFieldUpdateOperationsInput | boolean
-    canViewReports?: BoolFieldUpdateOperationsInput | boolean
     userId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
