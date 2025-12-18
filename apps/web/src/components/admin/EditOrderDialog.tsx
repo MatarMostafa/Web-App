@@ -25,6 +25,7 @@ import { Order, UpdateOrderData, OrderStatus } from "@/types/order";
 import toast from "react-hot-toast";
 import { useTranslation } from "@/hooks/useTranslation";
 import TimeOnlyInput from "@/components/ui/TimeOnlyInput";
+import { useSession } from "next-auth/react";
 
 interface EditOrderDialogProps {
   order: Order;
@@ -38,6 +39,7 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
   onOpenChange,
 }) => {
   const { t, ready } = useTranslation();
+  const { data: session } = useSession();
   
   if (!ready) {
     return null;
@@ -50,12 +52,51 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [startTimeOnly, setStartTimeOnly] = useState("");
   const [endTimeOnly, setEndTimeOnly] = useState("");
+  const [activities, setActivities] = useState<any[]>([]);
+  const [selectedActivities, setSelectedActivities] = useState<string[]>([]);
+
+  const [dataLoading, setDataLoading] = useState(true);
+
+  const fetchActivities = async (customerId: string) => {
+    if (!customerId) return;
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/pricing/customers/${customerId}/activities`, {
+        headers: { Authorization: `Bearer ${session?.accessToken}` },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setActivities(data);
+        return data;
+      }
+    } catch (error) {
+      console.error("Error fetching activities:", error);
+    }
+    return [];
+  };
+
+  const fetchExistingActivityIds = async (orderId: string) => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/orders/${orderId}/activity-ids`, {
+        headers: { Authorization: `Bearer ${session?.accessToken}` },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        return data.data || [];
+      }
+    } catch (error) {
+      console.error("Error fetching existing activity IDs:", error);
+    }
+    return [];
+  };
 
   useEffect(() => {
     if (order && open) {
-      fetchEmployees();
-      fetchCustomers();
-      getOrderAssignments(order.id).then((assignedEmployeeIds) => {
+      setDataLoading(true);
+      Promise.all([
+        fetchEmployees(),
+        fetchCustomers(),
+        getOrderAssignments(order.id)
+      ]).then(([, , assignedEmployeeIds]) => {
         const startTime = order.startTime ? new Date(order.startTime) : null;
         const endTime = order.endTime ? new Date(order.endTime) : null;
         
@@ -77,11 +118,23 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
         
         setStartTimeOnly(startTime ? `${startTime.getHours().toString().padStart(2, '0')}:${startTime.getMinutes().toString().padStart(2, '0')}` : "09:00");
         setEndTimeOnly(endTime ? `${endTime.getHours().toString().padStart(2, '0')}:${endTime.getMinutes().toString().padStart(2, '0')}` : "");
+        
+        if (order.customerId) {
+          Promise.all([
+            fetchActivities(order.customerId),
+            fetchExistingActivityIds(order.id)
+          ]).then(([, activityIds]) => {
+            setSelectedActivities(activityIds);
+            setDataLoading(false);
+          });
+        } else {
+          setDataLoading(false);
+        }
       });
     }
   }, [order, open, fetchEmployees, fetchCustomers, getOrderAssignments]);
 
-  // Auto-fill location when customer is selected
+  // Auto-fill location and fetch activities when customer is selected
   useEffect(() => {
     if (formData.customerId) {
       const selectedCustomer = customers.find(c => c.id === formData.customerId);
@@ -91,6 +144,7 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
           : Object.values(selectedCustomer.address).filter(Boolean).join(', ');
         setFormData(prev => ({ ...prev, location: addressStr }));
       }
+      fetchActivities(formData.customerId);
     }
   }, [formData.customerId, customers]);
 
@@ -129,7 +183,13 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
     setLoading(true);
 
     try {
-      const submitData = { ...formData };
+      const submitData = { 
+        ...formData,
+        activities: selectedActivities.map(activityId => ({
+          activityId,
+          quantity: 1
+        }))
+      };
 
       // Convert date and datetime-local to ISO format
       if (submitData.scheduledDate) {
@@ -184,12 +244,37 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
     });
   };
 
+  const handleActivityToggle = (activityId: string, checked: boolean) => {
+    setSelectedActivities(prev => 
+      checked
+        ? [...prev, activityId]
+        : prev.filter(id => id !== activityId)
+    );
+  };
+
+  const getTotalPrice = () => {
+    return selectedActivities.reduce((total, activityId) => {
+      const activity = activities.find(a => a.activity.id === activityId);
+      return total + (activity ? Number(activity.unitPrice || activity.activity.defaultPrice) : 0);
+    }, 0);
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="w-[95vw] max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{t("admin.orders.form.editOrder")}</DialogTitle>
         </DialogHeader>
+        {dataLoading ? (
+          <div className="space-y-4">
+            {[...Array(8)].map((_, i) => (
+              <div key={i} className="animate-pulse">
+                <div className="h-4 bg-gray-200 rounded w-1/4 mb-2"></div>
+                <div className="h-10 bg-gray-200 rounded"></div>
+              </div>
+            ))}
+          </div>
+        ) : (
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
@@ -227,6 +312,35 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
               </SelectContent>
             </Select>
             {errors.customerId && <p className="text-sm text-red-500 mt-1">{errors.customerId}</p>}
+          </div>
+
+          <div>
+            <Label>Activities</Label>
+            <div className="text-sm text-muted-foreground mb-2">
+              {selectedActivities.length} activities selected - Total: €{getTotalPrice().toFixed(2)}
+            </div>
+            <div className="max-h-40 overflow-y-auto border rounded-md p-3 space-y-2">
+              {activities.map((customerActivity) => (
+                <div key={customerActivity.id} className="flex items-center justify-between space-x-2">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id={`activity-${customerActivity.activity.id}`}
+                      checked={selectedActivities.includes(customerActivity.activity.id)}
+                      onCheckedChange={(checked) => handleActivityToggle(customerActivity.activity.id, checked as boolean)}
+                    />
+                    <Label htmlFor={`activity-${customerActivity.activity.id}`} className="text-sm">
+                      {customerActivity.activity.name}
+                    </Label>
+                  </div>
+                  <span className="text-sm text-muted-foreground">
+                    €{Number(customerActivity.unitPrice || customerActivity.activity.defaultPrice).toFixed(2)}
+                  </span>
+                </div>
+              ))}
+              {activities.length === 0 && (
+                <p className="text-sm text-gray-500">{formData.customerId ? 'No activities available for this customer' : 'Select a customer first'}</p>
+              )}
+            </div>
           </div>
 
           <div>
@@ -338,24 +452,7 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
             </div>
           </div>
 
-          <div>
-            <Label htmlFor="specialInstructions">{t("admin.orders.form.activities")}</Label>
-            <Select
-              value={formData.specialInstructions || ""}
-              onValueChange={(value) => handleInputChange("specialInstructions", value)}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder={t("admin.orders.form.selectActivity")} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Container entladen">{t("admin.orders.activities.containerUnloading")}</SelectItem>
-                <SelectItem value="Kommissionieren">{t("admin.orders.activities.picking")}</SelectItem>
-                <SelectItem value="Paletten sortieren">{t("admin.orders.activities.palletSorting")}</SelectItem>
-                <SelectItem value="Qualitätskontrolle">{t("admin.orders.activities.qualityControl")}</SelectItem>
-                <SelectItem value="Verpacken">{t("admin.orders.activities.packaging")}</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+
 
           <div>
             <Label>{t("admin.orders.form.assignEmployeesEdit")}</Label>
@@ -402,6 +499,7 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
             </Button>
           </div>
         </form>
+        )}
       </DialogContent>
     </Dialog>
   );
