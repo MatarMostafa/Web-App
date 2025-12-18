@@ -16,6 +16,7 @@ import { orderNotesApi } from "@/lib/orderNotesApi";
 import { useOrderStore } from "@/store/orderStore";
 import { format } from "date-fns";
 import toast from "react-hot-toast";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface EmployeeOrderDetailPageProps {
   orderId: string;
@@ -44,16 +45,16 @@ const getStatusColor = (status: OrderStatus) => {
   }
 };
 
-const getAvailableActions = (status: OrderStatus) => {
+const getAvailableActions = (status: OrderStatus, t: any) => {
   const actions = [];
   
   switch (status) {
     case OrderStatus.ACTIVE:
-      actions.push({ key: "start", label: "Start Work", variant: "default" as const });
+      actions.push({ key: "start", label: t("employee.orderDetail.startWork"), variant: "default" as const });
       break;
     case OrderStatus.IN_PROGRESS:
-      actions.push({ key: "review", label: "Request Review", variant: "default" as const });
-      actions.push({ key: "pause", label: "Pause Work", variant: "outline" as const });
+      actions.push({ key: "review", label: t("employee.orderDetail.requestReview"), variant: "default" as const });
+      actions.push({ key: "pause", label: t("employee.orderDetail.pauseWork"), variant: "outline" as const });
       break;
   }
   
@@ -64,6 +65,7 @@ export const EmployeeOrderDetailPage: React.FC<EmployeeOrderDetailPageProps> = (
   orderId,
 }) => {
   const router = useRouter();
+  const { t } = useTranslation();
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -89,7 +91,7 @@ export const EmployeeOrderDetailPage: React.FC<EmployeeOrderDetailPageProps> = (
         setOrder(assignment.order as any);
         setError(null);
       } else {
-        setError("Order not found or not assigned to you");
+        setError(t("employee.orderDetail.orderNotFoundDesc"));
       }
       setLoading(false);
     }
@@ -123,10 +125,10 @@ export const EmployeeOrderDetailPage: React.FC<EmployeeOrderDetailPageProps> = (
       useEmployeeOrderStore.setState({ employeeAssignments: updatedAssignments });
 
       setRefreshActivities(prev => prev + 1);
-      toast.success(`Order status updated to ${newStatus}`);
+      toast.success(`${t("employee.orderDetail.orderStatusUpdated")} ${newStatus}`);
     } catch (error) {
       console.error("Failed to update status:", error);
-      toast.error("Failed to update order status");
+      toast.error(t("employee.orderDetail.failedToUpdateStatus"));
     } finally {
       setIsSubmitting(false);
     }
@@ -135,13 +137,13 @@ export const EmployeeOrderDetailPage: React.FC<EmployeeOrderDetailPageProps> = (
   const handleActionClick = (actionKey: string) => {
     switch (actionKey) {
       case "start":
-        handleStatusChange(OrderStatus.IN_PROGRESS, "Work started on this order");
+        handleStatusChange(OrderStatus.IN_PROGRESS, t("employee.orderDetail.workStartedNote"));
         break;
       case "pause":
-        handleStatusChange(OrderStatus.ACTIVE, "Work paused on this order");
+        handleStatusChange(OrderStatus.ACTIVE, t("employee.orderDetail.workPausedNote"));
         break;
       case "review":
-        handleStatusChange(OrderStatus.IN_REVIEW, "Order submitted for review");
+        handleStatusChange(OrderStatus.IN_REVIEW, t("employee.orderDetail.reviewRequestedNote"));
         break;
     }
   };
@@ -159,10 +161,10 @@ export const EmployeeOrderDetailPage: React.FC<EmployeeOrderDetailPageProps> = (
 
       setNoteContent("");
       setRefreshActivities(prev => prev + 1);
-      toast.success("Note added successfully");
+      toast.success(t("employee.orderDetail.noteAddedSuccess"));
     } catch (error) {
       console.error("Failed to add note:", error);
-      toast.error("Failed to add note");
+      toast.error(t("employee.orderDetail.failedToAddNote"));
     } finally {
       setIsSubmitting(false);
     }
@@ -178,13 +180,13 @@ export const EmployeeOrderDetailPage: React.FC<EmployeeOrderDetailPageProps> = (
         <div className="flex items-center gap-2 mb-6">
           <Button variant="ghost" onClick={handleBack}>
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Orders
+            {t("employee.orderDetail.backToOrders")}
           </Button>
         </div>
         <Card>
           <CardContent className="p-6 text-center">
             <AlertCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-lg font-medium mb-2">Order Not Found</h3>
+            <h3 className="text-lg font-medium mb-2">{t("employee.orderDetail.orderNotFound")}</h3>
             <p className="text-muted-foreground">{error}</p>
           </CardContent>
         </Card>
@@ -192,7 +194,7 @@ export const EmployeeOrderDetailPage: React.FC<EmployeeOrderDetailPageProps> = (
     );
   }
 
-  const availableActions = getAvailableActions(order.status);
+  const availableActions = getAvailableActions(order.status, t);
 
   return (
     <div className="p-6 space-y-6">
@@ -200,7 +202,7 @@ export const EmployeeOrderDetailPage: React.FC<EmployeeOrderDetailPageProps> = (
       <div className="flex items-center gap-2 mb-6">
         <Button variant="ghost" onClick={handleBack}>
           <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to Orders
+          {t("employee.orderDetail.backToOrders")}
         </Button>
       </div>
 
@@ -211,15 +213,32 @@ export const EmployeeOrderDetailPage: React.FC<EmployeeOrderDetailPageProps> = (
             <div>
               <CardTitle className="text-2xl">Order #{order.orderNumber}</CardTitle>
               <p className="text-muted-foreground mt-1">
-                {order.description || "No description provided"}
+                {order.description || t("employee.orderDetail.noDescription")}
               </p>
             </div>
             <Badge className={`${getStatusColor(order.status)} text-sm w-fit`}>
-              {order.status === "IN_PROGRESS"
-                ? "In Progress"
-                : order.status === "IN_REVIEW"
-                  ? "In Review"
-                  : order.status.replace("_", " ")}
+              {(() => {
+                switch (order.status) {
+                  case OrderStatus.IN_PROGRESS:
+                    return t("admin.orders.status.inProgress");
+                  case OrderStatus.IN_REVIEW:
+                    return t("admin.orders.status.inProgress");
+                  case OrderStatus.ACTIVE:
+                    return t("admin.orders.status.active");
+                  case OrderStatus.COMPLETED:
+                    return t("admin.orders.status.completed");
+                  case OrderStatus.CANCELLED:
+                    return t("admin.orders.status.cancelled");
+                  case OrderStatus.DRAFT:
+                    return t("admin.orders.status.draft");
+                  case OrderStatus.OPEN:
+                    return t("admin.orders.status.open");
+                  case OrderStatus.EXPIRED:
+                    return t("admin.orders.status.expired");
+                  default:
+                    return String(order.status).replace("_", " ");
+                }
+              })()}
             </Badge>
           </div>
         </CardHeader>
@@ -228,13 +247,13 @@ export const EmployeeOrderDetailPage: React.FC<EmployeeOrderDetailPageProps> = (
             <div className="flex items-center gap-2">
               <Calendar className="h-4 w-4 text-muted-foreground" />
               <div>
-                <p className="text-sm font-medium">Scheduled Date</p>
+                <p className="text-sm font-medium">{t("employee.orderDetail.scheduledDate")}</p>
                 <p className="text-sm text-muted-foreground">
                   {format(new Date(order.scheduledDate), "MMM dd, yyyy")}
                 </p>
                 {order.startTime && (
                   <p className="text-xs text-muted-foreground">
-                    Start: {format(new Date(order.startTime), "HH:mm")}
+                    {t("employee.orderDetail.start")}: {format(new Date(order.startTime), "HH:mm")}
                   </p>
                 )}
               </div>
@@ -244,7 +263,7 @@ export const EmployeeOrderDetailPage: React.FC<EmployeeOrderDetailPageProps> = (
               <div className="flex items-center gap-2">
                 <MapPin className="h-4 w-4 text-muted-foreground" />
                 <div>
-                  <p className="text-sm font-medium">Location</p>
+                  <p className="text-sm font-medium">{t("employee.orderDetail.location")}</p>
                   <p className="text-sm text-muted-foreground">{order.location}</p>
                 </div>
               </div>
@@ -254,9 +273,9 @@ export const EmployeeOrderDetailPage: React.FC<EmployeeOrderDetailPageProps> = (
               <div className="flex items-center gap-2">
                 <Clock className="h-4 w-4 text-muted-foreground" />
                 <div>
-                  <p className="text-sm font-medium">Duration</p>
+                  <p className="text-sm font-medium">{t("employee.orderDetail.duration")}</p>
                   <p className="text-sm text-muted-foreground">
-                    {order.duration} {order.duration === 1 ? 'hour' : 'hours'}
+                    {order.duration} {order.duration === 1 ? t("employee.orderDetail.hour") : t("employee.orderDetail.hours")}
                   </p>
                 </div>
               </div>
@@ -265,7 +284,7 @@ export const EmployeeOrderDetailPage: React.FC<EmployeeOrderDetailPageProps> = (
           
           {order.specialInstructions && (
             <div className="mt-4 p-3 bg-muted rounded-lg">
-              <p className="text-sm font-medium mb-1">Special Instructions</p>
+              <p className="text-sm font-medium mb-1">{t("employee.orderDetail.specialInstructions")}</p>
               <p className="text-sm text-muted-foreground">{order.specialInstructions}</p>
             </div>
           )}
@@ -276,7 +295,7 @@ export const EmployeeOrderDetailPage: React.FC<EmployeeOrderDetailPageProps> = (
       {(order as any)?.customerActivities?.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle>Activities & Pricing</CardTitle>
+            <CardTitle>{t("employee.orderDetail.activitiesPricing")}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
@@ -284,10 +303,10 @@ export const EmployeeOrderDetailPage: React.FC<EmployeeOrderDetailPageProps> = (
                 <div key={index} className="flex items-center justify-between p-3 bg-muted rounded-lg">
                   <div>
                     <p className="font-medium">
-                      {customerActivity.activity?.name || 'Unknown Activity'}
+                      {customerActivity.activity?.name || t("employee.orderDetail.unknownActivity")}
                     </p>
                     <p className="text-sm text-muted-foreground">
-                      Quantity: {customerActivity.quantity || 1}
+                      {t("employee.orderDetail.quantity")}: {customerActivity.quantity || 1}
                     </p>
                   </div>
                   <div className="text-right">
@@ -296,7 +315,7 @@ export const EmployeeOrderDetailPage: React.FC<EmployeeOrderDetailPageProps> = (
                         <p className="font-medium">€{Number(customerActivity.unitPrice).toFixed(2)}</p>
                         {customerActivity.lineTotal && (
                           <p className="text-sm text-muted-foreground">
-                            Total: €{Number(customerActivity.lineTotal).toFixed(2)}
+                            {t("employee.orderDetail.total")}: €{Number(customerActivity.lineTotal).toFixed(2)}
                           </p>
                         )}
                       </>
@@ -307,7 +326,7 @@ export const EmployeeOrderDetailPage: React.FC<EmployeeOrderDetailPageProps> = (
               {(order as any).customerActivities.some((ca: any) => ca.lineTotal) && (
                 <div className="border-t pt-3 mt-3">
                   <div className="flex justify-between items-center font-semibold">
-                    <span>Total Order Value:</span>
+                    <span>{t("employee.orderDetail.totalOrderValue")}:</span>
                     <span>€{(order as any).customerActivities.reduce((sum: number, ca: any) => sum + (Number(ca.lineTotal) || 0), 0).toFixed(2)}</span>
                   </div>
                 </div>
@@ -330,7 +349,7 @@ export const EmployeeOrderDetailPage: React.FC<EmployeeOrderDetailPageProps> = (
           {availableActions.length > 0 && (
             <Card>
               <CardHeader>
-                <CardTitle>Quick Actions</CardTitle>
+                <CardTitle>{t("employee.orderDetail.quickActions")}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="flex flex-col gap-2">
@@ -353,11 +372,11 @@ export const EmployeeOrderDetailPage: React.FC<EmployeeOrderDetailPageProps> = (
           {/* Add Note */}
           <Card>
             <CardHeader>
-              <CardTitle>Add Note</CardTitle>
+              <CardTitle>{t("employee.orderDetail.addNote")}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <Textarea
-                placeholder="Add a note about this order..."
+                placeholder={t("employee.orderDetail.addNotePlaceholder")}
                 value={noteContent}
                 onChange={(e) => setNoteContent(e.target.value)}
                 rows={3}
@@ -368,7 +387,7 @@ export const EmployeeOrderDetailPage: React.FC<EmployeeOrderDetailPageProps> = (
                 className="w-full"
               >
                 <MessageSquare className="h-4 w-4 mr-2" />
-                Add Note
+                {t("employee.orderDetail.addNote")}
               </Button>
             </CardContent>
           </Card>

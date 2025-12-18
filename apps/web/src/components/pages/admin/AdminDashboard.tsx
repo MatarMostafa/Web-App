@@ -15,7 +15,7 @@ import {
   Building,
 } from "lucide-react";
 import { useAdminStore } from "@/store/adminStore";
-import { useTranslation } from '@/hooks/useTranslation';
+import { useTranslation } from "@/hooks/useTranslation";
 
 const AdminDashboardPage = () => {
   const { t } = useTranslation();
@@ -68,9 +68,14 @@ const AdminDashboardPage = () => {
   return (
     <div className="p-6 space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-foreground mb-1">{t('admin.dashboard.title', 'Dashboard')}</h1>
+        <h1 className="text-3xl font-bold text-foreground mb-1">
+          {t("admin.dashboard.title", "Dashboard")}
+        </h1>
         <p className="text-muted-foreground">
-          {t('admin.dashboard.subtitle', 'Overview of your organization\'s performance')}
+          {t(
+            "admin.dashboard.subtitle",
+            "Overview of your organization's performance"
+          )}
         </p>
       </div>
 
@@ -79,7 +84,7 @@ const AdminDashboardPage = () => {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              {t('admin.dashboard.metrics.orders30Days')}
+              {t("admin.dashboard.metrics.orders30Days")}
             </CardTitle>
             <ShoppingCart className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
@@ -88,48 +93,7 @@ const AdminDashboardPage = () => {
               {dashboardStats?.ordersLast30Days || 0}
             </div>
             <p className="text-xs text-muted-foreground">
-              {t('admin.dashboard.metrics.newOrders')}
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{t('admin.dashboard.metrics.newCustomers')}</CardTitle>
-            <UserPlus className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {dashboardStats?.newCustomersLast30Days || 0}
-            </div>
-            <p className="text-xs text-muted-foreground">{t('admin.dashboard.metrics.addedThisMonth')}</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{t('admin.dashboard.metrics.newEmployees')}</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {dashboardStats?.newEmployeesLast30Days || 0}
-            </div>
-            <p className="text-xs text-muted-foreground">{t('admin.dashboard.metrics.hiredThisMonth')}</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{t('admin.dashboard.metrics.onLeave')}</CardTitle>
-            <Calendar className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {dashboardStats?.employeesOnLeave || 0}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              {t('admin.dashboard.metrics.employeesOnLeave')}
+              {t("admin.dashboard.metrics.newOrders")}
             </p>
           </CardContent>
         </Card>
@@ -137,7 +101,58 @@ const AdminDashboardPage = () => {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              {t('admin.dashboard.metrics.unassignedOrders')}
+              {t("admin.dashboard.metrics.newCustomers")}
+            </CardTitle>
+            <UserPlus className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {dashboardStats?.newCustomersLast30Days || 0}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              {t("admin.dashboard.metrics.addedThisMonth")}
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              {t("admin.dashboard.metrics.newEmployees")}
+            </CardTitle>
+            <Users className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {dashboardStats?.newEmployeesLast30Days || 0}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              {t("admin.dashboard.metrics.hiredThisMonth")}
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              {t("admin.dashboard.metrics.onLeave")}
+            </CardTitle>
+            <Calendar className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {dashboardStats?.employeesOnLeave || 0}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              {t("admin.dashboard.metrics.employeesOnLeave")}
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              {t("admin.dashboard.metrics.unassignedOrders")}
             </CardTitle>
             <AlertTriangle className="h-4 w-4 text-orange-500" />
           </CardHeader>
@@ -146,7 +161,7 @@ const AdminDashboardPage = () => {
               {dashboardStats?.unassignedOrders || 0}
             </div>
             <p className="text-xs text-muted-foreground">
-              {t('admin.dashboard.metrics.ordersNeedingAssignment')}
+              {t("admin.dashboard.metrics.ordersNeedingAssignment")}
             </p>
           </CardContent>
         </Card>
@@ -154,7 +169,7 @@ const AdminDashboardPage = () => {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              {t('admin.dashboard.metrics.completedOrders')}
+              {t("admin.dashboard.metrics.completedOrders")}
             </CardTitle>
             <CheckCircle className="h-4 w-4 text-green-500" />
           </CardHeader>
@@ -163,7 +178,7 @@ const AdminDashboardPage = () => {
               {dashboardStats?.completedOrders || 0}
             </div>
             <p className="text-xs text-muted-foreground">
-              {t('admin.dashboard.metrics.totalCompletedOrders')}
+              {t("admin.dashboard.metrics.totalCompletedOrders")}
             </p>
           </CardContent>
         </Card>
@@ -175,13 +190,13 @@ const AdminDashboardPage = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Building className="h-5 w-5" />
-              {t('admin.dashboard.customerStats.title')}
+              {t("admin.dashboard.customerStats.title")}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex justify-between items-center">
               <span className="text-sm text-muted-foreground">
-                {t('admin.dashboard.customerStats.totalCustomers')}
+                {t("admin.dashboard.customerStats.totalCustomers")}
               </span>
               <Badge variant="outline">
                 {customerStats?.totalCustomers || 0}
@@ -189,7 +204,7 @@ const AdminDashboardPage = () => {
             </div>
             <div className="flex justify-between items-center">
               <span className="text-sm text-muted-foreground">
-                {t('admin.dashboard.customerStats.activeCustomers')}
+                {t("admin.dashboard.customerStats.activeCustomers")}
               </span>
               <Badge variant="outline">
                 {customerStats?.activeCustomers || 0}
@@ -197,7 +212,7 @@ const AdminDashboardPage = () => {
             </div>
             <div className="flex justify-between items-center">
               <span className="text-sm text-muted-foreground">
-                {t('admin.dashboard.customerStats.avgOrdersPerCustomer')}
+                {t("admin.dashboard.customerStats.avgOrdersPerCustomer")}
               </span>
               <Badge variant="outline">
                 {customerStats?.avgOrdersPerCustomer || 0}
@@ -210,27 +225,29 @@ const AdminDashboardPage = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <TrendingUp className="h-5 w-5" />
-              {t('admin.dashboard.averageValues.title')}
+              {t("admin.dashboard.averageValues.title")}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex justify-between items-center">
               <span className="text-sm text-muted-foreground">
-                {t('admin.dashboard.averageValues.orderDuration')}
+                {t("admin.dashboard.averageValues.orderDuration")}
               </span>
               <Badge variant="outline">
-                {averageValues?.avgOrderDuration || 0}h
+                {Number(averageValues?.avgOrderDuration).toFixed(2) || 0}h
               </Badge>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-sm text-muted-foreground">{t('admin.dashboard.averageValues.hourlyRate')}</span>
+              <span className="text-sm text-muted-foreground">
+                {t("admin.dashboard.averageValues.hourlyRate")}
+              </span>
               <Badge variant="outline">
                 ${averageValues?.avgEmployeeHourlyRate || 0}
               </Badge>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-sm text-muted-foreground">
-                {t('admin.dashboard.averageValues.estimatedHours')}
+                {t("admin.dashboard.averageValues.estimatedHours")}
               </span>
               <Badge variant="outline">
                 {Number(averageValues?.avgEstimatedHours).toFixed(2) || 0}h
@@ -238,7 +255,7 @@ const AdminDashboardPage = () => {
             </div>
             <div className="flex justify-between items-center">
               <span className="text-sm text-muted-foreground">
-                {t('admin.dashboard.averageValues.actualHours')}
+                {t("admin.dashboard.averageValues.actualHours")}
               </span>
               <Badge variant="outline">
                 {averageValues?.avgActualHours || 0}h
@@ -253,7 +270,7 @@ const AdminDashboardPage = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Clock className="h-5 w-5" />
-            {t('admin.dashboard.topEmployees.title')}
+            {t("admin.dashboard.topEmployees.title")}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -272,10 +289,12 @@ const AdminDashboardPage = () => {
                   </div>
                   <div className="text-right">
                     <div className="font-medium">
-                      {employee.totalActualHours}h {t('admin.dashboard.topEmployees.actual')}
+                      {employee.totalActualHours}h{" "}
+                      {t("admin.dashboard.topEmployees.actual")}
                     </div>
                     <div className="text-sm text-muted-foreground">
-                      {employee.assignmentCount} {t('admin.dashboard.topEmployees.assignments')}
+                      {employee.assignmentCount}{" "}
+                      {t("admin.dashboard.topEmployees.assignments")}
                     </div>
                   </div>
                 </div>
@@ -284,7 +303,7 @@ const AdminDashboardPage = () => {
           ) : (
             <div className="text-center py-8 text-muted-foreground">
               <Clock className="h-12 w-12 mx-auto mb-2 opacity-50" />
-              <p>{t('admin.dashboard.topEmployees.noData')}</p>
+              <p>{t("admin.dashboard.topEmployees.noData")}</p>
             </div>
           )}
         </CardContent>

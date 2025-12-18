@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { orderNotesApi, OrderNote } from "@/lib/orderNotesApi";
 import { format } from "date-fns";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface TimelineEvent {
   id: string;
@@ -100,6 +101,7 @@ export const OrderTimeline: React.FC<OrderTimelineProps> = ({
   order,
   userRole,
 }) => {
+  const { t } = useTranslation();
   const [events, setEvents] = useState<TimelineEvent[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -117,9 +119,9 @@ export const OrderTimeline: React.FC<OrderTimelineProps> = ({
       id: "created",
       type: "system",
       timestamp: order.createdAt,
-      actor: "System",
-      title: "Order created",
-      description: `Order #${order.orderNumber} was created`,
+      actor: t("employee.orderDetail.system"),
+      title: t("employee.orderDetail.orderCreated"),
+      description: `${t("order.order")} #${order.orderNumber} ${t("employee.orderDetail.orderCreated").toLowerCase()}`,
     });
     if (createdEvent) timelineEvents.push(createdEvent);
     
@@ -129,9 +131,9 @@ export const OrderTimeline: React.FC<OrderTimelineProps> = ({
         id: "activated",
         type: "status_change",
         timestamp: order.updatedAt,
-        actor: "System",
-        title: "Order activated",
-        description: "Order is now active and ready for work",
+        actor: t("employee.orderDetail.system"),
+        title: t("employee.orderDetail.orderActivated"),
+        description: t("employee.orderDetail.orderActiveReady"),
         status: "ACTIVE",
       });
       if (activeEvent) timelineEvents.push(activeEvent);
@@ -142,9 +144,9 @@ export const OrderTimeline: React.FC<OrderTimelineProps> = ({
         id: "started",
         type: "status_change",
         timestamp: order.updatedAt,
-        actor: "System",
-        title: "Work started",
-        description: "Work has begun on this order",
+        actor: t("employee.orderDetail.system"),
+        title: t("employee.orderDetail.workStarted"),
+        description: t("employee.orderDetail.workBegun"),
         status: "IN_PROGRESS",
       });
       if (progressEvent) timelineEvents.push(progressEvent);
@@ -155,9 +157,9 @@ export const OrderTimeline: React.FC<OrderTimelineProps> = ({
         id: "review",
         type: "status_change",
         timestamp: order.updatedAt,
-        actor: "System",
-        title: "Review requested",
-        description: "Order has been submitted for review",
+        actor: t("employee.orderDetail.system"),
+        title: t("employee.orderDetail.reviewRequested"),
+        description: t("employee.orderDetail.orderSubmittedReview"),
         status: "IN_REVIEW",
       });
       if (reviewEvent) timelineEvents.push(reviewEvent);
@@ -168,9 +170,9 @@ export const OrderTimeline: React.FC<OrderTimelineProps> = ({
         id: "completed",
         type: "status_change",
         timestamp: order.updatedAt,
-        actor: "System",
-        title: "Order completed",
-        description: "Order has been completed successfully",
+        actor: t("employee.orderDetail.system"),
+        title: t("employee.orderDetail.orderCompleted"),
+        description: t("employee.orderDetail.orderCompletedSuccess"),
         status: "COMPLETED",
       });
       if (completedEvent) timelineEvents.push(completedEvent);
@@ -181,9 +183,9 @@ export const OrderTimeline: React.FC<OrderTimelineProps> = ({
         id: "cancelled",
         type: "status_change",
         timestamp: order.updatedAt,
-        actor: "System",
-        title: "Order cancelled",
-        description: "Order has been cancelled",
+        actor: t("employee.orderDetail.system"),
+        title: t("employee.orderDetail.orderCancelled"),
+        description: t("employee.orderDetail.orderCancelledDesc"),
         status: "CANCELLED",
       });
       if (cancelledEvent) timelineEvents.push(cancelledEvent);
@@ -209,7 +211,7 @@ export const OrderTimeline: React.FC<OrderTimelineProps> = ({
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Timeline</CardTitle>
+          <CardTitle>{t("employee.orderDetail.timeline")}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -233,13 +235,13 @@ export const OrderTimeline: React.FC<OrderTimelineProps> = ({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Timeline</CardTitle>
+        <CardTitle>{t("employee.orderDetail.timeline")}</CardTitle>
       </CardHeader>
       <CardContent>
         {events.length === 0 ? (
           <div className="text-center py-8 text-muted-foreground">
             <Clock className="h-12 w-12 mx-auto mb-4 opacity-50" />
-            <p>No timeline events yet</p>
+            <p>{t("employee.orderDetail.noTimelineEvents")}</p>
           </div>
         ) : (
           <div className="space-y-4">
@@ -282,7 +284,7 @@ export const OrderTimeline: React.FC<OrderTimelineProps> = ({
                       <span>
                         {event.timestamp && !isNaN(new Date(event.timestamp).getTime()) 
                           ? format(new Date(event.timestamp), "MMM dd, yyyy 'at' HH:mm")
-                          : "Invalid date"
+                          : t("employee.orderDetail.invalidDate")
                         }
                       </span>
                     </div>
