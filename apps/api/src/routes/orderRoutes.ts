@@ -56,6 +56,7 @@ import {
   createOrderRating,
   updateOrderRating,
   deleteOrderRating,
+  getOrderActivities,
 } from "../controllers/orderController";
 import {
   getOrderNotes,
@@ -65,6 +66,7 @@ import {
   deleteOrderNote,
   getOrderNotesCount,
 } from "../controllers/orderNotesController";
+
 
 const router = express.Router();
 
@@ -358,6 +360,16 @@ router.delete(
   authMiddleware,
   validateRequest(deleteOrderNoteRequestSchema),
   deleteOrderNote
+);
+
+/**
+ * @section Order Activities
+ */
+router.get(
+  "/:orderId/activities",
+  authMiddleware,
+  roleMiddleware(["ADMIN", "TEAM_LEADER", "EMPLOYEE"]),
+  getOrderActivities
 );
 
 /**

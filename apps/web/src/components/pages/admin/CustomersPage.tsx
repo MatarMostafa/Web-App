@@ -9,6 +9,7 @@ import EditCustomerDialog from "@/components/admin/EditCustomerDialog";
 import ResetPasswordDialog from "@/components/admin/ResetPasswordDialog";
 import CreateCustomerAccountDialog from "@/components/admin/CreateCustomerAccountDialog";
 import BlockCustomerModal from "@/components/modals/BlockCustomerModal";
+import { CustomerExportDialog } from "@/components/admin/CustomerExportDialog";
 import { useCustomerStore } from "@/store/customerStore";
 import { Customer } from "@/types/customer";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -117,13 +118,16 @@ const CustomersPage = () => {
             {t("admin.customers.subtitle")}
           </p>
         </div>
-        <AddCustomerDialog
-          trigger={
-            <Button className="bg-primary hover:bg-primary/90">
-              <Plus className="h-4 w-4 mr-2" /> {t("admin.customers.addCustomer")}
-            </Button>
-          }
-        />
+        <div className="flex gap-2">
+          <CustomerExportDialog customers={customers} />
+          <AddCustomerDialog
+            trigger={
+              <Button className="bg-primary hover:bg-primary/90">
+                <Plus className="h-4 w-4 mr-2" /> {t("admin.customers.addCustomer")}
+              </Button>
+            }
+          />
+        </div>
       </div>
 
       <div className="mb-6">

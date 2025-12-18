@@ -11,6 +11,7 @@ import {
 } from "../services/customerService";
 import { registerCustomer } from "../services/authService";
 import { notifyCustomerBlocked, notifyCustomerUnblocked } from "../services/notificationHelpers";
+import * as customerExportService from "../services/customerExportService";
 
 const router = express.Router();
 
@@ -450,6 +451,39 @@ router.post(
         message: "Failed to unblock customer",
         error: error instanceof Error ? error.message : String(error)
       });
+    }
+  }
+);
+
+// Export customer data as CSV
+router.get(
+  "/export/data",
+  authMiddleware,
+  roleMiddleware(["ADMIN", "HR_MANAGER"]),
+  async (req, res) => {
+    try {
+      const { customerId, startDate, endDate } = req.query;
+      
+      if (!startDate || !endDate) {
+        return res.status(400).json({ message: "Start and end dates are required" });
+      }
+
+      const filters = {
+        customerId: customerId as string,
+        startDate: new Date(startDate as string),
+        endDate: new Date(endDate as string),
+      };
+
+      const csvData = await customerExportService.exportCustomerData(filters);
+      
+      const filename = `customer-data-${new Date().toISOString().split('T')[0]}.csv`;
+      
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+      res.send(csvData);
+    } catch (error) {
+      console.error('Export error:', error);
+      res.status(500).json({ message: "Error exporting customer data", error });
     }
   }
 );

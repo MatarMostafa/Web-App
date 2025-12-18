@@ -320,9 +320,11 @@ model Customer {
   user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String? @unique
 
-  subAccounts SubAccount[]
-  orders      Order[]
-  ratings     Rating[]
+  subAccounts       SubAccount[]
+  orders            Order[]
+  ratings           Rating[]
+  customerPrices    CustomerPrice[]
+  customerActivities CustomerActivity[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -392,6 +394,7 @@ model Order {
   ratings             Rating[]
   files               File[]
   notes               OrderNote[]
+  customerActivities  CustomerActivity[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -446,6 +449,72 @@ model EmployeeQualification {
   @@map("employee_qualifications")
 }
 
+model Activity {
+  id           String   @id @default(cuid())
+  name         String   @unique
+  code         String?  @unique
+  description  String?
+  defaultPrice Decimal  @db.Decimal(10, 2)
+  unit         String   @default("hour")
+  isActive     Boolean  @default(true)
+
+  customerPrices      CustomerPrice[]
+  orderQualifications OrderQualification[]
+  customerActivities  CustomerActivity[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("activities")
+}
+
+model CustomerPrice {
+  id         String   @id @default(cuid())
+  customerId String
+  activityId String
+  price      Decimal  @db.Decimal(10, 2)
+  currency   String   @default("EUR")
+
+  effectiveFrom DateTime
+  effectiveTo   DateTime?
+  isActive      Boolean   @default(true)
+
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  activity Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([customerId, activityId, effectiveFrom])
+  @@index([customerId])
+  @@index([activityId])
+  @@index([customerId, activityId])
+  @@map("customer_prices")
+}
+
+model CustomerActivity {
+  id         String @id @default(cuid())
+  customerId String
+  activityId String
+  orderId    String?
+  quantity   Int    @default(1)
+  unitPrice  Decimal? @db.Decimal(10, 2)
+  lineTotal  Decimal? @db.Decimal(12, 2)
+  isActive   Boolean @default(true)
+
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  activity Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  order    Order?   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([customerId, activityId, orderId])
+  @@index([customerId])
+  @@index([orderId])
+  @@map("customer_activities")
+}
+
 model OrderQualification {
   id String @id @default(cuid())
 
@@ -453,9 +522,17 @@ model OrderQualification {
   orderId         String
   qualification   Qualification @relation(fields: [qualificationId], references: [id], onDelete: Cascade)
   qualificationId String
+  activity        Activity?     @relation(fields: [activityId], references: [id], onDelete: SetNull)
+  activityId      String?
 
   required       Boolean @default(true)
   minProficiency Int     @default(1)
+
+  // Price snapshot fields
+  unit      String?
+  unitPrice Decimal? @db.Decimal(10, 2)
+  quantity  Int      @default(1)
+  lineTotal Decimal? @db.Decimal(12, 2)
 
   @@unique([orderId, qualificationId])
   @@map("order_qualifications")
