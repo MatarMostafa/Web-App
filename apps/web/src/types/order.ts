@@ -22,6 +22,7 @@ export interface Order {
   priority: number;
   specialInstructions?: string;
   status: OrderStatus;
+  usesTemplate?: boolean;
   customerId: string;
   createdAt: string;
   updatedAt: string;
@@ -43,6 +44,7 @@ export interface CreateOrderData {
   status?: OrderStatus;
   customerId: string;
   assignedEmployeeIds?: string[];
+  templateData?: Record<string, string> | null;
   qualifications?: Array<{
     qualificationId: string;
     activityId?: string;
@@ -65,4 +67,5 @@ export interface UpdateOrderData {
   status?: OrderStatus;
   customerId?: string;
   assignedEmployeeIds?: string[];
+  templateData?: Record<string, string> | null;
 }

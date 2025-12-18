@@ -10,6 +10,7 @@ import { useSession } from "next-auth/react";
 import { format } from "date-fns";
 import { useTranslation } from "@/hooks/useTranslation";
 import { TeamLeaderOrderNotesDialog } from "@/components/team-leader/OrderNotesDialog";
+import OrderDescriptionTemplate from "@/components/employee/OrderDescriptionTemplate";
 
 interface Order {
   id: string;
@@ -59,6 +60,7 @@ const TeamLeaderOrderDetail = ({ params }: { params: Promise<{ id: string }> }) 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [notesDialogOpen, setNotesDialogOpen] = useState(false);
+  const [orderWithTemplate, setOrderWithTemplate] = useState<any>(null);
   const resolvedParams = React.use(params);
 
   useEffect(() => {
@@ -75,6 +77,7 @@ const TeamLeaderOrderDetail = ({ params }: { params: Promise<{ id: string }> }) 
           const foundOrder = orders.find((o: Order) => o.id === resolvedParams.id);
           if (foundOrder) {
             setOrder(foundOrder);
+            fetchOrderWithTemplateData(foundOrder.id);
           } else {
             setError(t('teamLeader.orders.orderNotFoundDesc'));
           }
@@ -93,6 +96,26 @@ const TeamLeaderOrderDetail = ({ params }: { params: Promise<{ id: string }> }) 
       fetchOrder();
     }
   }, [resolvedParams.id, session]);
+
+  const fetchOrderWithTemplateData = async (orderId: string) => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/orders/${orderId}/with-template-data`, {
+        headers: {
+          "Authorization": `Bearer ${session?.accessToken}`,
+          "Content-Type": "application/json"
+        }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          setOrderWithTemplate(data.data);
+        }
+      }
+    } catch (error) {
+      console.error("Failed to fetch order with template data:", error);
+    }
+  };
 
   const handleBack = () => {
     router.push("/dashboard-team-leader/orders");
@@ -242,6 +265,22 @@ const TeamLeaderOrderDetail = ({ params }: { params: Promise<{ id: string }> }) 
           </Card>
         )}
       </div>
+
+      {/* Order Description Template */}
+      {orderWithTemplate && (
+        <OrderDescriptionTemplate
+          orderId={resolvedParams.id}
+          customerId={orderWithTemplate.customerId}
+          currentDescription={orderWithTemplate.description}
+          usesTemplate={orderWithTemplate.usesTemplate}
+          onDescriptionUpdate={(description) => {
+            setOrder(prev => prev ? { ...prev, description } : null);
+            if (orderWithTemplate) {
+              setOrderWithTemplate(prev => ({ ...prev, description }));
+            }
+          }}
+        />
+      )}
 
       {/* Assigned Employees */}
       {order.employeeAssignments.length > 0 && (

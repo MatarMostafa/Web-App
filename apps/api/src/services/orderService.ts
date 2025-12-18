@@ -18,6 +18,7 @@ import {
 } from "./notificationHelpers";
 import { getPriceForCustomer } from "./priceService";
 import { Decimal } from "decimal.js";
+import * as templateService from "./templateService";
 
 // Type definitions for better type safety
 type OrderCreateInput = Prisma.OrderCreateInput;
@@ -72,8 +73,8 @@ export const getOrderByIdService = async (id: string) => {
   });
 };
 
-export const createOrderService = async (data: OrderCreateInput & { assignedEmployeeIds?: string[]; activities?: Array<{ activityId: string; quantity?: number }>; customerId: string }, createdBy?: string) => {
-  let { assignedEmployeeIds, activities, customerId, ...orderData } = data;
+export const createOrderService = async (data: OrderCreateInput & { assignedEmployeeIds?: string[]; activities?: Array<{ activityId: string; quantity?: number }>; customerId: string; templateData?: Record<string, string> | null }, createdBy?: string) => {
+  let { assignedEmployeeIds, activities, customerId, templateData, ...orderData } = data;
   
   if (!customerId) {
     throw new Error('Customer ID is required');
@@ -128,12 +129,23 @@ export const createOrderService = async (data: OrderCreateInput & { assignedEmpl
       data: {
         ...orderData,
         requiredEmployees: assignedEmployeeIds?.length || orderData.requiredEmployees || 1,
+        usesTemplate: templateData !== null ? true : false,
         createdBy,
         customer: {
           connect: { id: customerId }
         }
       },
     });
+
+    // Create order description data if template data is provided and has actual values
+    if (templateData && Object.keys(templateData).length > 0 && Object.values(templateData).some(value => value.trim() !== "")) {
+      await tx.orderDescriptionData.create({
+        data: {
+          orderId: newOrder.id,
+          descriptionData: templateData
+        }
+      });
+    }
 
     // Create customer activities linked to order
     if (activities && activities.length > 0) {

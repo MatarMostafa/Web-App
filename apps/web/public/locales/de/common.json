@@ -1,7 +1,7 @@
 {
   "navigation": {
     "products": "Produkte",
-    "features": "Funktionen", 
+    "features": "Funktionen",
     "pricing": "Preise",
     "about": "Über uns",
     "login": "Anmelden",
@@ -270,7 +270,6 @@
     "address": "Adresse",
     "enterAddress": "Adresse eingeben",
     "hireDate": "Einstellungsdatum"
-    
   },
   "order": {
     "order": "Auftrag",
@@ -287,7 +286,9 @@
     "completed": "Abgeschlossen",
     "cancelled": "Storniert",
     "assigned": "Zugewiesen",
-    "unassigned": "Nicht zugewiesen"
+    "unassigned": "Nicht zugewiesen",
+    "description": "Auftragsbeschreibung",
+    "descriptionPlaceholder": "Geben Sie hier die Auftragsbeschreibung ein…"
   },
   "customer": {
     "customer": "Kunde",
@@ -760,6 +761,30 @@
         "title": "Kundenaktivität",
         "noActivity": "Keine Aktivität gefunden",
         "noActivityDesc": "Kundenaktivität wird hier angezeigt"
+      },
+      "template": {
+        "title": "Beschreibungsvorlage",
+        "noTemplate": "Keine Beschreibungsvorlage konfiguriert",
+        "noTemplateDesc": "Erstellen Sie eine Vorlage, um Auftragsbeschreibungen für diesen Kunden zu standardisieren",
+        "createTemplate": "Vorlage erstellen",
+        "editTemplate": "Vorlage bearbeiten",
+        "deleteTemplate": "Löschen",
+        "templateLines": "Vorlagenzeilen",
+        "line": "Zeile",
+        "addLine": "Zeile hinzufügen",
+        "preview": "Vorschau",
+        "previewDesc": "So wird es in Auftragsformularen angezeigt:",
+        "fieldPlaceholder": "Feldbezeichnung eingeben (z.B. Container, Gewicht, etc.)",
+        "employeePlaceholder": "Mitarbeiter wird dieses Feld ausfüllen",
+        "saving": "Wird gespeichert...",
+        "updateTemplate": "Vorlage aktualisieren",
+        "confirmDelete": "Sind Sie sicher, dass Sie diese Vorlage löschen möchten?",
+        "useCustomDescription": "Benutzerdefinierte Beschreibung verwenden",
+        "templateSelected": "Vorlage ausgewählt",
+        "employeeWillFill": "Mitarbeiter füllt dieses Feld aus",
+        "customDescriptionPlaceholder": "Benutzerdefinierte Beschreibung eingeben",
+        "loading": "Vorlage wird geladen..."
+
       }
     },
     "customers": {
