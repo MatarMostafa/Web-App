@@ -43,6 +43,10 @@ export interface CreateOrderData {
   status?: OrderStatus;
   customerId: string;
   assignedEmployeeIds?: string[];
+  activities?: Array<{
+    activityId: string;
+    quantity?: number;
+  }>;
   qualifications?: Array<{
     qualificationId: string;
     activityId?: string;
@@ -65,4 +69,8 @@ export interface UpdateOrderData {
   status?: OrderStatus;
   customerId?: string;
   assignedEmployeeIds?: string[];
+  activities?: Array<{
+    activityId: string;
+    quantity?: number;
+  }>;
 }

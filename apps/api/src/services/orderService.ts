@@ -236,10 +236,10 @@ export const createOrderService = async (data: OrderCreateInput & { assignedEmpl
 
 export const updateOrderService = async (
   id: string,
-  data: OrderUpdateInput & { assignedEmployeeIds?: string[] },
+  data: OrderUpdateInput & { assignedEmployeeIds?: string[]; activities?: Array<{ activityId: string; quantity?: number }> },
   updatedBy?: string
 ) => {
-  let { assignedEmployeeIds, ...orderData } = data;
+  let { assignedEmployeeIds, activities, ...orderData } = data;
   
   // Clean empty strings to undefined for optional DateTime fields
   if (orderData.startTime === '') orderData.startTime = undefined;
@@ -253,14 +253,53 @@ export const updateOrderService = async (
     orderData.startTime = orderData.scheduledDate;
   }
   
-  const order = await prisma.order.update({
-    where: { id },
-    data: {
-      ...orderData,
-      ...(assignedEmployeeIds !== undefined && {
-        requiredEmployees: assignedEmployeeIds.length || 1
-      })
-    },
+  const order = await prisma.$transaction(async (tx) => {
+    const updatedOrder = await tx.order.update({
+      where: { id },
+      data: {
+        ...orderData,
+        ...(assignedEmployeeIds !== undefined && {
+          requiredEmployees: assignedEmployeeIds.length || 1
+        })
+      },
+    });
+
+    // Handle activities update if provided
+    if (activities !== undefined) {
+      // Remove existing customer activities for this order
+      await tx.customerActivity.deleteMany({
+        where: { orderId: id }
+      });
+
+      // Create new customer activities
+      if (activities.length > 0) {
+        for (const activity of activities) {
+          try {
+            const priceResult = await getPriceForCustomer(
+              updatedOrder.customerId,
+              activity.activityId,
+              updatedOrder.scheduledDate
+            );
+
+            await tx.customerActivity.create({
+              data: {
+                customerId: updatedOrder.customerId,
+                activityId: activity.activityId,
+                orderId: id,
+                quantity: activity.quantity ?? 1,
+                unitPrice: priceResult.price.toNumber(),
+                lineTotal: priceResult.price.mul(activity.quantity ?? 1).toNumber()
+              }
+            });
+          } catch (error) {
+            console.error(`Error updating customer activity for activity ${activity.activityId}:`, error);
+            throw error;
+          }
+        }
+      }
+    }
+
+    return updatedOrder;
   });
 
   // Handle employee assignments if specified
