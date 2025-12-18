@@ -320,11 +320,12 @@ model Customer {
   user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String? @unique
 
-  subAccounts       SubAccount[]
-  orders            Order[]
-  ratings           Rating[]
-  customerPrices    CustomerPrice[]
-  customerActivities CustomerActivity[]
+  subAccounts         SubAccount[]
+  orders              Order[]
+  ratings             Rating[]
+  customerPrices      CustomerPrice[]
+  customerActivities  CustomerActivity[]
+  descriptionTemplate CustomerDescriptionTemplate?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -382,6 +383,9 @@ model Order {
   estimatedHours Decimal? @db.Decimal(5, 2)
   actualHours    Decimal? @db.Decimal(5, 2)
 
+  // Template usage flag
+  usesTemplate Boolean @default(false)
+
   customer              Customer   @relation(fields: [customerId], references: [id], onDelete: Cascade)
   customerId            String
   createdBySubAccount   SubAccount? @relation("SubAccountCreatedOrders", fields: [createdBySubAccountId], references: [id], onDelete: SetNull)
@@ -395,6 +399,7 @@ model Order {
   files               File[]
   notes               OrderNote[]
   customerActivities  CustomerActivity[]
+  descriptionData     OrderDescriptionData?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -880,6 +885,37 @@ model TeamMember {
 
   @@unique([teamId, employeeId])
   @@map("team_members")
+}
+
+// ===============================
+// DESCRIPTION TEMPLATES
+// ===============================
+
+model CustomerDescriptionTemplate {
+  id            String   @id @default(cuid())
+  customerId    String   @unique
+  templateLines String[] // Array of text prompts like ['Container', 'Weight', 'Instructions']
+  
+  customer      Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  createdBy     String?
+  
+  @@map("customer_description_templates")
+}
+
+model OrderDescriptionData {
+  id              String @id @default(cuid())
+  orderId         String @unique
+  descriptionData Json   // {"Container": "20ft", "Weight": "15000kg", "Instructions": "Handle with care"}
+  
+  order           Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@map("order_description_data")
 }
 
 // ===============================
