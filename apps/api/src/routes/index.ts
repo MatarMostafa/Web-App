@@ -20,6 +20,7 @@ import subAccountRoutes from "./subAccountRoutes";
 import teamRoutes from "./teamRoutes";
 import teamLeaderRoutes from "./teamLeaderRoutes";
 import customerPricingRoutes from "./customerPricingRoutes";
+import templateRoutes from "./templateRoutes";
 
 const router = express.Router();
 
@@ -76,5 +77,8 @@ router.use("/team-leader", teamLeaderRoutes);
 
 // Customer Pricing routes
 router.use("/pricing", customerPricingRoutes);
+
+// Template routes
+router.use("/", templateRoutes);
 
 export default router;

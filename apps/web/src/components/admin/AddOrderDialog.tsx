@@ -27,6 +27,7 @@ import toast from "react-hot-toast";
 import { useTranslation } from "@/hooks/useTranslation";
 import TimeOnlyInput from "@/components/ui/TimeOnlyInput";
 import { useSession } from "next-auth/react";
+import OrderDescriptionForm from "./OrderDescriptionForm";
 
 interface AddOrderDialogProps {
   trigger: React.ReactNode;
@@ -47,6 +48,7 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [activities, setActivities] = useState<any[]>([]);
   const [selectedActivities, setSelectedActivities] = useState<string[]>([]);
+  const [templateData, setTemplateData] = useState<Record<string, string> | null>(null);
 
   const [formData, setFormData] = useState<CreateOrderData>({
     description: "",
@@ -142,6 +144,7 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
     setStartTimeOnly("09:00");
     setEndTimeOnly("");
     setSelectedActivities([]);
+    setTemplateData(null);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -168,7 +171,8 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
         activities: selectedActivities.map(activityId => ({
           activityId,
           quantity: 1
-        }))
+        })),
+        templateData: templateData
       };
 
       // Convert date and datetime-local to ISO format
@@ -303,15 +307,13 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
             </div>
           </div>
 
-          <div>
-            <Label htmlFor="description">{t("admin.orders.form.description")}</Label>
-            <Textarea
-              id="description"
-              value={formData.description}
-              onChange={(e) => handleInputChange("description", e.target.value)}
-              rows={3}
-            />
-          </div>
+          <OrderDescriptionForm
+            customerId={formData.customerId}
+            description={formData.description}
+            onDescriptionChange={(description) => handleInputChange("description", description)}
+            onTemplateDataChange={setTemplateData}
+          />
+          
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>

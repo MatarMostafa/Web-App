@@ -22,6 +22,7 @@ import {
 import { useSession } from "next-auth/react";
 import toast from "react-hot-toast";
 import TimeOnlyInput from "@/components/ui/TimeOnlyInput";
+import OrderDescriptionForm from "../admin/OrderDescriptionForm";
 
 interface AddOrderDialogProps {
   trigger: React.ReactNode;
@@ -36,6 +37,7 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger, onOrderCreated
   const [employees, setEmployees] = useState<any[]>([]);
   const [activities, setActivities] = useState<any[]>([]);
   const [selectedActivities, setSelectedActivities] = useState<string[]>([]);
+  const [templateData, setTemplateData] = useState<Record<string, string> | null>(null);
   const [formData, setFormData] = useState({
     description: "",
     scheduledDate: "",
@@ -141,6 +143,7 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger, onOrderCreated
       assignedEmployeeIds: [],
     });
     setSelectedActivities([]);
+    setTemplateData(null);
     setStartTimeOnly("09:00");
     setEndTimeOnly("");
   };
@@ -155,12 +158,13 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger, onOrderCreated
 
     setLoading(true);
     try {
-      const submitData = { 
+      const submitData: any = { 
         ...formData,
         activities: selectedActivities.map(activityId => ({
           activityId,
           quantity: 1
-        }))
+        })),
+        templateData: templateData
       };
       
       if (submitData.scheduledDate) {
@@ -251,15 +255,12 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger, onOrderCreated
             </Select>
           </div>
 
-          <div>
-            <Label htmlFor="description">Description</Label>
-            <Textarea
-              id="description"
-              value={formData.description}
-              onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-              rows={3}
-            />
-          </div>
+          <OrderDescriptionForm
+            customerId={formData.customerId}
+            description={formData.description}
+            onDescriptionChange={(description) => setFormData(prev => ({ ...prev, description }))}
+            onTemplateDataChange={setTemplateData}
+          />
 
           <div>
             <Label>Activities</Label>

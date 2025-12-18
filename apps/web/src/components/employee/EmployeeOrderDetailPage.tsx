@@ -16,6 +16,8 @@ import { orderNotesApi } from "@/lib/orderNotesApi";
 import { useOrderStore } from "@/store/orderStore";
 import { format } from "date-fns";
 import toast from "react-hot-toast";
+import OrderDescriptionTemplate from "./OrderDescriptionTemplate";
+import OrderDescriptionForm from "@/components/admin/OrderDescriptionForm";
 
 interface EmployeeOrderDetailPageProps {
   orderId: string;
@@ -70,6 +72,7 @@ export const EmployeeOrderDetailPage: React.FC<EmployeeOrderDetailPageProps> = (
   const [noteContent, setNoteContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [refreshActivities, setRefreshActivities] = useState(0);
+  const [orderWithTemplate, setOrderWithTemplate] = useState<any>(null);
 
   const { employeeAssignments, fetchEmployeeAssignments } = useEmployeeOrderStore();
   const { updateOrderStatus } = useOrderStore();
@@ -87,6 +90,7 @@ export const EmployeeOrderDetailPage: React.FC<EmployeeOrderDetailPageProps> = (
       const assignment = employeeAssignments.find(a => a.order.id === orderId);
       if (assignment) {
         setOrder(assignment.order as any);
+        fetchOrderWithTemplateData(orderId);
         setError(null);
       } else {
         setError("Order not found or not assigned to you");
@@ -94,6 +98,29 @@ export const EmployeeOrderDetailPage: React.FC<EmployeeOrderDetailPageProps> = (
       setLoading(false);
     }
   }, [employeeAssignments, orderId]);
+
+  const fetchOrderWithTemplateData = async (orderId: string) => {
+    try {
+      const { getSession } = await import("next-auth/react");
+      const session = await getSession();
+      
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/orders/${orderId}/with-template-data`, {
+        headers: {
+          "Authorization": `Bearer ${session?.accessToken}`,
+          "Content-Type": "application/json"
+        }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          setOrderWithTemplate(data.data);
+        }
+      }
+    } catch (error) {
+      console.error("Failed to fetch order with template data:", error);
+    }
+  };
 
   const handleBack = () => {
     router.push("/dashboard-employee/orders");
@@ -320,6 +347,29 @@ export const EmployeeOrderDetailPage: React.FC<EmployeeOrderDetailPageProps> = (
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left Column - Timeline & Activities */}
         <div className="lg:col-span-2 space-y-6">
+          {/* Order Description Template */}
+          {orderWithTemplate && (
+            <OrderDescriptionForm
+              customerId={orderWithTemplate.customerId}
+              description={orderWithTemplate.description}
+              onDescriptionChange={(description) => {
+                setOrder(prev => prev ? { ...prev, description } : null);
+                if (orderWithTemplate) {
+                  setOrderWithTemplate(prev => ({ ...prev, description }));
+                }
+              }}
+              onTemplateDataChange={(templateData) => {
+                // keep parent in sync if needed
+                setOrderWithTemplate(prev => prev ? ({ ...prev, descriptionData: templateData }) : prev);
+              }}
+              editableForEmployee={true}
+              orderId={orderId}
+              orderDescriptionData={orderWithTemplate.descriptionData?.descriptionData || null}
+              onTemplateSaved={(saved) => {
+                setOrderWithTemplate(prev => prev ? ({ ...prev, descriptionData: { descriptionData: saved } }) : prev);
+              }}
+            />
+          )}
           <OrderTimeline orderId={orderId} order={order} userRole="EMPLOYEE" />
           <OrderActivities orderId={orderId} key={refreshActivities} />
         </div>
