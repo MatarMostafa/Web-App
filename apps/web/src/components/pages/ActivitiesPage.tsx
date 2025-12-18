@@ -10,6 +10,7 @@ import { apiClient } from '@/lib/api-client';
 import { useSession } from 'next-auth/react';
 import { AddActivityDialog } from '@/components/activities/AddActivityDialog';
 import { EditActivityDialog } from '@/components/activities/EditActivityDialog';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface Activity {
   id: string;
@@ -29,6 +30,7 @@ interface Activity {
 }
 
 export const ActivitiesPage = () => {
+  const { t } = useTranslation();
   const { data: session } = useSession();
   const [activities, setActivities] = useState<Activity[]>([]);
   const [customers, setCustomers] = useState<any[]>([]);
@@ -71,7 +73,7 @@ export const ActivitiesPage = () => {
       const data = await apiClient.get<Activity[]>('/api/pricing/activities');
       setActivities(data);
     } catch (error) {
-      toast.error('Failed to load activities');
+      toast.error(t('activities.messages.loadError'));
     }
   };
 
@@ -82,12 +84,12 @@ export const ActivitiesPage = () => {
         ...addFormData,
         defaultPrice: parseFloat(addFormData.defaultPrice)
       });
-      toast.success('Customer activity created');
+      toast.success(t('activities.messages.createSuccess'));
       setAddDialogOpen(false);
       setAddFormData({ name: '', code: '', defaultPrice: '', unit: 'hour', customerId: '' });
       fetchActivities();
     } catch (error: any) {
-      toast.error(error.message || 'Failed to save activity');
+      toast.error(error.message || t('activities.messages.createError'));
     }
   };
 
@@ -99,13 +101,13 @@ export const ActivitiesPage = () => {
         ...editFormData,
         defaultPrice: parseFloat(editFormData.defaultPrice)
       });
-      toast.success('Customer activity updated');
+      toast.success(t('activities.messages.updateSuccess'));
       setEditDialogOpen(false);
       setEditingActivity(null);
       setEditFormData({ name: '', code: '', defaultPrice: '', unit: 'hour', customerId: '' });
       fetchActivities();
     } catch (error: any) {
-      toast.error(error.message || 'Failed to save activity');
+      toast.error(error.message || t('activities.messages.updateError'));
     }
   };
 
@@ -123,20 +125,20 @@ export const ActivitiesPage = () => {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this activity?')) return;
+    if (!confirm(t('activities.confirmDelete'))) return;
     try {
       await apiClient.delete(`/api/pricing/activities/${id}`);
-      toast.success('Activity deleted');
+      toast.success(t('activities.messages.deleteSuccess'));
       fetchActivities();
     } catch (error: any) {
-      toast.error(error.message || 'Failed to delete activity');
+      toast.error(error.message || t('activities.messages.deleteError'));
     }
   };
 
   return (
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Activities</h1>
+        <h1 className="text-2xl font-bold">{t('activities.title')}</h1>
         <AddActivityDialog
           open={addDialogOpen}
           onOpenChange={(open) => {
@@ -154,12 +156,12 @@ export const ActivitiesPage = () => {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Code</TableHead>
-              <TableHead>Default Price</TableHead>
-              <TableHead>Unit</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Actions</TableHead>
+              <TableHead>{t('activities.table.name')}</TableHead>
+              <TableHead>{t('activities.table.code')}</TableHead>
+              <TableHead>{t('activities.table.defaultPrice')}</TableHead>
+              <TableHead>{t('activities.table.unit')}</TableHead>
+              <TableHead>{t('activities.table.status')}</TableHead>
+              <TableHead>{t('activities.table.actions')}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -169,7 +171,7 @@ export const ActivitiesPage = () => {
                 <TableCell>{activity.code || '-'}</TableCell>
                 <TableCell>€{Number(activity.defaultPrice).toFixed(2)}</TableCell>
                 <TableCell>{activity.unit}</TableCell>
-                <TableCell>{activity.isActive ? 'Active' : 'Inactive'}</TableCell>
+                <TableCell>{activity.isActive ? t('activities.table.active') : t('activities.table.inactive')}</TableCell>
                 <TableCell>
                   <div className="flex gap-2">
                     <Button variant="outline" size="sm" onClick={() => handleEdit(activity)}>
