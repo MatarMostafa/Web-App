@@ -1,9 +1,10 @@
 "use client";
 import React from "react";
 import { Badge, Button } from "@/components/ui";
-import { Calendar, MapPin, Users, MessageSquare } from "lucide-react";
+import { Calendar, MapPin, Users, MessageSquare, Eye } from "lucide-react";
 import { OrderStatus } from "@/types/order";
 import { format } from "date-fns";
+import Link from "next/link";
 
 
 interface Assignment {
@@ -143,6 +144,11 @@ const EmployeeOrderTableView: React.FC<EmployeeOrderTableViewProps> = ({
                 </td>
                 <td className="p-4">
                   <div className="flex items-center justify-end gap-2">
+                    <Link href={`/dashboard-employee/orders/${assignment.order.id}`}>
+                      <Button variant="ghost" size="sm">
+                        <Eye className="h-4 w-4" />
+                      </Button>
+                    </Link>
                     <Button
                       variant="ghost"
                       size="sm"

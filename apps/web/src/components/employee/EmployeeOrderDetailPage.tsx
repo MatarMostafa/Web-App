@@ -2,24 +2,23 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Calendar, MapPin, User, Users, Clock, AlertCircle } from "lucide-react";
+import { ArrowLeft, Calendar, MapPin, Clock, AlertCircle, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { LoadingSpinnerWithText } from "@/components/ui";
+import { Textarea } from "@/components/ui/textarea";
 import { Order, OrderStatus } from "@/types/order";
-import { useOrderStore } from "@/store/orderStore";
 import { useEmployeeOrderStore } from "@/store/employee/employeeOrderStore";
-import { OrderTimeline } from "./OrderTimeline";
-import { OrderActions } from "./OrderActions";
-import { OrderAssignments } from "./OrderAssignments";
-import { OrderDetailSkeleton } from "./OrderDetailSkeleton";
-import { useTranslation } from "@/hooks/useTranslation";
+import { OrderTimeline } from "../order-detail/OrderTimeline";
+import { OrderDetailSkeleton } from "../order-detail/OrderDetailSkeleton";
+import { OrderActivities } from "../order-detail/OrderActivities";
+import { orderNotesApi } from "@/lib/orderNotesApi";
+import { useOrderStore } from "@/store/orderStore";
 import { format } from "date-fns";
+import toast from "react-hot-toast";
 
-interface OrderDetailPageProps {
+interface EmployeeOrderDetailPageProps {
   orderId: string;
-  userRole: "ADMIN" | "EMPLOYEE";
 }
 
 const getStatusColor = (status: OrderStatus) => {
@@ -45,77 +44,128 @@ const getStatusColor = (status: OrderStatus) => {
   }
 };
 
-export const OrderDetailPage: React.FC<OrderDetailPageProps> = ({
+const getAvailableActions = (status: OrderStatus) => {
+  const actions = [];
+  
+  switch (status) {
+    case OrderStatus.ACTIVE:
+      actions.push({ key: "start", label: "Start Work", variant: "default" as const });
+      break;
+    case OrderStatus.IN_PROGRESS:
+      actions.push({ key: "review", label: "Request Review", variant: "default" as const });
+      actions.push({ key: "pause", label: "Pause Work", variant: "outline" as const });
+      break;
+  }
+  
+  return actions;
+};
+
+export const EmployeeOrderDetailPage: React.FC<EmployeeOrderDetailPageProps> = ({
   orderId,
-  userRole,
 }) => {
-  const { t } = useTranslation();
   const router = useRouter();
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [assignedStaffCount, setAssignedStaffCount] = useState<number>(0);
-  const [dataFetched, setDataFetched] = useState(false);
-  const [orderActivities, setOrderActivities] = useState<any[]>([]);
+  const [noteContent, setNoteContent] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [refreshActivities, setRefreshActivities] = useState(0);
 
-  const { orders, fetchOrders, getOrderEmployeeNames } = useOrderStore();
   const { employeeAssignments, fetchEmployeeAssignments } = useEmployeeOrderStore();
+  const { updateOrderStatus } = useOrderStore();
 
   useEffect(() => {
-    if (userRole === "ADMIN") {
-      fetchOrders();
-    } else {
-      // For employees, get their assignments
-      import("next-auth/react").then(m => m.getSession()).then(session => {
-        if (session?.user?.id) {
-          fetchEmployeeAssignments(session.user.id);
-        }
-      });
-    }
-  }, [orderId, userRole, fetchOrders, fetchEmployeeAssignments]);
-
-  // Set activities from order data
-  useEffect(() => {
-    if (order && (order as any).customerActivities) {
-      setOrderActivities((order as any).customerActivities);
-    }
-  }, [order]);
-
-  // Update order when stores change
-  useEffect(() => {
-    if (userRole === "ADMIN") {
-      if (orders.length > 0) {
-        setDataFetched(true);
-        const foundOrder = orders.find(o => o.id === orderId);
-        if (foundOrder) {
-          setOrder(foundOrder);
-          setError(null);
-        } else {
-          setError("Order not found");
-        }
-        setLoading(false);
+    import("next-auth/react").then(m => m.getSession()).then(session => {
+      if (session?.user?.id) {
+        fetchEmployeeAssignments(session.user.id);
       }
-    } else {
-      if (employeeAssignments.length > 0) {
-        setDataFetched(true);
-        const assignment = employeeAssignments.find(a => a.order.id === orderId);
-        if (assignment) {
-          const orderData = assignment.order as any;
-          // Use the order data from assignment, even if customer data is missing
-          setOrder(orderData);
-          setError(null);
-          setLoading(false);
-        } else {
-          setError("Order not found or not assigned to you");
-          setLoading(false);
-        }
+    });
+  }, [orderId, fetchEmployeeAssignments]);
+
+  useEffect(() => {
+    if (employeeAssignments.length > 0) {
+      const assignment = employeeAssignments.find(a => a.order.id === orderId);
+      if (assignment) {
+        setOrder(assignment.order as any);
+        setError(null);
+      } else {
+        setError("Order not found or not assigned to you");
       }
+      setLoading(false);
     }
-  }, [orders, employeeAssignments, orderId, userRole]);
+  }, [employeeAssignments, orderId]);
 
   const handleBack = () => {
-    const basePath = userRole === "ADMIN" ? "/dashboard-admin" : "/dashboard-employee";
-    router.push(`${basePath}/orders`);
+    router.push("/dashboard-employee/orders");
+  };
+
+  const handleStatusChange = async (newStatus: OrderStatus, note: string) => {
+    setIsSubmitting(true);
+    try {
+      await orderNotesApi.createOrderNote(orderId, {
+        content: note,
+        triggersStatus: newStatus,
+        category: 'GENERAL_UPDATE',
+        isInternal: false
+      });
+
+      updateOrderStatus(orderId, newStatus);
+      
+      const updatedAssignments = employeeAssignments.map(assignment => {
+        if (assignment.order.id === orderId) {
+          return {
+            ...assignment,
+            order: { ...assignment.order, status: newStatus }
+          };
+        }
+        return assignment;
+      });
+      useEmployeeOrderStore.setState({ employeeAssignments: updatedAssignments });
+
+      setRefreshActivities(prev => prev + 1);
+      toast.success(`Order status updated to ${newStatus}`);
+    } catch (error) {
+      console.error("Failed to update status:", error);
+      toast.error("Failed to update order status");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleActionClick = (actionKey: string) => {
+    switch (actionKey) {
+      case "start":
+        handleStatusChange(OrderStatus.IN_PROGRESS, "Work started on this order");
+        break;
+      case "pause":
+        handleStatusChange(OrderStatus.ACTIVE, "Work paused on this order");
+        break;
+      case "review":
+        handleStatusChange(OrderStatus.IN_REVIEW, "Order submitted for review");
+        break;
+    }
+  };
+
+  const handleAddNote = async () => {
+    if (!noteContent.trim()) return;
+
+    setIsSubmitting(true);
+    try {
+      await orderNotesApi.createOrderNote(orderId, {
+        content: noteContent.trim(),
+        category: 'GENERAL_UPDATE',
+        isInternal: false
+      });
+
+      setNoteContent("");
+      setRefreshActivities(prev => prev + 1);
+      toast.success("Note added successfully");
+    } catch (error) {
+      console.error("Failed to add note:", error);
+      toast.error("Failed to add note");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (loading) {
@@ -141,6 +191,8 @@ export const OrderDetailPage: React.FC<OrderDetailPageProps> = ({
       </div>
     );
   }
+
+  const availableActions = getAvailableActions(order.status);
 
   return (
     <div className="p-6 space-y-6">
@@ -172,7 +224,7 @@ export const OrderDetailPage: React.FC<OrderDetailPageProps> = ({
           </div>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
             <div className="flex items-center gap-2">
               <Calendar className="h-4 w-4 text-muted-foreground" />
               <div>
@@ -188,16 +240,6 @@ export const OrderDetailPage: React.FC<OrderDetailPageProps> = ({
               </div>
             </div>
             
-            {(order as any)?.customer?.companyName && (
-              <div className="flex items-center gap-2">
-                <User className="h-4 w-4 text-muted-foreground" />
-                <div>
-                  <p className="text-sm font-medium">Company</p>
-                  <p className="text-sm text-muted-foreground">{(order as any).customer.companyName}</p>
-                </div>
-              </div>
-            )}
-            
             {order.location && (
               <div className="flex items-center gap-2">
                 <MapPin className="h-4 w-4 text-muted-foreground" />
@@ -208,19 +250,7 @@ export const OrderDetailPage: React.FC<OrderDetailPageProps> = ({
               </div>
             )}
             
-            <div className="flex items-center gap-2">
-              <Users className="h-4 w-4 text-muted-foreground" />
-              <div>
-                <p className="text-sm font-medium">Assigned Staff</p>
-                <p className="text-sm text-muted-foreground">
-                  {assignedStaffCount === 0 ? 'No staff assigned' : 
-                   assignedStaffCount === 1 ? '1 person assigned' : 
-                   `${assignedStaffCount} people assigned`}
-                </p>
-              </div>
-            </div>
-            
-            {order.duration ? (
+            {order.duration && (
               <div className="flex items-center gap-2">
                 <Clock className="h-4 w-4 text-muted-foreground" />
                 <div>
@@ -228,14 +258,6 @@ export const OrderDetailPage: React.FC<OrderDetailPageProps> = ({
                   <p className="text-sm text-muted-foreground">
                     {order.duration} {order.duration === 1 ? 'hour' : 'hours'}
                   </p>
-                </div>
-              </div>
-            ) : (
-              <div className="flex items-center gap-2">
-                <AlertCircle className="h-4 w-4 text-muted-foreground" />
-                <div>
-                  <p className="text-sm font-medium">Priority</p>
-                  <Badge variant="outline">P{order.priority}</Badge>
                 </div>
               </div>
             )}
@@ -251,14 +273,14 @@ export const OrderDetailPage: React.FC<OrderDetailPageProps> = ({
       </Card>
 
       {/* Activities */}
-      {orderActivities.length > 0 && (
+      {(order as any)?.customerActivities?.length > 0 && (
         <Card>
           <CardHeader>
             <CardTitle>Activities & Pricing</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {orderActivities.map((customerActivity, index) => (
+              {(order as any).customerActivities.map((customerActivity: any, index: number) => (
                 <div key={index} className="flex items-center justify-between p-3 bg-muted rounded-lg">
                   <div>
                     <p className="font-medium">
@@ -282,11 +304,11 @@ export const OrderDetailPage: React.FC<OrderDetailPageProps> = ({
                   </div>
                 </div>
               ))}
-              {orderActivities.some(ca => ca.lineTotal) && (
+              {(order as any).customerActivities.some((ca: any) => ca.lineTotal) && (
                 <div className="border-t pt-3 mt-3">
                   <div className="flex justify-between items-center font-semibold">
                     <span>Total Order Value:</span>
-                    <span>€{orderActivities.reduce((sum, ca) => sum + (Number(ca.lineTotal) || 0), 0).toFixed(2)}</span>
+                    <span>€{(order as any).customerActivities.reduce((sum: number, ca: any) => sum + (Number(ca.lineTotal) || 0), 0).toFixed(2)}</span>
                   </div>
                 </div>
               )}
@@ -294,28 +316,62 @@ export const OrderDetailPage: React.FC<OrderDetailPageProps> = ({
           </CardContent>
         </Card>
       )}
-      {orderActivities.length === 0 && (
-        <Card>
-          <CardContent className="p-6 text-center text-muted-foreground">
-            No activities assigned to this order
-          </CardContent>
-        </Card>
-      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left Column - Timeline */}
+        {/* Left Column - Timeline & Activities */}
         <div className="lg:col-span-2 space-y-6">
-          <OrderTimeline orderId={orderId} order={order} userRole={userRole} />
+          <OrderTimeline orderId={orderId} order={order} userRole="EMPLOYEE" />
+          <OrderActivities orderId={orderId} key={refreshActivities} />
         </div>
 
-        {/* Right Column - Assignments */}
-        <div>
-          <OrderAssignments 
-            orderId={orderId} 
-            order={order} 
-            userRole={userRole} 
-            onAssignmentCountChange={setAssignedStaffCount}
-          />
+        {/* Right Column - Actions */}
+        <div className="space-y-6">
+          {/* Quick Actions */}
+          {availableActions.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Quick Actions</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex flex-col gap-2">
+                  {availableActions.map((action) => (
+                    <Button
+                      key={action.key}
+                      variant={action.variant}
+                      onClick={() => handleActionClick(action.key)}
+                      disabled={isSubmitting}
+                      className="w-full"
+                    >
+                      {action.label}
+                    </Button>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Add Note */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Add Note</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <Textarea
+                placeholder="Add a note about this order..."
+                value={noteContent}
+                onChange={(e) => setNoteContent(e.target.value)}
+                rows={3}
+              />
+              <Button
+                onClick={handleAddNote}
+                disabled={!noteContent.trim() || isSubmitting}
+                className="w-full"
+              >
+                <MessageSquare className="h-4 w-4 mr-2" />
+                Add Note
+              </Button>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>

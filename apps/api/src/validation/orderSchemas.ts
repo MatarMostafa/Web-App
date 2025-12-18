@@ -69,7 +69,11 @@ export const createOrderSchema = z.object({
 
     status: OrderStatusEnum.default("DRAFT"),
     customerId: z.string().cuid(),
-    assignedEmployeeIds: z.array(z.string().cuid()).optional()
+    assignedEmployeeIds: z.array(z.string().cuid()).optional(),
+    activities: z.array(z.object({
+      activityId: z.string().cuid(),
+      quantity: z.number().int().positive().optional().default(1)
+    })).optional()
   })
 });
 
