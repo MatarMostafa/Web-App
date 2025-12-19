@@ -72,7 +72,7 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
             <DropdownMenuContent align="end" className="w-40">
               <DropdownMenuItem
                 onClick={logout}
-                className="cursor-pointer py-2"
+                className="text-black cursor-pointer py-2"
               >
                 Log Out
               </DropdownMenuItem>
