@@ -158,9 +158,11 @@ export const OrderDetailPage: React.FC<OrderDetailPageProps> = ({
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
               <CardTitle className="text-2xl">Order #{order.orderNumber}</CardTitle>
-              <p className="text-muted-foreground mt-1">
-                {order.description || "No description provided"}
-              </p>
+              {!order.descriptionData?.descriptionData && (
+                <p className="text-muted-foreground mt-1">
+                  {order.description || "No description provided"}
+                </p>
+              )}
             </div>
             <Badge className={`${getStatusColor(order.status)} text-sm w-fit`}>
               {order.status === "IN_PROGRESS"
@@ -249,7 +251,34 @@ export const OrderDetailPage: React.FC<OrderDetailPageProps> = ({
           )}
         </CardContent>
       </Card>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
+      {/* Template Description Card */}
+      {order.descriptionData?.descriptionData && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Order Description</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {Object.entries(order.descriptionData.descriptionData).map(
+                ([key, value]) => (
+                  <div
+                    key={key}
+                    className="flex justify-between gap-4 bg-muted rounded-md p-3 text-sm"
+                  >
+                    <span className="font-medium">{key}</span>
+                    <span className="text-muted-foreground">{String(value)}</span>
+                  </div>
+                )
+              )}
+            </div>
+            <p className="text-xs text-muted-foreground mt-3">
+              ℹ️ This description is template-based and cannot be edited.
+            </p>
+          </CardContent>
+        </Card>
+      )}
       {/* Activities */}
       {orderActivities.length > 0 && (
         <Card>
@@ -301,6 +330,8 @@ export const OrderDetailPage: React.FC<OrderDetailPageProps> = ({
           </CardContent>
         </Card>
       )}
+      </div>
+
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left Column - Timeline */}
