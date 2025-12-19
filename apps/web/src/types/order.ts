@@ -9,10 +9,17 @@ export enum OrderStatus {
   EXPIRED = "EXPIRED"
 }
 
+export interface DescriptionData {
+  [key: string]: string; // each template field is a string
+}
+
 export interface Order {
   id: string;
   orderNumber: string;
   description?: string;
+  descriptionData?: {
+    descriptionData: DescriptionData; // nested object as returned by backend
+  };
   scheduledDate: string;
   startTime?: string;
   endTime?: string;
@@ -29,6 +36,7 @@ export interface Order {
   createdBy?: string;
   updatedBy?: string;
 }
+
 
 export interface CreateOrderData {
   orderNumber?: string;
