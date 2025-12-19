@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { AuthRequest } from "../middleware/authMiddleware";
 import * as employeeService from "../services/employeeService";
+import * as employeeExportService from "../services/employeeExportService";
 
 export const getAllEmployees = async (req: Request, res: Response) => {
   const authReq = req as AuthRequest;
@@ -100,5 +101,89 @@ export const deleteEmployee = async (req: Request, res: Response) => {
     res.json({ message: "Mitarbeiter erfolgreich gelöscht" });
   } catch (error) {
     res.status(500).json({ message: "Fehler beim Löschen des Mitarbeiters", error });
+  }
+};
+
+export const exportEmployeeAssignments = async (req: Request, res: Response) => {
+  try {
+    const { employeeId, period = 'monthly', startDate, endDate } = req.query;
+    
+    if (!startDate || !endDate) {
+      return res.status(400).json({ message: "Start and end dates are required" });
+    }
+
+    const filters = {
+      employeeId: employeeId as string,
+      period: period as 'daily' | 'weekly' | 'monthly',
+      startDate: new Date(startDate as string),
+      endDate: new Date(endDate as string),
+    };
+
+    const csvData = await employeeExportService.exportEmployeeAssignments(filters);
+    
+    const filename = `employee-assignments-${period}-${new Date().toISOString().split('T')[0]}.csv`;
+    
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+    res.send(csvData);
+  } catch (error) {
+    console.error('Export error:', error);
+    res.status(500).json({ message: "Error exporting employee assignments", error });
+  }
+};
+
+export const exportEmployeeWorkStats = async (req: Request, res: Response) => {
+  try {
+    const { employeeId, period = 'monthly', startDate, endDate } = req.query;
+    
+    if (!startDate || !endDate) {
+      return res.status(400).json({ message: "Start and end dates are required" });
+    }
+
+    const filters = {
+      employeeId: employeeId as string,
+      period: period as 'daily' | 'weekly' | 'monthly',
+      startDate: new Date(startDate as string),
+      endDate: new Date(endDate as string),
+    };
+
+    const csvData = await employeeExportService.exportEmployeeWorkStatistics(filters);
+    
+    const filename = `employee-work-stats-${period}-${new Date().toISOString().split('T')[0]}.csv`;
+    
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+    res.send(csvData);
+  } catch (error) {
+    console.error('Export error:', error);
+    res.status(500).json({ message: "Error exporting work statistics", error });
+  }
+};
+
+export const exportCombinedEmployeeData = async (req: Request, res: Response) => {
+  try {
+    const { employeeId, period = 'monthly', startDate, endDate } = req.query;
+    
+    if (!startDate || !endDate) {
+      return res.status(400).json({ message: "Start and end dates are required" });
+    }
+
+    const filters = {
+      employeeId: employeeId as string,
+      period: period as 'daily' | 'weekly' | 'monthly',
+      startDate: new Date(startDate as string),
+      endDate: new Date(endDate as string),
+    };
+
+    const csvData = await employeeExportService.exportCombinedEmployeeData(filters);
+    
+    const filename = `employee-combined-data-${period}-${new Date().toISOString().split('T')[0]}.csv`;
+    
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+    res.send(csvData);
+  } catch (error) {
+    console.error('Export error:', error);
+    res.status(500).json({ message: "Error exporting combined employee data", error });
   }
 };

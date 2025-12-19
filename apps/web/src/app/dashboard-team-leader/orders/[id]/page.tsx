@@ -22,6 +22,9 @@ interface Order {
   duration?: number;
   priority: number;
   specialInstructions?: string;
+  descriptionData?: {
+    descriptionData: Record<string, any>;
+  };
   customer: {
     companyName: string;
   };
@@ -59,7 +62,7 @@ const TeamLeaderOrderDetail = ({ params }: { params: Promise<{ id: string }> }) 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [notesDialogOpen, setNotesDialogOpen] = useState(false);
-  const resolvedParams = React.use(params);
+  const { id } = React.use(params);
 
   useEffect(() => {
     const fetchOrder = async () => {
@@ -72,7 +75,7 @@ const TeamLeaderOrderDetail = ({ params }: { params: Promise<{ id: string }> }) 
         
         if (response.ok) {
           const orders = await response.json();
-          const foundOrder = orders.find((o: Order) => o.id === resolvedParams.id);
+          const foundOrder = orders.find((o: Order) => o.id === id);
           if (foundOrder) {
             setOrder(foundOrder);
           } else {
@@ -92,7 +95,9 @@ const TeamLeaderOrderDetail = ({ params }: { params: Promise<{ id: string }> }) 
     if (session?.accessToken) {
       fetchOrder();
     }
-  }, [resolvedParams.id, session]);
+  }, [id, session, t]);
+
+
 
   const handleBack = () => {
     router.push("/dashboard-team-leader/orders");
@@ -142,9 +147,11 @@ const TeamLeaderOrderDetail = ({ params }: { params: Promise<{ id: string }> }) 
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
               <CardTitle className="text-2xl">Order #{order.orderNumber}</CardTitle>
-              <p className="text-muted-foreground mt-1">
-                {order.description || t('teamLeader.orders.noDescription')}
-              </p>
+              {!order.descriptionData?.descriptionData && (
+                <p className="text-muted-foreground mt-1">
+                  {order.description || t('teamLeader.orders.noDescription')}
+                </p>
+              )}
             </div>
             <Badge className={`${getStatusColor(order.status)} text-sm w-fit`}>
               {order.status.replace('_', ' ')}
@@ -242,6 +249,33 @@ const TeamLeaderOrderDetail = ({ params }: { params: Promise<{ id: string }> }) 
           </Card>
         )}
       </div>
+
+      {/* Template Description Card */}
+      {order.descriptionData?.descriptionData && (
+        <Card>
+          <CardHeader>
+            <CardTitle>{t('order.description')}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {Object.entries(order.descriptionData.descriptionData).map(
+                ([key, value]) => (
+                  <div
+                    key={key}
+                    className="flex justify-between gap-4 bg-muted rounded-md p-3 text-sm"
+                  >
+                    <span className="font-medium">{key}</span>
+                    <span className="text-muted-foreground">{String(value)}</span>
+                  </div>
+                )
+              )}
+            </div>
+            <p className="text-xs text-muted-foreground mt-3">
+              ℹ️ {t('order.templateBasedDescription')}
+            </p>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Assigned Employees */}
       {order.employeeAssignments.length > 0 && (

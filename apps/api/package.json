@@ -8,7 +8,8 @@
     "dev": "nodemon --exec \"node -r esbuild-register ./src/server.ts\" -e .ts",
     "lint": "tsc --noEmit && eslint \"src/**/*.ts*\" --max-warnings 0",
     "start": "node -r esbuild-register ./src/server.ts",
-    "test": "jest --detectOpenHandles"
+    "test": "jest --detectOpenHandles",
+    "backfill:pricing": "node -r esbuild-register ./src/scripts/backfillPricing.ts"
   },
   "jest": {
     "preset": "@repo/jest-presets/node"
@@ -23,6 +24,7 @@
     "bullmq": "^5.58.7",
     "cors": "^2.8.5",
     "cron": "^4.3.3",
+    "decimal.js": "^10.6.0",
     "dotenv": "^17.2.2",
     "express": "^4.18.3",
     "express-rate-limit": "^8.1.0",

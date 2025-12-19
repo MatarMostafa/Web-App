@@ -87,6 +87,9 @@ export interface Order {
   startedAt?: Date;
   completedAt?: Date;
 
+  // Template fields
+  usesTemplate?: boolean;
+
   customerId: string;
   customer?: Customer;
   // subAccountId?: string; // optional: for future linking to sub-accounts

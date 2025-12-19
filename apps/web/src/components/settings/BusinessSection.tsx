@@ -37,16 +37,16 @@ export function BusinessSection() {
   const fetchBusinessInfo = async () => {
     try {
       const response = await apiClient.get<any>("/api/customers/me");
-      const data = response;
+      const data = response.data || response;
       
       setBusinessInfo({
         companyName: data.companyName || "",
-        address: data.address?.street || "",
+        address: typeof data.address === 'string' ? data.address : (data.address?.street || ""),
         industry: data.industry || "",
         taxNumber: data.taxNumber || "",
       });
       setEditValues({
-        address: data.address?.street || "",
+        address: typeof data.address === 'string' ? data.address : (data.address?.street || ""),
         industry: data.industry || "",
       });
     } catch (error) {

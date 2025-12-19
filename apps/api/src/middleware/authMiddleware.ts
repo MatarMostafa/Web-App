@@ -9,6 +9,18 @@ export interface AuthRequest extends Request {
     username: string;
     role: string;
     isActive: boolean;
+    employee?: {
+      isAvailable: boolean;
+    } | null;
+    customer?: {
+      id: string;
+      isActive: boolean;
+    } | null;
+    subAccount?: {
+      id: string;
+      customerId: string;
+      isActive: boolean;
+    } | null;
   };
 }
 
@@ -44,6 +56,14 @@ export const authMiddleware = async (
         },
         customer: {
           select: {
+            id: true,
+            isActive: true,
+          },
+        },
+        subAccount: {
+          select: {
+            id: true,
+            customerId: true,
             isActive: true,
           },
         },
@@ -60,6 +80,10 @@ export const authMiddleware = async (
 
     if (user.customer && !user.customer.isActive) {
       return res.status(403).json({ message: "Ihr Kundenkonto wurde deaktiviert. Bitte wenden Sie sich an den Support." });
+    }
+
+    if (user.subAccount && !user.subAccount.isActive) {
+      return res.status(403).json({ message: "Ihr Sub-Account wurde deaktiviert. Bitte wenden Sie sich an den Administrator." });
     }
 
     authReq.user = user;

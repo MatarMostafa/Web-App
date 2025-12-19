@@ -41,10 +41,17 @@ export const getOrders = async (req: Request, res: Response) => {
 export const createOrder = async (req: Request, res: Response) => {
   const authReq = req as AuthRequest;
   try {
+    // Get employee ID from user
+    const employee = await teamService.getEmployeeByUserId(authReq.user!.id);
+    if (!employee) {
+      return res.status(404).json({ message: "Employee not found" });
+    }
+
     // Team leaders can create orders but without pricing fields
     const { hourlyRate, totalCost, profit, ...orderData } = req.body;
     
-    const order = await orderService.createOrderService(orderData, authReq.user?.id);
+    // Pass the employee ID as createdBy to properly track who created the order
+    const order = await orderService.createOrderService(orderData, employee.id);
     res.status(201).json(order);
   } catch (error) {
     console.error("Team leader create order error:", error);
@@ -66,14 +73,17 @@ export const updateOrder = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "Employee not found" });
     }
 
-    // Verify the order belongs to a team led by this user
+    // Verify the order belongs to a team led by this user or was created by them
     const order = await orderService.getOrderByIdService(id);
     if (!order) {
       return res.status(404).json({ message: "Order not found" });
     }
 
-    // Check if order is assigned to a team led by this employee
-    if (order.teamId) {
+    // Check if order was created by this team leader
+    if (order.createdBy === employee.id) {
+      // Team leader can update their own orders
+    } else if (order.teamId) {
+      // Check if order is assigned to a team led by this employee
       const team = await teamService.getTeamById(order.teamId);
       if (!team || team.teamLeaderId !== employee.id) {
         return res.status(403).json({ message: "Access denied" });
@@ -99,7 +109,7 @@ export const updateOrder = async (req: Request, res: Response) => {
     // Remove pricing fields from update data
     const { hourlyRate, totalCost, profit, ...updateData } = req.body;
     
-    const updatedOrder = await orderService.updateOrderService(id, updateData, authReq.user?.id);
+    const updatedOrder = await orderService.updateOrderService(id, updateData, employee.id);
     res.json(updatedOrder);
   } catch (error) {
     console.error("Team leader update order error:", error);

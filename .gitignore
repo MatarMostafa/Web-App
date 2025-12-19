@@ -38,3 +38,5 @@ yarn-error.log*
 
 packages/db/src/generated/
 .vscode/settings.json
+.vscode/settings.json
+.vscode

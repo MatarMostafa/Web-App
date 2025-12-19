@@ -26,6 +26,8 @@ import { CreateOrderData, OrderStatus } from "@/types/order";
 import toast from "react-hot-toast";
 import { useTranslation } from "@/hooks/useTranslation";
 import TimeOnlyInput from "@/components/ui/TimeOnlyInput";
+import { useSession } from "next-auth/react";
+import OrderDescriptionForm from "./OrderDescriptionForm";
 
 interface AddOrderDialogProps {
   trigger: React.ReactNode;
@@ -33,6 +35,7 @@ interface AddOrderDialogProps {
 
 const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
   const { t, ready } = useTranslation();
+  const { data: session } = useSession();
   
   if (!ready) {
     return null;
@@ -43,6 +46,10 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [activities, setActivities] = useState<any[]>([]);
+  const [selectedActivities, setSelectedActivities] = useState<string[]>([]);
+  const [templateData, setTemplateData] = useState<Record<string, string> | null>(null);
+
   const [formData, setFormData] = useState<CreateOrderData>({
     description: "",
     scheduledDate: "",
@@ -67,7 +74,24 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
     }
   }, [open, fetchEmployees, fetchCustomers]);
 
-  // Auto-fill location when customer is selected
+  const fetchActivities = async () => {
+    if (!formData.customerId) return;
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/pricing/customers/${formData.customerId}/activities`, {
+        headers: { Authorization: `Bearer ${session?.accessToken}` },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setActivities(data);
+      }
+    } catch (error) {
+      console.error("Error fetching activities:", error);
+    }
+  };
+
+
+
+  // Auto-fill location and fetch activities when customer is selected
   useEffect(() => {
     if (formData.customerId) {
       const selectedCustomer = customers.find(
@@ -82,6 +106,8 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
                 .join(", ");
         setFormData((prev) => ({ ...prev, location: addressStr }));
       }
+      fetchActivities();
+      setSelectedActivities([]);
     }
   }, [formData.customerId, customers]);
 
@@ -117,6 +143,8 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
     });
     setStartTimeOnly("09:00");
     setEndTimeOnly("");
+    setSelectedActivities([]);
+    setTemplateData(null);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -138,7 +166,14 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
     setLoading(true);
 
     try {
-      const submitData = { ...formData };
+      const submitData = { 
+        ...formData,
+        activities: selectedActivities.map(activityId => ({
+          activityId,
+          quantity: 1
+        })),
+        templateData: templateData
+      };
 
       // Convert date and datetime-local to ISO format
       if (submitData.scheduledDate) {
@@ -195,6 +230,23 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
     });
   };
 
+  const handleActivityToggle = (activityId: string, checked: boolean) => {
+    setSelectedActivities(prev => 
+      checked
+        ? [...prev, activityId]
+        : prev.filter(id => id !== activityId)
+    );
+  };
+
+  const getTotalPrice = () => {
+    return selectedActivities.reduce((total, activityId) => {
+      const activity = activities.find(a => a.activity.id === activityId);
+      return total + (activity ? Number(activity.unitPrice || activity.activity.defaultPrice) : 0);
+    }, 0);
+  };
+
+
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
@@ -227,14 +279,41 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
           </div>
 
           <div>
-            <Label htmlFor="description">{t("admin.orders.form.description")}</Label>
-            <Textarea
-              id="description"
-              value={formData.description}
-              onChange={(e) => handleInputChange("description", e.target.value)}
-              rows={3}
-            />
+            <Label>Activities</Label>
+            <div className="text-sm text-muted-foreground mb-2">
+              {selectedActivities.length} activities selected - Total: €{getTotalPrice().toFixed(2)}
+            </div>
+            <div className="max-h-40 overflow-y-auto border rounded-md p-3 space-y-2">
+              {activities.map((customerActivity) => (
+                <div key={customerActivity.id} className="flex items-center justify-between space-x-2">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id={`activity-${customerActivity.activity.id}`}
+                      checked={selectedActivities.includes(customerActivity.activity.id)}
+                      onCheckedChange={(checked) => handleActivityToggle(customerActivity.activity.id, checked as boolean)}
+                    />
+                    <Label htmlFor={`activity-${customerActivity.activity.id}`} className="text-sm">
+                      {customerActivity.activity.name}
+                    </Label>
+                  </div>
+                  <span className="text-sm text-muted-foreground">
+                    €{Number(customerActivity.unitPrice || customerActivity.activity.defaultPrice).toFixed(2)}
+                  </span>
+                </div>
+              ))}
+              {activities.length === 0 && (
+                <p className="text-sm text-gray-500">{formData.customerId ? 'No activities available for this customer' : 'Select a customer first'}</p>
+              )}
+            </div>
           </div>
+
+          <OrderDescriptionForm
+            customerId={formData.customerId}
+            description={formData.description || ""}
+            onDescriptionChange={(description) => handleInputChange("description", description)}
+            onTemplateDataChange={setTemplateData}
+          />
+          
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
@@ -330,24 +409,7 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
             </div>
           </div>
 
-          <div>
-            <Label htmlFor="specialInstructions">{t("admin.orders.form.activities")}</Label>
-            <Select
-              value={formData.specialInstructions}
-              onValueChange={(value) => handleInputChange("specialInstructions", value)}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder={t("admin.orders.form.selectActivity")} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Container entladen">{t("admin.orders.activities.containerUnloading")}</SelectItem>
-                <SelectItem value="Kommissionieren">{t("admin.orders.activities.picking")}</SelectItem>
-                <SelectItem value="Paletten sortieren">{t("admin.orders.activities.palletSorting")}</SelectItem>
-                <SelectItem value="Qualitätskontrolle">{t("admin.orders.activities.qualityControl")}</SelectItem>
-                <SelectItem value="Verpacken">{t("admin.orders.activities.packaging")}</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+
 
           <div>
             <Label>{t("admin.orders.form.assignEmployees")}</Label>

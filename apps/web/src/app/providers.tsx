@@ -9,6 +9,7 @@ import enTranslations from '../../public/locales/en/common.json';
 import deTranslations from '../../public/locales/de/common.json';
 
 i18n.use(initReactI18next).init({
+  lng: 'de',
   fallbackLng: 'en',
   resources: {
     en: { translation: enTranslations },

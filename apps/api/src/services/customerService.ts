@@ -90,31 +90,59 @@ export const getCustomerOrderByIdService = async (customerId: string, orderId: s
   return filterOrderForCustomer(order);
 };
 
-// Get customer profile
+// Get customer profile (works for both CUSTOMER and CUSTOMER_SUB_USER)
 export const getCustomerProfileService = async (userId: string) => {
   const user = await prisma.user.findUnique({
     where: { id: userId },
     include: {
       customer: true,
+      subAccount: {
+        include: {
+          customer: true,
+        },
+      },
     },
   });
 
-  if (!user?.customer) {
-    throw new Error('Customer profile not found');
+  if (!user) {
+    throw new Error('User not found');
   }
 
-  return {
-    id: user.customer.id,
-    companyName: user.customer.companyName,
-    contactEmail: user.email || user.customer.contactEmail, // Prioritize user's email
-    contactPhone: user.customer.contactPhone,
-    address: user.customer.address,
-    industry: user.customer.industry,
-    user: {
-      email: user.email,
-      username: user.username,
-    },
-  };
+  // For CUSTOMER role, use direct customer relationship
+  if (user.customer) {
+    return {
+      id: user.customer.id,
+      companyName: user.customer.companyName,
+      contactEmail: user.email || user.customer.contactEmail,
+      contactPhone: user.customer.contactPhone,
+      address: user.customer.address,
+      industry: user.customer.industry,
+      taxNumber: user.customer.taxNumber,
+      user: {
+        email: user.email,
+        username: user.username,
+      },
+    };
+  }
+
+  // For CUSTOMER_SUB_USER role, use parent customer through subAccount
+  if (user.subAccount?.customer) {
+    return {
+      id: user.subAccount.customer.id,
+      companyName: user.subAccount.customer.companyName,
+      contactEmail: user.subAccount.customer.contactEmail,
+      contactPhone: user.subAccount.customer.contactPhone,
+      address: user.subAccount.customer.address,
+      industry: user.subAccount.customer.industry,
+      taxNumber: user.subAccount.customer.taxNumber,
+      user: {
+        email: user.email,
+        username: user.username,
+      },
+    };
+  }
+
+  throw new Error('Customer profile not found');
 };
 
 // Update customer profile
@@ -182,6 +210,19 @@ export const getCustomerByIdService = async (customerId: string) => {
           isActive: true,
         },
       },
+      subAccounts: {
+        include: {
+          user: {
+            select: {
+              id: true,
+              username: true,
+              email: true,
+              isActive: true,
+            },
+          },
+        },
+        orderBy: { createdAt: 'desc' },
+      },
       orders: {
         orderBy: { createdAt: 'desc' },
         take: 10,
@@ -189,6 +230,7 @@ export const getCustomerByIdService = async (customerId: string) => {
       _count: {
         select: {
           orders: true,
+          subAccounts: true,
         },
       },
     },

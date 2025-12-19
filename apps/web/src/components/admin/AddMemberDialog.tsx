@@ -100,7 +100,7 @@ const AddMemberDialog: React.FC<AddMemberDialogProps> = ({
     e.preventDefault();
     
     if (selectedEmployeeIds.length === 0) {
-      toast.error("Please select at least one employee");
+      toast.error(t('teams.addMemberDialog.selectAtLeastOne'));
       return;
     }
     
@@ -122,16 +122,16 @@ const AddMemberDialog: React.FC<AddMemberDialogProps> = ({
       const failedCount = responses.filter(r => !r.ok).length;
       
       if (failedCount === 0) {
-        toast.success(`${selectedEmployeeIds.length} member(s) added successfully`);
+        toast.success(t('teams.addMemberDialog.membersAddedSuccess', { count: selectedEmployeeIds.length }));
       } else {
-        toast.error(`${failedCount} member(s) failed to add`);
+        toast.error(t('teams.addMemberDialog.membersAddedError', { count: failedCount }));
       }
       
       onMemberAdded();
       onOpenChange(false);
       setSelectedEmployeeIds([]);
     } catch (error) {
-      toast.error("Error adding members");
+      toast.error(t('teams.addMemberDialog.errorAddingMembers'));
     } finally {
       setLoading(false);
     }
@@ -141,13 +141,13 @@ const AddMemberDialog: React.FC<AddMemberDialogProps> = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="w-[95vw] max-w-2xl max-h-[90vh] flex flex-col">
         <DialogHeader className="flex-shrink-0">
-          <DialogTitle>Add Members to {teamName}</DialogTitle>
+          <DialogTitle>{t('teams.addMemberDialog.title').replace('{teamName}', teamName)}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="flex flex-col h-full space-y-4">
           <div className="flex-1 min-h-0">
-            <Label>Select Employees</Label>
+            <Label>{t('teams.addMemberDialog.selectEmployees')}</Label>
             <div className="text-sm text-muted-foreground mb-3">
-              {selectedEmployeeIds.length} employee(s) selected
+              {t('teams.addMemberDialog.employeesSelected').replace('{count}', selectedEmployeeIds.length.toString())}
             </div>
             <div className="h-[50vh] min-h-[300px] overflow-y-auto border rounded-md">
               <div className="p-3 space-y-3">
@@ -186,7 +186,7 @@ const AddMemberDialog: React.FC<AddMemberDialogProps> = ({
                 {!fetchingEmployees && employees.length === 0 && (
                   <div className="flex items-center justify-center h-32">
                     <p className="text-sm text-muted-foreground">
-                      No available employees to add
+                      {t('teams.addMemberDialog.noAvailableEmployees')}
                     </p>
                   </div>
                 )}
@@ -201,14 +201,17 @@ const AddMemberDialog: React.FC<AddMemberDialogProps> = ({
               onClick={() => onOpenChange(false)}
               className="w-full sm:w-auto"
             >
-              Cancel
+              {t('common.cancel')}
             </Button>
             <Button 
               type="submit" 
               disabled={loading || selectedEmployeeIds.length === 0}
               className="w-full sm:w-auto"
             >
-              {loading ? "Adding..." : `Add ${selectedEmployeeIds.length || 0} Member${selectedEmployeeIds.length === 1 ? '' : 's'}`}
+              {loading ? t('teams.addMemberDialog.adding') : 
+                selectedEmployeeIds.length === 1 ? 
+                  t('teams.addMemberDialog.addMembers') : 
+                  t('teams.addMemberDialog.addMembersPlural', { count: selectedEmployeeIds.length || 0 })}
             </Button>
           </div>
         </form>

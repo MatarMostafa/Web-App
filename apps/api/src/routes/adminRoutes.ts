@@ -14,6 +14,8 @@ import {
   getPendingSettingsRequests,
   reviewSettingsRequest,
 } from "../services/settingsChangeService";
+import * as subAccountService from "../services/subAccountService";
+import { AuthRequest } from "../middleware/authMiddleware";
 
 const router = express.Router();
 
@@ -124,6 +126,126 @@ router.post(
     } catch (error: any) {
       console.error("Reject request error:", error);
       res.status(500).json({ message: error.message || "Failed to reject request" });
+    }
+  }
+);
+
+// Sub-account management for admins
+router.get(
+  "/customers/:customerId/sub-accounts",
+  authMiddleware,
+  roleMiddleware(["ADMIN", "SUPER_ADMIN"]),
+  async (req, res) => {
+    try {
+      const { customerId } = req.params;
+      const subAccounts = await subAccountService.getSubAccountsByCustomer(customerId);
+      res.json({ success: true, data: subAccounts });
+    } catch (error: any) {
+      res.status(500).json({ success: false, message: error.message });
+    }
+  }
+);
+
+router.post(
+  "/customers/:customerId/sub-accounts",
+  authMiddleware,
+  roleMiddleware(["ADMIN", "SUPER_ADMIN"]),
+  async (req, res) => {
+    const authReq = req as AuthRequest;
+    try {
+      const { customerId } = req.params;
+      const { name, username, password, email } = req.body;
+
+      const result = await subAccountService.createSubAccount({
+        name,
+        username,
+        password,
+        email,
+        customerId,
+        createdBy: authReq.user?.id,
+      });
+
+      res.status(201).json({
+        success: true,
+        data: result,
+      });
+    } catch (error: any) {
+      const errorMessage = error instanceof Error ? error.message : "FAILED_TO_CREATE";
+      res.status(400).json({
+        success: false,
+        message: errorMessage,
+        error: errorMessage
+      });
+    }
+  }
+);
+
+router.put(
+  "/sub-accounts/:id",
+  authMiddleware,
+  roleMiddleware(["ADMIN", "SUPER_ADMIN"]),
+  async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { name, email, isActive } = req.body;
+
+      const updatedSubAccount = await subAccountService.updateSubAccount(id, {
+        name,
+        email,
+        isActive,
+      });
+
+      res.json({ success: true, data: updatedSubAccount });
+    } catch (error: any) {
+      console.error("Update sub-account error:", error);
+      res.status(500).json({
+        message: "Failed to update sub-account",
+        error: error instanceof Error ? error.message : String(error)
+      });
+    }
+  }
+);
+
+router.delete(
+  "/sub-accounts/:id",
+  authMiddleware,
+  roleMiddleware(["ADMIN", "SUPER_ADMIN"]),
+  async (req, res) => {
+    try {
+      const { id } = req.params;
+      await subAccountService.deleteSubAccount(id);
+      res.json({ message: "Sub-account deleted successfully" });
+    } catch (error) {
+      console.error("Delete sub-account error:", error);
+      res.status(500).json({
+        message: "Failed to delete sub-account",
+        error: error instanceof Error ? error.message : String(error)
+      });
+    }
+  }
+);
+
+router.put(
+  "/sub-accounts/:id/reset-password",
+  authMiddleware,
+  roleMiddleware(["ADMIN", "SUPER_ADMIN"]),
+  async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { newPassword } = req.body;
+      
+      if (!newPassword || newPassword.length < 8) {
+        return res.status(400).json({ message: "Password must be at least 8 characters long" });
+      }
+
+      await subAccountService.resetSubAccountPassword(id, newPassword);
+      res.json({ message: "Password reset successfully" });
+    } catch (error) {
+      console.error("Reset sub-account password error:", error);
+      res.status(500).json({
+        message: "Failed to reset password",
+        error: error instanceof Error ? error.message : String(error)
+      });
     }
   }
 );

@@ -1,11 +1,11 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { OrderDetailPage } from "@/components/order-detail/OrderDetailPage";
+import { EmployeeOrderDetailPage } from "@/components/employee/EmployeeOrderDetailPage";
 
-export default function EmployeeOrderDetailPage() {
+export default function EmployeeOrderDetailPageRoute() {
   const params = useParams();
   const orderId = params.id as string;
 
-  return <OrderDetailPage orderId={orderId} userRole="EMPLOYEE" />;
+  return <EmployeeOrderDetailPage orderId={orderId} />;
 }

@@ -11,6 +11,7 @@ import {
 } from "../services/customerService";
 import { registerCustomer } from "../services/authService";
 import { notifyCustomerBlocked, notifyCustomerUnblocked } from "../services/notificationHelpers";
+import * as customerExportService from "../services/customerExportService";
 
 const router = express.Router();
 
@@ -18,7 +19,7 @@ const router = express.Router();
 router.get(
   "/me/orders",
   authMiddleware,
-  roleMiddleware(["CUSTOMER"]),
+  roleMiddleware(["CUSTOMER", "CUSTOMER_SUB_USER"]),
   async (req, res) => {
     try {
       const userId = req.user?.id;
@@ -26,18 +27,30 @@ router.get(
         return res.status(401).json({ message: "Unauthorized" });
       }
 
-      // Get customer ID from user
+      // Get customer ID from user (works for both CUSTOMER and CUSTOMER_SUB_USER)
       const { prisma } = await import("@repo/db");
       const user = await prisma.user.findUnique({
         where: { id: userId },
-        include: { customer: true },
+        include: { 
+          customer: true,
+          subAccount: {
+            include: { customer: true }
+          }
+        },
       });
 
-      if (!user?.customer) {
+      let customerId: string;
+      if (user?.customer) {
+        // Direct customer
+        customerId = user.customer.id;
+      } else if (user?.subAccount?.customer) {
+        // Sub-user accessing parent customer's data
+        customerId = user.subAccount.customer.id;
+      } else {
         return res.status(404).json({ message: "Customer profile not found" });
       }
 
-      const orders = await getCustomerOrdersService(user.customer.id);
+      const orders = await getCustomerOrdersService(customerId);
       res.json({ success: true, data: orders });
     } catch (error) {
       console.error("Get customer orders error:", error);
@@ -53,7 +66,7 @@ router.get(
 router.get(
   "/me/orders/:id",
   authMiddleware,
-  roleMiddleware(["CUSTOMER"]),
+  roleMiddleware(["CUSTOMER", "CUSTOMER_SUB_USER"]),
   async (req, res) => {
     try {
       const userId = req.user?.id;
@@ -63,18 +76,30 @@ router.get(
         return res.status(401).json({ message: "Unauthorized" });
       }
 
-      // Get customer ID from user
+      // Get customer ID from user (works for both CUSTOMER and CUSTOMER_SUB_USER)
       const { prisma } = await import("@repo/db");
       const user = await prisma.user.findUnique({
         where: { id: userId },
-        include: { customer: true },
+        include: { 
+          customer: true,
+          subAccount: {
+            include: { customer: true }
+          }
+        },
       });
 
-      if (!user?.customer) {
+      let customerId: string;
+      if (user?.customer) {
+        // Direct customer
+        customerId = user.customer.id;
+      } else if (user?.subAccount?.customer) {
+        // Sub-user accessing parent customer's data
+        customerId = user.subAccount.customer.id;
+      } else {
         return res.status(404).json({ message: "Customer profile not found" });
       }
 
-      const order = await getCustomerOrderByIdService(user.customer.id, orderId);
+      const order = await getCustomerOrderByIdService(customerId, orderId);
       res.json({ success: true, data: order });
     } catch (error) {
       console.error("Get customer order error:", error);
@@ -93,7 +118,7 @@ router.get(
 router.get(
   "/me",
   authMiddleware,
-  roleMiddleware(["CUSTOMER"]),
+  roleMiddleware(["CUSTOMER", "CUSTOMER_SUB_USER"]),
   async (req, res) => {
     try {
       const userId = req.user?.id;
@@ -113,7 +138,7 @@ router.get(
   }
 );
 
-// Update customer profile
+// Update customer profile (only main customers, not sub-users)
 router.put(
   "/me",
   authMiddleware,
@@ -426,6 +451,39 @@ router.post(
         message: "Failed to unblock customer",
         error: error instanceof Error ? error.message : String(error)
       });
+    }
+  }
+);
+
+// Export customer data as CSV
+router.get(
+  "/export/data",
+  authMiddleware,
+  roleMiddleware(["ADMIN", "HR_MANAGER"]),
+  async (req, res) => {
+    try {
+      const { customerId, startDate, endDate } = req.query;
+      
+      if (!startDate || !endDate) {
+        return res.status(400).json({ message: "Start and end dates are required" });
+      }
+
+      const filters = {
+        customerId: customerId as string,
+        startDate: new Date(startDate as string),
+        endDate: new Date(endDate as string),
+      };
+
+      const csvData = await customerExportService.exportCustomerData(filters);
+      
+      const filename = `customer-data-${new Date().toISOString().split('T')[0]}.csv`;
+      
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+      res.send(csvData);
+    } catch (error) {
+      console.error('Export error:', error);
+      res.status(500).json({ message: "Error exporting customer data", error });
     }
   }
 );

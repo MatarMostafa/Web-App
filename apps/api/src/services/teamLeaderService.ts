@@ -31,30 +31,34 @@ export const getTeamLeaderDashboard = async (employeeId: string) => {
     },
   });
 
-  if (!team) {
-    return {
-      team: null,
-      orders: [],
-      statistics: {
-        totalOrders: 0,
-        activeOrders: 0,
-        completedOrders: 0,
-        totalTeamMembers: 0,
-      },
-    };
+  // Always get orders created by the team leader
+  const whereConditions: any[] = [
+    { createdBy: employeeId }, // Orders created by the team leader
+  ];
+
+  let teamMemberIds: string[] = [employeeId];
+  let teamOrders: any[] = [];
+
+  if (team) {
+    teamMemberIds = team.members.map(member => member.employeeId);
+    teamMemberIds.push(employeeId); // Add team leader
+    teamOrders = team.orders;
+
+    // Add team-related conditions
+    whereConditions.push(
+      {
+        employeeAssignments: {
+          some: {
+            employeeId: { in: teamMemberIds },
+          },
+        },
+      }
+    );
   }
 
-  const teamMemberIds = team.members.map(member => member.employeeId);
-
-  // Get orders assigned to team members (individual assignments)
+  // Get orders assigned to team members (individual assignments) or created by team leader
   const memberOrders = await prisma.order.findMany({
-    where: {
-      employeeAssignments: {
-        some: {
-          employeeId: { in: teamMemberIds },
-        },
-      },
-    },
+    where: { OR: whereConditions },
     select: {
       id: true,
       orderNumber: true,
@@ -81,7 +85,7 @@ export const getTeamLeaderDashboard = async (employeeId: string) => {
   });
 
   // Combine team orders and member orders
-  const allOrders = [...team.orders, ...memberOrders];
+  const allOrders = [...teamOrders, ...memberOrders];
 
   // Remove duplicates based on order ID
   const uniqueOrders = allOrders.filter((order, index, self) => 
@@ -98,7 +102,7 @@ export const getTeamLeaderDashboard = async (employeeId: string) => {
   ).length;
 
   return {
-    team: {
+    team: team ? {
       ...team,
       createdAt: team.createdAt.toISOString(),
       updatedAt: team.updatedAt.toISOString(),
@@ -107,13 +111,13 @@ export const getTeamLeaderDashboard = async (employeeId: string) => {
         joinedAt: member.joinedAt.toISOString(),
         leftAt: member.leftAt?.toISOString(),
       })),
-    },
+    } : null,
     orders: uniqueOrders,
     statistics: {
       totalOrders,
       activeOrders,
       completedOrders,
-      totalTeamMembers: teamMemberIds.length,
+      totalTeamMembers: team ? teamMemberIds.length - 1 : 0, // Subtract 1 to exclude team leader from member count
     },
   };
 };
@@ -145,34 +149,38 @@ export const getTeamLeaderOrders = async (employeeId: string, filters?: any) => 
     select: { id: true },
   });
 
-  if (!team) {
-    return [];
-  }
+  // Build where clause - always include orders created by team leader
+  const whereConditions: any[] = [
+    { createdBy: employeeId }, // Orders created by the team leader
+  ];
 
-  // Get team member IDs
-  const teamMembers = await prisma.teamMember.findMany({
-    where: { 
-      teamId: team.id,
-      isActive: true,
-    },
-    select: { employeeId: true },
-  });
+  // If team leader has a team, also include team-related orders
+  if (team) {
+    // Get team member IDs
+    const teamMembers = await prisma.teamMember.findMany({
+      where: { 
+        teamId: team.id,
+        isActive: true,
+      },
+      select: { employeeId: true },
+    });
 
-  const teamMemberIds = teamMembers.map(member => member.employeeId);
+    const teamMemberIds = teamMembers.map(member => member.employeeId);
+    teamMemberIds.push(employeeId); // Add team leader to the list
 
-  // Build where clause
-  const where: any = {
-    OR: [
-      { teamId: team.id },
+    whereConditions.push(
+      { teamId: team.id }, // Orders directly assigned to the team
       {
         employeeAssignments: {
           some: {
             employeeId: { in: teamMemberIds },
           },
         },
-      },
-    ],
-  };
+      }
+    );
+  }
+
+  const where: any = { OR: whereConditions };
 
   if (filters?.status) {
     where.status = filters.status;

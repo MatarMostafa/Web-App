@@ -21,6 +21,10 @@ interface EmployeeAssignment {
     scheduledDate: string;
     status: string;
     priority: number;
+    customer?: {
+    id: string;
+    companyName: string;
+  };
   };
 }
 
