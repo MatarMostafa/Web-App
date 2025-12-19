@@ -57,9 +57,17 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger, onOrderCreated
     if (open && session?.accessToken) {
       fetchCustomers();
       fetchEmployees();
-      fetchActivities();
     }
   }, [open, session?.accessToken]);
+
+  useEffect(() => {
+    if (formData.customerId) {
+      fetchActivities(formData.customerId);
+    } else {
+      setActivities([]);
+      setSelectedActivities([]);
+    }
+  }, [formData.customerId, session?.accessToken]);
 
   useEffect(() => {
     if (formData.scheduledDate && startTimeOnly) {
@@ -94,38 +102,39 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger, onOrderCreated
   const fetchEmployees = async () => {
     if (!session?.accessToken) return;
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/team-leader/dashboard`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/team-leader/employees`, {
         headers: { Authorization: `Bearer ${session.accessToken}` },
       });
       if (response.ok) {
         const data = await response.json();
-        const teamMembers = data.teams?.flatMap((team: any) => 
-          team.members?.map((member: any) => ({
-            id: member.employee.id,
-            firstName: member.employee.firstName,
-            lastName: member.employee.lastName,
-            employeeCode: member.employee.employeeCode,
-          })) || []
-        ) || [];
-        setEmployees(teamMembers);
+        setEmployees(Array.isArray(data) ? data : []);
       }
     } catch (error) {
       console.error("Error fetching team employees:", error);
     }
   };
 
-  const fetchActivities = async () => {
-    if (!session?.accessToken) return;
+  const fetchActivities = async (customerId?: string) => {
+    if (!session?.accessToken || !customerId) {
+      setActivities([]);
+      return;
+    }
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/pricing/activities`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/pricing/customers/${customerId}/activities`, {
         headers: { Authorization: `Bearer ${session.accessToken}` },
       });
       if (response.ok) {
         const data = await response.json();
-        setActivities(Array.isArray(data) ? data : []);
+        const activities = Array.isArray(data) ? data.map((item: any) => ({
+          id: item.activity.id,
+          name: item.activity.name,
+          defaultPrice: item.activity.defaultPrice
+        })) : [];
+        setActivities(activities);
       }
     } catch (error) {
       console.error("Error fetching activities:", error);
+      setActivities([]);
     }
   };
 

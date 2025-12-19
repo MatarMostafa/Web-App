@@ -141,13 +141,13 @@ const AddMemberDialog: React.FC<AddMemberDialogProps> = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="w-[95vw] max-w-2xl max-h-[90vh] flex flex-col">
         <DialogHeader className="flex-shrink-0">
-          <DialogTitle>{t('teams.addMemberDialog.title', { teamName })}</DialogTitle>
+          <DialogTitle>{t('teams.addMemberDialog.title').replace('{teamName}', teamName)}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="flex flex-col h-full space-y-4">
           <div className="flex-1 min-h-0">
             <Label>{t('teams.addMemberDialog.selectEmployees')}</Label>
             <div className="text-sm text-muted-foreground mb-3">
-              {t('teams.addMemberDialog.employeesSelected', { count: selectedEmployeeIds.length })}
+              {t('teams.addMemberDialog.employeesSelected').replace('{count}', selectedEmployeeIds.length.toString())}
             </div>
             <div className="h-[50vh] min-h-[300px] overflow-y-auto border rounded-md">
               <div className="p-3 space-y-3">

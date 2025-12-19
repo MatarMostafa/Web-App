@@ -3,10 +3,6 @@ import { User, Menu } from "lucide-react";
 import { useAuthStore } from "@/store/authStore";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { NotificationDropdown } from "@/components/notifications/NotificationDropdown";
-
-interface HeaderProps {
-  onMenuClick?: () => void;
-}
 import { Button } from "@/components/ui";
 import Link from "next/link";
 import Image from "next/image";
@@ -17,84 +13,66 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui";
 
+interface HeaderProps {
+  onMenuClick?: () => void;
+}
+
 const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
   const { logout } = useAuthStore();
 
   return (
-    <header className="border-b border-border bg-background sticky top-0 z-10 shadow-sm">
-      <div className="container max-w-full px-4 py-3 flex items-center justify-between gap-4">
-        <div className="flex items-center">
-          {/* Mobile hamburger menu */}
+    <header className="sticky top-0 z-20 w-full border-b border-border bg-background shadow-sm">
+      <div className="flex items-center justify-between gap-2 px-4 py-2 md:py-3">
+        {/* Left Section */}
+        <div className="flex items-center gap-2 min-w-0">
+          {/* Mobile Menu */}
           <Button
             variant="ghost"
             size="icon"
-            className="md:hidden mr-2"
+            className="md:hidden"
             onClick={onMenuClick}
           >
             <Menu className="h-5 w-5" />
           </Button>
 
-          <Link href="/" className="flex items-center gap-2 mr-8">
+          {/* Logo */}
+          <Link href="/" className="flex items-center gap-2">
             <Image
               src="/img/matar_Logo.png"
               alt="ERP Beta"
               width={120}
               height={40}
-              className="h-8 w-auto"
+              priority
+              className="h-7 w-auto md:h-8"
             />
           </Link>
-
-          {/* <nav className="hidden md:flex space-x-2">
-            {navItems.map((item) => {
-              const Icon = item.icon;
-              const isActive =
-                pathname === item.path ||
-                (item.path === "/contacts" && pathname === "/");
-
-              return (
-                <Button
-                  key={item.name}
-                  variant={isActive ? "default" : "ghost"}
-                  className={cn(
-                    isActive
-                      ? "bg-primary hover:bg-primary/90"
-                      : "text-foreground",
-                    "gap-2 font-medium"
-                  )}
-                  asChild
-                >
-                  <Link href={item.path}>
-                    <Icon className="w-4 h-4" />
-                    <span>{item.name}</span>
-                  </Link>
-                </Button>
-              );
-            })}
-          </nav> */}
         </div>
 
-        <div className="flex items-center gap-3">
+        {/* Right Section */}
+        <div className="flex items-center gap-2 md:gap-3">
           <NotificationDropdown />
-          <LanguageSwitcher />
-          
+
+          <div className="hidden sm:block">
+            <LanguageSwitcher />
+          </div>
+
+          {/* User Menu */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
                 size="icon"
-                className="rounded-full w-10 h-10 ml-2"
+                className="h-9 w-9 md:h-10 md:w-10 rounded-full"
               >
                 <User className="h-5 w-5" />
                 <span className="sr-only">User menu</span>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              {/* <DropdownMenuItem asChild>
-                <Link href="/settings">Profile</Link>
-              </DropdownMenuItem> */}
+
+            <DropdownMenuContent align="end" className="w-40">
               <DropdownMenuItem
-                className="px-2 py-3 cursor-pointer text-black"
                 onClick={logout}
+                className="cursor-pointer py-2"
               >
                 Log Out
               </DropdownMenuItem>

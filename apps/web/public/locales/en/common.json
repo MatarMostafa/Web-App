@@ -1824,6 +1824,15 @@
       "teamUpdatedSuccess": "Team updated successfully",
       "createTeamError": "Failed to create team",
       "updateTeamError": "Failed to update team"
-    }
+    },
+    "manageMembers": "Manage Members",
+    "manageTeamMembers": "Manage Team Members",
+    "confirmRemoveMember": "Are you sure you want to remove this member from the team?",
+    "memberRemovedSuccess": "Team member removed successfully",
+    "memberRemoveError": "Failed to remove team member",
+    "loadMembersError": "Failed to load team members",
+    "noMembersFound": "No team members found",
+    "remove": "Remove",
+    "add": "Add"
   }
 }

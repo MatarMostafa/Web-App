@@ -4,11 +4,11 @@ import React, { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui";
 import { Button } from "@/components/ui";
 import { Badge } from "@/components/ui";
-import { Plus, Users, Edit, Trash2, UserPlus } from "lucide-react";
+import { Plus, Users, Edit, Trash2, Settings } from "lucide-react";
 import { useSession } from "next-auth/react";
-import AddMemberDialog from "@/components/admin/AddMemberDialog";
 import EditTeamDialog from "@/components/admin/EditTeamDialog";
 import CreateTeamDialog from "@/components/admin/CreateTeamDialog";
+import ManageTeamMembersDialog from "@/components/admin/ManageTeamMembersDialog";
 import { useTranslation } from '@/hooks/useTranslation';
 
 interface Team {
@@ -38,8 +38,8 @@ const AdminTeams = () => {
   const [teams, setTeams] = useState<Team[]>([]);
   const [loading, setLoading] = useState(true);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
-  const [addMemberTeam, setAddMemberTeam] = useState<Team | null>(null);
   const [editingTeam, setEditingTeam] = useState<Team | null>(null);
+  const [managingTeam, setManagingTeam] = useState<Team | null>(null);
   const { data: session } = useSession();
 
   useEffect(() => {
@@ -136,10 +136,10 @@ const AdminTeams = () => {
                     <Button 
                       variant="outline" 
                       size="sm"
-                      onClick={() => setAddMemberTeam(team)}
+                      onClick={() => setManagingTeam(team)}
                     >
-                      <UserPlus className="h-4 w-4 mr-2" />
-                      {t('teams.addMember')}
+                      <Settings className="h-4 w-4 mr-2" />
+                      {t('teams.manageMembers')}
                     </Button>
                     <Button 
                       variant="outline" 
@@ -205,19 +205,6 @@ const AdminTeams = () => {
         </div>
       )}
       
-      {addMemberTeam && (
-        <AddMemberDialog
-          teamId={addMemberTeam.id}
-          teamName={addMemberTeam.name}
-          open={!!addMemberTeam}
-          onOpenChange={(open) => !open && setAddMemberTeam(null)}
-          onMemberAdded={() => {
-            fetchTeams();
-            setAddMemberTeam(null);
-          }}
-        />
-      )}
-      
       {editingTeam && (
         <EditTeamDialog
           team={editingTeam}
@@ -226,6 +213,21 @@ const AdminTeams = () => {
           onTeamUpdated={() => {
             fetchTeams();
             setEditingTeam(null);
+          }}
+        />
+      )}
+      
+      {managingTeam && (
+        <ManageTeamMembersDialog
+          teamId={managingTeam.id}
+          teamName={managingTeam.name}
+          open={!!managingTeam}
+          onOpenChange={(open) => !open && setManagingTeam(null)}
+          onMemberRemoved={() => {
+            fetchTeams();
+          }}
+          onMemberAdded={() => {
+            fetchTeams();
           }}
         />
       )}

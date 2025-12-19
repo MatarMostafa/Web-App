@@ -282,7 +282,7 @@ export const EmployeeOrderDetailPage: React.FC<
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
               <CardTitle className="text-2xl">
-                Order #{order.orderNumber}
+                {t("order.order")} #{order.orderNumber}
               </CardTitle>
               <p className="text-muted-foreground mt-1">
                 {order.description || t("employee.orderDetail.noDescription")}
@@ -469,7 +469,10 @@ export const EmployeeOrderDetailPage: React.FC<
               onDescriptionChange={(description) => {
                 setOrder((prev) => (prev ? { ...prev, description } : null));
                 if (orderWithTemplate) {
-                  setOrderWithTemplate((prev: any) => ({ ...prev, description }));
+                  setOrderWithTemplate((prev: any) => ({
+                    ...prev,
+                    description,
+                  }));
                 }
               }}
               onTemplateDataChange={(templateData) => {
