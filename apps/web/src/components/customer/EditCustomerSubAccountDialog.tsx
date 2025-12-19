@@ -69,8 +69,6 @@ export default function EditCustomerSubAccountDialog({
       return;
     }
 
-
-
     try {
       setLoading(true);
 
@@ -109,19 +107,25 @@ export default function EditCustomerSubAccountDialog({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="name">{t("customerPortal.subAccounts.form.name")} *</Label>
+              <Label htmlFor="name">
+                {t("customerPortal.subAccounts.form.name")} *
+              </Label>
               <Input
                 id="name"
                 value={formData.name}
                 onChange={(e) => handleInputChange("name", e.target.value)}
-                placeholder={t("customerPortal.subAccounts.form.namePlaceholder")}
+                placeholder={t(
+                  "customerPortal.subAccounts.form.namePlaceholder"
+                )}
                 required
                 className="rounded-lg"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="email">{t("customerPortal.subAccounts.form.email")}</Label>
+              <Label htmlFor="email">
+                {t("customerPortal.subAccounts.form.email")}
+              </Label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
@@ -129,7 +133,9 @@ export default function EditCustomerSubAccountDialog({
                   type="email"
                   value={formData.email}
                   onChange={(e) => handleInputChange("email", e.target.value)}
-                  placeholder={t("customerPortal.subAccounts.form.emailPlaceholder")}
+                  placeholder={t(
+                    "customerPortal.subAccounts.form.emailPlaceholder"
+                  )}
                   className="pl-10 rounded-lg"
                 />
               </div>
@@ -157,8 +163,6 @@ export default function EditCustomerSubAccountDialog({
             </div>
           </div>
 
-
-
           {/* Submit Buttons */}
           <div className="flex gap-3 pt-4 border-t">
             <Button
@@ -172,7 +176,7 @@ export default function EditCustomerSubAccountDialog({
             </Button>
             <Button
               type="submit"
-              className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg"
+              className="flex-1 bg-primary hover:bg-primary/90 text-white rounded-lg"
               disabled={loading}
             >
               {loading ? (

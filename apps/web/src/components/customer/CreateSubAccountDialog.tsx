@@ -47,7 +47,10 @@ export default function CreateSubAccountDialog({
   });
   const [loading, setLoading] = useState(false);
 
-  const handleInputChange = (field: keyof SubAccountFormData, value: string) => {
+  const handleInputChange = (
+    field: keyof SubAccountFormData,
+    value: string
+  ) => {
     setFormData((prev) => ({
       ...prev,
       [field]: value,
@@ -67,8 +70,12 @@ export default function CreateSubAccountDialog({
     const errorMap: Record<string, string> = {
       USERNAME_EXISTS: t("customerPortal.subAccounts.errors.usernameExists"),
       EMAIL_EXISTS: t("customerPortal.subAccounts.errors.emailExists"),
-      CUSTOMER_NOT_FOUND: t("customerPortal.subAccounts.errors.customerNotFound"),
-      SUB_ACCOUNT_NOT_FOUND: t("customerPortal.subAccounts.errors.subAccountNotFound"),
+      CUSTOMER_NOT_FOUND: t(
+        "customerPortal.subAccounts.errors.customerNotFound"
+      ),
+      SUB_ACCOUNT_NOT_FOUND: t(
+        "customerPortal.subAccounts.errors.subAccountNotFound"
+      ),
       FAILED_TO_CREATE: t("customerPortal.subAccounts.createError"),
     };
     return errorMap[error] || error;
@@ -103,12 +110,15 @@ export default function CreateSubAccountDialog({
       };
 
       await createSubAccount(customerId, subAccountData);
-      
+
       onOpenChange(false);
       resetForm();
       onSuccess?.();
     } catch (error) {
-      const errorMessage = error instanceof Error ? getErrorMessage(error.message) : t("customerPortal.subAccounts.createError");
+      const errorMessage =
+        error instanceof Error
+          ? getErrorMessage(error.message)
+          : t("customerPortal.subAccounts.createError");
       toast.error(errorMessage);
     } finally {
       setLoading(false);
@@ -134,12 +144,16 @@ export default function CreateSubAccountDialog({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="name">{t("customerPortal.subAccounts.form.name")} *</Label>
+              <Label htmlFor="name">
+                {t("customerPortal.subAccounts.form.name")} *
+              </Label>
               <Input
                 id="name"
                 value={formData.name}
                 onChange={(e) => handleInputChange("name", e.target.value)}
-                placeholder={t("customerPortal.subAccounts.form.namePlaceholder")}
+                placeholder={t(
+                  "customerPortal.subAccounts.form.namePlaceholder"
+                )}
                 required
                 className="rounded-lg"
               />
@@ -147,29 +161,41 @@ export default function CreateSubAccountDialog({
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="username">{t("customerPortal.subAccounts.form.username")} *</Label>
+                <Label htmlFor="username">
+                  {t("customerPortal.subAccounts.form.username")} *
+                </Label>
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     id="username"
                     value={formData.username}
-                    onChange={(e) => handleInputChange("username", e.target.value)}
-                    placeholder={t("customerPortal.subAccounts.form.usernamePlaceholder")}
+                    onChange={(e) =>
+                      handleInputChange("username", e.target.value)
+                    }
+                    placeholder={t(
+                      "customerPortal.subAccounts.form.usernamePlaceholder"
+                    )}
                     required
                     className="pl-10 rounded-lg"
                   />
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="password">{t("customerPortal.subAccounts.form.password")} *</Label>
+                <Label htmlFor="password">
+                  {t("customerPortal.subAccounts.form.password")} *
+                </Label>
                 <div className="relative">
                   <Key className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     id="password"
                     type="password"
                     value={formData.password}
-                    onChange={(e) => handleInputChange("password", e.target.value)}
-                    placeholder={t("customerPortal.subAccounts.form.passwordPlaceholder")}
+                    onChange={(e) =>
+                      handleInputChange("password", e.target.value)
+                    }
+                    placeholder={t(
+                      "customerPortal.subAccounts.form.passwordPlaceholder"
+                    )}
                     required
                     className="pl-10 rounded-lg"
                   />
@@ -178,7 +204,9 @@ export default function CreateSubAccountDialog({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="email">{t("customerPortal.subAccounts.form.email")}</Label>
+              <Label htmlFor="email">
+                {t("customerPortal.subAccounts.form.email")}
+              </Label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
@@ -186,7 +214,9 @@ export default function CreateSubAccountDialog({
                   type="email"
                   value={formData.email}
                   onChange={(e) => handleInputChange("email", e.target.value)}
-                  placeholder={t("customerPortal.subAccounts.form.emailPlaceholder")}
+                  placeholder={t(
+                    "customerPortal.subAccounts.form.emailPlaceholder"
+                  )}
                   className="pl-10 rounded-lg"
                 />
               </div>
@@ -205,7 +235,7 @@ export default function CreateSubAccountDialog({
             </Button>
             <Button
               type="submit"
-              className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg"
+              className="flex-1 bg-primary hover:bg-primary/90 text-white rounded-lg"
               disabled={loading}
             >
               {loading ? (
