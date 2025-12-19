@@ -77,6 +77,51 @@ router.get(
   getAllEmployees
 );
 
+// Export routes (must come before /:id routes)
+router.get(
+  "/export/assignments",
+  authMiddleware,
+  roleMiddleware(["ADMIN", "HR_MANAGER"]),
+  async (req, res) => {
+    try {
+      const { period = 'monthly', startDate, endDate, employeeId } = req.query;
+      
+      if (!startDate || !endDate) {
+        return res.status(400).json({ message: "Start and end dates are required" });
+      }
+
+      // If employeeId is provided, validate it exists
+      if (employeeId) {
+        const employee = await prisma.employee.findUnique({
+          where: { id: employeeId as string },
+        });
+        if (!employee) {
+          return res.status(404).json({ message: "Employee not found" });
+        }
+      }
+
+      await exportEmployeeAssignments(req, res);
+    } catch (error) {
+      console.error('Export assignments error:', error);
+      res.status(500).json({ message: "Error exporting employee assignments", error });
+    }
+  }
+);
+
+router.get(
+  "/export/work-stats",
+  authMiddleware,
+  roleMiddleware(["ADMIN", "HR_MANAGER"]),
+  exportEmployeeWorkStats
+);
+
+router.get(
+  "/export/combined",
+  authMiddleware,
+  roleMiddleware(["ADMIN", "HR_MANAGER"]),
+  exportCombinedEmployeeData
+);
+
 router.get(
   "/:id",
   authMiddleware,
@@ -285,26 +330,121 @@ router.get(
 
 // Export employee assignments as CSV
 router.get(
-  "/export/assignments",
+  "/:id/export/assignments",
   authMiddleware,
   roleMiddleware(["ADMIN", "HR_MANAGER"]),
-  exportEmployeeAssignments
+  async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { period = 'monthly', startDate, endDate } = req.query;
+      
+      if (!startDate || !endDate) {
+        return res.status(400).json({ message: "Start and end dates are required" });
+      }
+
+      // Try to find employee by ID first, then by userId
+      let employee = await prisma.employee.findUnique({
+        where: { id },
+      });
+
+      if (!employee) {
+        employee = await prisma.employee.findUnique({
+          where: { userId: id },
+        });
+      }
+
+      if (!employee) {
+        return res.status(404).json({ message: "Employee not found" });
+      }
+
+      // Call the export function with the found employee ID
+      req.query.employeeId = employee.id;
+      await exportEmployeeAssignments(req, res);
+    } catch (error) {
+      console.error('Export assignments error:', error);
+      res.status(500).json({ message: "Error exporting employee assignments", error });
+    }
+  }
 );
 
 // Export employee work statistics as CSV
 router.get(
-  "/export/work-stats",
+  "/:id/export/work-stats",
   authMiddleware,
   roleMiddleware(["ADMIN", "HR_MANAGER"]),
-  exportEmployeeWorkStats
+  async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { period = 'monthly', startDate, endDate } = req.query;
+      
+      if (!startDate || !endDate) {
+        return res.status(400).json({ message: "Start and end dates are required" });
+      }
+
+      // Try to find employee by ID first, then by userId
+      let employee = await prisma.employee.findUnique({
+        where: { id },
+      });
+
+      if (!employee) {
+        employee = await prisma.employee.findUnique({
+          where: { userId: id },
+        });
+      }
+
+      if (!employee) {
+        return res.status(404).json({ message: "Employee not found" });
+      }
+
+      // Call the export function with the found employee ID
+      req.query.employeeId = employee.id;
+      await exportEmployeeWorkStats(req, res);
+    } catch (error) {
+      console.error('Export work stats error:', error);
+      res.status(500).json({ message: "Error exporting work statistics", error });
+    }
+  }
 );
 
 // Export combined employee data as CSV
 router.get(
-  "/export/combined",
+  "/:id/export/combined",
   authMiddleware,
   roleMiddleware(["ADMIN", "HR_MANAGER"]),
-  exportCombinedEmployeeData
+  async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { period = 'monthly', startDate, endDate } = req.query;
+      
+      if (!startDate || !endDate) {
+        return res.status(400).json({ message: "Start and end dates are required" });
+      }
+
+      // Try to find employee by ID first, then by userId
+      let employee = await prisma.employee.findUnique({
+        where: { id },
+      });
+
+      if (!employee) {
+        employee = await prisma.employee.findUnique({
+          where: { userId: id },
+        });
+      }
+
+      if (!employee) {
+        return res.status(404).json({ message: "Employee not found" });
+      }
+
+      // Call the export function with the found employee ID
+      req.query.employeeId = employee.id;
+      await exportCombinedEmployeeData(req, res);
+    } catch (error) {
+      console.error('Export combined data error:', error);
+      res.status(500).json({ message: "Error exporting combined employee data", error });
+    }
+  }
 );
+
+
 
 export default router;
