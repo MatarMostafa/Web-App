@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Activity, MessageSquare, RefreshCw, UserPlus, Calendar, Package } from "lucide-react";
 import { OrderActivity, orderActivitiesApi } from "@/lib/orderActivitiesApi";
 import { format } from "date-fns";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface OrderActivitiesProps {
   orderId: string;
@@ -44,6 +45,7 @@ const getActivityColor = (type: OrderActivity['type']) => {
 };
 
 export const OrderActivities: React.FC<OrderActivitiesProps> = ({ orderId }) => {
+  const { t } = useTranslation();
   const [activities, setActivities] = useState<OrderActivity[]>([]);
   const [loading, setLoading] = useState(true);
   console.log("order id = ", orderId)
@@ -69,7 +71,7 @@ export const OrderActivities: React.FC<OrderActivitiesProps> = ({ orderId }) => 
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Activity className="h-5 w-5" />
-            Order Activities
+            {t("employee.orderDetail.orderActivities")}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -94,13 +96,13 @@ export const OrderActivities: React.FC<OrderActivitiesProps> = ({ orderId }) => 
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Activity className="h-5 w-5" />
-          Order Activities
+          {t("employee.orderDetail.orderActivities")}
         </CardTitle>
       </CardHeader>
       <CardContent>
         {activities.length === 0 ? (
           <p className="text-muted-foreground text-center py-4">
-            No activities found for this order.
+            {t("employee.orderDetail.noActivitiesFound")}
           </p>
         ) : (
           <div className="space-y-4">
@@ -139,13 +141,13 @@ export const OrderActivities: React.FC<OrderActivitiesProps> = ({ orderId }) => 
                         <div className="text-xs text-muted-foreground">Code: {activity.metadata.activityCode}</div>
                       )}
                       <div className="flex justify-between items-center">
-                        <span>Quantity: {activity.metadata.quantity}</span>
+                        <span>{t("employee.orderDetail.quantity")}: {activity.metadata.quantity}</span>
                         {activity.metadata.unitPrice && (
                           <span>€{Number(activity.metadata.unitPrice).toFixed(2)}/{activity.metadata.unit}</span>
                         )}
                       </div>
                       {activity.metadata.lineTotal && (
-                        <div className="font-medium">Total: €{Number(activity.metadata.lineTotal).toFixed(2)}</div>
+                        <div className="font-medium">{t("employee.orderDetail.total")}: €{Number(activity.metadata.lineTotal).toFixed(2)}</div>
                       )}
                     </div>
                   )}
