@@ -2,7 +2,15 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Calendar, MapPin, Clock, AlertCircle, MessageSquare } from "lucide-react";
+import {
+  ArrowLeft,
+  Calendar,
+  MapPin,
+  Clock,
+  AlertCircle,
+  MessageSquare,
+  User,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -49,23 +57,35 @@ const getStatusColor = (status: OrderStatus) => {
 
 const getAvailableActions = (status: OrderStatus, t: any) => {
   const actions = [];
-  
+
   switch (status) {
     case OrderStatus.ACTIVE:
-      actions.push({ key: "start", label: t("employee.orderDetail.startWork"), variant: "default" as const });
+      actions.push({
+        key: "start",
+        label: t("employee.orderDetail.startWork"),
+        variant: "default" as const,
+      });
       break;
     case OrderStatus.IN_PROGRESS:
-      actions.push({ key: "review", label: t("employee.orderDetail.requestReview"), variant: "default" as const });
-      actions.push({ key: "pause", label: t("employee.orderDetail.pauseWork"), variant: "outline" as const });
+      actions.push({
+        key: "review",
+        label: t("employee.orderDetail.requestReview"),
+        variant: "default" as const,
+      });
+      actions.push({
+        key: "pause",
+        label: t("employee.orderDetail.pauseWork"),
+        variant: "outline" as const,
+      });
       break;
   }
-  
+
   return actions;
 };
 
-export const EmployeeOrderDetailPage: React.FC<EmployeeOrderDetailPageProps> = ({
-  orderId,
-}) => {
+export const EmployeeOrderDetailPage: React.FC<
+  EmployeeOrderDetailPageProps
+> = ({ orderId }) => {
   const router = useRouter();
   const { t } = useTranslation();
   const [order, setOrder] = useState<Order | null>(null);
@@ -76,20 +96,25 @@ export const EmployeeOrderDetailPage: React.FC<EmployeeOrderDetailPageProps> = (
   const [refreshActivities, setRefreshActivities] = useState(0);
   const [orderWithTemplate, setOrderWithTemplate] = useState<any>(null);
 
-  const { employeeAssignments, fetchEmployeeAssignments } = useEmployeeOrderStore();
+  const { employeeAssignments, fetchEmployeeAssignments } =
+    useEmployeeOrderStore();
   const { updateOrderStatus } = useOrderStore();
 
   useEffect(() => {
-    import("next-auth/react").then(m => m.getSession()).then(session => {
-      if (session?.user?.id) {
-        fetchEmployeeAssignments(session.user.id);
-      }
-    });
+    import("next-auth/react")
+      .then((m) => m.getSession())
+      .then((session) => {
+        if (session?.user?.id) {
+          fetchEmployeeAssignments(session.user.id);
+        }
+      });
   }, [orderId, fetchEmployeeAssignments]);
 
   useEffect(() => {
     if (employeeAssignments.length > 0) {
-      const assignment = employeeAssignments.find(a => a.order.id === orderId);
+      const assignment = employeeAssignments.find(
+        (a) => a.order.id === orderId
+      );
       if (assignment) {
         setOrder(assignment.order as any);
         fetchOrderWithTemplateData(orderId);
@@ -105,14 +130,17 @@ export const EmployeeOrderDetailPage: React.FC<EmployeeOrderDetailPageProps> = (
     try {
       const { getSession } = await import("next-auth/react");
       const session = await getSession();
-      
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/orders/${orderId}/with-template-data`, {
-        headers: {
-          "Authorization": `Bearer ${session?.accessToken}`,
-          "Content-Type": "application/json"
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/orders/${orderId}/with-template-data`,
+        {
+          headers: {
+            Authorization: `Bearer ${session?.accessToken}`,
+            "Content-Type": "application/json",
+          },
         }
-      });
-      
+      );
+
       if (response.ok) {
         const data = await response.json();
         if (data.success) {
@@ -134,25 +162,29 @@ export const EmployeeOrderDetailPage: React.FC<EmployeeOrderDetailPageProps> = (
       await orderNotesApi.createOrderNote(orderId, {
         content: note,
         triggersStatus: newStatus,
-        category: 'GENERAL_UPDATE',
-        isInternal: false
+        category: "GENERAL_UPDATE",
+        isInternal: false,
       });
 
       updateOrderStatus(orderId, newStatus);
-      
-      const updatedAssignments = employeeAssignments.map(assignment => {
+
+      const updatedAssignments = employeeAssignments.map((assignment) => {
         if (assignment.order.id === orderId) {
           return {
             ...assignment,
-            order: { ...assignment.order, status: newStatus }
+            order: { ...assignment.order, status: newStatus },
           };
         }
         return assignment;
       });
-      useEmployeeOrderStore.setState({ employeeAssignments: updatedAssignments });
+      useEmployeeOrderStore.setState({
+        employeeAssignments: updatedAssignments,
+      });
 
-      setRefreshActivities(prev => prev + 1);
-      toast.success(`${t("employee.orderDetail.orderStatusUpdated")} ${newStatus}`);
+      setRefreshActivities((prev) => prev + 1);
+      toast.success(
+        `${t("employee.orderDetail.orderStatusUpdated")} ${newStatus}`
+      );
     } catch (error) {
       console.error("Failed to update status:", error);
       toast.error(t("employee.orderDetail.failedToUpdateStatus"));
@@ -164,13 +196,22 @@ export const EmployeeOrderDetailPage: React.FC<EmployeeOrderDetailPageProps> = (
   const handleActionClick = (actionKey: string) => {
     switch (actionKey) {
       case "start":
-        handleStatusChange(OrderStatus.IN_PROGRESS, t("employee.orderDetail.workStartedNote"));
+        handleStatusChange(
+          OrderStatus.IN_PROGRESS,
+          t("employee.orderDetail.workStartedNote")
+        );
         break;
       case "pause":
-        handleStatusChange(OrderStatus.ACTIVE, t("employee.orderDetail.workPausedNote"));
+        handleStatusChange(
+          OrderStatus.ACTIVE,
+          t("employee.orderDetail.workPausedNote")
+        );
         break;
       case "review":
-        handleStatusChange(OrderStatus.IN_REVIEW, t("employee.orderDetail.reviewRequestedNote"));
+        handleStatusChange(
+          OrderStatus.IN_REVIEW,
+          t("employee.orderDetail.reviewRequestedNote")
+        );
         break;
     }
   };
@@ -182,12 +223,12 @@ export const EmployeeOrderDetailPage: React.FC<EmployeeOrderDetailPageProps> = (
     try {
       await orderNotesApi.createOrderNote(orderId, {
         content: noteContent.trim(),
-        category: 'GENERAL_UPDATE',
-        isInternal: false
+        category: "GENERAL_UPDATE",
+        isInternal: false,
       });
 
       setNoteContent("");
-      setRefreshActivities(prev => prev + 1);
+      setRefreshActivities((prev) => prev + 1);
       toast.success(t("employee.orderDetail.noteAddedSuccess"));
     } catch (error) {
       console.error("Failed to add note:", error);
@@ -213,7 +254,9 @@ export const EmployeeOrderDetailPage: React.FC<EmployeeOrderDetailPageProps> = (
         <Card>
           <CardContent className="p-6 text-center">
             <AlertCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-lg font-medium mb-2">{t("employee.orderDetail.orderNotFound")}</h3>
+            <h3 className="text-lg font-medium mb-2">
+              {t("employee.orderDetail.orderNotFound")}
+            </h3>
             <p className="text-muted-foreground">{error}</p>
           </CardContent>
         </Card>
@@ -238,7 +281,9 @@ export const EmployeeOrderDetailPage: React.FC<EmployeeOrderDetailPageProps> = (
         <CardHeader>
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <CardTitle className="text-2xl">Order #{order.orderNumber}</CardTitle>
+              <CardTitle className="text-2xl">
+                Order #{order.orderNumber}
+              </CardTitle>
               <p className="text-muted-foreground mt-1">
                 {order.description || t("employee.orderDetail.noDescription")}
               </p>
@@ -274,45 +319,74 @@ export const EmployeeOrderDetailPage: React.FC<EmployeeOrderDetailPageProps> = (
             <div className="flex items-center gap-2">
               <Calendar className="h-4 w-4 text-muted-foreground" />
               <div>
-                <p className="text-sm font-medium">{t("employee.orderDetail.scheduledDate")}</p>
+                <p className="text-sm font-medium">
+                  {t("employee.orderDetail.scheduledDate")}
+                </p>
                 <p className="text-sm text-muted-foreground">
                   {format(new Date(order.scheduledDate), "MMM dd, yyyy")}
                 </p>
                 {order.startTime && (
                   <p className="text-xs text-muted-foreground">
-                    {t("employee.orderDetail.start")}: {format(new Date(order.startTime), "HH:mm")}
+                    {t("employee.orderDetail.start")}:{" "}
+                    {format(new Date(order.startTime), "HH:mm")}
                   </p>
                 )}
               </div>
             </div>
-            
+
+            {/* Company Name */}
+            {order.customer && (
+              <div className="flex items-center gap-2">
+                <User className="h-4 w-4 text-muted-foreground" />
+                <div>
+                  <p className="text-sm font-medium">{t("order.company")}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {order.customer.companyName}
+                  </p>
+                </div>
+              </div>
+            )}
+
             {order.location && (
               <div className="flex items-center gap-2">
                 <MapPin className="h-4 w-4 text-muted-foreground" />
                 <div>
-                  <p className="text-sm font-medium">{t("employee.orderDetail.location")}</p>
-                  <p className="text-sm text-muted-foreground">{order.location}</p>
+                  <p className="text-sm font-medium">
+                    {t("employee.orderDetail.location")}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    {order.location}
+                  </p>
                 </div>
               </div>
             )}
-            
+
             {order.duration && (
               <div className="flex items-center gap-2">
                 <Clock className="h-4 w-4 text-muted-foreground" />
                 <div>
-                  <p className="text-sm font-medium">{t("employee.orderDetail.duration")}</p>
+                  <p className="text-sm font-medium">
+                    {t("employee.orderDetail.duration")}
+                  </p>
                   <p className="text-sm text-muted-foreground">
-                    {order.duration} {order.duration === 1 ? t("employee.orderDetail.hour") : t("employee.orderDetail.hours")}
+                    {order.duration}{" "}
+                    {order.duration === 1
+                      ? t("employee.orderDetail.hour")
+                      : t("employee.orderDetail.hours")}
                   </p>
                 </div>
               </div>
             )}
           </div>
-          
+
           {order.specialInstructions && (
             <div className="mt-4 p-3 bg-muted rounded-lg">
-              <p className="text-sm font-medium mb-1">{t("employee.orderDetail.specialInstructions")}</p>
-              <p className="text-sm text-muted-foreground">{order.specialInstructions}</p>
+              <p className="text-sm font-medium mb-1">
+                {t("employee.orderDetail.specialInstructions")}
+              </p>
+              <p className="text-sm text-muted-foreground">
+                {order.specialInstructions}
+              </p>
             </div>
           )}
         </CardContent>
@@ -326,35 +400,56 @@ export const EmployeeOrderDetailPage: React.FC<EmployeeOrderDetailPageProps> = (
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {(order as any).customerActivities.map((customerActivity: any, index: number) => (
-                <div key={index} className="flex items-center justify-between p-3 bg-muted rounded-lg">
-                  <div>
-                    <p className="font-medium">
-                      {customerActivity.activity?.name || t("employee.orderDetail.unknownActivity")}
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      {t("employee.orderDetail.quantity")}: {customerActivity.quantity || 1}
-                    </p>
-                  </div>
-                  <div className="text-right">
-                    {customerActivity.unitPrice && (
-                      <>
-                        <p className="font-medium">€{Number(customerActivity.unitPrice).toFixed(2)}</p>
-                        {customerActivity.lineTotal && (
-                          <p className="text-sm text-muted-foreground">
-                            {t("employee.orderDetail.total")}: €{Number(customerActivity.lineTotal).toFixed(2)}
+              {(order as any).customerActivities.map(
+                (customerActivity: any, index: number) => (
+                  <div
+                    key={index}
+                    className="flex items-center justify-between p-3 bg-muted rounded-lg"
+                  >
+                    <div>
+                      <p className="font-medium">
+                        {customerActivity.activity?.name ||
+                          t("employee.orderDetail.unknownActivity")}
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        {t("employee.orderDetail.quantity")}:{" "}
+                        {customerActivity.quantity || 1}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      {customerActivity.unitPrice && (
+                        <>
+                          <p className="font-medium">
+                            €{Number(customerActivity.unitPrice).toFixed(2)}
                           </p>
-                        )}
-                      </>
-                    )}
+                          {customerActivity.lineTotal && (
+                            <p className="text-sm text-muted-foreground">
+                              {t("employee.orderDetail.total")}: €
+                              {Number(customerActivity.lineTotal).toFixed(2)}
+                            </p>
+                          )}
+                        </>
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))}
-              {(order as any).customerActivities.some((ca: any) => ca.lineTotal) && (
+                )
+              )}
+              {(order as any).customerActivities.some(
+                (ca: any) => ca.lineTotal
+              ) && (
                 <div className="border-t pt-3 mt-3">
                   <div className="flex justify-between items-center font-semibold">
                     <span>{t("employee.orderDetail.totalOrderValue")}:</span>
-                    <span>€{(order as any).customerActivities.reduce((sum: number, ca: any) => sum + (Number(ca.lineTotal) || 0), 0).toFixed(2)}</span>
+                    <span>
+                      €
+                      {(order as any).customerActivities
+                        .reduce(
+                          (sum: number, ca: any) =>
+                            sum + (Number(ca.lineTotal) || 0),
+                          0
+                        )
+                        .toFixed(2)}
+                    </span>
                   </div>
                 </div>
               )}
@@ -372,20 +467,28 @@ export const EmployeeOrderDetailPage: React.FC<EmployeeOrderDetailPageProps> = (
               customerId={orderWithTemplate.customerId}
               description={orderWithTemplate.description}
               onDescriptionChange={(description) => {
-                setOrder(prev => prev ? { ...prev, description } : null);
+                setOrder((prev) => (prev ? { ...prev, description } : null));
                 if (orderWithTemplate) {
-                  setOrderWithTemplate(prev => ({ ...prev, description }));
+                  setOrderWithTemplate((prev: any) => ({ ...prev, description }));
                 }
               }}
               onTemplateDataChange={(templateData) => {
                 // keep parent in sync if needed
-                setOrderWithTemplate(prev => prev ? ({ ...prev, descriptionData: templateData }) : prev);
+                setOrderWithTemplate((prev: any) =>
+                  prev ? { ...prev, descriptionData: templateData } : prev
+                );
               }}
               editableForEmployee={true}
               orderId={orderId}
-              orderDescriptionData={orderWithTemplate.descriptionData?.descriptionData || null}
+              orderDescriptionData={
+                orderWithTemplate.descriptionData?.descriptionData || null
+              }
               onTemplateSaved={(saved) => {
-                setOrderWithTemplate(prev => prev ? ({ ...prev, descriptionData: { descriptionData: saved } }) : prev);
+                setOrderWithTemplate((prev: any) =>
+                  prev
+                    ? { ...prev, descriptionData: { descriptionData: saved } }
+                    : prev
+                );
               }}
             />
           )}
