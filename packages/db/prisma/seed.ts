@@ -269,8 +269,10 @@ async function main() {
 
   // Create teams (one per leader)
   const teams = await Promise.all([
-    prisma.team.create({
-      data: {
+    prisma.team.upsert({
+      where: { name: "Development Team" },
+      update: {},
+      create: {
         name: "Development Team",
         description: "Frontend and backend development team",
         teamLeaderId: users[4].employee!.id,
@@ -280,14 +282,28 @@ async function main() {
 
   // Add team members
   await Promise.all([
-    prisma.teamMember.create({
-      data: {
+    prisma.teamMember.upsert({
+      where: {
+        teamId_employeeId: {
+          teamId: teams[0].id,
+          employeeId: users[0].employee!.id,
+        },
+      },
+      update: {},
+      create: {
         teamId: teams[0].id,
         employeeId: users[0].employee!.id,
       },
     }),
-    prisma.teamMember.create({
-      data: {
+    prisma.teamMember.upsert({
+      where: {
+        teamId_employeeId: {
+          teamId: teams[0].id,
+          employeeId: users[2].employee!.id,
+        },
+      },
+      update: {},
+      create: {
         teamId: teams[0].id,
         employeeId: users[2].employee!.id,
       },
@@ -296,8 +312,10 @@ async function main() {
 
   // Create customers
   const customers = await Promise.all([
-    prisma.customer.create({
-      data: {
+    prisma.customer.upsert({
+      where: { taxNumber: "TAX001" },
+      update: {},
+      create: {
         companyName: "Tech Solutions Inc",
         contactEmail: "contact@techsolutions.com",
         contactPhone: "+1-555-1001",
@@ -311,8 +329,10 @@ async function main() {
         },
       },
     }),
-    prisma.customer.create({
-      data: {
+    prisma.customer.upsert({
+      where: { taxNumber: "TAX002" },
+      update: {},
+      create: {
         companyName: "Global Marketing Corp",
         contactEmail: "info@globalmarketing.com",
         contactPhone: "+1-555-2001",
@@ -330,57 +350,73 @@ async function main() {
 
   // Create qualifications
   const qualifications = await Promise.all([
-    prisma.qualification.create({
-      data: {
+    prisma.qualification.upsert({
+      where: { name: "JavaScript Programming" },
+      update: {},
+      create: {
         name: "JavaScript Programming",
         description: "Proficiency in JavaScript development",
         category: "Technical",
       },
     }),
-    prisma.qualification.create({
-      data: {
+    prisma.qualification.upsert({
+      where: { name: "Project Management" },
+      update: {},
+      create: {
         name: "Project Management",
         description: "Project management skills",
         category: "Management",
       },
     }),
-    prisma.qualification.create({
-      data: {
+    prisma.qualification.upsert({
+      where: { name: "Data Analysis" },
+      update: {},
+      create: {
         name: "Data Analysis",
         description: "Data analysis and reporting",
         category: "Technical",
       },
     }),
-    prisma.qualification.create({
-      data: {
+    prisma.qualification.upsert({
+      where: { name: "React Development" },
+      update: {},
+      create: {
         name: "React Development",
         description: "Frontend development with React framework",
         category: "Technical",
       },
     }),
-    prisma.qualification.create({
-      data: {
+    prisma.qualification.upsert({
+      where: { name: "Database Management" },
+      update: {},
+      create: {
         name: "Database Management",
         description: "SQL and database administration",
         category: "Technical",
       },
     }),
-    prisma.qualification.create({
-      data: {
+    prisma.qualification.upsert({
+      where: { name: "Team Leadership" },
+      update: {},
+      create: {
         name: "Team Leadership",
         description: "Leading and managing teams",
         category: "Management",
       },
     }),
-    prisma.qualification.create({
-      data: {
+    prisma.qualification.upsert({
+      where: { name: "Customer Service" },
+      update: {},
+      create: {
         name: "Customer Service",
         description: "Customer relationship management",
         category: "Soft Skills",
       },
     }),
-    prisma.qualification.create({
-      data: {
+    prisma.qualification.upsert({
+      where: { name: "German Language" },
+      update: {},
+      create: {
         name: "German Language",
         description: "German language proficiency",
         category: "Language",
@@ -392,24 +428,45 @@ async function main() {
 
   // Create employee qualifications
   await Promise.all([
-    prisma.employeeQualification.create({
-      data: {
+    prisma.employeeQualification.upsert({
+      where: {
+        employeeId_qualificationId: {
+          employeeId: users[0].employee!.id,
+          qualificationId: qualifications[0].id,
+        },
+      },
+      update: {},
+      create: {
         employeeId: users[0].employee!.id,
         qualificationId: qualifications[0].id,
         proficiencyLevel: 5,
         isVerified: true,
       },
     }),
-    prisma.employeeQualification.create({
-      data: {
+    prisma.employeeQualification.upsert({
+      where: {
+        employeeId_qualificationId: {
+          employeeId: users[2].employee!.id,
+          qualificationId: qualifications[0].id,
+        },
+      },
+      update: {},
+      create: {
         employeeId: users[2].employee!.id,
         qualificationId: qualifications[0].id,
         proficiencyLevel: 4,
         isVerified: true,
       },
     }),
-    prisma.employeeQualification.create({
-      data: {
+    prisma.employeeQualification.upsert({
+      where: {
+        employeeId_qualificationId: {
+          employeeId: users[3].employee!.id,
+          qualificationId: qualifications[2].id,
+        },
+      },
+      update: {},
+      create: {
         employeeId: users[3].employee!.id,
         qualificationId: qualifications[2].id,
         proficiencyLevel: 4,
@@ -420,8 +477,10 @@ async function main() {
 
   // Create orders
   const orders = await Promise.all([
-    prisma.order.create({
-      data: {
+    prisma.order.upsert({
+      where: { orderNumber: "ORD-2024-001" },
+      update: {},
+      create: {
         orderNumber: "ORD-2024-001",
         description: "Website Development Project - Develop a new company website",
         scheduledDate: new Date("2024-02-01"),
@@ -437,8 +496,10 @@ async function main() {
         createdBy: users[0].id,
       },
     }),
-    prisma.order.create({
-      data: {
+    prisma.order.upsert({
+      where: { orderNumber: "ORD-2024-002" },
+      update: {},
+      create: {
         orderNumber: "ORD-2024-002",
         description: "Marketing Campaign Analysis - Analyze marketing campaign performance",
         scheduledDate: new Date("2024-02-15"),
@@ -549,8 +610,15 @@ async function main() {
 
   // Create work statistics
   await Promise.all([
-    prisma.workStatistic.create({
-      data: {
+    prisma.workStatistic.upsert({
+      where: {
+        employeeId_date: {
+          employeeId: users[0].employee!.id,
+          date: new Date("2024-01-15"),
+        },
+      },
+      update: {},
+      create: {
         date: new Date("2024-01-15"),
         employeeId: users[0].employee!.id,
         hoursWorked: 8.5,
@@ -561,8 +629,15 @@ async function main() {
         qualityScore: 0.92,
       },
     }),
-    prisma.workStatistic.create({
-      data: {
+    prisma.workStatistic.upsert({
+      where: {
+        employeeId_date: {
+          employeeId: users[2].employee!.id,
+          date: new Date("2024-01-15"),
+        },
+      },
+      update: {},
+      create: {
         date: new Date("2024-01-15"),
         employeeId: users[2].employee!.id,
         hoursWorked: 8.0,
@@ -577,8 +652,10 @@ async function main() {
 
   // Create performance thresholds
   await Promise.all([
-    prisma.performanceThreshold.create({
-      data: {
+    prisma.performanceThreshold.upsert({
+      where: { departmentId: departments[0].id },
+      update: {},
+      create: {
         departmentId: departments[0].id, // IT
         redMin: 0,
         redMax: 60,
@@ -588,8 +665,10 @@ async function main() {
         greenMax: 100,
       },
     }),
-    prisma.performanceThreshold.create({
-      data: {
+    prisma.performanceThreshold.upsert({
+      where: { departmentId: departments[1].id },
+      update: {},
+      create: {
         departmentId: departments[1].id, // HR
         redMin: 0,
         redMax: 65,
@@ -726,24 +805,30 @@ async function main() {
 
   // Create notification templates for settings changes
   await Promise.all([
-    prisma.notificationTemplate.create({
-      data: {
+    prisma.notificationTemplate.upsert({
+      where: { key: "SETTINGS_CHANGE_REQUESTED" },
+      update: {},
+      create: {
         key: "SETTINGS_CHANGE_REQUESTED",
         title: "Settings Change Request",
         body: "{{employeeName}} has requested to change their {{changeType}} from '{{currentValue}}' to '{{requestedValue}}'. Reason: {{reason}}",
         defaultChannels: ["in_app", "email"],
       },
     }),
-    prisma.notificationTemplate.create({
-      data: {
+    prisma.notificationTemplate.upsert({
+      where: { key: "SETTINGS_CHANGE_APPROVED" },
+      update: {},
+      create: {
         key: "SETTINGS_CHANGE_APPROVED",
         title: "Settings Change Approved",
         body: "Your request to change {{changeType}} has been approved by {{reviewerName}}.",
         defaultChannels: ["in_app", "email"],
       },
     }),
-    prisma.notificationTemplate.create({
-      data: {
+    prisma.notificationTemplate.upsert({
+      where: { key: "SETTINGS_CHANGE_REJECTED" },
+      update: {},
+      create: {
         key: "SETTINGS_CHANGE_REJECTED",
         title: "Settings Change Rejected",
         body: "Your request to change {{changeType}} has been rejected. Reason: {{reviewNotes}}",
@@ -754,15 +839,19 @@ async function main() {
 
   // Create system config
   await Promise.all([
-    prisma.systemConfig.create({
-      data: {
+    prisma.systemConfig.upsert({
+      where: { key: "company_name" },
+      update: {},
+      create: {
         key: "company_name",
         value: "Employee Management System",
         description: "Company name displayed in the application",
       },
     }),
-    prisma.systemConfig.create({
-      data: {
+    prisma.systemConfig.upsert({
+      where: { key: "max_vacation_days" },
+      update: {},
+      create: {
         key: "max_vacation_days",
         value: "25",
         description: "Maximum vacation days per year",

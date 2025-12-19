@@ -1689,6 +1689,43 @@
         "completed": "Abgeschlossen",
         "active": "Aktiv"
       },
+      "leaveStats": {
+        "title": "Urlaubsstatistiken",
+        "totalDays": "Gesamttage",
+        "approved": "Genehmigt",
+        "pending": "Ausstehend",
+        "rejected": "Abgelehnt"
+      },
+      "currentWeekOrders": {
+        "title": "Aufträge dieser Woche",
+        "loadingOrders": "Aufträge werden geladen...",
+        "noOrders": "Keine Aufträge für diese Woche zugewiesen",
+        "newOrdersMonday": "Neue Aufträge erscheinen hier am Montag",
+        "orderNumber": "Auftrag #",
+        "scheduled": "Geplant",
+        "estimated": "Geschätzt",
+        "actual": "Tatsächlich",
+        "priority": "Priorität"
+      },
+      "archivedOrders": {
+        "title": "Archivierte Aufträge",
+        "completed": "Abgeschlossen",
+        "noArchivedOrders": "Noch keine archivierten Aufträge",
+        "showingCount": "Zeige {{showing}} von {{total}} archivierten Aufträgen"
+      },
+      "actions": {
+        "start": "Starten",
+        "pause": "Pausieren",
+        "complete": "Abschließen",
+        "resume": "Fortsetzen"
+      },
+      "status": {
+        "assigned": "Zugewiesen",
+        "inprogress": "In Bearbeitung",
+        "pending": "Ausstehend",
+        "completed": "Abgeschlossen",
+        "active": "Aktiv"
+      },
       "dateLabels": {
         "today": "Heute",
         "tomorrow": "Morgen"
@@ -1851,6 +1888,15 @@
       "teamUpdatedSuccess": "Mannschaft erfolgreich aktualisiert",
       "createTeamError": "Fehler beim Erstellen der Mannschaft",
       "updateTeamError": "Fehler beim Aktualisieren der Mannschaft"
-    }
+    },
+    "manageMembers": "Mitglieder verwalten",
+    "manageTeamMembers": "Mannschaftsmitglieder verwalten",
+    "confirmRemoveMember": "Sind Sie sicher, dass Sie dieses Mitglied aus der Mannschaft entfernen möchten?",
+    "memberRemovedSuccess": "Mannschaftsmitglied erfolgreich entfernt",
+    "memberRemoveError": "Fehler beim Entfernen des Mannschaftsmitglieds",
+    "loadMembersError": "Fehler beim Laden der Mannschaftsmitglieder",
+    "noMembersFound": "Keine Mannschaftsmitglieder gefunden",
+    "remove": "Entfernen",
+    "add": "Hinzufügen"
   }
 }
