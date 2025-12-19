@@ -252,7 +252,7 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
                 <SelectValue placeholder={t("admin.orders.form.selectCustomer")} />
               </SelectTrigger>
               <SelectContent>
-                {customers.map((customer) => (
+                {Array.isArray(customers) && customers.map((customer) => (
                   <SelectItem key={customer.id} value={customer.id}>
                     {customer.companyName}
                   </SelectItem>
