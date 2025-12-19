@@ -52,6 +52,7 @@ export const getAllOrdersService = async () => {
       orderAssignments: true,
       employeeAssignments: true,
       ratings: true,
+      descriptionData: true
     },
   });
 };
@@ -69,6 +70,7 @@ export const getOrderByIdService = async (id: string) => {
       orderAssignments: true,
       employeeAssignments: true,
       ratings: true,
+      descriptionData:true,
     },
   });
 };

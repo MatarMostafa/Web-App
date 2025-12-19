@@ -783,7 +783,8 @@
         "templateSelected": "Vorlage ausgewählt",
         "employeeWillFill": "Mitarbeiter füllt dieses Feld aus",
         "customDescriptionPlaceholder": "Benutzerdefinierte Beschreibung eingeben",
-        "loading": "Vorlage wird geladen..."
+        "loading": "Vorlage wird geladen...",
+        "readOnlyWarning":"Diese Beschreibung basiert auf einer Vorlage und kann nicht bearbeitet werden."
 
       }
     },

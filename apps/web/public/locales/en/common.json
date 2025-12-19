@@ -783,8 +783,8 @@
         "templateSelected": "Template selected",
         "employeeWillFill": "Employee will fill this field",
         "customDescriptionPlaceholder": "Enter a custom description",
-        "loading": "Loading template..."
-
+        "loading": "Loading template...",
+        "readOnlyWarning":"This description is template-based and cannot be edited."
       }
     },
     "customers": {
