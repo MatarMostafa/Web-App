@@ -20,6 +20,7 @@ import {
 } from "@/components/ui";
 import { useSession } from "next-auth/react";
 import toast from "react-hot-toast";
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface Employee {
   id: string;
@@ -39,6 +40,7 @@ const CreateTeamDialog: React.FC<CreateTeamDialogProps> = ({
   onOpenChange,
   onTeamCreated,
 }) => {
+  const { t } = useTranslation();
   const { data: session } = useSession();
   const [loading, setLoading] = useState(false);
   const [employees, setEmployees] = useState<Employee[]>([]);
@@ -81,7 +83,7 @@ const CreateTeamDialog: React.FC<CreateTeamDialogProps> = ({
     e.preventDefault();
     
     if (!formData.name.trim()) {
-      toast.error("Team name is required");
+      toast.error(t('teams.form.teamNameRequired'));
       return;
     }
     
@@ -103,15 +105,15 @@ const CreateTeamDialog: React.FC<CreateTeamDialogProps> = ({
       });
 
       if (response.ok) {
-        toast.success("Team created successfully");
+        toast.success(t('teams.messages.teamCreatedSuccess'));
         onTeamCreated();
         onOpenChange(false);
       } else {
         const errorData = await response.json();
-        toast.error(errorData.message || "Failed to create team");
+        toast.error(errorData.message || t('teams.messages.createTeamError'));
       }
     } catch (error) {
-      toast.error("Error creating team");
+      toast.error(t('teams.messages.createTeamError'));
     } finally {
       setLoading(false);
     }
@@ -125,42 +127,42 @@ const CreateTeamDialog: React.FC<CreateTeamDialogProps> = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="w-[95vw] max-w-md">
         <DialogHeader>
-          <DialogTitle>Create New Team</DialogTitle>
+          <DialogTitle>{t('teams.createTeam')}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <Label htmlFor="name">Team Name *</Label>
+            <Label htmlFor="name">{t('teams.form.teamName')} *</Label>
             <Input
               id="name"
               value={formData.name}
               onChange={(e) => handleInputChange("name", e.target.value)}
-              placeholder="Enter team name"
+              placeholder={t('teams.form.enterTeamName')}
               required
             />
           </div>
 
           <div>
-            <Label htmlFor="description">Description</Label>
+            <Label htmlFor="description">{t('teams.form.description')}</Label>
             <Textarea
               id="description"
               value={formData.description}
               onChange={(e) => handleInputChange("description", e.target.value)}
-              placeholder="Enter team description (optional)"
+              placeholder={t('teams.form.enterDescription')}
               rows={3}
             />
           </div>
 
           <div>
-            <Label htmlFor="teamLeader">Team Leader</Label>
+            <Label htmlFor="teamLeader">{t('teams.form.teamLeader')}</Label>
             <Select 
               value={formData.teamLeaderId} 
               onValueChange={(value) => handleInputChange("teamLeaderId", value)}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Select team leader (optional)" />
+                <SelectValue placeholder={t('teams.form.selectTeamLeader')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="none">No team leader</SelectItem>
+                <SelectItem value="none">{t('teams.form.noTeamLeader')}</SelectItem>
                 {employees.map((employee) => (
                   <SelectItem key={employee.id} value={employee.id}>
                     {employee.firstName && employee.lastName
@@ -178,7 +180,7 @@ const CreateTeamDialog: React.FC<CreateTeamDialogProps> = ({
               checked={formData.isActive}
               onCheckedChange={(checked) => handleInputChange("isActive", !!checked)}
             />
-            <Label htmlFor="isActive">Active Team</Label>
+            <Label htmlFor="isActive">{t('teams.form.activeTeam')}</Label>
           </div>
 
           <div className="flex flex-col sm:flex-row justify-end gap-2 pt-4">
@@ -188,10 +190,10 @@ const CreateTeamDialog: React.FC<CreateTeamDialogProps> = ({
               onClick={() => onOpenChange(false)}
               className="w-full sm:w-auto"
             >
-              Cancel
+              {t('common.cancel')}
             </Button>
             <Button type="submit" disabled={loading} className="w-full sm:w-auto">
-              {loading ? "Creating..." : "Create Team"}
+              {loading ? t('teams.form.creating') : t('teams.form.create')}
             </Button>
           </div>
         </form>

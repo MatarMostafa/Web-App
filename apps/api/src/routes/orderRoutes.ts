@@ -372,6 +372,37 @@ router.get(
   getOrderActivities
 );
 
+router.get(
+  "/:orderId/activity-ids",
+  authMiddleware,
+  roleMiddleware(["ADMIN", "TEAM_LEADER"]),
+  async (req: Request, res: Response) => {
+    try {
+      const { orderId } = req.params;
+      console.log(`Fetching activity IDs for order: ${orderId}`);
+      
+      const customerActivities = await prisma.customerActivity.findMany({
+        where: { orderId },
+        select: { activityId: true }
+      });
+      
+      console.log(`Found ${customerActivities.length} customer activities for order ${orderId}:`, customerActivities);
+      
+      const activityIds = customerActivities.map(ca => ca.activityId);
+      console.log(`Returning activity IDs:`, activityIds);
+      
+      res.json({ success: true, data: activityIds });
+    } catch (error) {
+      console.error("Get order activity IDs error:", error);
+      res.status(500).json({ 
+        success: false,
+        message: "Fehler beim Abrufen der Aktivitäts-IDs", 
+        error: error instanceof Error ? error.message : String(error)
+      });
+    }
+  }
+);
+
 /**
  * @section Analytics
  */
