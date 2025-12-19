@@ -35,6 +35,10 @@ export interface Order {
   updatedAt: string;
   createdBy?: string;
   updatedBy?: string;
+  customer?: {
+    id: string;
+    companyName: string;
+  };
 }
 
 

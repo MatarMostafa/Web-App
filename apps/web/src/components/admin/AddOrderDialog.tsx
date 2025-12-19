@@ -309,7 +309,7 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
 
           <OrderDescriptionForm
             customerId={formData.customerId}
-            description={formData.description}
+            description={formData.description || ""}
             onDescriptionChange={(description) => handleInputChange("description", description)}
             onTemplateDataChange={setTemplateData}
           />

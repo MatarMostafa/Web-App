@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "@/hooks/useTranslation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -53,6 +54,7 @@ export const OrderAssignments: React.FC<OrderAssignmentsProps> = ({
   userRole,
   onAssignmentCountChange,
 }) => {
+  const { t } = useTranslation();
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
@@ -98,11 +100,11 @@ export const OrderAssignments: React.FC<OrderAssignmentsProps> = ({
           setAssignments(assignmentData);
           onAssignmentCountChange?.(assignmentData.length);
         }
-        toast.success('Staff member removed successfully');
+        toast.success(t('messages.success'));
       }
     } catch (error) {
       console.error("Failed to remove assignment:", error);
-      toast.error('Failed to remove staff member');
+      toast.error(t('messages.error'));
     } finally {
       setActionLoading(false);
     }
@@ -142,7 +144,7 @@ export const OrderAssignments: React.FC<OrderAssignmentsProps> = ({
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Assigned Staff</CardTitle>
+          <CardTitle>{t("order.assignedStaff")}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -168,11 +170,11 @@ export const OrderAssignments: React.FC<OrderAssignmentsProps> = ({
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle>Assigned Staff</CardTitle>
+            <CardTitle>{t("order.assignedStaff")}</CardTitle>
             <p className="text-sm text-muted-foreground mt-1">
-              {assignments.length === 0 ? 'No staff assigned' : 
-               assignments.length === 1 ? '1 person assigned' : 
-               `${assignments.length} people assigned`}
+              {assignments.length === 0 ? t("order.noStaffAssigned") : 
+               assignments.length === 1 ? `1 ${t("order.personAssigned")}` : 
+               `${assignments.length} ${t("order.peopleAssigned")}`}
             </p>
           </div>
           {userRole === "ADMIN" && (
@@ -183,7 +185,7 @@ export const OrderAssignments: React.FC<OrderAssignmentsProps> = ({
               disabled={actionLoading}
             >
               <UserPlus className="h-4 w-4 mr-2" />
-              Assign
+              {t("common.assign")}
             </Button>
           )}
         </div>
@@ -192,7 +194,7 @@ export const OrderAssignments: React.FC<OrderAssignmentsProps> = ({
         {assignments.length === 0 ? (
           <div className="text-center py-8 text-muted-foreground">
             <User className="h-12 w-12 mx-auto mb-4 opacity-50" />
-            <p>No staff assigned yet</p>
+            <p>{t("order.noStaffAssigned")}</p>
             {userRole === "ADMIN" && (
               <Button 
                 size="sm" 
@@ -202,7 +204,7 @@ export const OrderAssignments: React.FC<OrderAssignmentsProps> = ({
                 disabled={actionLoading}
               >
                 <UserPlus className="h-4 w-4 mr-2" />
-                Assign Staff
+                {t("order.assignedStaff")}
               </Button>
             )}
           </div>
@@ -257,7 +259,7 @@ export const OrderAssignments: React.FC<OrderAssignmentsProps> = ({
                     <div className="flex items-center gap-1">
                       <Calendar className="h-3 w-3" />
                       <span>
-                        Assigned {new Date(assignment.assignedDate).toLocaleDateString()}
+                        {t("order.assigned")} {new Date(assignment.assignedDate).toLocaleDateString()}
                       </span>
                     </div>
                   </div>

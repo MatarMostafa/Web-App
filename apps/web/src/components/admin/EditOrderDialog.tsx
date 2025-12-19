@@ -127,6 +127,8 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
             : ""
         );
       });
+      setDataLoading(false); // ✅ Add this
+
     }
   }, [order, open, fetchEmployees, fetchCustomers, getOrderAssignments]);
 
@@ -338,34 +340,7 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
             )}
           </div>
 
-          <div>
-            <Label>Activities</Label>
-            <div className="text-sm text-muted-foreground mb-2">
-              {selectedActivities.length} activities selected - Total: €{getTotalPrice().toFixed(2)}
-            </div>
-            <div className="max-h-40 overflow-y-auto border rounded-md p-3 space-y-2">
-              {activities.map((customerActivity) => (
-                <div key={customerActivity.id} className="flex items-center justify-between space-x-2">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`activity-${customerActivity.activity.id}`}
-                      checked={selectedActivities.includes(customerActivity.activity.id)}
-                      onCheckedChange={(checked) => handleActivityToggle(customerActivity.activity.id, checked as boolean)}
-                    />
-                    <Label htmlFor={`activity-${customerActivity.activity.id}`} className="text-sm">
-                      {customerActivity.activity.name}
-                    </Label>
-                  </div>
-                  <span className="text-sm text-muted-foreground">
-                    €{Number(customerActivity.unitPrice || customerActivity.activity.defaultPrice).toFixed(2)}
-                  </span>
-                </div>
-              ))}
-              {activities.length === 0 && (
-                <p className="text-sm text-gray-500">{formData.customerId ? 'No activities available for this customer' : 'Select a customer first'}</p>
-              )}
-            </div>
-          </div>
+          
 
           <div>
             <Label>Activities</Label>
@@ -544,24 +519,7 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
             </div>
           </div>
 
-          <div>
-            <Label htmlFor="specialInstructions">{t("admin.orders.form.activities")}</Label>
-            <Select
-              value={formData.specialInstructions || ""}
-              onValueChange={(value) => handleInputChange("specialInstructions", value)}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder={t("admin.orders.form.selectActivity")} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Container entladen">{t("admin.orders.activities.containerUnloading")}</SelectItem>
-                <SelectItem value="Kommissionieren">{t("admin.orders.activities.picking")}</SelectItem>
-                <SelectItem value="Paletten sortieren">{t("admin.orders.activities.palletSorting")}</SelectItem>
-                <SelectItem value="Qualitätskontrolle">{t("admin.orders.activities.qualityControl")}</SelectItem>
-                <SelectItem value="Verpacken">{t("admin.orders.activities.packaging")}</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          
 
           <div>
             <Label>{t("admin.orders.form.assignEmployeesEdit")}</Label>
