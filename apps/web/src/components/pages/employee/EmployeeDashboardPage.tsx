@@ -420,7 +420,7 @@ const EmployeeDashboardPage = () => {
               ))}
               {archivedOrders.length > 10 && (
                 <div className="text-center text-sm text-muted-foreground pt-2">
-                  {`Showing 10 of ${archivedOrders.length} archived orders`}
+                  {t("employee.dashboard.archivedOrders.showingCount", { showing: 10, total: archivedOrders.length })}
                 </div>
               )}
             </div>

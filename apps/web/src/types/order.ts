@@ -9,10 +9,17 @@ export enum OrderStatus {
   EXPIRED = "EXPIRED"
 }
 
+export interface DescriptionData {
+  [key: string]: string; // each template field is a string
+}
+
 export interface Order {
   id: string;
   orderNumber: string;
   description?: string;
+  descriptionData?: {
+    descriptionData: DescriptionData; // nested object as returned by backend
+  };
   scheduledDate: string;
   startTime?: string;
   endTime?: string;
@@ -22,12 +29,18 @@ export interface Order {
   priority: number;
   specialInstructions?: string;
   status: OrderStatus;
+  usesTemplate?: boolean;
   customerId: string;
   createdAt: string;
   updatedAt: string;
   createdBy?: string;
   updatedBy?: string;
+  customer?: {
+    id: string;
+    companyName: string;
+  };
 }
+
 
 export interface CreateOrderData {
   orderNumber?: string;
@@ -43,6 +56,17 @@ export interface CreateOrderData {
   status?: OrderStatus;
   customerId: string;
   assignedEmployeeIds?: string[];
+  activities?: Array<{
+    activityId: string;
+    quantity?: number;
+  }>;
+  templateData?: Record<string, string> | null;
+  qualifications?: Array<{
+    qualificationId: string;
+    activityId?: string;
+    quantity?: number;
+    required?: boolean;
+  }>;
 }
 
 export interface UpdateOrderData {
@@ -59,4 +83,9 @@ export interface UpdateOrderData {
   status?: OrderStatus;
   customerId?: string;
   assignedEmployeeIds?: string[];
+  activities?: Array<{
+    activityId: string;
+    quantity?: number;
+  }>;
+  templateData?: Record<string, string> | null;
 }

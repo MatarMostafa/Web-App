@@ -34,6 +34,21 @@ export default withAuth(
       }
     }
 
+    if (pathname.startsWith("/dashboard-customer")) {
+      if (token?.role !== "CUSTOMER" && token?.role !== "CUSTOMER_SUB_USER") {
+        if (token?.role === "ADMIN") {
+          return NextResponse.redirect(new URL("/dashboard-admin", req.url));
+        }
+        if (token?.role === "EMPLOYEE") {
+          return NextResponse.redirect(new URL("/dashboard-employee", req.url));
+        }
+        if (token?.role === "TEAM_LEADER") {
+          return NextResponse.redirect(new URL("/dashboard-team-leader", req.url));
+        }
+        return NextResponse.redirect(new URL("/login", req.url));
+      }
+    }
+
     return NextResponse.next();
   },
   {
@@ -46,5 +61,5 @@ export default withAuth(
 );
 
 export const config = {
-  matcher: ["/dashboard-admin/:path*", "/dashboard-employee/:path*", "/dashboard-team-leader/:path*"],
+  matcher: ["/dashboard-admin/:path*", "/dashboard-employee/:path*", "/dashboard-team-leader/:path*", "/dashboard-customer/:path*"],
 };

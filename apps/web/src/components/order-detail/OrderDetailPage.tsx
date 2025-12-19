@@ -56,6 +56,7 @@ export const OrderDetailPage: React.FC<OrderDetailPageProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [assignedStaffCount, setAssignedStaffCount] = useState<number>(0);
   const [dataFetched, setDataFetched] = useState(false);
+  const [orderActivities, setOrderActivities] = useState<any[]>([]);
 
   const { orders, fetchOrders, getOrderEmployeeNames } = useOrderStore();
   const { employeeAssignments, fetchEmployeeAssignments } = useEmployeeOrderStore();
@@ -72,6 +73,13 @@ export const OrderDetailPage: React.FC<OrderDetailPageProps> = ({
       });
     }
   }, [orderId, userRole, fetchOrders, fetchEmployeeAssignments]);
+
+  // Set activities from order data
+  useEffect(() => {
+    if (order && (order as any).customerActivities) {
+      setOrderActivities((order as any).customerActivities);
+    }
+  }, [order]);
 
   // Update order when stores change
   useEffect(() => {
@@ -120,14 +128,14 @@ export const OrderDetailPage: React.FC<OrderDetailPageProps> = ({
         <div className="flex items-center gap-2 mb-6">
           <Button variant="ghost" onClick={handleBack}>
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Orders
+{t("order.backToOrders")}
           </Button>
         </div>
         <Card>
           <CardContent className="p-6 text-center">
             <AlertCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-lg font-medium mb-2">Order Not Found</h3>
-            <p className="text-muted-foreground">{error}</p>
+            <h3 className="text-lg font-medium mb-2">{t("order.orderNotFound")}</h3>
+            <p className="text-muted-foreground">{error || t("order.orderNotFoundDesc")}</p>
           </CardContent>
         </Card>
       </div>
@@ -140,7 +148,7 @@ export const OrderDetailPage: React.FC<OrderDetailPageProps> = ({
       <div className="flex items-center gap-2 mb-6">
         <Button variant="ghost" onClick={handleBack}>
           <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to Orders
+{t("order.backToOrders")}
         </Button>
       </div>
 
@@ -150,9 +158,11 @@ export const OrderDetailPage: React.FC<OrderDetailPageProps> = ({
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
               <CardTitle className="text-2xl">Order #{order.orderNumber}</CardTitle>
-              <p className="text-muted-foreground mt-1">
-                {order.description || "No description provided"}
-              </p>
+              {!order.descriptionData?.descriptionData && (
+                <p className="text-muted-foreground mt-1">
+                  {order.description || t("order.noDescription")}
+                </p>
+              )}
             </div>
             <Badge className={`${getStatusColor(order.status)} text-sm w-fit`}>
               {order.status === "IN_PROGRESS"
@@ -168,13 +178,13 @@ export const OrderDetailPage: React.FC<OrderDetailPageProps> = ({
             <div className="flex items-center gap-2">
               <Calendar className="h-4 w-4 text-muted-foreground" />
               <div>
-                <p className="text-sm font-medium">Scheduled Date</p>
+                <p className="text-sm font-medium">{t("order.scheduledDate")}</p>
                 <p className="text-sm text-muted-foreground">
                   {format(new Date(order.scheduledDate), "MMM dd, yyyy")}
                 </p>
                 {order.startTime && (
                   <p className="text-xs text-muted-foreground">
-                    Start: {format(new Date(order.startTime), "HH:mm")}
+                    {t("order.start")}: {format(new Date(order.startTime), "HH:mm")}
                   </p>
                 )}
               </div>
@@ -184,7 +194,7 @@ export const OrderDetailPage: React.FC<OrderDetailPageProps> = ({
               <div className="flex items-center gap-2">
                 <User className="h-4 w-4 text-muted-foreground" />
                 <div>
-                  <p className="text-sm font-medium">Company</p>
+                  <p className="text-sm font-medium">{t("order.company")}</p>
                   <p className="text-sm text-muted-foreground">{(order as any).customer.companyName}</p>
                 </div>
               </div>
@@ -194,7 +204,7 @@ export const OrderDetailPage: React.FC<OrderDetailPageProps> = ({
               <div className="flex items-center gap-2">
                 <MapPin className="h-4 w-4 text-muted-foreground" />
                 <div>
-                  <p className="text-sm font-medium">Location</p>
+                  <p className="text-sm font-medium">{t("order.location")}</p>
                   <p className="text-sm text-muted-foreground">{order.location}</p>
                 </div>
               </div>
@@ -203,11 +213,14 @@ export const OrderDetailPage: React.FC<OrderDetailPageProps> = ({
             <div className="flex items-center gap-2">
               <Users className="h-4 w-4 text-muted-foreground" />
               <div>
-                <p className="text-sm font-medium">Assigned Staff</p>
+                <p className="text-sm font-medium">{t("order.assignedStaff")}</p>
                 <p className="text-sm text-muted-foreground">
-                  {assignedStaffCount === 0 ? 'No staff assigned' : 
-                   assignedStaffCount === 1 ? '1 person assigned' : 
-                   `${assignedStaffCount} people assigned`}
+                  {assignedStaffCount === 0 
+                    ? t("order.noStaffAssigned") 
+                    : assignedStaffCount === 1 
+                      ? `1 ${t("order.personAssigned")}` 
+                      : `${assignedStaffCount} ${t("order.peopleAssigned")}`
+                  }
                 </p>
               </div>
             </div>
@@ -216,9 +229,9 @@ export const OrderDetailPage: React.FC<OrderDetailPageProps> = ({
               <div className="flex items-center gap-2">
                 <Clock className="h-4 w-4 text-muted-foreground" />
                 <div>
-                  <p className="text-sm font-medium">Duration</p>
+                  <p className="text-sm font-medium">{t("order.duration")}</p>
                   <p className="text-sm text-muted-foreground">
-                    {order.duration} {order.duration === 1 ? 'hour' : 'hours'}
+                    {order.duration} {order.duration === 1 ? t("order.hour") : t("order.hours")}
                   </p>
                 </div>
               </div>
@@ -226,7 +239,7 @@ export const OrderDetailPage: React.FC<OrderDetailPageProps> = ({
               <div className="flex items-center gap-2">
                 <AlertCircle className="h-4 w-4 text-muted-foreground" />
                 <div>
-                  <p className="text-sm font-medium">Priority</p>
+                  <p className="text-sm font-medium">{t("order.priority")}</p>
                   <Badge variant="outline">P{order.priority}</Badge>
                 </div>
               </div>
@@ -235,12 +248,93 @@ export const OrderDetailPage: React.FC<OrderDetailPageProps> = ({
           
           {order.specialInstructions && (
             <div className="mt-4 p-3 bg-muted rounded-lg">
-              <p className="text-sm font-medium mb-1">Special Instructions</p>
+              <p className="text-sm font-medium mb-1">{t("order.specialInstructions")}</p>
               <p className="text-sm text-muted-foreground">{order.specialInstructions}</p>
             </div>
           )}
         </CardContent>
       </Card>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+      {/* Template Description Card */}
+      {order.descriptionData?.descriptionData && (
+        <Card>
+          <CardHeader>
+            <CardTitle>{t("order.description")}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {Object.entries(order.descriptionData.descriptionData).map(
+                ([key, value]) => (
+                  <div
+                    key={key}
+                    className="flex justify-between gap-4 bg-muted rounded-md p-3 text-sm"
+                  >
+                    <span className="font-medium">{key}</span>
+                    <span className="text-muted-foreground">{String(value)}</span>
+                  </div>
+                )
+              )}
+            </div>
+            <p className="text-xs text-muted-foreground mt-3">
+              ℹ️ {t("order.templateBasedDescription")}
+            </p>
+          </CardContent>
+        </Card>
+      )}
+      {/* Activities */}
+      {orderActivities.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>{t("order.activitiesPricing")}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {orderActivities.map((customerActivity, index) => (
+                <div key={index} className="flex items-center justify-between p-3 bg-muted rounded-lg">
+                  <div>
+                    <p className="font-medium">
+                      {customerActivity.activity?.name || t("order.unknownActivity")}
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      {t("order.quantity")}: {customerActivity.quantity || 1}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    {customerActivity.unitPrice && (
+                      <>
+                        <p className="font-medium">€{Number(customerActivity.unitPrice).toFixed(2)}</p>
+                        {customerActivity.lineTotal && (
+                          <p className="text-sm text-muted-foreground">
+                            {t("order.total")}: €{Number(customerActivity.lineTotal).toFixed(2)}
+                          </p>
+                        )}
+                      </>
+                    )}
+                  </div>
+                </div>
+              ))}
+              {orderActivities.some(ca => ca.lineTotal) && (
+                <div className="border-t pt-3 mt-3">
+                  <div className="flex justify-between items-center font-semibold">
+                    <span>{t("order.totalOrderValue")}:</span>
+                    <span>€{orderActivities.reduce((sum, ca) => sum + (Number(ca.lineTotal) || 0), 0).toFixed(2)}</span>
+                  </div>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+      {orderActivities.length === 0 && (
+        <Card>
+          <CardContent className="p-6 text-center text-muted-foreground">
+            {t("order.noActivitiesAssigned")}
+          </CardContent>
+        </Card>
+      )}
+      </div>
+
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left Column - Timeline */}

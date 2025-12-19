@@ -8,6 +8,11 @@ declare module "next-auth" {
       email?: string | null;
       image?: string | null;
       role: string;
+      subAccount?: {
+        id: string;
+        name: string;
+        customerId: string;
+      } | null;
     };
     accessToken: string;
     error?: string;
