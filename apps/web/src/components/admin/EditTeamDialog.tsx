@@ -20,6 +20,7 @@ import {
 } from "@/components/ui";
 import { useSession } from "next-auth/react";
 import toast from "react-hot-toast";
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface Employee {
   id: string;
@@ -49,6 +50,7 @@ const EditTeamDialog: React.FC<EditTeamDialogProps> = ({
   onOpenChange,
   onTeamUpdated,
 }) => {
+  const { t } = useTranslation();
   const { data: session } = useSession();
   const [loading, setLoading] = useState(false);
   const [employees, setEmployees] = useState<Employee[]>([]);
@@ -91,7 +93,7 @@ const EditTeamDialog: React.FC<EditTeamDialogProps> = ({
     e.preventDefault();
     
     if (!formData.name.trim()) {
-      toast.error("Team name is required");
+      toast.error(t('teams.form.teamNameRequired'));
       return;
     }
     
@@ -113,15 +115,15 @@ const EditTeamDialog: React.FC<EditTeamDialogProps> = ({
       });
 
       if (response.ok) {
-        toast.success("Team updated successfully");
+        toast.success(t('teams.messages.teamUpdatedSuccess'));
         onTeamUpdated();
         onOpenChange(false);
       } else {
         const errorData = await response.json();
-        toast.error(errorData.message || "Failed to update team");
+        toast.error(errorData.message || t('teams.messages.updateTeamError'));
       }
     } catch (error) {
-      toast.error("Error updating team");
+      toast.error(t('teams.messages.updateTeamError'));
     } finally {
       setLoading(false);
     }
@@ -135,42 +137,42 @@ const EditTeamDialog: React.FC<EditTeamDialogProps> = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>Edit Team</DialogTitle>
+          <DialogTitle>{t('teams.editTeam')}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <Label htmlFor="name">Team Name *</Label>
+            <Label htmlFor="name">{t('teams.form.teamName')} *</Label>
             <Input
               id="name"
               value={formData.name}
               onChange={(e) => handleInputChange("name", e.target.value)}
-              placeholder="Enter team name"
+              placeholder={t('teams.form.enterTeamName')}
               required
             />
           </div>
 
           <div>
-            <Label htmlFor="description">Description</Label>
+            <Label htmlFor="description">{t('teams.form.description')}</Label>
             <Textarea
               id="description"
               value={formData.description}
               onChange={(e) => handleInputChange("description", e.target.value)}
-              placeholder="Enter team description (optional)"
+              placeholder={t('teams.form.enterDescription')}
               rows={3}
             />
           </div>
 
           <div>
-            <Label htmlFor="teamLeader">Team Leader</Label>
+            <Label htmlFor="teamLeader">{t('teams.form.teamLeader')}</Label>
             <Select 
               value={formData.teamLeaderId} 
               onValueChange={(value) => handleInputChange("teamLeaderId", value)}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Select team leader (optional)" />
+                <SelectValue placeholder={t('teams.form.selectTeamLeader')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="none">No team leader</SelectItem>
+                <SelectItem value="none">{t('teams.form.noTeamLeader')}</SelectItem>
                 {employees.map((employee) => (
                   <SelectItem key={employee.id} value={employee.id}>
                     {employee.firstName && employee.lastName
@@ -188,7 +190,7 @@ const EditTeamDialog: React.FC<EditTeamDialogProps> = ({
               checked={formData.isActive}
               onCheckedChange={(checked) => handleInputChange("isActive", !!checked)}
             />
-            <Label htmlFor="isActive">Active Team</Label>
+            <Label htmlFor="isActive">{t('teams.form.activeTeam')}</Label>
           </div>
 
           <div className="flex justify-end gap-2 pt-4">
@@ -197,10 +199,10 @@ const EditTeamDialog: React.FC<EditTeamDialogProps> = ({
               variant="outline"
               onClick={() => onOpenChange(false)}
             >
-              Cancel
+              {t('common.cancel')}
             </Button>
             <Button type="submit" disabled={loading}>
-              {loading ? "Updating..." : "Update Team"}
+              {loading ? t('teams.form.updating') : t('teams.form.update')}
             </Button>
           </div>
         </form>

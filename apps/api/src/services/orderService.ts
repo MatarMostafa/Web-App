@@ -250,10 +250,10 @@ export const createOrderService = async (data: OrderCreateInput & { assignedEmpl
 
 export const updateOrderService = async (
   id: string,
-  data: OrderUpdateInput & { assignedEmployeeIds?: string[] },
+  data: OrderUpdateInput & { assignedEmployeeIds?: string[]; activities?: Array<{ activityId: string; quantity?: number }> },
   updatedBy?: string
 ) => {
-  let { assignedEmployeeIds, ...orderData } = data;
+  let { assignedEmployeeIds, activities, ...orderData } = data;
   
   // Clean empty strings to undefined for optional DateTime fields
   if (orderData.startTime === '') orderData.startTime = undefined;
@@ -267,14 +267,53 @@ export const updateOrderService = async (
     orderData.startTime = orderData.scheduledDate;
   }
   
-  const order = await prisma.order.update({
-    where: { id },
-    data: {
-      ...orderData,
-      ...(assignedEmployeeIds !== undefined && {
-        requiredEmployees: assignedEmployeeIds.length || 1
-      })
-    },
+  const order = await prisma.$transaction(async (tx) => {
+    const updatedOrder = await tx.order.update({
+      where: { id },
+      data: {
+        ...orderData,
+        ...(assignedEmployeeIds !== undefined && {
+          requiredEmployees: assignedEmployeeIds.length || 1
+        })
+      },
+    });
+
+    // Handle activities update if provided
+    if (activities !== undefined) {
+      // Remove existing customer activities for this order
+      await tx.customerActivity.deleteMany({
+        where: { orderId: id }
+      });
+
+      // Create new customer activities
+      if (activities.length > 0) {
+        for (const activity of activities) {
+          try {
+            const priceResult = await getPriceForCustomer(
+              updatedOrder.customerId,
+              activity.activityId,
+              updatedOrder.scheduledDate
+            );
+
+            await tx.customerActivity.create({
+              data: {
+                customerId: updatedOrder.customerId,
+                activityId: activity.activityId,
+                orderId: id,
+                quantity: activity.quantity ?? 1,
+                unitPrice: priceResult.price.toNumber(),
+                lineTotal: priceResult.price.mul(activity.quantity ?? 1).toNumber()
+              }
+            });
+          } catch (error) {
+            console.error(`Error updating customer activity for activity ${activity.activityId}:`, error);
+            throw error;
+          }
+        }
+      }
+    }
+
+    return updatedOrder;
   });
 
   // Handle employee assignments if specified
@@ -695,7 +734,7 @@ export const autoAssignEmployeesService = async (
           endDate: order.endTime,
           status: "ASSIGNED",
           estimatedHours: order.duration ? order.duration / 60 : undefined,
-          notes: `Auto-assigned based on qualifications and performance`,
+          notes: `Automatisch zugewiesen basierend auf Qualifikationen und Leistung`,
         },
         include: {
           employee: {
@@ -722,7 +761,7 @@ export const autoAssignEmployeesService = async (
         requiredQualifications: requiredQualifications.map(
           (q) => q.qualification.name
         ),
-        performanceFilter: "GREEN/YELLOW only",
+        performanceFilter: "NUR GRÜN/GELB",
         availabilityCheck: true,
         conflictCheck: true,
       },
@@ -759,7 +798,7 @@ export const createOrderQualificationService = async (
 ) => {
   return prisma.$transaction(async (tx) => {
     const order = await tx.order.findUnique({ where: { id: orderId }, select: { customerId: true, scheduledDate: true } });
-    if (!order) throw new Error('Order not found');
+    if (!order) throw new Error('Auftrag nicht gefunden');
 
     let unitPrice: number | undefined;
     let unit: string | undefined;
@@ -897,7 +936,7 @@ export const getOrderActivitiesService = async (orderId: string) => {
     activities.push({
       id: `order-created-${orderId}`,
       type: 'ORDER_CREATED' as const,
-      description: 'Order was created',
+      description: 'Auftrag wurde erstellt',
       authorId: order.createdBy || 'system',
       authorName: 'System',
       timestamp: order.createdAt.toISOString(),
@@ -910,7 +949,7 @@ export const getOrderActivitiesService = async (orderId: string) => {
     activities.push({
       id: `customer-activity-${customerActivity.id}`,
       type: 'ACTIVITY_ASSIGNED' as const,
-      description: `Activity "${customerActivity.activity.name}" assigned (Qty: ${customerActivity.quantity})`,
+      description: `Aktivität "${customerActivity.activity.name}" zugewiesen (Menge: ${customerActivity.quantity})`,
       authorId: 'system',
       authorName: 'System',
       timestamp: customerActivity.createdAt.toISOString(),
@@ -935,10 +974,10 @@ export const getOrderActivitiesService = async (orderId: string) => {
       id: note.id,
       type: note.triggersStatus ? 'STATUS_CHANGE' : 'NOTE_ADDED' as const,
       description: note.triggersStatus 
-        ? `Status changed to ${note.triggersStatus}`
-        : 'Note added',
+        ? `Status geändert zu ${note.triggersStatus}`
+        : 'Notiz hinzugefügt',
       authorId: note.authorId,
-      authorName: authorName || 'Unknown User',
+      authorName: authorName || 'Unbekannter Benutzer',
       timestamp: note.createdAt.toISOString(),
       metadata: {
         noteContent: note.content,
@@ -955,7 +994,7 @@ export const getOrderActivitiesService = async (orderId: string) => {
     activities.push({
       id: `assignment-${assignment.id}`,
       type: 'ASSIGNMENT_CHANGED' as const,
-      description: `Employee ${employeeName} was assigned to this order`,
+      description: `Mitarbeiter ${employeeName} wurde diesem Auftrag zugewiesen`,
       authorId: 'system',
       authorName: 'System',
       timestamp: assignment.createdAt.toISOString(),

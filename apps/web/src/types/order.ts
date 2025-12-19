@@ -52,6 +52,10 @@ export interface CreateOrderData {
   status?: OrderStatus;
   customerId: string;
   assignedEmployeeIds?: string[];
+  activities?: Array<{
+    activityId: string;
+    quantity?: number;
+  }>;
   templateData?: Record<string, string> | null;
   qualifications?: Array<{
     qualificationId: string;
@@ -75,5 +79,9 @@ export interface UpdateOrderData {
   status?: OrderStatus;
   customerId?: string;
   assignedEmployeeIds?: string[];
+  activities?: Array<{
+    activityId: string;
+    quantity?: number;
+  }>;
   templateData?: Record<string, string> | null;
 }
