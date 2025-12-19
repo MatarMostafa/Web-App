@@ -98,7 +98,14 @@
     "urgent": "Dringend",
     "normal": "Normal",
     "username": "Benutzername",
-    "name": "Name"
+    "name": "Name",
+    "assign": "Zuweisen",
+    "selected": "ausgewählt",
+    "searchEmployees": "Mitarbeiter suchen...",
+    "assigning": "Wird zugewiesen...",
+    "assignEmployees": "Mitarbeiter zuweisen",
+    "employeesSelected": "Mitarbeiter ausgewählt",
+    "employeeSelected": "Mitarbeiter ausgewählt"
   },
   "auth": {
     "signIn": "Anmelden",
@@ -276,6 +283,7 @@
   "order": {
     "order": "Auftrag",
     "orders": "Aufträge",
+    "company": "Firma",
     "orderNumber": "Auftragsnummer",
     "title": "Titel",
     "customer": "Kunde",
@@ -290,7 +298,29 @@
     "assigned": "Zugewiesen",
     "unassigned": "Nicht zugewiesen",
     "description": "Auftragsbeschreibung",
-    "descriptionPlaceholder": "Geben Sie hier die Auftragsbeschreibung ein…"
+    "descriptionPlaceholder": "Geben Sie hier die Auftragsbeschreibung ein…",
+    "backToOrders": "Zurück zu Aufträgen",
+    "orderNotFound": "Auftrag nicht gefunden",
+    "orderNotFoundDesc": "Auftrag nicht gefunden oder nicht zugänglich",
+    "noDescription": "Keine Beschreibung vorhanden",
+    "location": "Standort",
+    "assignedStaff": "Zugewiesenes Personal",
+    "noStaffAssigned": "Kein Personal zugewiesen",
+    "personAssigned": "Person zugewiesen",
+    "peopleAssigned": "Personen zugewiesen",
+    "duration": "Dauer",
+    "hour": "Stunde",
+    "hours": "Stunden",
+    "specialInstructions": "Besondere Anweisungen",
+    "activitiesPricing": "Aktivitäten & Preise",
+    "unknownActivity": "Unbekannte Aktivität",
+    "quantity": "Menge",
+    "total": "Gesamt",
+    "totalOrderValue": "Gesamtauftragswert",
+    "noActivitiesAssigned": "Keine Aktivitäten diesem Auftrag zugewiesen",
+    "templateBasedDescription": "Diese Beschreibung basiert auf einer Vorlage und kann nicht bearbeitet werden.",
+    "priority": "Priorität",
+    "start": "Start"
   },
   "customer": {
     "customer": "Kunde",
@@ -328,7 +358,8 @@
     "fieldInvalid": "{{field}} ist ungültig",
     "pleaseSelect": "Bitte auswählen",
     "enterValue": "Wert eingeben",
-    "selectOption": "Option auswählen"
+    "selectOption": "Option auswählen",
+    "selectAtLeastOne": "Bitte wählen Sie mindestens einen Mitarbeiter aus"
   },
   "messages": {
     "success": "Vorgang erfolgreich abgeschlossen",
@@ -1411,6 +1442,7 @@
       "orderInformation": "Auftragsinformationen",
       "scheduledDate": "Geplantes Datum",
       "location": "Standort",
+      "company":"Firma",
       "created": "Erstellt",
       "statusInformation": "Statusinformationen",
       "lastUpdated": "Zuletzt aktualisiert",
