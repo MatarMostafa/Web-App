@@ -37,3 +37,4 @@ yarn-error.log*
 .env
 
 packages/db/src/generated/
+.vscode/settings.json
