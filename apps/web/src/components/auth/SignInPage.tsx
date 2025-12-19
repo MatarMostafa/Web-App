@@ -44,7 +44,7 @@ export default function SignInPage() {
 
         if (session?.user?.role === "ADMIN") {
           router.push("/dashboard-admin");
-        } else if (session?.user?.role === "CUSTOMER") {
+        } else if (session?.user?.role === "CUSTOMER" || session?.user?.role === "CUSTOMER_SUB_USER") {
           router.push("/dashboard-customer");
         } else if (session?.user?.role === "TEAM_LEADER") {
           router.push("/dashboard-team-leader");

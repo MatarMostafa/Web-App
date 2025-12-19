@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { Order, CreateOrderData, UpdateOrderData } from "@/types/order";
 import { apiClient } from "@/lib/api-client";
+import { getSession } from "next-auth/react";
 import toast from "react-hot-toast";
 
 interface OrderState {
@@ -33,7 +34,14 @@ export const useOrderStore = create<OrderState>((set, get) => ({
   fetchOrders: async () => {
     set({ loading: true, error: null });
     try {
-      const orders = await apiClient.get<Order[]>("/api/orders");
+      // Get user session to determine the correct endpoint
+      const session = await getSession();
+      const userRole = session?.user?.role;
+      
+      // Use team leader endpoint for team leaders, admin endpoint for admins
+      const endpoint = userRole === "TEAM_LEADER" ? "/api/team-leader/orders" : "/api/orders";
+      
+      const orders = await apiClient.get<Order[]>(endpoint);
       set({ orders, loading: false });
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Failed to fetch orders";
@@ -100,7 +108,14 @@ export const useOrderStore = create<OrderState>((set, get) => ({
   createOrder: async (data: CreateOrderData) => {
     set({ loading: true, error: null });
     try {
-      const newOrder = await apiClient.post<Order>("/api/orders", data);
+      // Get user session to determine the correct endpoint
+      const session = await getSession();
+      const userRole = session?.user?.role;
+      
+      // Use team leader endpoint for team leaders, admin endpoint for admins
+      const endpoint = userRole === "TEAM_LEADER" ? "/api/team-leader/orders" : "/api/orders";
+      
+      const newOrder = await apiClient.post<Order>(endpoint, data);
       set(state => ({ 
         orders: [...state.orders, newOrder], 
         loading: false 
@@ -116,7 +131,14 @@ export const useOrderStore = create<OrderState>((set, get) => ({
   updateOrder: async (id: string, data: UpdateOrderData) => {
     set({ loading: true, error: null });
     try {
-      const updatedOrder = await apiClient.put<Order>(`/api/orders/${id}`, data);
+      // Get user session to determine the correct endpoint
+      const session = await getSession();
+      const userRole = session?.user?.role;
+      
+      // Use team leader endpoint for team leaders, admin endpoint for admins
+      const endpoint = userRole === "TEAM_LEADER" ? `/api/team-leader/orders/${id}` : `/api/orders/${id}`;
+      
+      const updatedOrder = await apiClient.put<Order>(endpoint, data);
       set(state => ({
         orders: state.orders.map(order => order.id === id ? updatedOrder : order),
         loading: false

@@ -1,15 +1,17 @@
 {
   "navigation": {
     "products": "Produkte",
-    "features": "Funktionen", 
+    "features": "Funktionen",
     "pricing": "Preise",
     "about": "Über uns",
     "login": "Anmelden",
     "getStarted": "Loslegen",
     "dashboard": "Dashboard",
     "employees": "Mitarbeiter",
+    "teams": "Mannschaften",
     "orders": "Aufträge",
     "customers": "Kunden",
+    "activities": "Aktivitäten",
     "reports": "Berichte",
     "settings": "Einstellungen",
     "profile": "Profil",
@@ -96,7 +98,14 @@
     "urgent": "Dringend",
     "normal": "Normal",
     "username": "Benutzername",
-    "name": "Name"
+    "name": "Name",
+    "assign": "Zuweisen",
+    "selected": "ausgewählt",
+    "searchEmployees": "Mitarbeiter suchen...",
+    "assigning": "Wird zugewiesen...",
+    "assignEmployees": "Mitarbeiter zuweisen",
+    "employeesSelected": "Mitarbeiter ausgewählt",
+    "employeeSelected": "Mitarbeiter ausgewählt"
   },
   "auth": {
     "signIn": "Anmelden",
@@ -270,11 +279,11 @@
     "address": "Adresse",
     "enterAddress": "Adresse eingeben",
     "hireDate": "Einstellungsdatum"
-    
   },
   "order": {
     "order": "Auftrag",
     "orders": "Aufträge",
+    "company": "Firma",
     "orderNumber": "Auftragsnummer",
     "title": "Titel",
     "customer": "Kunde",
@@ -287,7 +296,31 @@
     "completed": "Abgeschlossen",
     "cancelled": "Storniert",
     "assigned": "Zugewiesen",
-    "unassigned": "Nicht zugewiesen"
+    "unassigned": "Nicht zugewiesen",
+    "description": "Auftragsbeschreibung",
+    "descriptionPlaceholder": "Geben Sie hier die Auftragsbeschreibung ein…",
+    "backToOrders": "Zurück zu Aufträgen",
+    "orderNotFound": "Auftrag nicht gefunden",
+    "orderNotFoundDesc": "Auftrag nicht gefunden oder nicht zugänglich",
+    "noDescription": "Keine Beschreibung vorhanden",
+    "location": "Standort",
+    "assignedStaff": "Zugewiesenes Personal",
+    "noStaffAssigned": "Kein Personal zugewiesen",
+    "personAssigned": "Person zugewiesen",
+    "peopleAssigned": "Personen zugewiesen",
+    "duration": "Dauer",
+    "hour": "Stunde",
+    "hours": "Stunden",
+    "specialInstructions": "Besondere Anweisungen",
+    "activitiesPricing": "Aktivitäten & Preise",
+    "unknownActivity": "Unbekannte Aktivität",
+    "quantity": "Menge",
+    "total": "Gesamt",
+    "totalOrderValue": "Gesamtauftragswert",
+    "noActivitiesAssigned": "Keine Aktivitäten diesem Auftrag zugewiesen",
+    "templateBasedDescription": "Diese Beschreibung basiert auf einer Vorlage und kann nicht bearbeitet werden.",
+    "priority": "Priorität",
+    "start": "Start"
   },
   "customer": {
     "customer": "Kunde",
@@ -325,7 +358,8 @@
     "fieldInvalid": "{{field}} ist ungültig",
     "pleaseSelect": "Bitte auswählen",
     "enterValue": "Wert eingeben",
-    "selectOption": "Option auswählen"
+    "selectOption": "Option auswählen",
+    "selectAtLeastOne": "Bitte wählen Sie mindestens einen Mitarbeiter aus"
   },
   "messages": {
     "success": "Vorgang erfolgreich abgeschlossen",
@@ -709,6 +743,82 @@
         "palletSorting": "Paletten sortieren",
         "qualityControl": "Qualitätskontrolle",
         "packaging": "Verpacken"
+      }
+    },
+    "customerDetails": {
+      "loading": "Kunde wird geladen",
+      "notFound": "Kunde nicht gefunden",
+      "hasAccount": "Hat Konto",
+      "memberSince": "Mitglied seit",
+      "tabs": {
+        "overview": "Übersicht",
+        "orders": "Aufträge",
+        "subAccounts": "Unterkonten",
+        "activity": "Aktivität"
+      },
+      "overview": {
+        "title": "Kundenübersicht",
+        "totalOrders": "Gesamtaufträge",
+        "subAccounts": "Unterkonten",
+        "recentActivity": "Letzte Aktivität"
+      },
+      "orders": {
+        "title": "Kundenaufträge",
+        "noOrders": "Keine Aufträge gefunden",
+        "noOrdersDesc": "Dieser Kunde hat noch keine Aufträge"
+      },
+      "subAccounts": {
+        "title": "Unterkonto-Verwaltung",
+        "addSubAccount": "Unterkonto hinzufügen",
+        "searchPlaceholder": "Unterkonten nach Name oder E-Mail suchen...",
+        "confirmDelete": "Sind Sie sicher, dass Sie dieses Unterkonto löschen möchten?",
+        "noSubAccounts": "Keine Unterkonten gefunden",
+        "noSubAccountsDesc": "Dieser Kunde hat noch keine Unterkonten",
+        "table": {
+          "name": "Name",
+          "email": "E-Mail",
+          "username": "Benutzername",
+          "status": "Status",
+          "created": "Erstellt",
+          "actions": "Aktionen",
+          "active": "Aktiv",
+          "inactive": "Inaktiv",
+          "loading": "Unterkonten werden geladen...",
+          "noSubAccounts": "Keine Unterkonten gefunden",
+          "editSubAccount": "Unterkonto bearbeiten",
+          "resetPassword": "Passwort zurücksetzen",
+          "deleteSubAccount": "Unterkonto löschen"
+        }
+      },
+      "activity": {
+        "title": "Kundenaktivität",
+        "noActivity": "Keine Aktivität gefunden",
+        "noActivityDesc": "Kundenaktivität wird hier angezeigt"
+      },
+      "template": {
+        "title": "Beschreibungsvorlage",
+        "noTemplate": "Keine Beschreibungsvorlage konfiguriert",
+        "noTemplateDesc": "Erstellen Sie eine Vorlage, um Auftragsbeschreibungen für diesen Kunden zu standardisieren",
+        "createTemplate": "Vorlage erstellen",
+        "editTemplate": "Vorlage bearbeiten",
+        "deleteTemplate": "Löschen",
+        "templateLines": "Vorlagenzeilen",
+        "line": "Zeile",
+        "addLine": "Zeile hinzufügen",
+        "preview": "Vorschau",
+        "previewDesc": "So wird es in Auftragsformularen angezeigt:",
+        "fieldPlaceholder": "Feldbezeichnung eingeben (z.B. Container, Gewicht, etc.)",
+        "employeePlaceholder": "Mitarbeiter wird dieses Feld ausfüllen",
+        "saving": "Wird gespeichert...",
+        "updateTemplate": "Vorlage aktualisieren",
+        "confirmDelete": "Sind Sie sicher, dass Sie diese Vorlage löschen möchten?",
+        "useCustomDescription": "Benutzerdefinierte Beschreibung verwenden",
+        "templateSelected": "Vorlage ausgewählt",
+        "employeeWillFill": "Mitarbeiter füllt dieses Feld aus",
+        "customDescriptionPlaceholder": "Benutzerdefinierte Beschreibung eingeben",
+        "loading": "Vorlage wird geladen...",
+        "readOnlyWarning":"Diese Beschreibung basiert auf einer Vorlage und kann nicht bearbeitet werden."
+
       }
     },
     "customers": {
@@ -1201,6 +1311,10 @@
         "COMPANY_NAME": "Firmenname",
         "TAX_NUMBER": "Steuernummer"
       }
+    },
+    "subUserLimitations": {
+      "title": "Kontobeschränkungen",
+      "description": "Als Unterkonto-Benutzer können Sie nur Ihr Passwort ändern. Firmen- und Kontaktinformationen können nur vom Hauptkontoinhaber geändert werden."
     }
   },
   "customerPortal": {
@@ -1208,6 +1322,7 @@
       "title": "Kundenportal",
       "welcome": "Willkommen zurück",
       "overview": "Hier ist eine Übersicht über Ihre Aufträge und Ihr Konto",
+      "subUserOverview": "Hier ist eine Übersicht über die Aufträge und Aktivitäten Ihres Unternehmens",
       "totalOrders": "Gesamtaufträge",
       "completed": "Abgeschlossen",
       "inProgress": "In Bearbeitung",
@@ -1251,7 +1366,74 @@
     "navigation": {
       "dashboard": "Dashboard",
       "orders": "Meine Aufträge",
+      "subAccounts": "Unterkonten",
       "profile": "Profil"
+    },
+    "subAccounts": {
+      "title": "Unterkonten",
+      "subtitle": "Verwalten Sie die Unterkonten und Benutzerzugriffe Ihres Unternehmens",
+      "addSubAccount": "Unterkonto hinzufügen",
+      "searchPlaceholder": "Unterkonten nach Name oder E-Mail suchen...",
+      "confirmDelete": "Sind Sie sicher, dass Sie dieses Unterkonto löschen möchten?",
+      "noSubAccountsFound": "Keine Unterkonten gefunden",
+      "getStartedMessage": "Beginnen Sie mit der Erstellung Ihres ersten Unterkontos",
+      "table": {
+        "name": "Name",
+        "email": "E-Mail",
+        "status": "Status",
+        "lastLogin": "Letzte Anmeldung",
+        "actions": "Aktionen",
+        "noEmail": "Keine E-Mail",
+        "never": "Nie"
+      },
+      "resetPassword": {
+        "title": "Passwort zurücksetzen",
+        "newPassword": "Neues Passwort",
+        "enterPassword": "Neues Passwort eingeben",
+        "generateRandom": "Zufälliges Passwort generieren",
+        "copyToClipboard": "In Zwischenablage kopieren",
+        "passwordRequired": "Passwort ist erforderlich",
+        "passwordTooShort": "Passwort muss mindestens 8 Zeichen lang sein",
+        "resetSuccess": "Passwort erfolgreich zurückgesetzt für {{name}}",
+        "resetFailed": "Passwort konnte nicht zurückgesetzt werden",
+        "resetPassword": "Passwort zurücksetzen",
+        "resetting": "Wird zurückgesetzt...",
+        "passwordCopied": "Passwort in Zwischenablage kopiert",
+        "copyFailed": "Passwort konnte nicht kopiert werden"
+      },
+      "form": {
+        "addNewSubAccount": "Neues Unterkonto hinzufügen",
+        "editSubAccount": "Unterkonto bearbeiten",
+        "basicInformation": "Grundinformationen",
+        "name": "Name",
+        "namePlaceholder": "Vollständigen Namen eingeben",
+        "nameRequired": "Name ist erforderlich",
+        "email": "E-Mail",
+        "username": "Benutzername",
+        "usernamePlaceholder": "Benutzername eingeben",
+        "password": "Passwort",
+        "passwordPlaceholder": "Passwort eingeben",
+        "emailPlaceholder": "E-Mail-Adresse eingeben (optional)",
+        "usernameRequired": "Benutzername ist erforderlich",
+        "passwordRequired": "Passwort ist erforderlich",
+
+        "activeAccount": "Aktives Konto",
+        "activeAccountDesc": "Dieses Unterkonto aktivieren oder deaktivieren",
+        "cancel": "Abbrechen",
+        "creating": "Wird erstellt...",
+        "addSubAccount": "Unterkonto hinzufügen",
+        "updating": "Wird aktualisiert...",
+        "updateSubAccount": "Unterkonto aktualisieren"
+      },
+      "createSuccess": "Unterkonto erfolgreich erstellt!",
+      "createError": "Fehler beim Erstellen des Unterkontos",
+      "accessDenied": "Zugriff verweigert. Unterkonten können keine anderen Unterkonten verwalten.",
+      "errors": {
+        "usernameExists": "Benutzername bereits vorhanden",
+        "emailExists": "E-Mail bereits vorhanden",
+        "customerNotFound": "Kunde nicht gefunden",
+        "subAccountNotFound": "Unterkonto nicht gefunden"
+      }
     },
     "orderDetail": {
       "orderNotFound": "Auftrag nicht gefunden",
@@ -1260,6 +1442,7 @@
       "orderInformation": "Auftragsinformationen",
       "scheduledDate": "Geplantes Datum",
       "location": "Standort",
+      "company":"Firma",
       "created": "Erstellt",
       "statusInformation": "Statusinformationen",
       "lastUpdated": "Zuletzt aktualisiert",
@@ -1370,6 +1553,58 @@
       "updating": "Wird aktualisiert...",
       "updateEmployee": "Mitarbeiter aktualisieren"
     },
+    "orderDetail": {
+      "backToOrders": "Zurück zu Aufträgen",
+      "orderNotFound": "Auftrag nicht gefunden",
+      "orderNotFoundDesc": "Auftrag nicht gefunden oder nicht Ihnen zugewiesen",
+      "noDescription": "Keine Beschreibung vorhanden",
+      "scheduledDate": "Geplantes Datum",
+      "location": "Standort",
+      "duration": "Dauer",
+      "hour": "Stunde",
+      "hours": "Stunden",
+      "specialInstructions": "Besondere Anweisungen",
+      "activitiesPricing": "Aktivitäten & Preise",
+      "unknownActivity": "Unbekannte Aktivität",
+      "quantity": "Menge",
+      "total": "Gesamt",
+      "totalOrderValue": "Gesamtauftragswert",
+      "quickActions": "Schnellaktionen",
+      "startWork": "Arbeit beginnen",
+      "requestReview": "Überprüfung anfordern",
+      "pauseWork": "Arbeit pausieren",
+      "addNote": "Notiz hinzufügen",
+      "addNotePlaceholder": "Fügen Sie eine Notiz zu diesem Auftrag hinzu...",
+      "orderStatusUpdated": "Auftragsstatus aktualisiert auf",
+      "failedToUpdateStatus": "Fehler beim Aktualisieren des Auftragsstatus",
+      "workStartedNote": "Arbeit an diesem Auftrag begonnen",
+      "workPausedNote": "Arbeit an diesem Auftrag pausiert",
+      "reviewRequestedNote": "Auftrag zur Überprüfung eingereicht",
+      "noteAddedSuccess": "Notiz erfolgreich hinzugefügt",
+      "failedToAddNote": "Fehler beim Hinzufügen der Notiz",
+      "start": "Start",
+      "timeline": "Zeitverlauf",
+      "orderActivities": "Auftragsaktivitäten",
+      "noTimelineEvents": "Noch keine Zeitverlaufsereignisse",
+      "noActivitiesFound": "Keine Aktivitäten für diesen Auftrag gefunden",
+      "orderCreated": "Auftrag erstellt",
+      "orderActivated": "Auftrag aktiviert",
+      "orderActiveReady": "Auftrag ist jetzt aktiv und arbeitsbereit",
+      "workStarted": "Arbeit begonnen",
+      "workBegun": "Arbeit an diesem Auftrag wurde begonnen",
+      "reviewRequested": "Überprüfung angefordert",
+      "orderSubmittedReview": "Auftrag wurde zur Überprüfung eingereicht",
+      "orderCompleted": "Auftrag abgeschlossen",
+      "orderCompletedSuccess": "Auftrag wurde erfolgreich abgeschlossen",
+      "orderCancelled": "Auftrag storniert",
+      "orderCancelledDesc": "Auftrag wurde storniert",
+      "system": "System",
+      "invalidDate": "Ungültiges Datum",
+      "statusChange": "Statusänderung",
+      "noteAdded": "Notiz hinzugefügt",
+      "assignmentChanged": "Zuweisung geändert",
+      "activityAssigned": "Aktivität zugewiesen"
+    },
     "dashboard": {
       "title": "Mein Dashboard",
       "subtitle": "Übersicht über Ihre aktuellen Zuweisungen und Leistung",
@@ -1392,6 +1627,67 @@
         "averagePerOrder": "Durchschnitt pro Auftrag",
         "upcomingDeadlines": "Anstehende Fristen",
         "dueInNext7Days": "Fällig in den nächsten 7 Tagen"
+      }
+    },
+    "oldDashboard": {
+      "title": "Mein Dashboard",
+      "subtitle": "Übersicht über Ihre aktuellen Zuweisungen und Leistung",
+      "loading": "Wird geladen...",
+      "leaveManagement": "Urlaubsverwaltung",
+      "requestLeave": "Urlaub beantragen",
+      "myLeaveRequests": "Meine Urlaubsanträge",
+      "noLeaveRequests": "Keine Urlaubsanträge gefunden",
+      "submitFirstRequest": "Ersten Antrag einreichen",
+      "metrics": {
+        "thisWeekOrders": "Aufträge dieser Woche",
+        "ordersAssignedThisWeek": "Aufträge diese Woche zugewiesen",
+        "completedOrders": "Abgeschlossene Aufträge",
+        "totalCompleted": "Gesamt abgeschlossen",
+        "pendingOrders": "Ausstehende Aufträge",
+        "awaitingCompletion": "Warten auf Abschluss",
+        "hoursWorked": "Arbeitsstunden",
+        "totalHoursLogged": "Gesamte protokollierte Stunden",
+        "avgHoursPerOrder": "Durchschn. Stunden/Auftrag",
+        "averagePerOrder": "Durchschnitt pro Auftrag",
+        "upcomingDeadlines": "Anstehende Fristen",
+        "dueInNext7Days": "Fällig in den nächsten 7 Tagen"
+      },
+      "leaveStats": {
+        "title": "Urlaubsstatistiken",
+        "totalDays": "Gesamttage",
+        "approved": "Genehmigt",
+        "pending": "Ausstehend",
+        "rejected": "Abgelehnt"
+      },
+      "currentWeekOrders": {
+        "title": "Aufträge dieser Woche",
+        "loadingOrders": "Aufträge werden geladen...",
+        "noOrders": "Keine Aufträge für diese Woche zugewiesen",
+        "newOrdersMonday": "Neue Aufträge erscheinen hier am Montag",
+        "orderNumber": "Auftrag #",
+        "scheduled": "Geplant",
+        "estimated": "Geschätzt",
+        "actual": "Tatsächlich",
+        "priority": "Priorität"
+      },
+      "archivedOrders": {
+        "title": "Archivierte Aufträge",
+        "completed": "Abgeschlossen",
+        "noArchivedOrders": "Noch keine archivierten Aufträge",
+        "showingCount": "Zeige {{showing}} von {{total}} archivierten Aufträgen"
+      },
+      "actions": {
+        "start": "Starten",
+        "pause": "Pausieren",
+        "complete": "Abschließen",
+        "resume": "Fortsetzen"
+      },
+      "status": {
+        "assigned": "Zugewiesen",
+        "inprogress": "In Bearbeitung",
+        "pending": "Ausstehend",
+        "completed": "Abgeschlossen",
+        "active": "Aktiv"
       },
       "leaveStats": {
         "title": "Urlaubsstatistiken",
@@ -1495,5 +1791,112 @@
       "acquired": "Erworben",
       "expires": "Läuft ab"
     }
+  },
+  "activities": {
+    "title": "Aktivitäten",
+    "subtitle": "Verwalten Sie die Aktivitäten Ihrer Organisation",
+    "addActivity": "Aktivität hinzufügen",
+    "editActivity": "Aktivität bearbeiten",
+    "createActivity": "Aktivität erstellen",
+    "updateActivity": "Aktivität aktualisieren",
+    "deleteActivity": "Aktivität löschen",
+    "confirmDelete": "Sind Sie sicher, dass Sie diese Aktivität löschen möchten?",
+    "noActivitiesFound": "Keine Aktivitäten gefunden",
+    "getStartedMessage": "Beginnen Sie, indem Sie Ihre erste Aktivität hinzufügen",
+    "table": {
+      "name": "Name",
+      "code": "Code",
+      "defaultPrice": "Standardpreis",
+      "unit": "Einheit",
+      "status": "Status",
+      "actions": "Aktionen",
+      "active": "Aktiv",
+      "inactive": "Inaktiv"
+    },
+    "form": {
+      "customer": "Kunde",
+      "customerRequired": "Kunde ist erforderlich",
+      "selectCustomer": "Kunde auswählen",
+      "noCustomersAvailable": "Keine Kunden verfügbar",
+      "name": "Name",
+      "nameRequired": "Name ist erforderlich",
+      "code": "Code",
+      "defaultPrice": "Standardpreis (EUR)",
+      "defaultPriceRequired": "Standardpreis ist erforderlich",
+      "unit": "Einheit",
+      "creating": "Wird erstellt...",
+      "updating": "Wird aktualisiert...",
+      "create": "Erstellen",
+      "update": "Aktualisieren"
+    },
+    "messages": {
+      "createSuccess": "Kundenaktivität erstellt",
+      "updateSuccess": "Kundenaktivität aktualisiert",
+      "deleteSuccess": "Aktivität gelöscht",
+      "createError": "Fehler beim Speichern der Aktivität",
+      "updateError": "Fehler beim Speichern der Aktivität",
+      "deleteError": "Fehler beim Löschen der Aktivität",
+      "loadError": "Fehler beim Laden der Aktivitäten"
+    }
+  },
+  "teams": {
+    "title": "Mannschaften",
+    "subtitle": "Mannschaften und Mannschaftszuweisungen verwalten",
+    "createTeam": "Mannschaft erstellen",
+    "editTeam": "Mannschaft bearbeiten",
+    "deleteTeam": "Mannschaft löschen",
+    "addMember": "Mitglied hinzufügen",
+    "confirmDelete": "Sind Sie sicher, dass Sie diese Mannschaft löschen möchten?",
+    "noTeamsFound": "Keine Mannschaften gefunden",
+    "createFirstTeam": "Erstellen Sie Ihre erste Mannschaft",
+    "teamLeader": "Mannschaftsleiter",
+    "noTeamLeaderAssigned": "Kein Mannschaftsleiter zugewiesen",
+    "members": "Mitglieder",
+    "teamMembers": "Mannschaftsmitglieder",
+    "more": "weitere",
+    "inactive": "Inaktiv",
+    "form": {
+      "teamName": "Mannschaftsname",
+      "teamNameRequired": "Mannschaftsname ist erforderlich",
+      "enterTeamName": "Mannschaftsname eingeben",
+      "description": "Beschreibung",
+      "enterDescription": "Mannschaftsbeschreibung eingeben (optional)",
+      "teamLeader": "Mannschaftsleiter",
+      "selectTeamLeader": "Mannschaftsleiter auswählen (optional)",
+      "noTeamLeader": "Kein Mannschaftsleiter",
+      "activeTeam": "Aktive Mannschaft",
+      "creating": "Wird erstellt...",
+      "updating": "Wird aktualisiert...",
+      "create": "Mannschaft erstellen",
+      "update": "Mannschaft aktualisieren"
+    },
+    "addMemberDialog": {
+      "title": "Mitglieder zu {teamName} hinzufügen",
+      "selectEmployees": "Mitarbeiter auswählen",
+      "employeesSelected": "{count} Mitarbeiter ausgewählt",
+      "noAvailableEmployees": "Keine verfügbaren Mitarbeiter zum Hinzufügen",
+      "adding": "Wird hinzugefügt...",
+      "addMembers": "Mitglied hinzufügen",
+      "addMembersPlural": "{count} Mitglieder hinzufügen",
+      "selectAtLeastOne": "Bitte wählen Sie mindestens einen Mitarbeiter aus",
+      "membersAddedSuccess": "{count} Mitglied(er) erfolgreich hinzugefügt",
+      "membersAddedError": "{count} Mitglied(er) konnten nicht hinzugefügt werden",
+      "errorAddingMembers": "Fehler beim Hinzufügen von Mitgliedern"
+    },
+    "messages": {
+      "teamCreatedSuccess": "Mannschaft erfolgreich erstellt",
+      "teamUpdatedSuccess": "Mannschaft erfolgreich aktualisiert",
+      "createTeamError": "Fehler beim Erstellen der Mannschaft",
+      "updateTeamError": "Fehler beim Aktualisieren der Mannschaft"
+    },
+    "manageMembers": "Mitglieder verwalten",
+    "manageTeamMembers": "Mannschaftsmitglieder verwalten",
+    "confirmRemoveMember": "Sind Sie sicher, dass Sie dieses Mitglied aus der Mannschaft entfernen möchten?",
+    "memberRemovedSuccess": "Mannschaftsmitglied erfolgreich entfernt",
+    "memberRemoveError": "Fehler beim Entfernen des Mannschaftsmitglieds",
+    "loadMembersError": "Fehler beim Laden der Mannschaftsmitglieder",
+    "noMembersFound": "Keine Mannschaftsmitglieder gefunden",
+    "remove": "Entfernen",
+    "add": "Hinzufügen"
   }
 }

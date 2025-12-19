@@ -12,6 +12,7 @@ import { useEmployeeBlockStore } from "@/store/employeeBlockStore";
 import { Employee } from "@/types/employee";
 import BlockEmployeeModal from "@/components/modals/BlockEmployeeModal";
 import { DeleteEmployeeDialog } from "@/components/admin/DeleteEmployeeDialog";
+import { EmployeeExportDialog } from "@/components/admin/EmployeeExportDialog";
 import { useTranslation } from '@/hooks/useTranslation';
 
 const EmployeesPage = () => {
@@ -131,6 +132,7 @@ const EmployeesPage = () => {
           </p>
         </div>
         <div className="flex gap-2">
+          <EmployeeExportDialog employees={employees} />
           <AddEmployeeDialog
             trigger={
               <Button className="bg-primary hover:bg-primary/90">

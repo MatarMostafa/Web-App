@@ -35,6 +35,7 @@ interface CustomerState {
   
   // Admin customer management state
   customers: Customer[];
+  currentCustomer: Customer | null;
   
   loading: boolean;
   error: string | null;
@@ -47,6 +48,7 @@ interface CustomerState {
   
   // Admin customer management methods
   fetchCustomers: () => Promise<void>;
+  fetchCustomerById: (id: string) => Promise<void>;
   createCustomer: (data: CreateCustomerData) => Promise<void>;
   updateCustomer: (id: string, data: UpdateCustomerData) => Promise<void>;
   deleteCustomer: (id: string) => Promise<void>;
@@ -60,6 +62,7 @@ export const useCustomerStore = create<CustomerState>((set, get) => ({
   orders: [],
   profile: null,
   customers: [],
+  currentCustomer: null,
   loading: false,
   error: null,
 
@@ -142,6 +145,22 @@ export const useCustomerStore = create<CustomerState>((set, get) => ({
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Failed to fetch customers";
+      set({ error: errorMessage, loading: false });
+      toast.error(errorMessage);
+    }
+  },
+
+  fetchCustomerById: async (id: string) => {
+    set({ loading: true, error: null });
+    try {
+      const response = await apiClient.get<{ success: boolean; data: Customer }>(`/api/customers/${id}`);
+      if (response.success) {
+        set({ currentCustomer: response.data, loading: false });
+      } else {
+        throw new Error("Failed to fetch customer");
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Failed to fetch customer";
       set({ error: errorMessage, loading: false });
       toast.error(errorMessage);
     }

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "@/hooks/useTranslation";
 import {
   Dialog,
   DialogContent,
@@ -53,6 +54,7 @@ export const AssignEmployeeModal: React.FC<AssignEmployeeModalProps> = ({
   onAssignmentComplete,
   maxEmployees,
 }) => {
+  const { t } = useTranslation();
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [filteredEmployees, setFilteredEmployees] = useState<Employee[]>([]);
   const [selectedEmployees, setSelectedEmployees] = useState<string[]>([]);
@@ -97,7 +99,7 @@ export const AssignEmployeeModal: React.FC<AssignEmployeeModalProps> = ({
       setFilteredEmployees(availableEmployees);
     } catch (error) {
       console.error("Failed to load employees:", error);
-      toast.error("Failed to load employees");
+      toast.error(t("messages.error"));
     } finally {
       setLoading(false);
     }
@@ -115,7 +117,7 @@ export const AssignEmployeeModal: React.FC<AssignEmployeeModalProps> = ({
 
   const handleAssign = async () => {
     if (selectedEmployees.length === 0) {
-      toast.error("Please select at least one employee");
+      toast.error(t("forms.selectAtLeastOne"));
       return;
     }
 
@@ -129,12 +131,12 @@ export const AssignEmployeeModal: React.FC<AssignEmployeeModalProps> = ({
         )
       );
 
-      toast.success(`Successfully assigned ${selectedEmployees.length} employee(s)`);
+      toast.success(t("messages.success"));
       onAssignmentComplete();
       onClose();
     } catch (error) {
       console.error("Failed to assign employees:", error);
-      toast.error("Failed to assign employees");
+      toast.error(t("messages.error"));
     } finally {
       setAssigning(false);
     }
@@ -153,7 +155,7 @@ export const AssignEmployeeModal: React.FC<AssignEmployeeModalProps> = ({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl max-h-[80vh] overflow-hidden flex flex-col">
         <DialogHeader>
-          <DialogTitle>Assign Employees</DialogTitle>
+          <DialogTitle>{t("common.assignEmployees")}</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4 flex-1 overflow-hidden flex flex-col">
@@ -161,7 +163,7 @@ export const AssignEmployeeModal: React.FC<AssignEmployeeModalProps> = ({
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
             <Input
-              placeholder="Search employees..."
+              placeholder={t("common.searchEmployees")}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10"
@@ -170,7 +172,12 @@ export const AssignEmployeeModal: React.FC<AssignEmployeeModalProps> = ({
 
           {/* Selected count info */}
           <div className="text-sm text-muted-foreground">
-            {selectedEmployees.length} employee{selectedEmployees.length !== 1 ? 's' : ''} selected
+            {selectedEmployees.length === 0 
+              ? `0 ${t("common.employeesSelected")}` 
+              : selectedEmployees.length === 1 
+                ? `1 ${t("common.employeeSelected")}` 
+                : `${selectedEmployees.length} ${t("common.employeesSelected")}`
+            }
           </div>
 
           {/* Employee list */}
@@ -193,7 +200,7 @@ export const AssignEmployeeModal: React.FC<AssignEmployeeModalProps> = ({
               <div className="text-center py-8 text-muted-foreground">
                 <User className="h-12 w-12 mx-auto mb-4 opacity-50" />
                 <p>
-                  {searchTerm ? "No employees found matching your search" : "No available employees"}
+                  {searchTerm ? t("admin.employees.noEmployeesFound") : t("admin.orders.form.noEmployeesAvailable")}
                 </p>
               </div>
             ) : (
@@ -265,13 +272,18 @@ export const AssignEmployeeModal: React.FC<AssignEmployeeModalProps> = ({
           {/* Actions */}
           <div className="flex justify-end gap-2 pt-4 border-t">
             <Button variant="outline" onClick={onClose} disabled={assigning}>
-              Cancel
+              {t("common.cancel")}
             </Button>
             <Button
               onClick={handleAssign}
               disabled={selectedEmployees.length === 0 || assigning}
             >
-              {assigning ? "Assigning..." : `Assign ${selectedEmployees.length || ""} Employee${selectedEmployees.length !== 1 ? "s" : ""}`}
+              {assigning 
+                ? t("common.assigning") 
+                : selectedEmployees.length === 1 
+                  ? `${t("common.assign")} 1 ${t("employee.employee")}` 
+                  : `${t("common.assign")} ${selectedEmployees.length} ${t("employee.employees")}`
+              }
             </Button>
           </div>
         </div>

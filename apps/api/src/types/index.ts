@@ -3,3 +3,4 @@
 export * from "./order";
 export * from "./customer";
 export * from "./rating";
+export * from "./template";
