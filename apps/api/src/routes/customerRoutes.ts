@@ -462,7 +462,7 @@ router.get(
   roleMiddleware(["ADMIN", "HR_MANAGER"]),
   async (req, res) => {
     try {
-      const { customerId, startDate, endDate } = req.query;
+      const { customerId, startDate, endDate, format = 'xlsx' } = req.query;
       
       if (!startDate || !endDate) {
         return res.status(400).json({ message: "Start and end dates are required" });
@@ -472,15 +472,21 @@ router.get(
         customerId: customerId as string,
         startDate: new Date(startDate as string),
         endDate: new Date(endDate as string),
+        format: format as 'csv' | 'xlsx',
       };
 
-      const csvData = await customerExportService.exportCustomerData(filters);
+      const exportData = await customerExportService.exportCustomerData(filters);
       
-      const filename = `customer-data-${new Date().toISOString().split('T')[0]}.csv`;
+      const fileExtension = format === 'csv' ? 'csv' : 'xlsx';
+      const filename = `customer-data-${new Date().toISOString().split('T')[0]}.${fileExtension}`;
       
-      res.setHeader('Content-Type', 'text/csv');
+      if (format === 'csv') {
+        res.setHeader('Content-Type', 'text/csv');
+      } else {
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      }
       res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
-      res.send(csvData);
+      res.send(exportData);
     } catch (error) {
       console.error('Export error:', error);
       res.status(500).json({ message: "Error exporting customer data", error });

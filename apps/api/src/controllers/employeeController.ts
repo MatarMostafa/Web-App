@@ -106,7 +106,7 @@ export const deleteEmployee = async (req: Request, res: Response) => {
 
 export const exportEmployeeAssignments = async (req: Request, res: Response) => {
   try {
-    const { employeeId, period = 'monthly', startDate, endDate } = req.query;
+    const { employeeId, period = 'monthly', startDate, endDate, format = 'xlsx' } = req.query;
     
     if (!startDate || !endDate) {
       return res.status(400).json({ message: "Start and end dates are required" });
@@ -117,15 +117,21 @@ export const exportEmployeeAssignments = async (req: Request, res: Response) => 
       period: period as 'daily' | 'weekly' | 'monthly',
       startDate: new Date(startDate as string),
       endDate: new Date(endDate as string),
+      format: format as 'csv' | 'xlsx',
     };
 
-    const csvData = await employeeExportService.exportEmployeeAssignments(filters);
+    const exportData = await employeeExportService.exportEmployeeAssignments(filters);
     
-    const filename = `employee-assignments-${period}-${new Date().toISOString().split('T')[0]}.csv`;
+    const fileExtension = format === 'csv' ? 'csv' : 'xlsx';
+    const filename = `employee-assignments-${period}-${new Date().toISOString().split('T')[0]}.${fileExtension}`;
     
-    res.setHeader('Content-Type', 'text/csv');
+    if (format === 'csv') {
+      res.setHeader('Content-Type', 'text/csv');
+    } else {
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    }
     res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
-    res.send(csvData);
+    res.send(exportData);
   } catch (error) {
     console.error('Export error:', error);
     res.status(500).json({ message: "Error exporting employee assignments", error });
@@ -134,7 +140,7 @@ export const exportEmployeeAssignments = async (req: Request, res: Response) => 
 
 export const exportEmployeeWorkStats = async (req: Request, res: Response) => {
   try {
-    const { employeeId, period = 'monthly', startDate, endDate } = req.query;
+    const { employeeId, period = 'monthly', startDate, endDate, format = 'xlsx' } = req.query;
     
     if (!startDate || !endDate) {
       return res.status(400).json({ message: "Start and end dates are required" });
@@ -145,15 +151,21 @@ export const exportEmployeeWorkStats = async (req: Request, res: Response) => {
       period: period as 'daily' | 'weekly' | 'monthly',
       startDate: new Date(startDate as string),
       endDate: new Date(endDate as string),
+      format: format as 'csv' | 'xlsx',
     };
 
-    const csvData = await employeeExportService.exportEmployeeWorkStatistics(filters);
+    const exportData = await employeeExportService.exportEmployeeWorkStatistics(filters);
     
-    const filename = `employee-work-stats-${period}-${new Date().toISOString().split('T')[0]}.csv`;
+    const fileExtension = format === 'csv' ? 'csv' : 'xlsx';
+    const filename = `employee-work-stats-${period}-${new Date().toISOString().split('T')[0]}.${fileExtension}`;
     
-    res.setHeader('Content-Type', 'text/csv');
+    if (format === 'csv') {
+      res.setHeader('Content-Type', 'text/csv');
+    } else {
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    }
     res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
-    res.send(csvData);
+    res.send(exportData);
   } catch (error) {
     console.error('Export error:', error);
     res.status(500).json({ message: "Error exporting work statistics", error });
@@ -162,7 +174,7 @@ export const exportEmployeeWorkStats = async (req: Request, res: Response) => {
 
 export const exportCombinedEmployeeData = async (req: Request, res: Response) => {
   try {
-    const { employeeId, period = 'monthly', startDate, endDate } = req.query;
+    const { employeeId, period = 'monthly', startDate, endDate, format = 'xlsx' } = req.query;
     
     if (!startDate || !endDate) {
       return res.status(400).json({ message: "Start and end dates are required" });
@@ -173,15 +185,21 @@ export const exportCombinedEmployeeData = async (req: Request, res: Response) =>
       period: period as 'daily' | 'weekly' | 'monthly',
       startDate: new Date(startDate as string),
       endDate: new Date(endDate as string),
+      format: format as 'csv' | 'xlsx',
     };
 
-    const csvData = await employeeExportService.exportCombinedEmployeeData(filters);
+    const exportData = await employeeExportService.exportCombinedEmployeeData(filters);
     
-    const filename = `employee-combined-data-${period}-${new Date().toISOString().split('T')[0]}.csv`;
+    const fileExtension = format === 'csv' ? 'csv' : 'xlsx';
+    const filename = `employee-combined-data-${period}-${new Date().toISOString().split('T')[0]}.${fileExtension}`;
     
-    res.setHeader('Content-Type', 'text/csv');
+    if (format === 'csv') {
+      res.setHeader('Content-Type', 'text/csv');
+    } else {
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    }
     res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
-    res.send(csvData);
+    res.send(exportData);
   } catch (error) {
     console.error('Export error:', error);
     res.status(500).json({ message: "Error exporting combined employee data", error });

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -34,15 +35,17 @@ interface CustomerExportDialogProps {
 }
 
 export function CustomerExportDialog({ customers }: CustomerExportDialogProps) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [customerId, setCustomerId] = useState<string>('all');
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
+  const [customerId, setCustomerId] = useState<string>("all");
+  const [format, setFormat] = useState<string>("xlsx");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
 
   const handleExport = async () => {
     if (!startDate || !endDate) {
-      toast.error('Please select start and end dates');
+      toast.error(t('customerExport.selectDates'));
       return;
     }
 
@@ -50,51 +53,61 @@ export function CustomerExportDialog({ customers }: CustomerExportDialogProps) {
     try {
       const session = await getSession();
       if (!session?.accessToken) {
-        toast.error('Authentication required');
+        toast.error(t('customerExport.authRequired'));
         return;
       }
 
       const params = new URLSearchParams({
         startDate,
         endDate,
+        format,
       });
 
-      if (customerId !== 'all') {
-        params.append('customerId', customerId);
+      if (customerId !== "all") {
+        params.append("customerId", customerId);
       }
 
-      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
-      const response = await fetch(`${API_URL}/api/customers/export/data?${params.toString()}`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${session.accessToken}`,
-        },
-      });
+      const API_URL =
+        process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+      const response = await fetch(
+        `${API_URL}/api/customers/export/data?${params.toString()}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${session.accessToken}`,
+          },
+        }
+      );
 
       if (!response.ok) {
-        throw new Error('Export failed');
+        throw new Error(t('customerExport.failed'));
       }
 
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.style.display = 'none';
+      const a = document.createElement("a");
+      a.style.display = "none";
       a.href = url;
-      
-      const filename = response.headers.get('Content-Disposition')?.split('filename=')[1]?.replace(/"/g, '') 
-        || `customer-data-${new Date().toISOString().split('T')[0]}.csv`;
-      
+
+      const fileExtension = format === "csv" ? "csv" : "xlsx";
+      const filename =
+        response.headers
+          .get("Content-Disposition")
+          ?.split("filename=")[1]
+          ?.replace(/"/g, "") ||
+        `customer-data-${new Date().toISOString().split("T")[0]}.${fileExtension}`;
+
       a.download = filename;
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
 
-      toast.success('Export completed successfully');
+      toast.success(t('customerExport.success'));
       setOpen(false);
     } catch (error) {
-      console.error('Export error:', error);
-      toast.error('Failed to export data');
+      console.error("Export error:", error);
+      toast.error(t('customerExport.error'));
     } finally {
       setLoading(false);
     }
@@ -104,9 +117,9 @@ export function CustomerExportDialog({ customers }: CustomerExportDialogProps) {
     const end = new Date();
     const start = new Date();
     start.setDate(start.getDate() - 30);
-    
-    setEndDate(end.toISOString().split('T')[0]);
-    setStartDate(start.toISOString().split('T')[0]);
+
+    setEndDate(end.toISOString().split("T")[0]);
+    setStartDate(start.toISOString().split("T")[0]);
   };
 
   return (
@@ -114,27 +127,27 @@ export function CustomerExportDialog({ customers }: CustomerExportDialogProps) {
       <DialogTrigger asChild>
         <Button variant="outline" onClick={setDefaultDates}>
           <Download className="h-4 w-4 mr-2" />
-          Export CSV
+          {t('customerExport.button')}
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Export Customer Data</DialogTitle>
+          <DialogTitle>{t('customerExport.title')}</DialogTitle>
           <DialogDescription>
-            Export customer orders, activities, hours, prices, and totals to CSV format.
+            {t('customerExport.description')}
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="customer" className="text-right">
-              Customer
+              {t('customerExport.customer')}
             </Label>
             <Select value={customerId} onValueChange={setCustomerId}>
               <SelectTrigger className="col-span-3">
-                <SelectValue placeholder="Select customer" />
+                <SelectValue placeholder={t('customerExport.selectCustomer')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Customers</SelectItem>
+                <SelectItem value="all">{t('customerExport.allCustomers')}</SelectItem>
                 {customers.map((customer) => (
                   <SelectItem key={customer.id} value={customer.id}>
                     {customer.companyName}
@@ -145,8 +158,23 @@ export function CustomerExportDialog({ customers }: CustomerExportDialogProps) {
           </div>
 
           <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="format" className="text-right">
+              {t('customerExport.format')}
+            </Label>
+            <Select value={format} onValueChange={setFormat}>
+              <SelectTrigger className="col-span-3">
+                <SelectValue placeholder={t('customerExport.selectFormat')} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="xlsx">{t('customerExport.excel')}</SelectItem>
+                <SelectItem value="csv">{t('customerExport.csv')}</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="start-date" className="text-right">
-              Start Date
+              {t('customerExport.startDate')}
             </Label>
             <Input
               id="start-date"
@@ -159,7 +187,7 @@ export function CustomerExportDialog({ customers }: CustomerExportDialogProps) {
 
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="end-date" className="text-right">
-              End Date
+              {t('customerExport.endDate')}
             </Label>
             <Input
               id="end-date"
@@ -172,10 +200,10 @@ export function CustomerExportDialog({ customers }: CustomerExportDialogProps) {
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={() => setOpen(false)}>
-            Cancel
+            {t('common.cancel')}
           </Button>
           <Button onClick={handleExport} disabled={loading}>
-            {loading ? 'Exporting...' : 'Export CSV'}
+            {loading ? t('customerExport.exporting') : t('customerExport.button')}
           </Button>
         </DialogFooter>
       </DialogContent>
