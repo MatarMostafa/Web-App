@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -36,17 +37,23 @@ interface EmployeeExportDialogProps {
 }
 
 export function EmployeeExportDialog({ employees }: EmployeeExportDialogProps) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [exportType, setExportType] = useState<'assignments' | 'work-stats' | 'combined'>('assignments');
-  const [period, setPeriod] = useState<'daily' | 'weekly' | 'monthly'>('monthly');
-  const [employeeId, setEmployeeId] = useState<string>('all');
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
+  const [exportType, setExportType] = useState<
+    "assignments" | "work-stats" | "combined"
+  >("assignments");
+  const [period, setPeriod] = useState<"daily" | "weekly" | "monthly">(
+    "monthly"
+  );
+  const [employeeId, setEmployeeId] = useState<string>("all");
+  const [format, setFormat] = useState<string>("xlsx");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
 
   const handleExport = async () => {
     if (!startDate || !endDate) {
-      toast.error('Please select start and end dates');
+      toast.error(t('export.selectDates'));
       return;
     }
 
@@ -54,7 +61,7 @@ export function EmployeeExportDialog({ employees }: EmployeeExportDialogProps) {
     try {
       const session = await getSession();
       if (!session?.accessToken) {
-        toast.error('Authentication required');
+        toast.error(t('export.authRequired'));
         return;
       }
 
@@ -62,50 +69,61 @@ export function EmployeeExportDialog({ employees }: EmployeeExportDialogProps) {
         period,
         startDate,
         endDate,
+        format,
       });
 
-      if (employeeId !== 'all') {
-        params.append('employeeId', employeeId);
+      if (employeeId !== "all") {
+        params.append("employeeId", employeeId);
       }
 
-      const endpoint = exportType === 'assignments' 
-        ? '/api/employees/export/assignments'
-        : exportType === 'work-stats'
-        ? '/api/employees/export/work-stats'
-        : '/api/employees/export/combined';
+      const endpoint =
+        exportType === "assignments"
+          ? "/api/employees/export/assignments"
+          : exportType === "work-stats"
+            ? "/api/employees/export/work-stats"
+            : "/api/employees/export/combined";
 
-      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
-      const response = await fetch(`${API_URL}${endpoint}?${params.toString()}`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${session.accessToken}`,
-        },
-      });
+      const API_URL =
+        process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+      const response = await fetch(
+        `${API_URL}${endpoint}?${params.toString()}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${session.accessToken}`,
+          },
+        }
+      );
 
       if (!response.ok) {
-        throw new Error('Export failed');
+        throw new Error(t('export.failed'));
       }
 
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.style.display = 'none';
+      const a = document.createElement("a");
+      a.style.display = "none";
       a.href = url;
-      
-      const filename = response.headers.get('Content-Disposition')?.split('filename=')[1]?.replace(/"/g, '') 
-        || `employee-${exportType}-${period}-${new Date().toISOString().split('T')[0]}.csv`;
-      
+
+      const fileExtension = format === "csv" ? "csv" : "xlsx";
+      const filename =
+        response.headers
+          .get("Content-Disposition")
+          ?.split("filename=")[1]
+          ?.replace(/"/g, "") ||
+        `employee-${exportType}-${period}-${new Date().toISOString().split("T")[0]}.${fileExtension}`;
+
       a.download = filename;
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
 
-      toast.success('Export completed successfully');
+      toast.success(t('export.success'));
       setOpen(false);
     } catch (error) {
-      console.error('Export error:', error);
-      toast.error('Failed to export data');
+      console.error("Export error:", error);
+      toast.error(t('export.error'));
     } finally {
       setLoading(false);
     }
@@ -116,9 +134,9 @@ export function EmployeeExportDialog({ employees }: EmployeeExportDialogProps) {
     const end = new Date();
     const start = new Date();
     start.setDate(start.getDate() - 30);
-    
-    setEndDate(end.toISOString().split('T')[0]);
-    setStartDate(start.toISOString().split('T')[0]);
+
+    setEndDate(end.toISOString().split("T")[0]);
+    setStartDate(start.toISOString().split("T")[0]);
   };
 
   return (
@@ -126,65 +144,70 @@ export function EmployeeExportDialog({ employees }: EmployeeExportDialogProps) {
       <DialogTrigger asChild>
         <Button variant="outline" onClick={setDefaultDates}>
           <Download className="h-4 w-4 mr-2" />
-          Export CSV
+          {t('export.button')}
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Export Employee Data</DialogTitle>
+          <DialogTitle>{t('export.title')}</DialogTitle>
           <DialogDescription>
-            Export employee assignments and work statistics to CSV format.
+            {t('export.description')}
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="export-type" className="text-right">
-              Export Type
+              {t('export.type')}
             </Label>
-            <Select value={exportType} onValueChange={(value: any) => setExportType(value)}>
+            <Select
+              value={exportType}
+              onValueChange={(value: any) => setExportType(value)}
+            >
               <SelectTrigger className="col-span-3">
-                <SelectValue placeholder="Select export type" />
+                <SelectValue placeholder={t('export.selectType')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="assignments">Assignments Only</SelectItem>
-                <SelectItem value="work-stats">Work Statistics Only</SelectItem>
-                <SelectItem value="combined">Combined Data</SelectItem>
+                <SelectItem value="assignments">{t('export.assignmentsOnly')}</SelectItem>
+                <SelectItem value="work-stats">{t('export.workStatsOnly')}</SelectItem>
+                <SelectItem value="combined">{t('export.combinedData')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
-          
+
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="period" className="text-right">
-              Period
+              {t('export.period')}
             </Label>
-            <Select value={period} onValueChange={(value: any) => setPeriod(value)}>
+            <Select
+              value={period}
+              onValueChange={(value: any) => setPeriod(value)}
+            >
               <SelectTrigger className="col-span-3">
-                <SelectValue placeholder="Select period" />
+                <SelectValue placeholder={t('export.selectPeriod')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="daily">Daily</SelectItem>
-                <SelectItem value="weekly">Weekly</SelectItem>
-                <SelectItem value="monthly">Monthly</SelectItem>
+                <SelectItem value="daily">{t('export.daily')}</SelectItem>
+                <SelectItem value="weekly">{t('export.weekly')}</SelectItem>
+                <SelectItem value="monthly">{t('export.monthly')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="employee" className="text-right">
-              Employee
+              {t('export.employee')}
             </Label>
             <Select value={employeeId} onValueChange={setEmployeeId}>
               <SelectTrigger className="col-span-3">
-                <SelectValue placeholder="Select employee" />
+                <SelectValue placeholder={t('export.selectEmployee')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Employees</SelectItem>
+                <SelectItem value="all">{t('export.allEmployees')}</SelectItem>
                 {employees.map((employee) => (
                   <SelectItem key={employee.id} value={employee.id}>
-                    {employee.firstName && employee.lastName 
+                    {employee.firstName && employee.lastName
                       ? `${employee.firstName} ${employee.lastName} (${employee.employeeCode})`
-                      : employee.employeeCode
-                    }
+                      : employee.employeeCode}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -192,8 +215,23 @@ export function EmployeeExportDialog({ employees }: EmployeeExportDialogProps) {
           </div>
 
           <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="format" className="text-right">
+              {t('export.format')}
+            </Label>
+            <Select value={format} onValueChange={setFormat}>
+              <SelectTrigger className="col-span-3">
+                <SelectValue placeholder={t('export.selectFormat')} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="xlsx">{t('export.excel')}</SelectItem>
+                <SelectItem value="csv">{t('export.csv')}</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="start-date" className="text-right">
-              Start Date
+              {t('export.startDate')}
             </Label>
             <Input
               id="start-date"
@@ -206,7 +244,7 @@ export function EmployeeExportDialog({ employees }: EmployeeExportDialogProps) {
 
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="end-date" className="text-right">
-              End Date
+              {t('export.endDate')}
             </Label>
             <Input
               id="end-date"
@@ -219,10 +257,10 @@ export function EmployeeExportDialog({ employees }: EmployeeExportDialogProps) {
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={() => setOpen(false)}>
-            Cancel
+            {t('common.cancel')}
           </Button>
           <Button onClick={handleExport} disabled={loading}>
-            {loading ? 'Exporting...' : 'Export CSV'}
+            {loading ? t('export.exporting') : t('export.button')}
           </Button>
         </DialogFooter>
       </DialogContent>

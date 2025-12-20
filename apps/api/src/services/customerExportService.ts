@@ -1,15 +1,17 @@
 import { prisma } from "@repo/db";
+import * as XLSX from 'xlsx';
 import { generateCSV } from "../utils/csvUtils";
 
 interface ExportFilters {
   customerId?: string;
   startDate: Date;
   endDate: Date;
+  format?: 'csv' | 'xlsx';
 }
 
-export const exportCustomerData = async (filters: ExportFilters): Promise<string> => {
+export const exportCustomerData = async (filters: ExportFilters): Promise<string | Buffer> => {
   try {
-    const { customerId, startDate, endDate } = filters;
+    const { customerId, startDate, endDate, format = 'xlsx' } = filters;
 
     const whereClause: any = {
       scheduledDate: {
@@ -92,7 +94,14 @@ export const exportCustomerData = async (filters: ExportFilters): Promise<string
       };
     });
 
-    return generateCSV(csvData);
+    if (format === 'csv') {
+      return generateCSV(csvData);
+    } else {
+      const ws = XLSX.utils.json_to_sheet(csvData);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Customer Data');
+      return XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' });
+    }
   } catch (error) {
     console.error('Error exporting customer data:', error);
     throw new Error('Failed to export customer data');
