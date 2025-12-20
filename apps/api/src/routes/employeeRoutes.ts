@@ -336,7 +336,7 @@ router.get(
   async (req, res) => {
     try {
       const { id } = req.params;
-      const { period = 'monthly', startDate, endDate } = req.query;
+      const { period = 'monthly', startDate, endDate, format = 'xlsx' } = req.query;
       
       if (!startDate || !endDate) {
         return res.status(400).json({ message: "Start and end dates are required" });
@@ -359,6 +359,7 @@ router.get(
 
       // Call the export function with the found employee ID
       req.query.employeeId = employee.id;
+      req.query.format = format;
       await exportEmployeeAssignments(req, res);
     } catch (error) {
       console.error('Export assignments error:', error);
@@ -375,7 +376,7 @@ router.get(
   async (req, res) => {
     try {
       const { id } = req.params;
-      const { period = 'monthly', startDate, endDate } = req.query;
+      const { period = 'monthly', startDate, endDate, format = 'xlsx' } = req.query;
       
       if (!startDate || !endDate) {
         return res.status(400).json({ message: "Start and end dates are required" });
@@ -398,6 +399,7 @@ router.get(
 
       // Call the export function with the found employee ID
       req.query.employeeId = employee.id;
+      req.query.format = format;
       await exportEmployeeWorkStats(req, res);
     } catch (error) {
       console.error('Export work stats error:', error);
@@ -414,7 +416,7 @@ router.get(
   async (req, res) => {
     try {
       const { id } = req.params;
-      const { period = 'monthly', startDate, endDate } = req.query;
+      const { period = 'monthly', startDate, endDate, format = 'xlsx' } = req.query;
       
       if (!startDate || !endDate) {
         return res.status(400).json({ message: "Start and end dates are required" });
@@ -437,6 +439,7 @@ router.get(
 
       // Call the export function with the found employee ID
       req.query.employeeId = employee.id;
+      req.query.format = format;
       await exportCombinedEmployeeData(req, res);
     } catch (error) {
       console.error('Export combined data error:', error);
