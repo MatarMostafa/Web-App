@@ -83,10 +83,34 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
           headers: { Authorization: `Bearer ${session?.accessToken}` },
         }
       );
+      
 
       if (response.ok) {
         const orderDetails = await response.json();
         const orderData = orderDetails.data;
+        console.log('Loading existing order data, response:', orderData);
+        
+        // Update form data with complete order details, preserving existing values
+        const scheduledDate = orderData.scheduledDate ? new Date(orderData.scheduledDate).toISOString().split('T')[0] : "";
+        
+        setFormData(prev => ({
+          scheduledDate,
+          startTime: orderData.startTime || "",
+          endTime: orderData.endTime || "",
+          location: orderData.location || "",
+          specialInstructions: orderData.specialInstructions || prev.specialInstructions || "",
+        }));
+
+        // Extract time components
+        if (orderData.startTime) {
+          const startTime = new Date(orderData.startTime);
+          setStartTimeOnly(`${startTime.getHours().toString().padStart(2, '0')}:${startTime.getMinutes().toString().padStart(2, '0')}`);
+        }
+        
+        if (orderData.endTime) {
+          const endTime = new Date(orderData.endTime);
+          setEndTimeOnly(`${endTime.getHours().toString().padStart(2, '0')}:${endTime.getMinutes().toString().padStart(2, '0')}`);
+        }
         
         // Load existing activities
         if (orderData.customerActivities) {
@@ -235,7 +259,7 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
       if (submitData.endTime && submitData.endTime.trim()) {
         submitData.endTime = new Date(submitData.endTime).toISOString();
       } else {
-        submitData.endTime = undefined;
+        delete (submitData as any).endTime;
       }
 
       const response = await fetch(
