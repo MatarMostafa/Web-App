@@ -130,6 +130,16 @@ const translations = {
         body: "Your customer account has been unblocked. You can now access the system normally."
       }
     },
+    admin: {
+      customerOrderCreated: {
+        title: "New Customer Order",
+        body: "{{creatorName}} from {{customerName}} has created a new order \"{{orderNumber}}\"."
+      },
+      customerOrderUpdated: {
+        title: "Customer Order Updated",
+        body: "{{updaterName}} from {{customerName}} has updated order \"{{orderNumber}}\"."
+      }
+    },
     statusMessages: {
       ACTIVE: "has been activated",
       IN_PROGRESS: "is in progress", 
@@ -263,6 +273,16 @@ const translations = {
       accountUnblocked: {
         title: "Konto entsperrt",
         body: "Ihr Kundenkonto wurde entsperrt. Sie können das System nun normal nutzen."
+      }
+    },
+    admin: {
+      customerOrderCreated: {
+        title: "Neuer Kundenauftrag",
+        body: "{{creatorName}} von {{customerName}} hat einen neuen Auftrag \"{{orderNumber}}\" erstellt."
+      },
+      customerOrderUpdated: {
+        title: "Kundenauftrag aktualisiert",
+        body: "{{updaterName}} von {{customerName}} hat Auftrag \"{{orderNumber}}\" aktualisiert."
       }
     },
     statusMessages: {

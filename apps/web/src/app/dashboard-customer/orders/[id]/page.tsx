@@ -197,39 +197,66 @@ export default function CustomerOrderDetailPage() {
         </Card>
       </div>
 
-      {/* Description */}
-      {order.description && (
+      {/* Description and Help Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Template Description Card */}
+        {order.descriptionData?.descriptionData && (
+          <Card>
+            <CardHeader>
+              <CardTitle>{t("customerPortal.orderDetail.description")}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {Object.entries(order.descriptionData.descriptionData).map(
+                  ([key, value]) => (
+                    <div
+                      key={key}
+                      className="flex justify-between gap-4 bg-muted rounded-md p-3 text-sm"
+                    >
+                      <span className="font-medium">{key}</span>
+                      <span className="text-muted-foreground">{String(value)}</span>
+                    </div>
+                  )
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Description */}
+        {order.description && !order.descriptionData?.descriptionData && (
+          <Card>
+            <CardHeader>
+              <CardTitle>{t('customerPortal.orderDetail.description')}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-foreground whitespace-pre-wrap">
+                {order.description}
+              </p>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Contact Information */}
         <Card>
           <CardHeader>
-            <CardTitle>{t('customerPortal.orderDetail.description')}</CardTitle>
+            <CardTitle>{t('customerPortal.orderDetail.needHelp')}</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-muted-foreground whitespace-pre-wrap">
-              {order.description}
+            <p className="text-muted-foreground mb-4">
+              {t('customerPortal.orderDetail.needHelpMessage')}
             </p>
+            <div className="flex gap-4">
+              <Button variant="outline">
+                {t('customerPortal.orderDetail.contactSupport')}
+              </Button>
+              <Button variant="outline">
+                {t('customerPortal.orderDetail.viewFaq')}
+              </Button>
+            </div>
           </CardContent>
         </Card>
-      )}
-
-      {/* Contact Information */}
-      <Card>
-        <CardHeader>
-          <CardTitle>{t('customerPortal.orderDetail.needHelp')}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground mb-4">
-            {t('customerPortal.orderDetail.needHelpMessage')}
-          </p>
-          <div className="flex gap-4">
-            <Button variant="outline">
-              {t('customerPortal.orderDetail.contactSupport')}
-            </Button>
-            <Button variant="outline">
-              {t('customerPortal.orderDetail.viewFaq')}
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+      </div>
     </div>
   );
 }
