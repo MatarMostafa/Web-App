@@ -1531,7 +1531,9 @@
       "minutes": "minutes",
       "specialInstructions": "Special Instructions",
       "customerInformation": "Customer Information",
-      "teamAssignment": "Team Assignment"
+      "teamAssignment": "Team Assignment",
+      "orderCommunication": "Order Communication",
+      "viewNotesAndCommunication": "View Notes & Communication"
     },
     "teams": {
       "title": "My Team",

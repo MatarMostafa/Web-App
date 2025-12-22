@@ -1534,7 +1534,9 @@
       "minutes": "Minuten",
       "specialInstructions": "Besondere Anweisungen",
       "customerInformation": "Kundeninformationen",
-      "teamAssignment": "Teamzuweisung"
+      "teamAssignment": "Teamzuweisung",
+      "orderCommunication": "Auftragskommunikation",
+      "viewNotesAndCommunication": "Notizen & Kommunikation anzeigen"
     },
     "teams": {
       "title": "Meine Teams",
