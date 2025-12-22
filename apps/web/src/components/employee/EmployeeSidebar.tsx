@@ -48,11 +48,17 @@ const EmployeeSidebar: React.FC<SidebarProps> = ({
   isOpen = false,
   onClose,
 }) => {
-  const { t } = useTranslation();
+  const { t, ready } = useTranslation();
   const isMobile = useIsMobile();
   const [collapsed, setCollapsed] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
+  const { logout } = useAuthStore();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const isSettingsPath = pathname.startsWith("/settings");
 
@@ -78,11 +84,13 @@ const EmployeeSidebar: React.FC<SidebarProps> = ({
     }
   };
 
-  const { logout } = useAuthStore();
-
   const handleLogout = async () => {
     await logout();
   };
+
+  if (!mounted || !ready) {
+    return null;
+  }
 
   if (isMobile && !isOpen) return null;
 

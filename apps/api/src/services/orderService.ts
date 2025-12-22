@@ -75,8 +75,8 @@ export const getOrderByIdService = async (id: string) => {
   });
 };
 
-export const createOrderService = async (data: OrderCreateInput & { assignedEmployeeIds?: string[]; activities?: Array<{ activityId: string; quantity?: number }>; customerId: string; templateData?: Record<string, string> | null }, createdBy?: string) => {
-  let { assignedEmployeeIds, activities, customerId, templateData, ...orderData } = data;
+export const createOrderService = async (data: OrderCreateInput & { assignedEmployeeIds?: string[]; activities?: Array<{ activityId: string; quantity?: number }>; customerId: string; templateData?: Record<string, string> | null; createdBySubAccountId?: string }, createdBy?: string) => {
+  let { assignedEmployeeIds, activities, customerId, templateData, createdBySubAccountId, ...orderData } = data;
   
   if (!customerId) {
     throw new Error('Customer ID is required');
@@ -135,7 +135,12 @@ export const createOrderService = async (data: OrderCreateInput & { assignedEmpl
         createdBy,
         customer: {
           connect: { id: customerId }
-        }
+        },
+        ...(createdBySubAccountId && {
+          createdBySubAccount: {
+            connect: { id: createdBySubAccountId }
+          }
+        })
       },
     });
 
@@ -250,10 +255,10 @@ export const createOrderService = async (data: OrderCreateInput & { assignedEmpl
 
 export const updateOrderService = async (
   id: string,
-  data: OrderUpdateInput & { assignedEmployeeIds?: string[]; activities?: Array<{ activityId: string; quantity?: number }> },
+  data: OrderUpdateInput & { assignedEmployeeIds?: string[]; activities?: Array<{ activityId: string; quantity?: number }>; templateData?: Record<string, string> | null },
   updatedBy?: string
 ) => {
-  let { assignedEmployeeIds, activities, ...orderData } = data;
+  let { assignedEmployeeIds, activities, templateData, ...orderData } = data;
   
   // Clean empty strings to undefined for optional DateTime fields
   if (orderData.startTime === '') orderData.startTime = undefined;
@@ -274,9 +279,30 @@ export const updateOrderService = async (
         ...orderData,
         ...(assignedEmployeeIds !== undefined && {
           requiredEmployees: assignedEmployeeIds.length || 1
+        }),
+        ...(templateData !== undefined && {
+          usesTemplate: templateData !== null && Object.keys(templateData || {}).length > 0
         })
       },
     });
+
+    // Handle template data update if provided
+    if (templateData !== undefined) {
+      // Remove existing template data
+      await tx.orderDescriptionData.deleteMany({
+        where: { orderId: id }
+      });
+
+      // Create new template data if provided and has actual values
+      if (templateData && Object.keys(templateData).length > 0 && Object.values(templateData).some(value => value.trim() !== "")) {
+        await tx.orderDescriptionData.create({
+          data: {
+            orderId: id,
+            descriptionData: templateData
+          }
+        });
+      }
+    }
 
     // Handle activities update if provided
     if (activities !== undefined) {
@@ -369,10 +395,10 @@ export const updateOrderService = async (
         )
       );
     }
-    
-    // Auto-update order status based on new assignments
-    await updateOrderStatusBasedOnAssignments(id);
   }
+  
+  // Always update order status based on assignments (whether assignments were updated or not)
+  await updateOrderStatusBasedOnAssignments(id);
 
   return order;
 };

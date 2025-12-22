@@ -1332,6 +1332,8 @@
     "orders": {
       "title": "My Orders",
       "subtitle": "Track and manage your orders",
+      "createOrder": "Create Order",
+      "createFirstOrder": "Create Your First Order",
       "searchPlaceholder": "Search orders by number, title, or description...",
       "noOrdersFound": "No orders found",
       "noOrdersMessage": "Your orders will appear here once they are created",
@@ -1348,6 +1350,40 @@
         "cancelled": "Cancelled",
         "unknown": "Unknown"
       }
+    },
+    "createOrder": {
+      "title": "Create New Order",
+      "scheduledDate": "Scheduled Date",
+      "scheduledDateRequired": "Scheduled date is required",
+      "startTime": "Start Time",
+      "endTime": "End Time (Optional)",
+      "location": "Location",
+      "locationPlaceholder": "Service location",
+      "activities": "Activities",
+      "selectActivities": "Select Activities",
+      "activitiesRequired": "Please select at least one activity",
+      "activitiesSelected": "activities selected",
+      "totalPrice": "Total",
+      "noActivitiesAvailable": "No activities available",
+      "orderDetails": "Order Details",
+      "serviceRequirements": "Service Requirements",
+      "specialInstructions": "Special Instructions",
+      "specialInstructionsPlaceholder": "Any special instructions or notes",
+      "cancel": "Cancel",
+      "creating": "Creating...",
+      "createOrder": "Create Order",
+      "orderCreatedSuccess": "Order created successfully!",
+      "orderCreationFailed": "Failed to create order",
+      "fillRequiredFields": "Please fill in all required fields"
+    },
+    "editOrder": {
+      "title": "Edit Order",
+      "updating": "Updating...",
+      "updateOrder": "Update Order",
+      "orderUpdatedSuccess": "Order updated successfully!",
+      "orderUpdateFailed": "Failed to update order",
+      "cannotEditOrder": "This order cannot be edited",
+      "cannotEditMessage": "Only orders in draft status can be edited. This order is already being processed."
     },
     "profile": {
       "title": "Company Profile",
