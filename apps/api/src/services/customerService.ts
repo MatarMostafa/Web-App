@@ -13,11 +13,14 @@ export const filterOrderForCustomer = (order: any) => {
     title: order.title,
     description: order.description,
     scheduledDate: order.scheduledDate,
+    startTime: order.startTime,
+    endTime: order.endTime,
     location: order.location,
+    specialInstructions: order.specialInstructions,
     status: mapOrderStatusForCustomer(order.status),
     createdAt: order.createdAt,
     updatedAt: order.updatedAt,
-    // Exclude: estimatedHours, actualHours, employeeAssignments, ratings, specialInstructions
+    // Exclude: estimatedHours, actualHours, employeeAssignments, ratings
   };
 };
 

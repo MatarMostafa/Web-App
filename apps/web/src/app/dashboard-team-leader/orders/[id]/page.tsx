@@ -236,12 +236,7 @@ const TeamLeaderOrderDetail = ({ params }: { params: Promise<{ id: string }> }) 
           <CardContent>
             <div className="space-y-2">
               <p className="font-medium">{order.customer.companyName}</p>
-              {order.location && (
-                <p className="text-sm text-muted-foreground">
-                  <MapPin className="h-3 w-3 inline mr-1" />
-                  {order.location}
-                </p>
-              )}
+              
             </div>
           </CardContent>
         </Card>
