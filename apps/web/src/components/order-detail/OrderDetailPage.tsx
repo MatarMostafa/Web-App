@@ -254,7 +254,7 @@ export const OrderDetailPage: React.FC<OrderDetailPageProps> = ({
           )}
         </CardContent>
       </Card>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className={`grid grid-cols-1 gap-6 ${order.descriptionData?.descriptionData ? 'lg:grid-cols-2' : ''}`}>
 
       {/* Template Description Card */}
       {order.descriptionData?.descriptionData && (

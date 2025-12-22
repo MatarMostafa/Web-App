@@ -7,13 +7,122 @@ import {
   getCustomerProfileService,
   updateCustomerProfileService,
   getAllCustomersService,
-  getCustomerByIdService
+  getCustomerByIdService,
+  createCustomerOrderService,
+  updateCustomerOrderService
 } from "../services/customerService";
 import { registerCustomer } from "../services/authService";
 import { notifyCustomerBlocked, notifyCustomerUnblocked } from "../services/notificationHelpers";
 import * as customerExportService from "../services/customerExportService";
 
 const router = express.Router();
+
+// Get customer's activities for pricing
+router.get(
+  "/me/activities",
+  authMiddleware,
+  roleMiddleware(["CUSTOMER", "CUSTOMER_SUB_USER"]),
+  async (req, res) => {
+    try {
+      const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      // Get customer ID from user (works for both CUSTOMER and CUSTOMER_SUB_USER)
+      const { prisma } = await import("@repo/db");
+      const user = await prisma.user.findUnique({
+        where: { id: userId },
+        include: { 
+          customer: true,
+          subAccount: {
+            include: { customer: true }
+          }
+        },
+      });
+
+      let customerId: string;
+      if (user?.customer) {
+        // Direct customer
+        customerId = user.customer.id;
+      } else if (user?.subAccount?.customer) {
+        // Sub-user accessing parent customer's data
+        customerId = user.subAccount.customer.id;
+      } else {
+        return res.status(404).json({ message: "Customer profile not found" });
+      }
+
+      // Get customer activities with pricing
+      const customerActivities = await prisma.customerActivity.findMany({
+        where: { 
+          customerId,
+          orderId: null, // Only get general activities, not order-specific ones
+          isActive: true
+        },
+        include: {
+          activity: {
+            select: {
+              id: true,
+              name: true,
+              code: true,
+              description: true,
+              unit: true,
+              defaultPrice: true
+            }
+          }
+        },
+        orderBy: { createdAt: 'desc' }
+      });
+
+      // If no customer-specific activities, get default activities with customer pricing
+      if (customerActivities.length === 0) {
+        const activities = await prisma.activity.findMany({
+          where: { isActive: true },
+          include: {
+            customerPrices: {
+              where: {
+                customerId,
+                isActive: true,
+                effectiveFrom: { lte: new Date() },
+                OR: [
+                  { effectiveTo: null },
+                  { effectiveTo: { gte: new Date() } }
+                ]
+              },
+              orderBy: { effectiveFrom: 'desc' },
+              take: 1
+            }
+          }
+        });
+
+        const activitiesWithPricing = activities.map(activity => ({
+          id: `default-${activity.id}`,
+          activity: {
+            id: activity.id,
+            name: activity.name,
+            code: activity.code,
+            description: activity.description,
+            unit: activity.unit,
+            defaultPrice: activity.defaultPrice
+          },
+          unitPrice: activity.customerPrices[0]?.price || activity.defaultPrice,
+          quantity: 1,
+          isActive: true
+        }));
+
+        return res.json({ success: true, data: activitiesWithPricing });
+      }
+
+      res.json({ success: true, data: customerActivities });
+    } catch (error) {
+      console.error("Get customer activities error:", error);
+      res.status(500).json({
+        message: "Failed to fetch activities",
+        error: error instanceof Error ? error.message : String(error)
+      });
+    }
+  }
+);
 
 // Get customer's orders
 router.get(
@@ -108,6 +217,96 @@ router.get(
       }
       res.status(500).json({
         message: "Failed to fetch order",
+        error: error instanceof Error ? error.message : String(error)
+      });
+    }
+  }
+);
+
+// Create customer order
+router.post(
+  "/me/orders",
+  authMiddleware,
+  roleMiddleware(["CUSTOMER", "CUSTOMER_SUB_USER"]),
+  async (req, res) => {
+    try {
+      const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const order = await createCustomerOrderService(userId, req.body);
+      res.status(201).json({ success: true, data: order });
+    } catch (error) {
+      console.error("Create customer order error:", error);
+      res.status(500).json({
+        message: "Failed to create order",
+        error: error instanceof Error ? error.message : String(error)
+      });
+    }
+  }
+);
+
+// Update customer order (only DRAFT orders)
+router.put(
+  "/me/orders/:id",
+  authMiddleware,
+  roleMiddleware(["CUSTOMER", "CUSTOMER_SUB_USER"]),
+  async (req, res) => {
+    try {
+      const userId = req.user?.id;
+      const orderId = req.params.id;
+
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      // Get customer ID from user (works for both CUSTOMER and CUSTOMER_SUB_USER)
+      const { prisma } = await import("@repo/db");
+      const user = await prisma.user.findUnique({
+        where: { id: userId },
+        include: { 
+          customer: true,
+          subAccount: {
+            include: { customer: true }
+          }
+        },
+      });
+
+      let customerId: string;
+      if (user?.customer) {
+        customerId = user.customer.id;
+      } else if (user?.subAccount?.customer) {
+        customerId = user.subAccount.customer.id;
+      } else {
+        return res.status(404).json({ message: "Customer profile not found" });
+      }
+
+      // Check if order exists and belongs to customer
+      const existingOrder = await prisma.order.findFirst({
+        where: {
+          id: orderId,
+          customerId: customerId,
+        },
+      });
+
+      if (!existingOrder) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+
+      // Only allow editing DRAFT and OPEN orders (both show as 'planned' to customers)
+      if (existingOrder.status !== 'DRAFT' && existingOrder.status !== 'OPEN') {
+        return res.status(403).json({ 
+          message: "Only draft orders can be edited" 
+        });
+      }
+
+      const updatedOrder = await updateCustomerOrderService(orderId, req.body);
+      res.json({ success: true, data: updatedOrder });
+    } catch (error) {
+      console.error("Update customer order error:", error);
+      res.status(500).json({
+        message: "Failed to update order",
         error: error instanceof Error ? error.message : String(error)
       });
     }

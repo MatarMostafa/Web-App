@@ -1334,6 +1334,8 @@
     "orders": {
       "title": "Meine Aufträge",
       "subtitle": "Verfolgen und verwalten Sie Ihre Aufträge",
+      "createOrder": "Auftrag erstellen",
+      "createFirstOrder": "Ihren ersten Auftrag erstellen",
       "searchPlaceholder": "Aufträge nach Nummer, Titel oder Beschreibung suchen...",
       "noOrdersFound": "Keine Aufträge gefunden",
       "noOrdersMessage": "Ihre Aufträge werden hier angezeigt, sobald sie erstellt wurden",
@@ -1350,6 +1352,40 @@
         "cancelled": "Storniert",
         "unknown": "Unbekannt"
       }
+    },
+    "createOrder": {
+      "title": "Neuen Auftrag erstellen",
+      "scheduledDate": "Geplantes Datum",
+      "scheduledDateRequired": "Geplantes Datum ist erforderlich",
+      "startTime": "Startzeit",
+      "endTime": "Endzeit (Optional)",
+      "location": "Standort",
+      "locationPlaceholder": "Servicestandort",
+      "activities": "Aktivitäten",
+      "selectActivities": "Aktivitäten auswählen",
+      "activitiesRequired": "Bitte wählen Sie mindestens eine Aktivität aus",
+      "activitiesSelected": "Aktivitäten ausgewählt",
+      "totalPrice": "Gesamt",
+      "noActivitiesAvailable": "Keine Aktivitäten verfügbar",
+      "orderDetails": "Auftragsdetails",
+      "serviceRequirements": "Service-Anforderungen",
+      "specialInstructions": "Besondere Anweisungen",
+      "specialInstructionsPlaceholder": "Besondere Anweisungen oder Notizen",
+      "cancel": "Abbrechen",
+      "creating": "Wird erstellt...",
+      "createOrder": "Auftrag erstellen",
+      "orderCreatedSuccess": "Auftrag erfolgreich erstellt!",
+      "orderCreationFailed": "Fehler beim Erstellen des Auftrags",
+      "fillRequiredFields": "Bitte füllen Sie alle erforderlichen Felder aus"
+    },
+    "editOrder": {
+      "title": "Auftrag bearbeiten",
+      "updating": "Wird aktualisiert...",
+      "updateOrder": "Auftrag aktualisieren",
+      "orderUpdatedSuccess": "Auftrag erfolgreich aktualisiert!",
+      "orderUpdateFailed": "Fehler beim Aktualisieren des Auftrags",
+      "cannotEditOrder": "Dieser Auftrag kann nicht bearbeitet werden",
+      "cannotEditMessage": "Nur Aufträge im Entwurfsstatus können bearbeitet werden. Dieser Auftrag wird bereits bearbeitet."
     },
     "profile": {
       "title": "Firmenprofil",

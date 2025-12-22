@@ -6,9 +6,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Package, Search, Calendar, MapPin, Eye } from "lucide-react";
+import { Package, Search, Calendar, MapPin, Eye, Plus, Edit } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "@/hooks/useTranslation";
+import CreateOrderDialog from "@/components/customer/CreateOrderDialog";
+import EditOrderDialog from "@/components/customer/EditOrderDialog";
 
 export default function CustomerOrdersPage() {
   const { t } = useTranslation();
@@ -73,11 +75,22 @@ export default function CustomerOrdersPage() {
   return (
     <div className="p-6 space-y-6">
       {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-foreground">{t('customerPortal.orders.title')}</h1>
-        <p className="text-muted-foreground mt-1">
-          {t('customerPortal.orders.subtitle')}
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold text-foreground">{t('customerPortal.orders.title')}</h1>
+          <p className="text-muted-foreground mt-1">
+            {t('customerPortal.orders.subtitle')}
+          </p>
+        </div>
+        <CreateOrderDialog
+          trigger={
+            <Button>
+              <Plus className="w-4 h-4 mr-2" />
+              {t("customerPortal.orders.createOrder")}
+            </Button>
+          }
+          onOrderCreated={fetchOrders}
+        />
       </div>
 
       {/* Search */}
@@ -99,11 +112,22 @@ export default function CustomerOrdersPage() {
             <h3 className="text-lg font-medium mb-2">
               {searchQuery ? t('customerPortal.orders.noOrdersFound') : t('customerPortal.orders.noOrdersFound')}
             </h3>
-            <p className="text-muted-foreground text-center">
+            <p className="text-muted-foreground text-center mb-4">
               {searchQuery 
                 ? t('customerPortal.orders.tryAdjustingSearch')
                 : t('customerPortal.orders.noOrdersMessage')}
             </p>
+            {!searchQuery && (
+              <CreateOrderDialog
+                trigger={
+                  <Button>
+                    <Plus className="w-4 h-4 mr-2" />
+                    {t("customerPortal.orders.createFirstOrder")}
+                  </Button>
+                }
+                onOrderCreated={fetchOrders}
+              />
+            )}
           </CardContent>
         </Card>
       ) : (
@@ -157,15 +181,28 @@ export default function CustomerOrdersPage() {
                       {t('customerPortal.orders.created')}: {new Date(order.createdAt).toLocaleDateString()}
                     </div>
                     
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleViewOrder(order.id)}
-                      className="flex items-center gap-2 w-full sm:w-auto order-1 sm:order-2"
-                    >
-                      <Eye className="h-4 w-4" />
-                      {t('customerPortal.orders.viewDetails')}
-                    </Button>
+                    <div className="flex items-center gap-2 w-full sm:w-auto order-1 sm:order-2">
+                      {order.status === 'planned' && (
+                        <EditOrderDialog
+                          trigger={
+                            <Button variant="outline" size="sm">
+                              <Edit className="h-4 w-4 mr-1" />
+                              {t('common.edit')}
+                            </Button>
+                          }
+                          order={order}
+                          onOrderUpdated={fetchOrders}
+                        />
+                      )}
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleViewOrder(order.id)}
+                      >
+                        <Eye className="h-4 w-4 mr-1" />
+                        {t('customerPortal.orders.viewDetails')}
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </CardContent>
