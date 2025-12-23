@@ -185,6 +185,7 @@ const OrdersPage = () => {
         <OrderNotesDialog
           orderId={notesOrder.id}
           orderNumber={notesOrder.orderNumber}
+          customerName={notesOrder.customer?.companyName}
           orderStatus={notesOrder.status}
           orderDetails={{
             scheduledDate: notesOrder.scheduledDate,
