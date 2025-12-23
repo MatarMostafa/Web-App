@@ -20,6 +20,7 @@ import toast from "react-hot-toast";
 interface OrderNotesDialogProps {
   orderId: string;
   orderNumber: string;
+  customerName?: string;
   orderStatus: OrderStatus;
   orderDetails?: {
     scheduledDate: string;
@@ -57,6 +58,7 @@ const getStatusColor = (status: OrderStatus) => {
 export const OrderNotesDialog: React.FC<OrderNotesDialogProps> = ({
   orderId,
   orderNumber,
+  customerName,
   orderStatus: initialOrderStatus,
   orderDetails,
   open,
@@ -206,7 +208,7 @@ export const OrderNotesDialog: React.FC<OrderNotesDialogProps> = ({
           <div className="flex flex-col gap-3">
             <div className="flex items-start justify-between gap-2">
               <DialogTitle className="text-lg sm:text-xl truncate">
-                Order #{orderNumber}
+                {customerName || `Order #${orderNumber}`}
               </DialogTitle>
               <Badge
                 className={`${getStatusColor(orderStatus as OrderStatus)} text-xs whitespace-nowrap flex-shrink-0 mr-4`}

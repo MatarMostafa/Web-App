@@ -1986,5 +1986,49 @@
     "noMembersFound": "Keine Mannschaftsmitglieder gefunden",
     "remove": "Entfernen",
     "add": "Hinzufügen"
+  },
+  "orderNotes": {
+    "noNotesYet": "Noch keine Notizen",
+    "startConversation": "Beginnen Sie die Unterhaltung, indem Sie unten eine Notiz hinzufügen",
+    "noteType": "Notiztyp",
+    "noteAddedSuccess": "Notiz erfolgreich hinzugefügt",
+    "failedToCreateNote": "Fehler beim Erstellen der Notiz",
+    "categories": {
+      "generalUpdate": {
+        "label": "Allgemeines Update",
+        "description": "Fortschrittsupdate oder Information"
+      },
+      "issueReport": {
+        "label": "Problembericht",
+        "description": "Problem oder Bedenken"
+      },
+      "adminResponse": {
+        "label": "Anweisungen",
+        "description": "Anleitung oder Richtungen"
+      },
+      "completionRequest": {
+        "label": "Arbeit abgeschlossen",
+        "description": "Arbeit als erledigt markieren"
+      }
+    },
+    "actions": {
+      "startWork": "Arbeit beginnen",
+      "markComplete": "Als erledigt markieren",
+      "addNote": "Notiz hinzufügen",
+      "approve": "Genehmigen",
+      "requestChanges": "Änderungen"
+    },
+    "placeholders": {
+      "reviewWork": "Prüfen Sie die abgeschlossene Arbeit und geben Sie Feedback...",
+      "startWork": "Fügen Sie eine Notiz hinzu und beginnen Sie mit der Arbeit an diesem Auftrag...",
+      "updateOrComplete": "Fügen Sie ein Update hinzu oder markieren Sie die Arbeit als abgeschlossen...",
+      "addNote": "Notiz hinzufügen..."
+    },
+    "status": {
+      "awaitingReview": "Dieser Auftrag wartet auf Überprüfung.",
+      "pleaseReview": "Bitte überprüfen und genehmigen oder Änderungen anfordern.",
+      "waitingForReview": "Warten auf Admin-Überprüfung.",
+      "orderAssigned": "Dieser Auftrag ist Ihnen zugewiesen. Fügen Sie eine Notiz hinzu und klicken Sie auf \"Arbeit beginnen\" um zu starten."
+    }
   }
 }

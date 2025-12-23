@@ -1922,5 +1922,49 @@
     "noMembersFound": "No team members found",
     "remove": "Remove",
     "add": "Add"
+  },
+  "orderNotes": {
+    "noNotesYet": "No notes yet",
+    "startConversation": "Start the conversation by adding a note below",
+    "noteType": "Note Type",
+    "noteAddedSuccess": "Note added successfully",
+    "failedToCreateNote": "Failed to create note",
+    "categories": {
+      "generalUpdate": {
+        "label": "General Update",
+        "description": "Progress update or information"
+      },
+      "issueReport": {
+        "label": "Issue Report",
+        "description": "Problem or concern"
+      },
+      "adminResponse": {
+        "label": "Instructions",
+        "description": "Guidance or directions"
+      },
+      "completionRequest": {
+        "label": "Work Complete",
+        "description": "Marking work as done"
+      }
+    },
+    "actions": {
+      "startWork": "Start Work",
+      "markComplete": "Mark Complete",
+      "addNote": "Add Note",
+      "approve": "Approve",
+      "requestChanges": "Changes"
+    },
+    "placeholders": {
+      "reviewWork": "Review the completed work and provide feedback...",
+      "startWork": "Add a note and start work on this order...",
+      "updateOrComplete": "Add an update or mark work as complete...",
+      "addNote": "Add a note..."
+    },
+    "status": {
+      "awaitingReview": "This order is awaiting review.",
+      "pleaseReview": "Please review and approve or request changes.",
+      "waitingForReview": "Waiting for admin review.",
+      "orderAssigned": "This order is assigned to you. Add a note and click \"Start Work\" to begin."
+    }
   }
 }
