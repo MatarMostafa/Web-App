@@ -1334,6 +1334,8 @@
     "orders": {
       "title": "Meine Aufträge",
       "subtitle": "Verfolgen und verwalten Sie Ihre Aufträge",
+      "createOrder": "Auftrag erstellen",
+      "createFirstOrder": "Ihren ersten Auftrag erstellen",
       "searchPlaceholder": "Aufträge nach Nummer, Titel oder Beschreibung suchen...",
       "noOrdersFound": "Keine Aufträge gefunden",
       "noOrdersMessage": "Ihre Aufträge werden hier angezeigt, sobald sie erstellt wurden",
@@ -1350,6 +1352,40 @@
         "cancelled": "Storniert",
         "unknown": "Unbekannt"
       }
+    },
+    "createOrder": {
+      "title": "Neuen Auftrag erstellen",
+      "scheduledDate": "Geplantes Datum",
+      "scheduledDateRequired": "Geplantes Datum ist erforderlich",
+      "startTime": "Startzeit",
+      "endTime": "Endzeit (Optional)",
+      "location": "Standort",
+      "locationPlaceholder": "Servicestandort",
+      "activities": "Aktivitäten",
+      "selectActivities": "Aktivitäten auswählen",
+      "activitiesRequired": "Bitte wählen Sie mindestens eine Aktivität aus",
+      "activitiesSelected": "Aktivitäten ausgewählt",
+      "totalPrice": "Gesamt",
+      "noActivitiesAvailable": "Keine Aktivitäten verfügbar",
+      "orderDetails": "Auftragsdetails",
+      "serviceRequirements": "Service-Anforderungen",
+      "specialInstructions": "Besondere Anweisungen",
+      "specialInstructionsPlaceholder": "Besondere Anweisungen oder Notizen",
+      "cancel": "Abbrechen",
+      "creating": "Wird erstellt...",
+      "createOrder": "Auftrag erstellen",
+      "orderCreatedSuccess": "Auftrag erfolgreich erstellt!",
+      "orderCreationFailed": "Fehler beim Erstellen des Auftrags",
+      "fillRequiredFields": "Bitte füllen Sie alle erforderlichen Felder aus"
+    },
+    "editOrder": {
+      "title": "Auftrag bearbeiten",
+      "updating": "Wird aktualisiert...",
+      "updateOrder": "Auftrag aktualisieren",
+      "orderUpdatedSuccess": "Auftrag erfolgreich aktualisiert!",
+      "orderUpdateFailed": "Fehler beim Aktualisieren des Auftrags",
+      "cannotEditOrder": "Dieser Auftrag kann nicht bearbeitet werden",
+      "cannotEditMessage": "Nur Aufträge im Entwurfsstatus können bearbeitet werden. Dieser Auftrag wird bereits bearbeitet."
     },
     "profile": {
       "title": "Firmenprofil",
@@ -1498,7 +1534,9 @@
       "minutes": "Minuten",
       "specialInstructions": "Besondere Anweisungen",
       "customerInformation": "Kundeninformationen",
-      "teamAssignment": "Teamzuweisung"
+      "teamAssignment": "Teamzuweisung",
+      "orderCommunication": "Auftragskommunikation",
+      "viewNotesAndCommunication": "Notizen & Kommunikation anzeigen"
     },
     "teams": {
       "title": "Meine Teams",
@@ -1948,5 +1986,49 @@
     "noMembersFound": "Keine Mannschaftsmitglieder gefunden",
     "remove": "Entfernen",
     "add": "Hinzufügen"
+  },
+  "orderNotes": {
+    "noNotesYet": "Noch keine Notizen",
+    "startConversation": "Beginnen Sie die Unterhaltung, indem Sie unten eine Notiz hinzufügen",
+    "noteType": "Notiztyp",
+    "noteAddedSuccess": "Notiz erfolgreich hinzugefügt",
+    "failedToCreateNote": "Fehler beim Erstellen der Notiz",
+    "categories": {
+      "generalUpdate": {
+        "label": "Allgemeines Update",
+        "description": "Fortschrittsupdate oder Information"
+      },
+      "issueReport": {
+        "label": "Problembericht",
+        "description": "Problem oder Bedenken"
+      },
+      "adminResponse": {
+        "label": "Anweisungen",
+        "description": "Anleitung oder Richtungen"
+      },
+      "completionRequest": {
+        "label": "Arbeit abgeschlossen",
+        "description": "Arbeit als erledigt markieren"
+      }
+    },
+    "actions": {
+      "startWork": "Arbeit beginnen",
+      "markComplete": "Als erledigt markieren",
+      "addNote": "Notiz hinzufügen",
+      "approve": "Genehmigen",
+      "requestChanges": "Änderungen"
+    },
+    "placeholders": {
+      "reviewWork": "Prüfen Sie die abgeschlossene Arbeit und geben Sie Feedback...",
+      "startWork": "Fügen Sie eine Notiz hinzu und beginnen Sie mit der Arbeit an diesem Auftrag...",
+      "updateOrComplete": "Fügen Sie ein Update hinzu oder markieren Sie die Arbeit als abgeschlossen...",
+      "addNote": "Notiz hinzufügen..."
+    },
+    "status": {
+      "awaitingReview": "Dieser Auftrag wartet auf Überprüfung.",
+      "pleaseReview": "Bitte überprüfen und genehmigen oder Änderungen anfordern.",
+      "waitingForReview": "Warten auf Admin-Überprüfung.",
+      "orderAssigned": "Dieser Auftrag ist Ihnen zugewiesen. Fügen Sie eine Notiz hinzu und klicken Sie auf \"Arbeit beginnen\" um zu starten."
+    }
   }
 }
