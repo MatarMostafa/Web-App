@@ -335,6 +335,7 @@ const TeamLeaderOrderDetail = ({ params }: { params: Promise<{ id: string }> }) 
         <TeamLeaderOrderNotesDialog
           orderId={order.id}
           orderNumber={order.orderNumber}
+          customerName={order.customer.companyName}
           orderStatus={order.status}
           orderDetails={{
             scheduledDate: order.scheduledDate,

@@ -3,6 +3,7 @@ import React from "react";
 import { ScrollArea } from "@/components/ui";
 import { NoteItem } from "./NoteItem";
 import { OrderNote } from "@/lib/orderNotesApi";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface NotesThreadProps {
   orderId: string;
@@ -17,6 +18,8 @@ export const NotesThread: React.FC<NotesThreadProps> = ({
   loading,
   userRole,
 }) => {
+  const { t } = useTranslation();
+
   if (loading) {
     return (
       <div className="p-4 sm:p-6">
@@ -41,8 +44,8 @@ export const NotesThread: React.FC<NotesThreadProps> = ({
     return (
       <div className="flex items-center justify-center h-full p-4 sm:p-6">
         <div className="text-center text-muted-foreground">
-          <div className="text-base sm:text-lg font-medium">No notes yet</div>
-          <div className="text-xs sm:text-sm">Start the conversation by adding a note below</div>
+          <div className="text-base sm:text-lg font-medium">{t('orderNotes.noNotesYet')}</div>
+          <div className="text-xs sm:text-sm">{t('orderNotes.startConversation')}</div>
         </div>
       </div>
     );

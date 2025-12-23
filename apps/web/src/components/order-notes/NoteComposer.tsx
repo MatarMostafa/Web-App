@@ -2,19 +2,28 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui";
 import { Textarea } from "@/components/ui";
-import { 
-  CheckCircle, 
-  XCircle, 
-  MessageSquare, 
+import {
+  CheckCircle,
+  XCircle,
+  MessageSquare,
   AlertTriangle,
-  Send
+  Send,
 } from "lucide-react";
 import { OrderStatus } from "@/types/order";
 import { CategorySelector } from "./CategorySelector";
-import { orderNotesApi, OrderNote, CreateOrderNoteData } from "@/lib/orderNotesApi";
+import {
+  orderNotesApi,
+  OrderNote,
+  CreateOrderNoteData,
+} from "@/lib/orderNotesApi";
 import toast from "react-hot-toast";
+import { useTranslation } from "@/hooks/useTranslation";
 
-type NoteCategory = "COMPLETION_REQUEST" | "ADMIN_RESPONSE" | "GENERAL_UPDATE" | "ISSUE_REPORT";
+type NoteCategory =
+  | "COMPLETION_REQUEST"
+  | "ADMIN_RESPONSE"
+  | "GENERAL_UPDATE"
+  | "ISSUE_REPORT";
 
 interface NoteComposerProps {
   orderId: string;
@@ -31,51 +40,57 @@ export const NoteComposer: React.FC<NoteComposerProps> = ({
   onNoteCreated,
   onStatusChange,
 }) => {
+  const { t } = useTranslation();
   const [content, setContent] = useState("");
   const [loading, setLoading] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<NoteCategory>("GENERAL_UPDATE");
+  const [selectedCategory, setSelectedCategory] =
+    useState<NoteCategory>("GENERAL_UPDATE");
   const [isStatusAction, setIsStatusAction] = useState(false);
 
   const handleSubmit = async (triggersStatus?: OrderStatus) => {
     if (!content.trim()) return;
-    
+
     setLoading(true);
-    
+
     try {
       // Determine category: auto for status actions, manual for general notes
-      const category = triggersStatus ? 
-        (triggersStatus === OrderStatus.IN_REVIEW ? "COMPLETION_REQUEST" : 
-         triggersStatus === OrderStatus.IN_PROGRESS ? "GENERAL_UPDATE" : 
-         triggersStatus === OrderStatus.COMPLETED ? "ADMIN_RESPONSE" : "GENERAL_UPDATE") : 
-        selectedCategory;
-      
+      const category = triggersStatus
+        ? triggersStatus === OrderStatus.IN_REVIEW
+          ? "COMPLETION_REQUEST"
+          : triggersStatus === OrderStatus.IN_PROGRESS
+            ? "GENERAL_UPDATE"
+            : triggersStatus === OrderStatus.COMPLETED
+              ? "ADMIN_RESPONSE"
+              : "GENERAL_UPDATE"
+        : selectedCategory;
+
       const noteData: CreateOrderNoteData = {
         content: content.trim(),
         triggersStatus,
         category,
         isInternal: false,
       };
-      
+
       const newNote = await orderNotesApi.createOrderNote(orderId, noteData);
-      
+
       if (newNote) {
         onNoteCreated(newNote);
         setContent("");
         setSelectedCategory("GENERAL_UPDATE");
-        toast.success("Note added successfully");
-        
+        toast.success(t('orderNotes.noteAddedSuccess'));
+
         // Trigger status change after successful note creation
         if (triggersStatus) {
           onStatusChange(triggersStatus);
         }
       } else {
-        toast.error("Failed to create note");
+        toast.error(t('orderNotes.failedToCreateNote'));
       }
-      
+
       setIsStatusAction(false);
     } catch (error) {
       console.error("Failed to create note:", error);
-      toast.error("Failed to create note");
+      toast.error(t('orderNotes.failedToCreateNote'));
     } finally {
       setLoading(false);
     }
@@ -98,11 +113,11 @@ export const NoteComposer: React.FC<NoteComposerProps> = ({
             className="bg-blue-600 hover:bg-blue-700"
           >
             <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-            <span className="text-xs sm:text-sm">Start Work</span>
+            <span className="text-xs sm:text-sm">{t('orderNotes.actions.startWork')}</span>
           </Button>
         );
       }
-      
+
       if (orderStatus === OrderStatus.IN_PROGRESS) {
         buttons.push(
           <Button
@@ -115,11 +130,11 @@ export const NoteComposer: React.FC<NoteComposerProps> = ({
             className="bg-green-600 hover:bg-green-700"
           >
             <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-            <span className="text-xs sm:text-sm">Mark Complete</span>
+            <span className="text-xs sm:text-sm">{t('orderNotes.actions.markComplete')}</span>
           </Button>
         );
       }
-      
+
       buttons.push(
         <Button
           key="update"
@@ -131,7 +146,7 @@ export const NoteComposer: React.FC<NoteComposerProps> = ({
           disabled={!content.trim() || loading}
         >
           <MessageSquare className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-          <span className="text-xs sm:text-sm">Add Note</span>
+          <span className="text-xs sm:text-sm">{t('orderNotes.actions.addNote')}</span>
         </Button>
       );
     }
@@ -150,10 +165,10 @@ export const NoteComposer: React.FC<NoteComposerProps> = ({
             className="bg-green-600 hover:bg-green-700"
           >
             <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-            <span className="text-xs sm:text-sm">Approve</span>
+            <span className="text-xs sm:text-sm">{t('orderNotes.actions.approve')}</span>
           </Button>
         );
-        
+
         buttons.push(
           <Button
             key="request-changes"
@@ -166,7 +181,7 @@ export const NoteComposer: React.FC<NoteComposerProps> = ({
             className="border-orange-300 text-orange-700 hover:bg-orange-50"
           >
             <XCircle className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-            <span className="text-xs sm:text-sm">Changes</span>
+            <span className="text-xs sm:text-sm">{t('orderNotes.actions.requestChanges')}</span>
           </Button>
         );
       } else {
@@ -181,7 +196,7 @@ export const NoteComposer: React.FC<NoteComposerProps> = ({
             disabled={!content.trim() || loading}
           >
             <MessageSquare className="h-4 w-4 mr-2" />
-            Add Note
+            {t('orderNotes.actions.addNote')}
           </Button>
         );
       }
@@ -201,41 +216,45 @@ export const NoteComposer: React.FC<NoteComposerProps> = ({
             userRole={userRole}
           />
         )}
-        
+
         <Textarea
-          placeholder={
+          placeholder={t(
             orderStatus === OrderStatus.IN_REVIEW && userRole === "ADMIN"
-              ? "Review the completed work and provide feedback..."
+              ? 'orderNotes.placeholders.reviewWork'
               : orderStatus === OrderStatus.ACTIVE && userRole === "EMPLOYEE"
-              ? "Add a note and start work on this order..."
-              : orderStatus === OrderStatus.IN_PROGRESS && userRole === "EMPLOYEE"
-              ? "Add an update or mark work as complete..."
-              : "Add a note..."
-          }
+                ? 'orderNotes.placeholders.startWork'
+                : orderStatus === OrderStatus.IN_PROGRESS &&
+                    userRole === "EMPLOYEE"
+                  ? 'orderNotes.placeholders.updateOrComplete'
+                  : 'orderNotes.placeholders.addNote'
+          )}
           value={content}
           onChange={(e) => setContent(e.target.value)}
-          className="min-h-[60px] sm:min-h-[80px] resize-none text-sm"
+          className="min-h-[60px] sm:min-h-20 resize-none text-sm"
           disabled={loading}
         />
-        
+
         <div className="flex justify-end">
           <div className="flex flex-wrap items-center gap-2">
             {getActionButtons()}
           </div>
         </div>
       </div>
-      
+
       {orderStatus === OrderStatus.IN_REVIEW && (
         <div className="text-xs text-muted-foreground bg-orange-50 p-2 rounded border border-orange-200">
           <AlertTriangle className="h-3 w-3 inline mr-1" />
-          This order is awaiting review. {userRole === "ADMIN" ? "Please review and approve or request changes." : "Waiting for admin review."}
+          {t('orderNotes.status.awaitingReview')}{" "}
+          {userRole === "ADMIN"
+            ? t('orderNotes.status.pleaseReview')
+            : t('orderNotes.status.waitingForReview')}
         </div>
       )}
-      
+
       {orderStatus === OrderStatus.ACTIVE && userRole === "EMPLOYEE" && (
         <div className="text-xs text-muted-foreground bg-blue-50 p-2 rounded border border-blue-200">
           <CheckCircle className="h-3 w-3 inline mr-1" />
-          This order is assigned to you. Add a note and click "Start Work" to begin.
+          {t('orderNotes.status.orderAssigned')}
         </div>
       )}
     </div>

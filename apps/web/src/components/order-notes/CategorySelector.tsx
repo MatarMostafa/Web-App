@@ -14,6 +14,7 @@ import {
   Shield,
   CheckCircle
 } from "lucide-react";
+import { useTranslation } from "@/hooks/useTranslation";
 
 type NoteCategory = "COMPLETION_REQUEST" | "ADMIN_RESPONSE" | "GENERAL_UPDATE" | "ISSUE_REPORT";
 
@@ -23,34 +24,38 @@ interface CategorySelectorProps {
   userRole: "ADMIN" | "EMPLOYEE" | "TEAM_LEADER";
 }
 
-const categoryOptions = {
-  GENERAL_UPDATE: {
-    label: "General Update",
-    icon: MessageSquare,
-    description: "Progress update or information"
-  },
-  ISSUE_REPORT: {
-    label: "Issue Report", 
-    icon: AlertTriangle,
-    description: "Problem or concern"
-  },
-  ADMIN_RESPONSE: {
-    label: "Instructions",
-    icon: Shield,
-    description: "Guidance or directions"
-  },
-  COMPLETION_REQUEST: {
-    label: "Work Complete",
-    icon: CheckCircle,
-    description: "Marking work as done"
-  }
-};
+
 
 export const CategorySelector: React.FC<CategorySelectorProps> = ({
   value,
   onChange,
   userRole,
 }) => {
+  const { t } = useTranslation();
+  
+  const categoryOptions = {
+    GENERAL_UPDATE: {
+      label: t('orderNotes.categories.generalUpdate.label'),
+      icon: MessageSquare,
+      description: t('orderNotes.categories.generalUpdate.description')
+    },
+    ISSUE_REPORT: {
+      label: t('orderNotes.categories.issueReport.label'), 
+      icon: AlertTriangle,
+      description: t('orderNotes.categories.issueReport.description')
+    },
+    ADMIN_RESPONSE: {
+      label: t('orderNotes.categories.adminResponse.label'),
+      icon: Shield,
+      description: t('orderNotes.categories.adminResponse.description')
+    },
+    COMPLETION_REQUEST: {
+      label: t('orderNotes.categories.completionRequest.label'),
+      icon: CheckCircle,
+      description: t('orderNotes.categories.completionRequest.description')
+    }
+  };
+
   const availableCategories = userRole === "ADMIN" 
     ? ["GENERAL_UPDATE", "ISSUE_REPORT", "ADMIN_RESPONSE"] as NoteCategory[]
     : ["GENERAL_UPDATE", "ISSUE_REPORT"] as NoteCategory[];
@@ -64,7 +69,7 @@ export const CategorySelector: React.FC<CategorySelectorProps> = ({
 
   return (
     <div className="space-y-2">
-      <Label className="text-sm font-medium">Note Type</Label>
+      <Label className="text-sm font-medium">{t('orderNotes.noteType')}</Label>
       <Select value={value} onValueChange={onChange}>
         <SelectTrigger className="w-full">
           <SelectValue>
