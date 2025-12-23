@@ -221,6 +221,7 @@ export const getTeamLeaderOrders = async (employeeId: string, filters?: any) => 
           },
         },
       },
+      descriptionData: true,
     },
     orderBy: { scheduledDate: 'desc' },
   });

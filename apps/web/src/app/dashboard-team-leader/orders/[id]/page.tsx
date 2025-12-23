@@ -234,48 +234,51 @@ const TeamLeaderOrderDetail = ({ params }: { params: Promise<{ id: string }> }) 
             <CardTitle>{t('teamLeader.orders.customerInformation')}</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="font-medium">{order.customer.companyName}</p>
+            <div className="space-y-2">
+              <p className="font-medium">{order.customer.companyName}</p>
+              
+            </div>
           </CardContent>
         </Card>
 
-        {order.team && (
+        {/* Template Description Card */}
+        {order.descriptionData?.descriptionData ? (
           <Card>
             <CardHeader>
-              <CardTitle>{t('teamLeader.orders.teamAssignment')}</CardTitle>
+              <CardTitle>{t('order.description')}</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="font-medium">{order.team.name}</p>
+              <div className="space-y-3">
+                {Object.entries(order.descriptionData.descriptionData).map(
+                  ([key, value]) => (
+                    <div
+                      key={key}
+                      className="flex justify-between gap-4 bg-muted rounded-md p-3 text-sm"
+                    >
+                      <span className="font-medium">{key}</span>
+                      <span className="text-muted-foreground">{String(value)}</span>
+                    </div>
+                  )
+                )}
+              </div>
+              <p className="text-xs text-muted-foreground mt-3">
+                ℹ️ {t('order.templateBasedDescription')}
+              </p>
             </CardContent>
           </Card>
+        ) : (
+          order.team && (
+            <Card>
+              <CardHeader>
+                <CardTitle>{t('teamLeader.orders.teamAssignment')}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="font-medium">{order.team.name}</p>
+              </CardContent>
+            </Card>
+          )
         )}
       </div>
-
-      {/* Template Description Card */}
-      {order.descriptionData?.descriptionData && (
-        <Card>
-          <CardHeader>
-            <CardTitle>{t('order.description')}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {Object.entries(order.descriptionData.descriptionData).map(
-                ([key, value]) => (
-                  <div
-                    key={key}
-                    className="flex justify-between gap-4 bg-muted rounded-md p-3 text-sm"
-                  >
-                    <span className="font-medium">{key}</span>
-                    <span className="text-muted-foreground">{String(value)}</span>
-                  </div>
-                )
-              )}
-            </div>
-            <p className="text-xs text-muted-foreground mt-3">
-              ℹ️ {t('order.templateBasedDescription')}
-            </p>
-          </CardContent>
-        </Card>
-      )}
 
       {/* Assigned Employees */}
       {order.employeeAssignments.length > 0 && (
@@ -313,7 +316,7 @@ const TeamLeaderOrderDetail = ({ params }: { params: Promise<{ id: string }> }) 
       {order && (
         <Card>
           <CardHeader>
-            <CardTitle>Order Communication</CardTitle>
+            <CardTitle>{t('teamLeader.orders.orderCommunication')}</CardTitle>
           </CardHeader>
           <CardContent>
             <Button 
@@ -321,7 +324,7 @@ const TeamLeaderOrderDetail = ({ params }: { params: Promise<{ id: string }> }) 
               className="w-full sm:w-auto"
             >
               <MessageSquare className="h-4 w-4 mr-2" />
-              View Notes & Communication
+              {t('teamLeader.orders.viewNotesAndCommunication')}
             </Button>
           </CardContent>
         </Card>
@@ -332,6 +335,7 @@ const TeamLeaderOrderDetail = ({ params }: { params: Promise<{ id: string }> }) 
         <TeamLeaderOrderNotesDialog
           orderId={order.id}
           orderNumber={order.orderNumber}
+          customerName={order.customer.companyName}
           orderStatus={order.status}
           orderDetails={{
             scheduledDate: order.scheduledDate,

@@ -1332,6 +1332,8 @@
     "orders": {
       "title": "My Orders",
       "subtitle": "Track and manage your orders",
+      "createOrder": "Create Order",
+      "createFirstOrder": "Create Your First Order",
       "searchPlaceholder": "Search orders by number, title, or description...",
       "noOrdersFound": "No orders found",
       "noOrdersMessage": "Your orders will appear here once they are created",
@@ -1348,6 +1350,40 @@
         "cancelled": "Cancelled",
         "unknown": "Unknown"
       }
+    },
+    "createOrder": {
+      "title": "Create New Order",
+      "scheduledDate": "Scheduled Date",
+      "scheduledDateRequired": "Scheduled date is required",
+      "startTime": "Start Time",
+      "endTime": "End Time (Optional)",
+      "location": "Location",
+      "locationPlaceholder": "Service location",
+      "activities": "Activities",
+      "selectActivities": "Select Activities",
+      "activitiesRequired": "Please select at least one activity",
+      "activitiesSelected": "activities selected",
+      "totalPrice": "Total",
+      "noActivitiesAvailable": "No activities available",
+      "orderDetails": "Order Details",
+      "serviceRequirements": "Service Requirements",
+      "specialInstructions": "Special Instructions",
+      "specialInstructionsPlaceholder": "Any special instructions or notes",
+      "cancel": "Cancel",
+      "creating": "Creating...",
+      "createOrder": "Create Order",
+      "orderCreatedSuccess": "Order created successfully!",
+      "orderCreationFailed": "Failed to create order",
+      "fillRequiredFields": "Please fill in all required fields"
+    },
+    "editOrder": {
+      "title": "Edit Order",
+      "updating": "Updating...",
+      "updateOrder": "Update Order",
+      "orderUpdatedSuccess": "Order updated successfully!",
+      "orderUpdateFailed": "Failed to update order",
+      "cannotEditOrder": "This order cannot be edited",
+      "cannotEditMessage": "Only orders in draft status can be edited. This order is already being processed."
     },
     "profile": {
       "title": "Company Profile",
@@ -1495,7 +1531,9 @@
       "minutes": "minutes",
       "specialInstructions": "Special Instructions",
       "customerInformation": "Customer Information",
-      "teamAssignment": "Team Assignment"
+      "teamAssignment": "Team Assignment",
+      "orderCommunication": "Order Communication",
+      "viewNotesAndCommunication": "View Notes & Communication"
     },
     "teams": {
       "title": "My Team",
@@ -1884,5 +1922,49 @@
     "noMembersFound": "No team members found",
     "remove": "Remove",
     "add": "Add"
+  },
+  "orderNotes": {
+    "noNotesYet": "No notes yet",
+    "startConversation": "Start the conversation by adding a note below",
+    "noteType": "Note Type",
+    "noteAddedSuccess": "Note added successfully",
+    "failedToCreateNote": "Failed to create note",
+    "categories": {
+      "generalUpdate": {
+        "label": "General Update",
+        "description": "Progress update or information"
+      },
+      "issueReport": {
+        "label": "Issue Report",
+        "description": "Problem or concern"
+      },
+      "adminResponse": {
+        "label": "Instructions",
+        "description": "Guidance or directions"
+      },
+      "completionRequest": {
+        "label": "Work Complete",
+        "description": "Marking work as done"
+      }
+    },
+    "actions": {
+      "startWork": "Start Work",
+      "markComplete": "Mark Complete",
+      "addNote": "Add Note",
+      "approve": "Approve",
+      "requestChanges": "Changes"
+    },
+    "placeholders": {
+      "reviewWork": "Review the completed work and provide feedback...",
+      "startWork": "Add a note and start work on this order...",
+      "updateOrComplete": "Add an update or mark work as complete...",
+      "addNote": "Add a note..."
+    },
+    "status": {
+      "awaitingReview": "This order is awaiting review.",
+      "pleaseReview": "Please review and approve or request changes.",
+      "waitingForReview": "Waiting for admin review.",
+      "orderAssigned": "This order is assigned to you. Add a note and click \"Start Work\" to begin."
+    }
   }
 }

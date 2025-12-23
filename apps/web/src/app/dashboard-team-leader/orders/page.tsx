@@ -268,6 +268,7 @@ const TeamLeaderOrders = () => {
         <TeamLeaderOrderNotesDialog
           orderId={notesOrder.id}
           orderNumber={notesOrder.orderNumber}
+          customerName={notesOrder.customer.companyName}
           orderStatus={notesOrder.status}
           orderDetails={{
             scheduledDate: notesOrder.scheduledDate,
