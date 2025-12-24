@@ -1087,6 +1087,127 @@ export const notifyCustomerOrderScheduleChanged = async (orderId: string, newDat
 };
 
 /**
+ * Admin Notifications for Customer Actions
+ */
+export const notifyAdminCustomerOrderCreated = async (orderId: string, createdBy?: string) => {
+  const order = await prisma.order.findUnique({
+    where: { id: orderId },
+    include: {
+      customer: true,
+      createdBySubAccount: {
+        include: { user: true }
+      }
+    }
+  });
+
+  if (!order) return;
+
+  // Get all admins
+  const admins = await prisma.user.findMany({
+    where: { role: "ADMIN" },
+    select: { id: true }
+  });
+
+  if (admins.length === 0) return;
+
+  const customerName = order.customer.companyName;
+  const creatorName = order.createdBySubAccount 
+    ? `${order.createdBySubAccount.name} (Sub-Account)`
+    : customerName;
+
+  // Send to each admin with their language preference
+  await Promise.all(
+    admins.map(async (admin) => {
+      const translation = await getNotificationTranslation(
+        admin.id,
+        'admin',
+        'customerOrderCreated',
+        {
+          orderNumber: order.orderNumber,
+          customerName,
+          creatorName
+        }
+      );
+
+      return createNotification({
+        templateKey: "ADMIN_CUSTOMER_ORDER_CREATED",
+        title: translation.title,
+        body: translation.body,
+        data: {
+          category: "order",
+          orderId: order.id,
+          orderNumber: order.orderNumber,
+          customerId: order.customerId,
+          customerName,
+          creatorName
+        },
+        recipients: [{ userId: admin.id }],
+        createdBy
+      });
+    })
+  );
+};
+
+export const notifyAdminCustomerOrderUpdated = async (orderId: string, updatedBy?: string) => {
+  const order = await prisma.order.findUnique({
+    where: { id: orderId },
+    include: {
+      customer: true,
+      createdBySubAccount: {
+        include: { user: true }
+      }
+    }
+  });
+
+  if (!order) return;
+
+  // Get all admins
+  const admins = await prisma.user.findMany({
+    where: { role: "ADMIN" },
+    select: { id: true }
+  });
+
+  if (admins.length === 0) return;
+
+  const customerName = order.customer.companyName;
+  const updaterName = order.createdBySubAccount 
+    ? `${order.createdBySubAccount.name} (Sub-Account)`
+    : customerName;
+
+  // Send to each admin with their language preference
+  await Promise.all(
+    admins.map(async (admin) => {
+      const translation = await getNotificationTranslation(
+        admin.id,
+        'admin',
+        'customerOrderUpdated',
+        {
+          orderNumber: order.orderNumber,
+          customerName,
+          updaterName
+        }
+      );
+
+      return createNotification({
+        templateKey: "ADMIN_CUSTOMER_ORDER_UPDATED",
+        title: translation.title,
+        body: translation.body,
+        data: {
+          category: "order",
+          orderId: order.id,
+          orderNumber: order.orderNumber,
+          customerId: order.customerId,
+          customerName,
+          updaterName
+        },
+        recipients: [{ userId: admin.id }],
+        createdBy: updatedBy
+      });
+    })
+  );
+};
+
+/**
  * System Notifications
  */
 export const notifyWelcomeNewEmployee = async (employeeId: string) => {
