@@ -23,7 +23,8 @@ async function backfillPricing() {
             name: qual.name,
             code: qual.category || undefined,
             description: qual.description,
-            defaultPrice: new Decimal(50.00), // Default fallback price
+            type: 'OTHER', // Default activity type
+            // No defaultPrice field in Activity model
             unit: 'hour',
             isActive: true
           }
@@ -95,14 +96,14 @@ async function backfillPricing() {
           const activity = await prisma.activity.findUnique({ where: { id: activityId } });
           unit = activity?.unit || 'hour';
         } else {
-          // Use default activity price
-          const activity = await prisma.activity.findUnique({ where: { id: activityId } });
-          if (!activity) {
+          // Use hardcoded default price since Activity model doesn't have defaultPrice field
+          unitPrice = new Decimal(50.00);
+          const activityRecord = await prisma.activity.findUnique({ where: { id: activityId } });
+          if (!activityRecord) {
             skipped++;
             continue;
           }
-          unitPrice = new Decimal(activity.defaultPrice.toString());
-          unit = activity.unit;
+          unit = activityRecord.unit;
         }
 
         const quantity = 1; // Default quantity

@@ -156,6 +156,24 @@ export default function CustomerOrderDetailPage() {
                 </p>
               </div>
             </div>
+
+            {(order.cartonQuantity || order.articleQuantity) && (
+              <div className="pt-4 border-t">
+                <p className="font-medium mb-2">Quantities</p>
+                <div className="space-y-1">
+                  {order.cartonQuantity && (
+                    <p className="text-sm text-muted-foreground">
+                      Carton Quantity: {order.cartonQuantity}
+                    </p>
+                  )}
+                  {order.articleQuantity && (
+                    <p className="text-sm text-muted-foreground">
+                      Article Quantity: {order.articleQuantity}
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
 
@@ -196,6 +214,36 @@ export default function CustomerOrderDetailPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Pricing Information */}
+      {order.customerActivities && order.customerActivities.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Order Pricing</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {order.customerActivities.map((activity: any) => (
+                <div key={activity.id} className="flex justify-between items-center py-2 border-b last:border-b-0">
+                  <div>
+                    <p className="font-medium">{activity.activity?.name || 'Activity'}</p>
+                    <p className="text-sm text-muted-foreground">
+                      Quantity: {activity.quantity}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-medium">€{Number(activity.unitPrice).toFixed(2)}</p>
+                  </div>
+                </div>
+              ))}
+              <div className="flex justify-between items-center pt-3 border-t font-semibold text-lg">
+                <span>Total</span>
+                <span>€{order.customerActivities.reduce((total: number, activity: any) => total + Number(activity.unitPrice), 0).toFixed(2)}</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Description and Help Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

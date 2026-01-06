@@ -11,62 +11,51 @@ import { useSession } from 'next-auth/react';
 import { AddActivityDialog } from '@/components/activities/AddActivityDialog';
 import { EditActivityDialog } from '@/components/activities/EditActivityDialog';
 import { useTranslation } from '@/hooks/useTranslation';
+import { ActivityType } from '@/types/order';
 
 interface Activity {
   id: string;
   name: string;
+  type: ActivityType;
   code?: string;
-  defaultPrice: number;
   unit: string;
   isActive: boolean;
-  customerActivities?: {
-    id: string;
-    customerId: string;
-    customer: {
-      id: string;
-      companyName: string;
-    };
-  }[];
 }
+
+const ACTIVITY_TYPE_LABELS = {
+  [ActivityType.CONTAINER_UNLOADING]: 'Container Unloading',
+  [ActivityType.WRAPPING]: 'Wrapping',
+  [ActivityType.REPACKING]: 'Repacking',
+  [ActivityType.CROSSING]: 'Crossing',
+  [ActivityType.LABELING]: 'Labeling',
+  [ActivityType.OTHER]: 'Other'
+};
 
 export const ActivitiesPage = () => {
   const { t } = useTranslation();
   const { data: session } = useSession();
   const [activities, setActivities] = useState<Activity[]>([]);
-  const [customers, setCustomers] = useState<any[]>([]);
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [editingActivity, setEditingActivity] = useState<Activity | null>(null);
-  const [addFormData, setAddFormData] = useState({ name: '', code: '', defaultPrice: '', unit: 'hour', customerId: '' });
-  const [editFormData, setEditFormData] = useState({ name: '', code: '', defaultPrice: '', unit: 'hour', customerId: '' });
+  const [addFormData, setAddFormData] = useState({ 
+    name: '', 
+    type: ActivityType.CONTAINER_UNLOADING, 
+    code: '', 
+    unit: 'hour' 
+  });
+  const [editFormData, setEditFormData] = useState({ 
+    name: '', 
+    type: ActivityType.CONTAINER_UNLOADING, 
+    code: '', 
+    unit: 'hour' 
+  });
 
   useEffect(() => {
     if (session?.accessToken) {
       fetchActivities();
-      fetchCustomers();
     }
   }, [session]);
-
-  const fetchCustomers = async () => {
-    if (!session?.accessToken) return;
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/customers`, {
-        headers: {
-          'Authorization': `Bearer ${session.accessToken}`,
-          'Content-Type': 'application/json'
-        }
-      });
-      if (response.ok) {
-        const result = await response.json();
-        const data = result.success ? result.data : result;
-        setCustomers(Array.isArray(data) ? data : []);
-      } else {
-        setCustomers([]);
-      }
-    } catch (error) {
-      setCustomers([]);
-    }
-  };
 
   const fetchActivities = async () => {
     try {
@@ -77,34 +66,30 @@ export const ActivitiesPage = () => {
     }
   };
 
-  const handleAddSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleAddSubmit = async (data: { name: string; type: ActivityType; code: string; unit: string; priceRanges?: any[] }) => {
     try {
-      await apiClient.post('/api/pricing/customer-activities', {
-        ...addFormData,
-        defaultPrice: parseFloat(addFormData.defaultPrice)
-      });
+      // Extract only the activity data, ignore priceRanges for now
+      const { priceRanges, ...activityData } = data;
+      await apiClient.post('/api/pricing/activities', activityData);
       toast.success(t('activities.messages.createSuccess'));
       setAddDialogOpen(false);
-      setAddFormData({ name: '', code: '', defaultPrice: '', unit: 'hour', customerId: '' });
+      setAddFormData({ name: '', type: ActivityType.CONTAINER_UNLOADING, code: '', unit: 'hour' });
       fetchActivities();
     } catch (error: any) {
       toast.error(error.message || t('activities.messages.createError'));
     }
   };
 
-  const handleEditSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleEditSubmit = async (data: { name: string; type: ActivityType; code: string; unit: string; priceRanges?: any[] }) => {
     if (!editingActivity) return;
     try {
-      await apiClient.put('/api/pricing/customer-activities', {
-        ...editFormData,
-        defaultPrice: parseFloat(editFormData.defaultPrice)
-      });
+      // Extract only the activity data, ignore priceRanges for now
+      const { priceRanges, ...activityData } = data;
+      await apiClient.put(`/api/pricing/activities/${editingActivity.id}`, activityData);
       toast.success(t('activities.messages.updateSuccess'));
       setEditDialogOpen(false);
       setEditingActivity(null);
-      setEditFormData({ name: '', code: '', defaultPrice: '', unit: 'hour', customerId: '' });
+      setEditFormData({ name: '', type: ActivityType.CONTAINER_UNLOADING, code: '', unit: 'hour' });
       fetchActivities();
     } catch (error: any) {
       toast.error(error.message || t('activities.messages.updateError'));
@@ -113,13 +98,11 @@ export const ActivitiesPage = () => {
 
   const handleEdit = (activity: Activity) => {
     setEditingActivity(activity);
-    const customerId = activity.customerActivities?.[0]?.customerId || '';
     setEditFormData({
       name: activity.name,
+      type: activity.type,
       code: activity.code || '',
-      defaultPrice: activity.defaultPrice.toString(),
-      unit: activity.unit,
-      customerId
+      unit: activity.unit
     });
     setEditDialogOpen(true);
   };
@@ -143,11 +126,9 @@ export const ActivitiesPage = () => {
           open={addDialogOpen}
           onOpenChange={(open) => {
             setAddDialogOpen(open);
-            if (!open) setAddFormData({ name: '', code: '', defaultPrice: '', unit: 'hour', customerId: '' });
+            if (!open) setAddFormData({ name: '', type: ActivityType.CONTAINER_UNLOADING, code: '', unit: 'hour' });
           }}
-          formData={addFormData}
-          setFormData={setAddFormData}
-          customers={customers}
+          customerId="" // Not needed for general activities
           onSubmit={handleAddSubmit}
         />
       </div>
@@ -157,8 +138,8 @@ export const ActivitiesPage = () => {
           <TableHeader>
             <TableRow>
               <TableHead>{t('activities.table.name')}</TableHead>
+              <TableHead>{t('activities.table.type')}</TableHead>
               <TableHead>{t('activities.table.code')}</TableHead>
-              <TableHead>{t('activities.table.defaultPrice')}</TableHead>
               <TableHead>{t('activities.table.unit')}</TableHead>
               <TableHead>{t('activities.table.status')}</TableHead>
               <TableHead>{t('activities.table.actions')}</TableHead>
@@ -168,8 +149,8 @@ export const ActivitiesPage = () => {
             {activities.map((activity) => (
               <TableRow key={activity.id}>
                 <TableCell className="font-medium">{activity.name}</TableCell>
+                <TableCell>{ACTIVITY_TYPE_LABELS[activity.type]}</TableCell>
                 <TableCell>{activity.code || '-'}</TableCell>
-                <TableCell>€{Number(activity.defaultPrice).toFixed(2)}</TableCell>
                 <TableCell>{activity.unit}</TableCell>
                 <TableCell>{activity.isActive ? t('activities.table.active') : t('activities.table.inactive')}</TableCell>
                 <TableCell>
@@ -194,12 +175,11 @@ export const ActivitiesPage = () => {
           setEditDialogOpen(open);
           if (!open) {
             setEditingActivity(null);
-            setEditFormData({ name: '', code: '', defaultPrice: '', unit: 'hour', customerId: '' });
+            setEditFormData({ name: '', type: ActivityType.CONTAINER_UNLOADING, code: '', unit: 'hour' });
           }
         }}
-        formData={editFormData}
-        setFormData={setEditFormData}
-        customers={customers}
+        activity={editingActivity}
+        customerId="" // Not needed for general activities
         onSubmit={handleEditSubmit}
       />
     </div>

@@ -9,8 +9,41 @@ export enum OrderStatus {
   EXPIRED = "EXPIRED"
 }
 
+export enum ActivityType {
+  CONTAINER_UNLOADING = 'CONTAINER_UNLOADING',
+  WRAPPING = 'WRAPPING',
+  REPACKING = 'REPACKING',
+  CROSSING = 'CROSSING',
+  LABELING = 'LABELING',
+  OTHER = 'OTHER'
+}
+
 export interface DescriptionData {
-  [key: string]: string; // each template field is a string
+  [key: string]: string;
+}
+
+export interface Activity {
+  id: string;
+  name: string;
+  type: ActivityType;
+  code?: string;
+  description?: string;
+  unit: string;
+  isActive: boolean;
+}
+
+export interface CustomerPriceTier {
+  id: string;
+  customerId: string;
+  activityId: string;
+  minQuantity: number;
+  maxQuantity: number;
+  price: number;
+  currency: string;
+  effectiveFrom: string;
+  effectiveTo?: string;
+  isActive: boolean;
+  activity?: Activity;
 }
 
 export interface Order {
@@ -18,7 +51,7 @@ export interface Order {
   orderNumber: string;
   description?: string;
   descriptionData?: {
-    descriptionData: DescriptionData; // nested object as returned by backend
+    descriptionData: DescriptionData;
   };
   scheduledDate: string;
   startTime?: string;
@@ -30,6 +63,8 @@ export interface Order {
   specialInstructions?: string;
   status: OrderStatus;
   usesTemplate?: boolean;
+  cartonQuantity?: number;
+  articleQuantity?: number;
   customerId: string;
   createdAt: string;
   updatedAt: string;
@@ -40,7 +75,6 @@ export interface Order {
     companyName: string;
   };
 }
-
 
 export interface CreateOrderData {
   orderNumber?: string;
@@ -58,13 +92,15 @@ export interface CreateOrderData {
   assignedEmployeeIds?: string[];
   activities?: Array<{
     activityId: string;
-    quantity?: number;
+    quantity: number;
   }>;
+  cartonQuantity?: number;
+  articleQuantity?: number;
   templateData?: Record<string, string> | null;
   qualifications?: Array<{
     qualificationId: string;
     activityId?: string;
-    quantity?: number;
+    quantity: number;
     required?: boolean;
   }>;
 }
@@ -85,7 +121,9 @@ export interface UpdateOrderData {
   assignedEmployeeIds?: string[];
   activities?: Array<{
     activityId: string;
-    quantity?: number;
+    quantity: number;
   }>;
+  cartonQuantity?: number;
+  articleQuantity?: number;
   templateData?: Record<string, string> | null;
 }

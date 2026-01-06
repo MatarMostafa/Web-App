@@ -199,29 +199,25 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({
 
     setLoading(true);
     try {
-      const submitData: any = {
-        ...formData,
+      const submitData = {
+        description: formData.description || "",
+        scheduledDate: new Date(formData.scheduledDate + "T00:00:00").toISOString(),
+        startTime: formData.scheduledDate && startTimeOnly ? 
+          new Date(`${formData.scheduledDate}T${startTimeOnly}`).toISOString() : null,
+        endTime: formData.scheduledDate && endTimeOnly ? 
+          new Date(`${formData.scheduledDate}T${endTimeOnly}`).toISOString() : null,
+        duration: formData.duration,
+        location: formData.location || "",
+        priority: formData.priority,
+        specialInstructions: formData.specialInstructions || "",
+        customerId: formData.customerId,
+        assignedEmployeeIds: formData.assignedEmployeeIds,
         activities: selectedActivities.map((activityId) => ({
           activityId,
           quantity: 1,
         })),
         templateData: templateData,
       };
-
-      if (submitData.scheduledDate) {
-        const dateStr = submitData.scheduledDate.includes("T")
-          ? submitData.scheduledDate
-          : submitData.scheduledDate + "T00:00:00";
-        submitData.scheduledDate = new Date(dateStr).toISOString();
-      }
-      if (submitData.startTime) {
-        submitData.startTime = new Date(submitData.startTime).toISOString();
-      }
-      if (submitData.endTime && submitData.endTime.trim()) {
-        submitData.endTime = new Date(submitData.endTime).toISOString();
-      } else {
-        delete (submitData as any).endTime;
-      }
 
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/team-leader/orders`,
@@ -235,17 +231,22 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({
         }
       );
 
-      if (response.ok) {
-        toast.success("Order created successfully");
-        setOpen(false);
-        resetForm();
-        onOrderCreated?.();
-      } else {
-        toast.error("Failed to create order");
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Order creation failed:", response.status, errorText);
+        throw new Error(`Failed to create order: ${response.status}`);
       }
+
+      const result = await response.json();
+      console.log("Order created successfully:", result);
+      
+      toast.success("Order created successfully");
+      setOpen(false);
+      resetForm();
+      onOrderCreated?.();
     } catch (error) {
       console.error("Error creating order:", error);
-      toast.error("Error creating order");
+      toast.error(error instanceof Error ? error.message : "Error creating order");
     } finally {
       setLoading(false);
     }

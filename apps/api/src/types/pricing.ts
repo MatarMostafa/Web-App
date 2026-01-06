@@ -1,21 +1,32 @@
 import { Decimal } from 'decimal.js';
 
+export enum ActivityType {
+  CONTAINER_UNLOADING = 'CONTAINER_UNLOADING',
+  WRAPPING = 'WRAPPING',
+  REPACKING = 'REPACKING',
+  CROSSING = 'CROSSING',
+  LABELING = 'LABELING',
+  OTHER = 'OTHER'
+}
+
 export interface ActivityDTO {
   id: string;
   name: string;
+  type: ActivityType;
   code?: string;
   description?: string;
-  defaultPrice: Decimal;
   unit: string;
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
 
-export interface CustomerPriceDTO {
+export interface CustomerPriceTierDTO {
   id: string;
   customerId: string;
   activityId: string;
+  minQuantity: number;
+  maxQuantity: number;
   price: Decimal;
   currency: string;
   effectiveFrom: Date;
@@ -25,8 +36,10 @@ export interface CustomerPriceDTO {
   updatedAt: Date;
 }
 
-export interface CreateCustomerPriceInput {
+export interface CreateCustomerPriceTierInput {
   activityId: string;
+  minQuantity: number;
+  maxQuantity: number;
   price: number;
   currency?: string;
   effectiveFrom: Date;
@@ -34,7 +47,9 @@ export interface CreateCustomerPriceInput {
   isActive?: boolean;
 }
 
-export interface UpdateCustomerPriceInput {
+export interface UpdateCustomerPriceTierInput {
+  minQuantity?: number;
+  maxQuantity?: number;
   price?: number;
   currency?: string;
   effectiveFrom?: Date;
@@ -44,9 +59,9 @@ export interface UpdateCustomerPriceInput {
 
 export interface CreateActivityInput {
   name: string;
+  type: ActivityType;
   code?: string;
   description?: string;
-  defaultPrice: number;
   unit?: string;
 }
 

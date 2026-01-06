@@ -54,6 +54,7 @@ export const useOrderStore = create<OrderState>((set, get) => ({
     set({ isLoadingOrder: true, error: null });
     try {
       const order = await apiClient.get<Order>(`/api/orders/${id}`);
+      console.log("Fetched order:", order);
       set({ currentOrder: order, isLoadingOrder: false });
     } catch (error) {
       set({ error: error instanceof Error ? error.message : "Failed to fetch order", isLoadingOrder: false });

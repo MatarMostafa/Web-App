@@ -41,7 +41,7 @@ interface AutoAssignConfig {
 
 // -------------------- Orders --------------------
 export const getAllOrdersService = async () => {
-  return prisma.order.findMany({
+  const orders = await prisma.order.findMany({
     include: {
       customer: true,
       customerActivities: {
@@ -55,10 +55,13 @@ export const getAllOrdersService = async () => {
       descriptionData: true
     },
   });
+  
+  console.log(`Fetched ${orders.length} orders with quantities`);
+  return orders;
 };
 
 export const getOrderByIdService = async (id: string) => {
-  return prisma.order.findUnique({
+  const order = await prisma.order.findUnique({
     where: { id },
     include: {
       customer: true,
@@ -70,13 +73,23 @@ export const getOrderByIdService = async (id: string) => {
       orderAssignments: true,
       employeeAssignments: true,
       ratings: true,
-      descriptionData:true,
+      descriptionData: true,
     },
   });
+  
+  if (order) {
+    console.log('Order fetched with quantities:', {
+      id: order.id,
+      cartonQuantity: order.cartonQuantity,
+      articleQuantity: order.articleQuantity
+    });
+  }
+  
+  return order;
 };
 
-export const createOrderService = async (data: OrderCreateInput & { assignedEmployeeIds?: string[]; activities?: Array<{ activityId: string; quantity?: number }>; customerId: string; templateData?: Record<string, string> | null; createdBySubAccountId?: string }, createdBy?: string) => {
-  let { assignedEmployeeIds, activities, customerId, templateData, createdBySubAccountId, ...orderData } = data;
+export const createOrderService = async (data: OrderCreateInput & { assignedEmployeeIds?: string[]; activities?: Array<{ activityId: string; quantity?: number }>; customerId: string; templateData?: Record<string, string> | null; createdBySubAccountId?: string; cartonQuantity?: number; articleQuantity?: number }, createdBy?: string) => {
+  let { assignedEmployeeIds, activities, customerId, templateData, createdBySubAccountId, cartonQuantity, articleQuantity, ...orderData } = data;
   
   if (!customerId) {
     throw new Error('Customer ID is required');
@@ -132,6 +145,8 @@ export const createOrderService = async (data: OrderCreateInput & { assignedEmpl
         ...orderData,
         requiredEmployees: assignedEmployeeIds?.length || orderData.requiredEmployees || 1,
         usesTemplate: templateData !== null ? true : false,
+        cartonQuantity,
+        articleQuantity,
         createdBy,
         customer: {
           connect: { id: customerId }
@@ -162,6 +177,7 @@ export const createOrderService = async (data: OrderCreateInput & { assignedEmpl
           const priceResult = await getPriceForCustomer(
             customerId!,
             activity.activityId,
+            activity.quantity ?? 1,
             orderData.scheduledDate as Date
           );
 
@@ -172,7 +188,7 @@ export const createOrderService = async (data: OrderCreateInput & { assignedEmpl
               orderId: newOrder.id,
               quantity: activity.quantity ?? 1,
               unitPrice: priceResult.price.toNumber(),
-              lineTotal: priceResult.price.mul(activity.quantity ?? 1).toNumber()
+              lineTotal: priceResult.price.toNumber()
             }
           });
           console.log(`Created customer activity ${customerActivity.id} for order ${newOrder.id}`);
@@ -255,10 +271,10 @@ export const createOrderService = async (data: OrderCreateInput & { assignedEmpl
 
 export const updateOrderService = async (
   id: string,
-  data: OrderUpdateInput & { assignedEmployeeIds?: string[]; activities?: Array<{ activityId: string; quantity?: number }>; templateData?: Record<string, string> | null },
+  data: OrderUpdateInput & { assignedEmployeeIds?: string[]; activities?: Array<{ activityId: string; quantity?: number }>; templateData?: Record<string, string> | null; cartonQuantity?: number; articleQuantity?: number },
   updatedBy?: string
 ) => {
-  let { assignedEmployeeIds, activities, templateData, ...orderData } = data;
+  let { assignedEmployeeIds, activities, templateData, cartonQuantity, articleQuantity, ...orderData } = data;
   
   // Clean empty strings to undefined for optional DateTime fields
   if (orderData.startTime === '') orderData.startTime = undefined;
@@ -282,7 +298,9 @@ export const updateOrderService = async (
         }),
         ...(templateData !== undefined && {
           usesTemplate: templateData !== null && Object.keys(templateData || {}).length > 0
-        })
+        }),
+        ...(cartonQuantity !== undefined && { cartonQuantity }),
+        ...(articleQuantity !== undefined && { articleQuantity })
       },
     });
 
@@ -318,6 +336,7 @@ export const updateOrderService = async (
             const priceResult = await getPriceForCustomer(
               updatedOrder.customerId,
               activity.activityId,
+              activity.quantity ?? 1,
               updatedOrder.scheduledDate
             );
 
@@ -328,7 +347,7 @@ export const updateOrderService = async (
                 orderId: id,
                 quantity: activity.quantity ?? 1,
                 unitPrice: priceResult.price.toNumber(),
-                lineTotal: priceResult.price.mul(activity.quantity ?? 1).toNumber()
+                lineTotal: priceResult.price.toNumber()
               }
             });
           } catch (error) {
@@ -831,10 +850,10 @@ export const createOrderQualificationService = async (
     let lineTotal: number | undefined;
 
     if (data.activityId) {
-      const priceResult = await getPriceForCustomer(order.customerId, data.activityId, order.scheduledDate);
+      const priceResult = await getPriceForCustomer(order.customerId, data.activityId, data.quantity ?? 1, order.scheduledDate);
       unitPrice = priceResult.price.toNumber();
       unit = priceResult.unit;
-      lineTotal = priceResult.price.mul(data.quantity ?? 1).toNumber();
+      lineTotal = priceResult.price.toNumber();
     }
 
     return tx.orderQualification.create({
@@ -985,7 +1004,8 @@ export const getOrderActivitiesService = async (orderId: string) => {
         quantity: customerActivity.quantity,
         unitPrice: customerActivity.unitPrice,
         lineTotal: customerActivity.lineTotal,
-        unit: customerActivity.activity.unit
+        unit: customerActivity.activity.unit,
+        priceValidFrom: customerActivity.createdAt.toISOString()
       }
     });
   });
