@@ -3,7 +3,6 @@ import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui";
 import { Input } from "@/components/ui";
 import { Label } from "@/components/ui";
-import { Textarea } from "@/components/ui";
 import {
   Select,
   SelectContent,
@@ -26,6 +25,8 @@ import toast from "react-hot-toast";
 import { useTranslation } from "@/hooks/useTranslation";
 import TimeOnlyInput from "@/components/ui/TimeOnlyInput";
 import { useSession } from "next-auth/react";
+import OrderDescriptionForm from "./OrderDescriptionForm";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface EditOrderDialogProps {
   order: Order;
@@ -41,40 +42,95 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
   const { t, ready } = useTranslation();
   const { data: session } = useSession();
   
-  if (!ready) {
-    return null;
-  }
+  if (!ready) return null;
+  
   const { updateOrder, getOrderAssignments } = useOrderStore();
   const { employees, fetchEmployees } = useEmployeeStore();
   const { customers, fetchCustomers } = useCustomerStore();
+  
   const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState<UpdateOrderData>({});
+  const [currentStep, setCurrentStep] = useState(1);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [startTimeOnly, setStartTimeOnly] = useState("");
-  const [endTimeOnly, setEndTimeOnly] = useState("");
   const [activities, setActivities] = useState<any[]>([]);
   const [selectedActivities, setSelectedActivities] = useState<string[]>([]);
+  const [templateData, setTemplateData] = useState<Record<string, string> | null>(null);
+  const [cartonQuantity, setCartonQuantity] = useState<number>(0);
+  const [articleQuantity, setArticleQuantity] = useState<number>(0);
+  const [assignedEmployeeIds, setAssignedEmployeeIds] = useState<string[]>([]);
 
-  const [dataLoading, setDataLoading] = useState(true);
+  const [formData, setFormData] = useState<UpdateOrderData>({
+    description: "",
+    scheduledDate: "",
+    startTime: "",
+    endTime: "",
+    duration: null,
+    location: "",
+    requiredEmployees: 1,
+    priority: 1,
+    specialInstructions: "",
+    status: OrderStatus.DRAFT,
+    customerId: "",
+  });
+  const [startTimeOnly, setStartTimeOnly] = useState("09:00");
+  const [endTimeOnly, setEndTimeOnly] = useState("");
 
-  const fetchActivities = async (customerId: string) => {
-    if (!customerId) return;
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/pricing/customers/${customerId}/activities`, {
-        headers: { Authorization: `Bearer ${session?.accessToken}` },
+  // Initialize form data when dialog opens
+  useEffect(() => {
+    if (order && open) {
+      console.log('Initializing with order:', order);
+      
+      const scheduledDate = new Date(order.scheduledDate).toISOString().split('T')[0];
+      const startTime = order.startTime ? new Date(order.startTime).toTimeString().slice(0, 5) : "09:00";
+      const endTime = order.endTime ? new Date(order.endTime).toTimeString().slice(0, 5) : "";
+      
+      setFormData({
+        description: order.description || "",
+        scheduledDate,
+        startTime: order.startTime || "",
+        endTime: order.endTime || "",
+        duration: order.duration,
+        location: order.location || "",
+        requiredEmployees: order.requiredEmployees,
+        priority: order.priority,
+        specialInstructions: order.specialInstructions || "",
+        status: order.status,
+        customerId: order.customerId,
       });
-      if (response.ok) {
-        const data = await response.json();
-        setActivities(data);
-        return data;
+      
+      setStartTimeOnly(startTime);
+      setEndTimeOnly(endTime);
+      setCartonQuantity(order.cartonQuantity || 0);
+      setArticleQuantity(order.articleQuantity || 0);
+      
+      if (order.descriptionData?.descriptionData) {
+        setTemplateData(order.descriptionData.descriptionData);
+      }
+      
+      fetchEmployees();
+      fetchCustomers();
+      loadOrderData();
+    }
+  }, [order, open]);
+
+  const loadOrderData = async () => {
+    try {
+      const [employeeIds, activityIds] = await Promise.all([
+        getOrderAssignments(order.id),
+        fetchOrderActivities(order.id)
+      ]);
+      
+      setAssignedEmployeeIds(employeeIds);
+      setSelectedActivities(activityIds);
+      
+      if (order.customerId) {
+        await fetchActivities(order.customerId);
       }
     } catch (error) {
-      console.error("Error fetching activities:", error);
+      console.error("Error loading order data:", error);
     }
-    return [];
   };
 
-  const fetchExistingActivityIds = async (orderId: string) => {
+  const fetchOrderActivities = async (orderId: string) => {
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/orders/${orderId}/activity-ids`, {
         headers: { Authorization: `Bearer ${session?.accessToken}` },
@@ -84,114 +140,98 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
         return data.data || [];
       }
     } catch (error) {
-      console.error("Error fetching existing activity IDs:", error);
+      console.error("Error fetching order activities:", error);
     }
     return [];
   };
 
-  useEffect(() => {
-    if (order && open) {
-      setDataLoading(true);
-      Promise.all([
-        fetchEmployees(),
-        fetchCustomers(),
-        getOrderAssignments(order.id)
-      ]).then(([, , assignedEmployeeIds]) => {
-        const startTime = order.startTime ? new Date(order.startTime) : null;
-        const endTime = order.endTime ? new Date(order.endTime) : null;
-
-        setFormData({
-          orderNumber: order.orderNumber,
-          description: order.description || "",
-          scheduledDate: order.scheduledDate.split("T")[0],
-          startTime: order.startTime ? order.startTime.substring(0, 16) : "",
-          endTime: order.endTime ? order.endTime.substring(0, 16) : "",
-          duration: order.duration,
-          location: order.location || "",
-          requiredEmployees: order.requiredEmployees,
-          priority: order.priority,
-          specialInstructions: order.specialInstructions || "",
-          status: order.status,
-          customerId: order.customerId,
-          assignedEmployeeIds,
-        });
-
-        setStartTimeOnly(
-          startTime
-            ? `${startTime.getHours().toString().padStart(2, "0")}:${startTime.getMinutes().toString().padStart(2, "0")}`
-            : "09:00"
-        );
-        setEndTimeOnly(
-          endTime
-            ? `${endTime.getHours().toString().padStart(2, "0")}:${endTime.getMinutes().toString().padStart(2, "0")}`
-            : ""
-        );
+  const fetchActivities = async (customerId: string) => {
+    if (!customerId) return;
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/pricing/activities`, {
+        headers: { Authorization: `Bearer ${session?.accessToken}` },
       });
-      setDataLoading(false); // ✅ Add this
-
+      if (response.ok) {
+        const allActivities = await response.json();
+        const customerActivities = await Promise.all(
+          allActivities.map(async (activity: any) => {
+            try {
+              const pricesResponse = await fetch(
+                `${process.env.NEXT_PUBLIC_API_URL}/api/pricing/customers/${customerId}/prices?activityId=${activity.id}`,
+                { headers: { Authorization: `Bearer ${session?.accessToken}` } }
+              );
+              if (pricesResponse.ok) {
+                const prices = await pricesResponse.json();
+                if (prices.length > 0) {
+                  const lowestPrice = Math.min(...prices.map((p: any) => Number(p.price)));
+                  return { ...activity, customerPrices: prices, unitPrice: lowestPrice };
+                }
+              }
+              return null;
+            } catch {
+              return null;
+            }
+          })
+        );
+        setActivities(customerActivities.filter(Boolean));
+      }
+    } catch (error) {
+      console.error("Error fetching activities:", error);
     }
-  }, [order, open, fetchEmployees, fetchCustomers, getOrderAssignments]);
+  };
 
-  // Auto-fill location and fetch activities when customer is selected
+  // Auto-fetch activities when customer changes
   useEffect(() => {
     if (formData.customerId) {
-      const selectedCustomer = customers.find(
-        (c) => c.id === formData.customerId
-      );
-      if (selectedCustomer?.address) {
-        const addressStr =
-          typeof selectedCustomer.address === "string"
-            ? selectedCustomer.address
-            : Object.values(selectedCustomer.address)
-                .filter(Boolean)
-                .join(", ");
-        setFormData((prev) => ({ ...prev, location: addressStr }));
-      }
       fetchActivities(formData.customerId);
     }
-  }, [formData.customerId, customers]);
+  }, [formData.customerId]);
 
-  // Combine date and time when either changes
+  // Combine date and time
   useEffect(() => {
     if (formData.scheduledDate && startTimeOnly) {
-      setFormData((prev) => ({
-        ...prev,
-        startTime: `${formData.scheduledDate}T${startTimeOnly}`,
-      }));
+      setFormData(prev => ({ ...prev, startTime: `${formData.scheduledDate}T${startTimeOnly}` }));
     }
   }, [formData.scheduledDate, startTimeOnly]);
 
   useEffect(() => {
     if (formData.scheduledDate && endTimeOnly) {
-      setFormData((prev) => ({
-        ...prev,
-        endTime: `${formData.scheduledDate}T${endTimeOnly}`,
-      }));
+      setFormData(prev => ({ ...prev, endTime: `${formData.scheduledDate}T${endTimeOnly}` }));
     } else if (!endTimeOnly) {
-      setFormData((prev) => ({ ...prev, endTime: "" }));
+      setFormData(prev => ({ ...prev, endTime: "" }));
     }
   }, [formData.scheduledDate, endTimeOnly]);
+
+  const handleNext = () => {
+    if (currentStep === 2 && selectedActivities.length === 0) {
+      toast.error("Please select at least one activity");
+      return;
+    }
+    if (currentStep === 3 && (!cartonQuantity || cartonQuantity < 1)) {
+      toast.error("Please enter a valid carton quantity");
+      return;
+    }
+    if (currentStep < 4) setCurrentStep(currentStep + 1);
+  };
+
+  const handlePrevious = () => {
+    if (currentStep > 1) setCurrentStep(currentStep - 1);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Validate required fields
     const newErrors: Record<string, string> = {};
-    if (!formData.customerId)
-      newErrors.customerId = t("admin.orders.form.customerRequired");
-    if (!formData.scheduledDate)
-      newErrors.scheduledDate = t("admin.orders.form.scheduledDateRequired");
-    if (!formData.requiredEmployees || formData.requiredEmployees < 1)
-      newErrors.requiredEmployees = t(
-        "admin.orders.form.requiredEmployeesRequired"
-      );
-    if (!formData.priority || formData.priority < 1)
-      newErrors.priority = t("admin.orders.form.priorityRequired");
-
+    if (!formData.customerId) newErrors.customerId = "Customer is required";
+    if (!formData.scheduledDate) newErrors.scheduledDate = "Scheduled date is required";
+    if (!formData.priority || formData.priority < 1) newErrors.priority = "Priority is required";
+    if (!cartonQuantity || cartonQuantity < 1) newErrors.cartonQuantity = "Carton quantity is required";
+    if (!articleQuantity || articleQuantity < 1) newErrors.articleQuantity = "Article quantity is required";
+    
     setErrors(newErrors);
-
+    
     if (Object.keys(newErrors).length > 0) {
-      toast.error(t("admin.orders.form.validationError"));
+      toast.error("Please fix validation errors");
       return;
     }
 
@@ -202,11 +242,15 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
         ...formData,
         activities: selectedActivities.map(activityId => ({
           activityId,
-          quantity: 1
-        }))
+          quantity: cartonQuantity
+        })),
+        cartonQuantity,
+        articleQuantity,
+        templateData,
+        assignedEmployeeIds
       };
 
-      // Convert date and datetime-local to ISO format
+      // Convert dates to ISO format
       if (submitData.scheduledDate) {
         const dateStr = submitData.scheduledDate.includes("T")
           ? submitData.scheduledDate
@@ -224,41 +268,25 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
 
       await updateOrder(order.id, submitData);
       onOpenChange(false);
+      toast.success("Order updated successfully");
     } catch (error) {
-      toast.error(t("admin.orders.form.updateError"));
+      console.error("Error updating order:", error);
+      toast.error("Failed to update order");
     } finally {
       setLoading(false);
     }
   };
 
   const handleInputChange = (field: keyof UpdateOrderData, value: any) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
+    setFormData(prev => ({ ...prev, [field]: value }));
   };
 
   const handleEmployeeToggle = (employeeId: string, checked: boolean) => {
-    setFormData((prev) => {
-      const currentAssigned = prev.assignedEmployeeIds || [];
-
-      if (checked) {
-        // Check if employee still exists
-        const employeeExists = employees.some((emp) => emp.id === employeeId);
-        if (!employeeExists) {
-          toast.error("Mitarbeiter nicht mehr verfügbar");
-          return prev;
-        }
-        return {
-          ...prev,
-          assignedEmployeeIds: [...currentAssigned, employeeId],
-        };
-      } else {
-        return {
-          ...prev,
-          assignedEmployeeIds: currentAssigned.filter(
-            (id) => id !== employeeId
-          ),
-        };
-      }
-    });
+    setAssignedEmployeeIds(prev => 
+      checked 
+        ? [...prev, employeeId]
+        : prev.filter(id => id !== employeeId)
+    );
   };
 
   const handleActivityToggle = (activityId: string, checked: boolean) => {
@@ -270,307 +298,383 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
   };
 
   const getTotalPrice = () => {
+    if (cartonQuantity === 0) return 0;
+    
     return selectedActivities.reduce((total, activityId) => {
-      const activity = activities.find(a => a.activity.id === activityId);
-      return total + (activity ? Number(activity.unitPrice || activity.activity.defaultPrice) : 0);
+      const activity = activities.find(a => a.id === activityId);
+      if (!activity) return total;
+      
+      if (activity.customerPrices && activity.customerPrices.length > 0) {
+        const applicablePrice = activity.customerPrices.find((p: any) => 
+          cartonQuantity >= p.minQuantity && cartonQuantity <= p.maxQuantity
+        );
+        if (applicablePrice) {
+          return total + Number(applicablePrice.price);
+        }
+      }
+      
+      return total + (Number(activity.unitPrice) || 0);
     }, 0);
   };
 
+  const renderStep1 = () => (
+    <div className="space-y-4">
+      <div className="text-center mb-6">
+        <h3 className="text-lg font-semibold">Step 1: Customer</h3>
+        <p className="text-sm text-muted-foreground">Select customer for this order</p>
+      </div>
+      <div>
+        <Label htmlFor="customerId">Customer *</Label>
+        <Select
+          value={formData.customerId}
+          onValueChange={(value) => {
+            handleInputChange("customerId", value);
+            if (errors.customerId) setErrors(prev => ({ ...prev, customerId: "" }));
+          }}
+        >
+          <SelectTrigger className={errors.customerId ? "border-red-500" : ""}>
+            <SelectValue placeholder="Select customer" />
+          </SelectTrigger>
+          <SelectContent>
+            {customers.map((customer) => (
+              <SelectItem key={customer.id} value={customer.id}>
+                {customer.companyName}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        {errors.customerId && <p className="text-sm text-red-500 mt-1">{errors.customerId}</p>}
+      </div>
+    </div>
+  );
+
+  const renderStep2 = () => (
+    <div className="space-y-4">
+      <div className="text-center mb-6">
+        <h3 className="text-lg font-semibold">Step 2: Activities</h3>
+        <p className="text-sm text-muted-foreground">Select activities for this order</p>
+      </div>
+      <div>
+        <Label>Activities ({selectedActivities.length} selected)</Label>
+        <div className="max-h-60 overflow-y-auto border rounded-md p-3 space-y-3">
+          {activities.map((activity) => (
+            <div key={activity.id} className="border rounded-lg p-3 space-y-2">
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id={`activity-${activity.id}`}
+                  checked={selectedActivities.includes(activity.id)}
+                  onCheckedChange={(checked) => handleActivityToggle(activity.id, checked as boolean)}
+                />
+                <div>
+                  <Label htmlFor={`activity-${activity.id}`} className="text-sm font-medium">
+                    {activity.name}
+                  </Label>
+                  <p className="text-xs text-muted-foreground">
+                    Type: {activity.type?.replace('_', ' ')} | Unit: {activity.unit}
+                  </p>
+                </div>
+              </div>
+              {activity.customerPrices && activity.customerPrices.length > 0 && (
+                <div className="ml-6">
+                  <p className="text-xs font-medium text-muted-foreground mb-1">Price Ranges:</p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 text-xs">
+                    {activity.customerPrices.map((price: any, idx: number) => (
+                      <div key={idx} className="bg-muted/50 px-2 py-1 rounded">
+                        {price.minQuantity}-{price.maxQuantity}: €{Number(price.price).toFixed(2)}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          ))}
+          {activities.length === 0 && (
+            <p className="text-sm text-gray-500">No activities available for this customer</p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderStep3 = () => (
+    <div className="space-y-4">
+      <div className="text-center mb-6">
+        <h3 className="text-lg font-semibold">Step 3: Quantities</h3>
+        <p className="text-sm text-muted-foreground">Enter carton and article quantities</p>
+      </div>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <Label htmlFor="cartonQuantity">Carton Quantity *</Label>
+          <Input
+            id="cartonQuantity"
+            type="number"
+            min="1"
+            value={cartonQuantity || ""}
+            onChange={(e) => {
+              const value = Number(e.target.value);
+              setCartonQuantity(value);
+              if (errors.cartonQuantity) setErrors(prev => ({ ...prev, cartonQuantity: "" }));
+            }}
+            className={errors.cartonQuantity ? "border-red-500" : ""}
+            placeholder="Enter carton quantity"
+          />
+          {errors.cartonQuantity && <p className="text-sm text-red-500 mt-1">{errors.cartonQuantity}</p>}
+        </div>
+        <div>
+          <Label htmlFor="articleQuantity">Article Quantity *</Label>
+          <Input
+            id="articleQuantity"
+            type="number"
+            min="1"
+            value={articleQuantity || ""}
+            onChange={(e) => {
+              const value = Number(e.target.value);
+              setArticleQuantity(value);
+              if (errors.articleQuantity) setErrors(prev => ({ ...prev, articleQuantity: "" }));
+            }}
+            className={errors.articleQuantity ? "border-red-500" : ""}
+            placeholder="Enter article quantity"
+          />
+          {errors.articleQuantity && <p className="text-sm text-red-500 mt-1">{errors.articleQuantity}</p>}
+        </div>
+      </div>
+      
+      {cartonQuantity > 0 && (
+        <div className="bg-muted/50 p-4 rounded-lg">
+          <h4 className="font-medium mb-2">Price Calculation</h4>
+          <div className="text-sm text-muted-foreground mb-2">
+            Based on carton quantity: {cartonQuantity}
+          </div>
+          <div className="space-y-1">
+            {selectedActivities.map(activityId => {
+              const activity = activities.find(a => a.id === activityId);
+              if (!activity) return null;
+              
+              let price = 0;
+              let priceInfo = "Base price";
+              
+              if (activity.customerPrices && activity.customerPrices.length > 0) {
+                const applicablePrice = activity.customerPrices.find((p: any) => 
+                  cartonQuantity >= p.minQuantity && cartonQuantity <= p.maxQuantity
+                );
+                if (applicablePrice) {
+                  price = Number(applicablePrice.price);
+                  priceInfo = `${applicablePrice.minQuantity}-${applicablePrice.maxQuantity} range`;
+                }
+              } else {
+                price = Number(activity.unitPrice) || 0;
+              }
+              
+              return (
+                <div key={activityId} className="flex justify-between text-sm">
+                  <span>{activity.name} ({priceInfo})</span>
+                  <span>€{price.toFixed(2)}</span>
+                </div>
+              );
+            })}
+            <div className="border-t pt-1 mt-2 flex justify-between font-medium">
+              <span>Total Price:</span>
+              <span>€{getTotalPrice().toFixed(2)}</span>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+
+  const renderStep4 = () => (
+    <div className="space-y-4">
+      <div className="text-center mb-6">
+        <h3 className="text-lg font-semibold">Step 4: Order Details</h3>
+        <p className="text-sm text-muted-foreground">Complete the order information</p>
+      </div>
+      
+      <OrderDescriptionForm
+        customerId={formData.customerId || ""}
+        description={formData.description || ""}
+        onDescriptionChange={(description) => handleInputChange("description", description)}
+        onTemplateDataChange={setTemplateData}
+        orderDescriptionData={templateData}
+      />
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <Label htmlFor="scheduledDate">Scheduled Date *</Label>
+          <Input
+            id="scheduledDate"
+            type="date"
+            value={formData.scheduledDate}
+            onChange={(e) => {
+              handleInputChange("scheduledDate", e.target.value);
+              if (errors.scheduledDate) setErrors(prev => ({ ...prev, scheduledDate: "" }));
+            }}
+            className={errors.scheduledDate ? "border-red-500" : ""}
+          />
+          {errors.scheduledDate && <p className="text-sm text-red-500 mt-1">{errors.scheduledDate}</p>}
+        </div>
+        <div>
+          <Label htmlFor="location">Location</Label>
+          <Input
+            id="location"
+            value={formData.location}
+            onChange={(e) => handleInputChange("location", e.target.value)}
+            placeholder="Enter location"
+          />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <Label htmlFor="startTime">Start Time</Label>
+          <TimeOnlyInput
+            value={startTimeOnly}
+            onChange={setStartTimeOnly}
+          />
+        </div>
+        <div>
+          <Label htmlFor="endTime">End Time (Optional)</Label>
+          <TimeOnlyInput
+            value={endTimeOnly}
+            onChange={setEndTimeOnly}
+          />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <Label htmlFor="priority">Priority *</Label>
+          <Input
+            id="priority"
+            type="number"
+            min="1"
+            value={formData.priority}
+            onChange={(e) => {
+              handleInputChange("priority", Number(e.target.value));
+              if (errors.priority) setErrors(prev => ({ ...prev, priority: "" }));
+            }}
+            className={errors.priority ? "border-red-500" : ""}
+          />
+          {errors.priority && <p className="text-sm text-red-500 mt-1">{errors.priority}</p>}
+        </div>
+        <div>
+          <Label htmlFor="duration">Duration (hours)</Label>
+          <Input
+            id="duration"
+            type="number"
+            min="0"
+            step="0.5"
+            value={formData.duration || ""}
+            onChange={(e) =>
+              handleInputChange(
+                "duration",
+                e.target.value ? Number(e.target.value) : null
+              )
+            }
+          />
+        </div>
+      </div>
+
+      <div>
+        <Label>Assign Employees ({assignedEmployeeIds.length} selected)</Label>
+        <div className="max-h-40 overflow-y-auto border rounded-md p-3 space-y-2">
+          {employees.map((employee) => (
+            <div key={employee.id} className="flex items-center space-x-2">
+              <Checkbox
+                id={`employee-${employee.id}`}
+                checked={assignedEmployeeIds.includes(employee.id)}
+                onCheckedChange={(checked) =>
+                  handleEmployeeToggle(employee.id, checked as boolean)
+                }
+              />
+              <Label
+                htmlFor={`employee-${employee.id}`}
+                className="text-sm"
+              >
+                {employee.firstName} {employee.lastName} ({employee.employeeCode})
+              </Label>
+            </div>
+          ))}
+          {employees.length === 0 && (
+            <p className="text-sm text-gray-500">No employees available</p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={(isOpen) => {
+      onOpenChange(isOpen);
+      if (!isOpen) setCurrentStep(1);
+    }}>
       <DialogContent className="w-[95vw] max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{t("admin.orders.form.editOrder")}</DialogTitle>
-        </DialogHeader>
-        {dataLoading ? (
-          <div className="space-y-4">
-            {[...Array(8)].map((_, i) => (
-              <div key={i} className="animate-pulse">
-                <div className="h-4 bg-gray-200 rounded w-1/4 mb-2"></div>
-                <div className="h-10 bg-gray-200 rounded"></div>
-              </div>
-            ))}
-          </div>
-        ) : (
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Label>{t("admin.orders.form.orderNumber")}</Label>
-              <div className="px-3 py-2 bg-muted rounded-md text-sm">
-                {order.orderNumber}
-              </div>
-            </div>
-            <div>
-              <Label>{t("admin.orders.form.status")}</Label>
-              <div className="px-3 py-2 bg-muted rounded-md text-sm">
-                {(formData.status || order.status).replace("_", " ")}
-              </div>
-            </div>
-          </div>
-
-          <div>
-            <Label htmlFor="customerId">
-              {t("admin.orders.form.customer")} *
-            </Label>
-            <Select
-              value={formData.customerId}
-              onValueChange={(value) => {
-                handleInputChange("customerId", value);
-                if (errors.customerId)
-                  setErrors((prev) => ({ ...prev, customerId: "" }));
-              }}
-            >
-              <SelectTrigger
-                className={errors.customerId ? "border-red-500" : ""}
-              >
-                <SelectValue
-                  placeholder={t("admin.orders.form.selectCustomer")}
-                />
-              </SelectTrigger>
-              <SelectContent>
-                {customers.map((customer) => (
-                  <SelectItem key={customer.id} value={customer.id}>
-                    {customer.companyName}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {errors.customerId && (
-              <p className="text-sm text-red-500 mt-1">{errors.customerId}</p>
-            )}
-          </div>
-
-          
-
-          <div>
-            <Label>Activities</Label>
-            <div className="text-sm text-muted-foreground mb-2">
-              {selectedActivities.length} activities selected - Total: €{getTotalPrice().toFixed(2)}
-            </div>
-            <div className="max-h-40 overflow-y-auto border rounded-md p-3 space-y-2">
-              {activities.map((customerActivity) => (
-                <div key={customerActivity.id} className="flex items-center justify-between space-x-2">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`activity-${customerActivity.activity.id}`}
-                      checked={selectedActivities.includes(customerActivity.activity.id)}
-                      onCheckedChange={(checked) => handleActivityToggle(customerActivity.activity.id, checked as boolean)}
-                    />
-                    <Label htmlFor={`activity-${customerActivity.activity.id}`} className="text-sm">
-                      {customerActivity.activity.name}
-                    </Label>
+          <DialogTitle>Edit Order #{order.orderNumber}</DialogTitle>
+          <div className="flex justify-center mt-4">
+            <div className="flex items-center space-x-2">
+              {[1, 2, 3, 4].map((step) => (
+                <div key={step} className="flex items-center">
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
+                    currentStep >= step ? 'bg-primary text-white' : 'bg-muted text-muted-foreground'
+                  }`}>
+                    {step}
                   </div>
-                  <span className="text-sm text-muted-foreground">
-                    €{Number(customerActivity.unitPrice || customerActivity.activity.defaultPrice).toFixed(2)}
-                  </span>
+                  {step < 4 && <div className={`w-8 h-0.5 ${
+                    currentStep > step ? 'bg-primary' : 'bg-muted'
+                  }`} />}
                 </div>
               ))}
-              {activities.length === 0 && (
-                <p className="text-sm text-gray-500">{formData.customerId ? 'No activities available for this customer' : 'Select a customer first'}</p>
-              )}
             </div>
           </div>
+        </DialogHeader>
+        
+        <div className="space-y-6">
+          {currentStep === 1 && renderStep1()}
+          {currentStep === 2 && renderStep2()}
+          {currentStep === 3 && renderStep3()}
+          {currentStep === 4 && (
+            <form id="order-form" onSubmit={handleSubmit} className="space-y-6">
+              {renderStep4()}
+            </form>
+          )}
 
-          <div>
-            <Label>{t("admin.orders.form.description")}</Label>
-
-            {order.descriptionData?.descriptionData ? (
-              <div className="space-y-2 rounded-md border bg-muted p-3 text-sm">
-                {Object.entries(order.descriptionData.descriptionData).map(
-                  ([key, value]) => (
-                    <div key={key} className="flex justify-between gap-4">
-                      <span className="font-medium">{key}</span>
-                      <span className="text-muted-foreground">{value}</span>
-                    </div>
-                  )
-                )}
-                <p className="text-xs text-muted-foreground mt-2">
-                  ℹ️  {t("admin.customerDetails.template.readOnlyWarning")}
-                </p>
-              </div>
-            ) : (
-              <Textarea
-                value={formData.description || ""}
-                onChange={(e) =>
-                  handleInputChange("description", e.target.value)
-                }
-                rows={3}
-              />
-            )}
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="scheduledDate">
-                {t("admin.orders.form.scheduledDate")} *
-              </Label>
-              <Input
-                id="scheduledDate"
-                type="date"
-                value={formData.scheduledDate || ""}
-                onChange={(e) => {
-                  const newDate = e.target.value;
-                  handleInputChange("scheduledDate", newDate);
-                  // Auto-set startTime if not already set
-                  if (newDate && !formData.startTime) {
-                    handleInputChange("startTime", newDate + "T09:00");
-                  }
-                  if (errors.scheduledDate)
-                    setErrors((prev) => ({ ...prev, scheduledDate: "" }));
-                }}
-                className={errors.scheduledDate ? "border-red-500" : ""}
-              />
-              {errors.scheduledDate && (
-                <p className="text-sm text-red-500 mt-1">
-                  {errors.scheduledDate}
-                </p>
-              )}
-            </div>
-            <div>
-              <Label htmlFor="location">
-                {t("admin.orders.form.location")}
-              </Label>
-              <Input
-                id="location"
-                value={formData.location || ""}
-                onChange={(e) => handleInputChange("location", e.target.value)}
-                placeholder={t("admin.orders.form.locationPlaceholder")}
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="startTime">
-                {t("admin.orders.form.startDateTime")}
-              </Label>
-              <TimeOnlyInput
-                value={startTimeOnly}
-                onChange={setStartTimeOnly}
-              />
-              <p className="text-xs text-muted-foreground mt-1">
-                Auto-set from scheduled date
-              </p>
-            </div>
-            <div>
-              <Label htmlFor="endTime">
-                {t("admin.orders.form.endDateTime")} (Optional)
-              </Label>
-              <TimeOnlyInput value={endTimeOnly} onChange={setEndTimeOnly} />
-              <p className="text-xs text-muted-foreground mt-1">
-                Leave empty if not needed
-              </p>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* <div>
-              <Label htmlFor="requiredEmployees">{t("admin.orders.form.requiredEmployees")} *</Label>
-              <Input
-                id="requiredEmployees"
-                type="number"
-                min="1"
-                value={formData.requiredEmployees || 1}
-                onChange={(e) => {
-                  handleInputChange("requiredEmployees", Number(e.target.value));
-                  if (errors.requiredEmployees) setErrors(prev => ({ ...prev, requiredEmployees: "" }));
-                }}
-                className={errors.requiredEmployees ? "border-red-500" : ""}
-              />
-              {errors.requiredEmployees && <p className="text-sm text-red-500 mt-1">{errors.requiredEmployees}</p>}
-            </div> */}
-            <div>
-              <Label htmlFor="priority">
-                {t("admin.orders.form.priority")} *
-              </Label>
-              <Input
-                id="priority"
-                type="number"
-                min="1"
-                value={formData.priority || 1}
-                onChange={(e) => {
-                  handleInputChange("priority", Number(e.target.value));
-                  if (errors.priority)
-                    setErrors((prev) => ({ ...prev, priority: "" }));
-                }}
-                className={errors.priority ? "border-red-500" : ""}
-              />
-              {errors.priority && (
-                <p className="text-sm text-red-500 mt-1">{errors.priority}</p>
-              )}
-            </div>
-            <div>
-              <Label htmlFor="duration">
-                {t("admin.orders.form.duration")}
-              </Label>
-              <Input
-                id="duration"
-                type="number"
-                min="0"
-                step="0.5"
-                value={formData.duration || ""}
-                onChange={(e) =>
-                  handleInputChange(
-                    "duration",
-                    e.target.value ? Number(e.target.value) : null
-                  )
-                }
-              />
-            </div>
-          </div>
-
-          
-
-          <div>
-            <Label>{t("admin.orders.form.assignEmployeesEdit")}</Label>
-            <div className="text-sm text-muted-foreground mb-2">
-              {`${(formData.assignedEmployeeIds || []).length} employees selected`}
-            </div>
-            <div className="max-h-40 overflow-y-auto border rounded-md p-3 space-y-2">
-              {employees.map((employee) => (
-                <div key={employee.id} className="flex items-center space-x-2">
-                  <Checkbox
-                    id={`employee-${employee.id}`}
-                    checked={(formData.assignedEmployeeIds || []).includes(
-                      employee.id
-                    )}
-                    onCheckedChange={(checked) =>
-                      handleEmployeeToggle(employee.id, checked as boolean)
-                    }
-                  />
-                  <Label
-                    htmlFor={`employee-${employee.id}`}
-                    className="text-sm"
-                  >
-                    {employee.firstName} {employee.lastName} (
-                    {employee.employeeCode})
-                  </Label>
-                </div>
-              ))}
-              {employees.length === 0 && (
-                <p className="text-sm text-gray-500">
-                  {t("admin.orders.form.noEmployeesAvailable")}
-                </p>
-              )}
-            </div>
-          </div>
-
-          <div className="flex flex-col sm:flex-row justify-end gap-2 pt-4">
+          <div className="flex justify-between pt-4">
             <Button
               type="button"
               variant="outline"
-              onClick={() => onOpenChange(false)}
+              onClick={handlePrevious}
+              disabled={currentStep === 1}
             >
-              {t("admin.orders.form.cancel")}
+              <ChevronLeft className="w-4 h-4 mr-1" />
+              Previous
             </Button>
-            <Button type="submit" disabled={loading}>
-              {loading
-                ? t("admin.orders.form.updating")
-                : t("admin.orders.form.updateOrder")}
-            </Button>
+            
+            <div className="flex gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => onOpenChange(false)}
+              >
+                Cancel
+              </Button>
+              
+              {currentStep < 4 ? (
+                <Button type="button" onClick={(e) => {
+                  e.preventDefault();
+                  handleNext();
+                }}>
+                  Next
+                  <ChevronRight className="w-4 h-4 ml-1" />
+                </Button>
+              ) : (
+                <Button type="submit" disabled={loading} form="order-form">
+                  {loading ? "Updating..." : "Update Order"}
+                </Button>
+              )}
+            </div>
           </div>
-        </form>
-        )}
+        </div>
       </DialogContent>
     </Dialog>
   );

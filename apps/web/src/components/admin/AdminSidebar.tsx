@@ -119,12 +119,12 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => {
       path: "/dashboard-admin/customers",
       icon: Contact,
     },
-    {
-      name: "Activities",
-      key: "navigation.activities",
-      path: "/dashboard-admin/activities",
-      icon: Activity,
-    },
+    // {
+    //   name: "Activities",
+    //   key: "navigation.activities",
+    //   path: "/dashboard-admin/activities",
+    //   icon: Activity,
+    // },
     // { name: "Analytics", key: "navigation.analytics", path: "/dashboard-admin/analytics", icon: BarChart3 },
 
     {

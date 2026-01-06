@@ -48,7 +48,10 @@ const CreateOrderDialog: React.FC<CreateOrderDialogProps> = ({
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [activities, setActivities] = useState<CustomerActivity[]>([]);
-  const [selectedActivities, setSelectedActivities] = useState<string[]>([]);
+  const [selectedActivities, setSelectedActivities] = useState<Array<{
+    activityId: string;
+    quantity: number;
+  }>>([]);
   const [templateData, setTemplateData] = useState<Record<
     string,
     string
@@ -175,27 +178,15 @@ const CreateOrderDialog: React.FC<CreateOrderDialogProps> = ({
     setStartTimeOnly("09:00");
     setEndTimeOnly("");
     setSelectedActivities([]);
-    setTemplateData(
-      templateLines.length > 0
-        ? templateLines.reduce((acc, line) => ({ ...acc, [line]: "" }), {})
-        : null
-    );
+    setTemplateData(null);
+    setErrors({});
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Validate required fields
-    const newErrors: Record<string, string> = {};
-    if (!formData.scheduledDate)
-      newErrors.scheduledDate = t(
-        "customerPortal.createOrder.scheduledDateRequired"
-      );
-
-    setErrors(newErrors);
-
-    if (Object.keys(newErrors).length > 0) {
-      toast.error(t("customerPortal.createOrder.fillRequiredFields"));
+    if (!formData.scheduledDate) {
+      toast.error("Scheduled date is required");
       return;
     }
 
@@ -203,31 +194,18 @@ const CreateOrderDialog: React.FC<CreateOrderDialogProps> = ({
 
     try {
       const submitData = {
-        ...formData,
-        ...(selectedActivities.length > 0 && {
-          activities: selectedActivities.map((activityId) => ({
-            activityId,
-            quantity: 1,
-          })),
-        }),
-        templateData: templateData,
+        description: formData.description || "",
+        scheduledDate: new Date(formData.scheduledDate + "T00:00:00").toISOString(),
+        startTime: formData.scheduledDate && startTimeOnly ? 
+          new Date(`${formData.scheduledDate}T${startTimeOnly}`).toISOString() : null,
+        endTime: formData.scheduledDate && endTimeOnly ? 
+          new Date(`${formData.scheduledDate}T${endTimeOnly}`).toISOString() : null,
+        location: formData.location || "",
+        specialInstructions: formData.specialInstructions || "",
+        customerId: formData.customerId,
+        activities: selectedActivities,
+        templateData: templateData
       };
-
-      // Convert date and datetime-local to ISO format
-      if (submitData.scheduledDate) {
-        const dateStr = submitData.scheduledDate.includes("T")
-          ? submitData.scheduledDate
-          : submitData.scheduledDate + "T00:00:00";
-        submitData.scheduledDate = new Date(dateStr).toISOString();
-      }
-      if (submitData.startTime) {
-        submitData.startTime = new Date(submitData.startTime).toISOString();
-      }
-      if (submitData.endTime && submitData.endTime.trim()) {
-        submitData.endTime = new Date(submitData.endTime).toISOString();
-      } else {
-        submitData.endTime = undefined;
-      }
 
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/customers/me/orders`,
@@ -242,21 +220,21 @@ const CreateOrderDialog: React.FC<CreateOrderDialogProps> = ({
       );
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to create order");
+        const errorText = await response.text();
+        console.error("Order creation failed:", response.status, errorText);
+        throw new Error(`Failed to create order: ${response.status}`);
       }
 
-      toast.success(t("customerPortal.createOrder.orderCreatedSuccess"));
+      const result = await response.json();
+      console.log("Order created successfully:", result);
+      
+      toast.success("Order created successfully!");
       setOpen(false);
       resetFormData();
       onOrderCreated?.();
     } catch (error) {
       console.error("Error creating order:", error);
-      toast.error(
-        error instanceof Error
-          ? error.message
-          : t("customerPortal.createOrder.orderCreationFailed")
-      );
+      toast.error(error instanceof Error ? error.message : "Failed to create order");
     } finally {
       setLoading(false);
     }
@@ -268,7 +246,17 @@ const CreateOrderDialog: React.FC<CreateOrderDialogProps> = ({
 
   const handleActivityToggle = (activityId: string, checked: boolean) => {
     setSelectedActivities((prev) =>
-      checked ? [...prev, activityId] : prev.filter((id) => id !== activityId)
+      checked 
+        ? [...prev, { activityId, quantity: 1 }]
+        : prev.filter((sa) => sa.activityId !== activityId)
+    );
+  };
+
+  const handleQuantityChange = (activityId: string, quantity: number) => {
+    setSelectedActivities((prev) =>
+      prev.map((sa) =>
+        sa.activityId === activityId ? { ...sa, quantity } : sa
+      )
     );
   };
 
@@ -278,12 +266,7 @@ const CreateOrderDialog: React.FC<CreateOrderDialogProps> = ({
     );
   };
 
-  const getTotalPrice = () => {
-    return selectedActivities.reduce((total, activityId) => {
-      const activity = activities.find((a) => a.activity.id === activityId);
-      return total + (activity ? Number(activity.unitPrice) : 0);
-    }, 0);
-  };
+
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -304,10 +287,10 @@ const CreateOrderDialog: React.FC<CreateOrderDialogProps> = ({
               value={formData.scheduledDate}
               onChange={(e) => {
                 handleInputChange("scheduledDate", e.target.value);
-                if (errors.scheduledDate)
-                  setErrors((prev) => ({ ...prev, scheduledDate: "" }));
+                setErrors(prev => ({ ...prev, scheduledDate: "" }));
               }}
               className={errors.scheduledDate ? "border-red-500" : ""}
+              required
             />
             {errors.scheduledDate && (
               <p className="text-sm text-red-500 mt-1">
@@ -353,39 +336,60 @@ const CreateOrderDialog: React.FC<CreateOrderDialogProps> = ({
             <Label>{t("customerPortal.createOrder.selectActivities")}</Label>
             <div className="text-sm text-muted-foreground mb-2">
               {selectedActivities.length}{" "}
-              {t("customerPortal.createOrder.activitiesSelected")} -{" "}
-              {t("customerPortal.createOrder.totalPrice")}: €
-              {getTotalPrice().toFixed(2)}
+              {t("customerPortal.createOrder.activitiesSelected")}
             </div>
-            <div className="max-h-40 overflow-y-auto border rounded-md p-3 space-y-2">
+            <div className="max-h-40 overflow-y-auto border rounded-md p-3 space-y-3">
               {activities.map((customerActivity) => (
                 <div
                   key={customerActivity.id}
-                  className="flex items-center justify-between space-x-2"
+                  className="border rounded-md p-3 space-y-2"
                 >
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`activity-${customerActivity.activity.id}`}
-                      checked={selectedActivities.includes(
-                        customerActivity.activity.id
-                      )}
-                      onCheckedChange={(checked) =>
-                        handleActivityToggle(
-                          customerActivity.activity.id,
-                          checked as boolean
-                        )
-                      }
-                    />
-                    <Label
-                      htmlFor={`activity-${customerActivity.activity.id}`}
-                      className="text-sm"
-                    >
-                      {customerActivity.activity.name}
-                    </Label>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        id={`activity-${customerActivity.activity.id}`}
+                        checked={selectedActivities.some(
+                          (sa) => sa.activityId === customerActivity.activity.id
+                        )}
+                        onCheckedChange={(checked) =>
+                          handleActivityToggle(
+                            customerActivity.activity.id,
+                            checked as boolean
+                          )
+                        }
+                      />
+                      <Label
+                        htmlFor={`activity-${customerActivity.activity.id}`}
+                        className="text-sm font-medium"
+                      >
+                        {customerActivity.activity.name}
+                      </Label>
+                    </div>
                   </div>
-                  <span className="text-sm text-muted-foreground">
-                    €{Number(customerActivity.unitPrice).toFixed(2)}
-                  </span>
+                  {selectedActivities.some(
+                    (sa) => sa.activityId === customerActivity.activity.id
+                  ) && (
+                    <div className="ml-6">
+                      <Label className="text-xs">Quantity *</Label>
+                      <Input
+                        type="number"
+                        min="1"
+                        value={
+                          selectedActivities.find(
+                            (sa) => sa.activityId === customerActivity.activity.id
+                          )?.quantity || 1
+                        }
+                        onChange={(e) =>
+                          handleQuantityChange(
+                            customerActivity.activity.id,
+                            parseInt(e.target.value) || 1
+                          )
+                        }
+                        className="w-20"
+                        required
+                      />
+                    </div>
+                  )}
                 </div>
               ))}
               {activities.length === 0 && (
@@ -394,7 +398,6 @@ const CreateOrderDialog: React.FC<CreateOrderDialogProps> = ({
                 </p>
               )}
             </div>
-            
           </div>
 
           {/* Template Data (if available) */}

@@ -1,16 +1,23 @@
 import { Request, Response } from 'express';
 import { prisma } from '@repo/db';
-import { getPriceForCustomer, validatePriceOverlap } from '../services/priceService';
+import { getPriceForCustomer, validatePriceTierOverlap } from '../services/priceService';
 import { Decimal } from 'decimal.js';
+import { ActivityType } from '../types/pricing';
 
 export const getCustomerPrices = async (req: Request, res: Response) => {
   try {
     const { id: customerId } = req.params;
+    const { activityId } = req.query;
+
+    const whereClause: any = { customerId };
+    if (activityId) {
+      whereClause.activityId = activityId as string;
+    }
 
     const prices = await prisma.customerPrice.findMany({
-      where: { customerId },
+      where: whereClause,
       include: { activity: true },
-      orderBy: { effectiveFrom: 'desc' }
+      orderBy: [{ effectiveFrom: 'desc' }, { minQuantity: 'asc' }]
     });
 
     res.json(prices);
@@ -27,7 +34,7 @@ export const getCustomerActivities = async (req: Request, res: Response) => {
       where: { 
         customerId,
         isActive: true,
-        orderId: null // Only get unassigned activities
+        orderId: null
       },
       include: { activity: true },
       orderBy: { createdAt: 'desc' }
@@ -42,31 +49,43 @@ export const getCustomerActivities = async (req: Request, res: Response) => {
 export const createCustomerPrice = async (req: Request, res: Response) => {
   try {
     const { id: customerId } = req.params;
-    const { activityId, price, currency = 'EUR', effectiveFrom, effectiveTo, isActive = true } = req.body;
+    const { activityId, minQuantity, maxQuantity, price, currency = 'EUR', effectiveFrom, effectiveTo, isActive = true } = req.body;
 
-    if (!activityId || !price || !effectiveFrom) {
-      return res.status(400).json({ error: 'activityId, price, and effectiveFrom are required' });
+    if (!activityId || !minQuantity || !maxQuantity || !price || !effectiveFrom) {
+      return res.status(400).json({ error: 'activityId, minQuantity, maxQuantity, price, and effectiveFrom are required' });
+    }
+
+    if (minQuantity <= 0 || maxQuantity <= 0) {
+      return res.status(400).json({ error: 'Quantities must be positive' });
+    }
+
+    if (minQuantity > maxQuantity) {
+      return res.status(400).json({ error: 'Minimum quantity cannot be greater than maximum quantity' });
     }
 
     if (new Decimal(price).lte(0)) {
       return res.status(400).json({ error: 'Price must be greater than 0' });
     }
 
-    const isValid = await validatePriceOverlap(
+    const isValid = await validatePriceTierOverlap(
       customerId,
       activityId,
+      minQuantity,
+      maxQuantity,
       new Date(effectiveFrom),
       effectiveTo ? new Date(effectiveTo) : null
     );
 
     if (!isValid) {
-      return res.status(400).json({ error: 'Price overlaps with existing price range' });
+      return res.status(400).json({ error: 'Price tier overlaps with existing tier' });
     }
 
     const customerPrice = await prisma.customerPrice.create({
       data: {
         customerId,
         activityId,
+        minQuantity,
+        maxQuantity,
         price: new Decimal(price),
         currency,
         effectiveFrom: new Date(effectiveFrom),
@@ -85,7 +104,7 @@ export const createCustomerPrice = async (req: Request, res: Response) => {
 export const updateCustomerPrice = async (req: Request, res: Response) => {
   try {
     const { id: customerId, priceId } = req.params;
-    const { price, currency, effectiveFrom, effectiveTo, isActive } = req.body;
+    const { minQuantity, maxQuantity, price, currency, effectiveFrom, effectiveTo, isActive } = req.body;
 
     const existing = await prisma.customerPrice.findUnique({
       where: { id: priceId }
@@ -95,27 +114,38 @@ export const updateCustomerPrice = async (req: Request, res: Response) => {
       return res.status(404).json({ error: 'Price not found' });
     }
 
+    const newMinQuantity = minQuantity ?? existing.minQuantity;
+    const newMaxQuantity = maxQuantity ?? existing.maxQuantity;
+
+    if (newMinQuantity > newMaxQuantity) {
+      return res.status(400).json({ error: 'Minimum quantity cannot be greater than maximum quantity' });
+    }
+
     if (price && new Decimal(price).lte(0)) {
       return res.status(400).json({ error: 'Price must be greater than 0' });
     }
 
-    if (effectiveFrom || effectiveTo) {
-      const isValid = await validatePriceOverlap(
+    if (minQuantity || maxQuantity || effectiveFrom || effectiveTo) {
+      const isValid = await validatePriceTierOverlap(
         customerId,
         existing.activityId,
+        newMinQuantity,
+        newMaxQuantity,
         effectiveFrom ? new Date(effectiveFrom) : existing.effectiveFrom,
         effectiveTo ? new Date(effectiveTo) : existing.effectiveTo,
         priceId
       );
 
       if (!isValid) {
-        return res.status(400).json({ error: 'Price overlaps with existing price range' });
+        return res.status(400).json({ error: 'Price tier overlaps with existing tier' });
       }
     }
 
     const updated = await prisma.customerPrice.update({
       where: { id: priceId },
       data: {
+        ...(minQuantity && { minQuantity }),
+        ...(maxQuantity && { maxQuantity }),
         ...(price && { price: new Decimal(price) }),
         ...(currency && { currency }),
         ...(effectiveFrom && { effectiveFrom: new Date(effectiveFrom) }),
@@ -176,23 +206,23 @@ export const getActivities = async (req: Request, res: Response) => {
 export const updateActivity = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const { name, code, description, defaultPrice, unit } = req.body;
+    const { name, type, code, description, unit } = req.body;
 
-    if (!name || !defaultPrice) {
-      return res.status(400).json({ error: 'name and defaultPrice are required' });
+    if (!name || !type) {
+      return res.status(400).json({ error: 'name and type are required' });
     }
 
-    if (new Decimal(defaultPrice).lte(0)) {
-      return res.status(400).json({ error: 'defaultPrice must be greater than 0' });
+    if (!Object.values(ActivityType).includes(type)) {
+      return res.status(400).json({ error: 'Invalid activity type' });
     }
 
     const activity = await prisma.activity.update({
       where: { id },
       data: {
         name,
+        type,
         code,
         description,
-        defaultPrice: new Decimal(defaultPrice),
         unit
       }
     });
@@ -219,73 +249,104 @@ export const deleteActivity = async (req: Request, res: Response) => {
 
 export const createActivity = async (req: Request, res: Response) => {
   try {
-    const { name, code, description, defaultPrice, unit = 'hour' } = req.body;
+    const { name, type, code, description, unit = 'hour' } = req.body;
 
-    if (!name || !defaultPrice) {
-      return res.status(400).json({ error: 'name and defaultPrice are required' });
+    if (!name || !type) {
+      return res.status(400).json({ error: 'name and type are required' });
     }
 
-    if (new Decimal(defaultPrice).lte(0)) {
-      return res.status(400).json({ error: 'defaultPrice must be greater than 0' });
+    if (!Object.values(ActivityType).includes(type)) {
+      return res.status(400).json({ error: 'Invalid activity type' });
+    }
+
+    // Check if activity with same name already exists
+    const existingActivity = await prisma.activity.findFirst({
+      where: { name }
+    });
+
+    if (existingActivity) {
+      return res.status(409).json({ error: `Activity with name '${name}' already exists` });
     }
 
     const activity = await prisma.activity.create({
       data: {
         name,
-        code,
-        description,
-        defaultPrice: new Decimal(defaultPrice),
+        type,
+        code: code || null,
+        description: description || null,
         unit
       }
     });
 
     res.status(201).json(activity);
   } catch (error: any) {
+    if (error.code === 'P2002') {
+      return res.status(409).json({ error: 'Activity with this name already exists' });
+    }
     res.status(500).json({ error: error.message });
   }
 };
 
 export const createCustomerActivity = async (req: Request, res: Response) => {
   try {
-    const { customerId, name, code, defaultPrice, unit = 'hour' } = req.body;
+    const { customerId, activityId, quantity, unitPrice, orderId } = req.body;
 
-    if (!customerId || !name || !defaultPrice) {
-      return res.status(400).json({ error: 'customerId, name and defaultPrice are required' });
+    if (!customerId || !activityId || !quantity || !unitPrice) {
+      return res.status(400).json({ error: 'customerId, activityId, quantity, and unitPrice are required' });
     }
 
-    if (new Decimal(defaultPrice).lte(0)) {
-      return res.status(400).json({ error: 'defaultPrice must be greater than 0' });
+    if (quantity <= 0) {
+      return res.status(400).json({ error: 'Quantity must be positive' });
     }
 
-    const result = await prisma.$transaction(async (tx) => {
-      // Create the activity first
-      const activity = await tx.activity.create({
-        data: {
-          name,
-          code,
-          defaultPrice: new Decimal(defaultPrice),
-          unit
-        }
-      });
+    if (new Decimal(unitPrice).lte(0)) {
+      return res.status(400).json({ error: 'Unit price must be greater than 0' });
+    }
 
-      // Create the customer activity relationship
-      const customerActivity = await tx.customerActivity.create({
-        data: {
-          customerId,
-          activityId: activity.id,
-          unitPrice: new Decimal(defaultPrice)
-        },
-        include: {
-          activity: true,
-          customer: true
-        }
-      });
+    const lineTotal = new Decimal(unitPrice).mul(quantity);
 
-      return customerActivity;
+    const customerActivity = await prisma.customerActivity.create({
+      data: {
+        customerId,
+        activityId,
+        orderId: orderId || null,
+        quantity,
+        unitPrice: new Decimal(unitPrice),
+        lineTotal
+      },
+      include: { activity: true }
     });
 
-    res.status(201).json(result);
+    res.status(201).json(customerActivity);
   } catch (error: any) {
     res.status(500).json({ error: error.message });
+  }
+};
+
+export const calculatePrice = async (req: Request, res: Response) => {
+  try {
+    const { customerId, activityId, quantity } = req.body;
+
+    if (!customerId || !activityId || !quantity) {
+      return res.status(400).json({ error: 'customerId, activityId, and quantity are required' });
+    }
+
+    if (quantity <= 0) {
+      return res.status(400).json({ error: 'Quantity must be positive' });
+    }
+
+    const priceResult = await getPriceForCustomer(customerId, activityId, quantity);
+    const lineTotal = priceResult.price.mul(quantity);
+
+    res.json({
+      unitPrice: priceResult.price,
+      currency: priceResult.currency,
+      quantity,
+      lineTotal,
+      unit: priceResult.unit,
+      tier: priceResult.tier
+    });
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
   }
 };

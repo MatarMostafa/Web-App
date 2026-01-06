@@ -475,6 +475,131 @@ async function main() {
     }),
   ]);
 
+  // Create activities
+  const activities = await Promise.all([
+    prisma.activity.upsert({
+      where: { name: "Container Unloading" },
+      update: {},
+      create: {
+        name: "Container Unloading",
+        type: "CONTAINER_UNLOADING",
+        code: "CU001",
+        unit: "hour",
+        description: "Unloading containers from trucks"
+      },
+    }),
+    prisma.activity.upsert({
+      where: { name: "Wrapping" },
+      update: {},
+      create: {
+        name: "Wrapping",
+        type: "WRAPPING",
+        code: "WR001",
+        unit: "piece",
+        description: "Wrapping goods for shipment"
+      },
+    }),
+    prisma.activity.upsert({
+      where: { name: "Repacking" },
+      update: {},
+      create: {
+        name: "Repacking",
+        type: "REPACKING",
+        code: "RP001",
+        unit: "hour",
+        description: "Repacking items for distribution"
+      },
+    }),
+  ]);
+
+  // Create customer pricing tiers
+  await Promise.all([
+    prisma.customerPrice.upsert({
+      where: {
+        customerId_activityId_minQuantity_maxQuantity_effectiveFrom: {
+          customerId: customers[0].id,
+          activityId: activities[0].id,
+          minQuantity: 1,
+          maxQuantity: 10,
+          effectiveFrom: new Date("2024-01-01")
+        }
+      },
+      update: {},
+      create: {
+        customerId: customers[0].id,
+        activityId: activities[0].id,
+        minQuantity: 1,
+        maxQuantity: 10,
+        price: 25.00,
+        currency: "EUR",
+        effectiveFrom: new Date("2024-01-01")
+      },
+    }),
+    prisma.customerPrice.upsert({
+      where: {
+        customerId_activityId_minQuantity_maxQuantity_effectiveFrom: {
+          customerId: customers[0].id,
+          activityId: activities[0].id,
+          minQuantity: 11,
+          maxQuantity: 999999,
+          effectiveFrom: new Date("2024-01-01")
+        }
+      },
+      update: {},
+      create: {
+        customerId: customers[0].id,
+        activityId: activities[0].id,
+        minQuantity: 11,
+        maxQuantity: 999999,
+        price: 22.00,
+        currency: "EUR",
+        effectiveFrom: new Date("2024-01-01")
+      },
+    }),
+    prisma.customerPrice.upsert({
+      where: {
+        customerId_activityId_minQuantity_maxQuantity_effectiveFrom: {
+          customerId: customers[1].id,
+          activityId: activities[1].id,
+          minQuantity: 1,
+          maxQuantity: 50,
+          effectiveFrom: new Date("2024-01-01")
+        }
+      },
+      update: {},
+      create: {
+        customerId: customers[1].id,
+        activityId: activities[1].id,
+        minQuantity: 1,
+        maxQuantity: 50,
+        price: 15.00,
+        currency: "EUR",
+        effectiveFrom: new Date("2024-01-01")
+      },
+    }),
+    prisma.customerPrice.upsert({
+      where: {
+        customerId_activityId_minQuantity_maxQuantity_effectiveFrom: {
+          customerId: customers[1].id,
+          activityId: activities[1].id,
+          minQuantity: 51,
+          maxQuantity: 999999,
+          effectiveFrom: new Date("2024-01-01")
+        }
+      },
+      update: {},
+      create: {
+        customerId: customers[1].id,
+        activityId: activities[1].id,
+        minQuantity: 51,
+        maxQuantity: 999999,
+        price: 12.00,
+        currency: "EUR",
+        effectiveFrom: new Date("2024-01-01")
+      },
+    }),
+  ]);
+
   // Create orders
   const orders = await Promise.all([
     prisma.order.upsert({

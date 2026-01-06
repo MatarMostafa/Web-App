@@ -47,7 +47,7 @@ const isoDateField = z.preprocess((val) => {
     }
   }
   return val;
-}, z.string());
+}, z.string().datetime({ message: "Invalid datetime format" }));
 
 // =========================
 // ORDER SCHEMAS
@@ -73,12 +73,19 @@ export const createOrderSchema = z.object({
     activities: z.array(z.object({
       activityId: z.string().cuid(),
       quantity: z.number().int().positive().optional().default(1)
-    })).optional()
+    })).optional(),
+    cartonQuantity: z.number().int().positive().optional(),
+    articleQuantity: z.number().int().positive().optional(),
+    templateData: z.record(z.string(), z.string()).nullable().optional()
   })
 });
 
 export const updateOrderSchema = z.object({
-  body: createOrderSchema.shape.body.partial(),
+  body: createOrderSchema.shape.body.partial().extend({
+    cartonQuantity: z.number().int().positive().optional(),
+    articleQuantity: z.number().int().positive().optional(),
+    templateData: z.record(z.string(), z.string()).nullable().optional()
+  }),
   params: z.object({ id: z.string().cuid() })
 });
 
@@ -98,8 +105,8 @@ export const createAssignmentSchema = z.object({
   params: z.object({ orderId: z.string().cuid() }),
   body: z.object({
     employeeId: z.string().cuid(),
-    startDate: isoDateField.optional(),
-    endDate: isoDateField.optional(),
+    startDate: z.string().datetime({ message: "Invalid datetime format" }).optional(),
+    endDate: z.string().datetime({ message: "Invalid datetime format" }).optional(),
     estimatedHours: z.number().positive().optional(),
     notes: z.string().optional()
   })
@@ -108,8 +115,8 @@ export const createAssignmentSchema = z.object({
 export const updateAssignmentSchema = z.object({
   params: z.object({ id: z.string().cuid() }),
   body: z.object({
-    startDate: isoDateField.optional(),
-    endDate: isoDateField.optional(),
+    startDate: z.string().datetime({ message: "Invalid datetime format" }).optional(),
+    endDate: z.string().datetime({ message: "Invalid datetime format" }).optional(),
     status: AssignmentStatusEnum.optional(),
     estimatedHours: z.number().positive().optional(),
     actualHours: z.number().positive().optional(),

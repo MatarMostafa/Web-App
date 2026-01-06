@@ -142,12 +142,9 @@ export const OrderActivities: React.FC<OrderActivitiesProps> = ({ orderId }) => 
                       )}
                       <div className="flex justify-between items-center">
                         <span>{t("employee.orderDetail.quantity")}: {activity.metadata.quantity}</span>
-                        {activity.metadata.unitPrice && (
-                          <span>€{Number(activity.metadata.unitPrice).toFixed(2)}/{activity.metadata.unit}</span>
-                        )}
                       </div>
-                      {activity.metadata.lineTotal && (
-                        <div className="font-medium">{t("employee.orderDetail.total")}: €{Number(activity.metadata.lineTotal).toFixed(2)}</div>
+                      {activity.metadata.unitPrice && (
+                        <div className="font-medium">{t("employee.orderDetail.total")}: €{Number(activity.metadata.unitPrice).toFixed(2)}</div>
                       )}
                     </div>
                   )}
