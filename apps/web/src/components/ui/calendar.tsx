@@ -51,10 +51,10 @@ function Calendar({
       onMonthChange={handleMonthChange}
       classNames={{
         months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
-        month: "space-y-4 min-w-[280px]", // ensure month block has enough width
+        month: "space-y-4 min-w-[280px]",
         month_caption: "flex justify-center items-center relative min-h-[2rem]",
         caption_label: "text-sm font-medium",
-        nav: "flex items-center", // keep arrows inline
+        nav: "flex items-center",
         button_previous: cn(
           buttonVariants({ variant: "outline" }),
           "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 absolute left-1 top-1/2 -translate-y-1/2"
@@ -63,23 +63,21 @@ function Calendar({
           buttonVariants({ variant: "outline" }),
           "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 absolute right-1 top-1/2 -translate-y-1/2"
         ),
-        month_grid: "w-full border-collapse space-y-1", // updated
+        month_grid: "w-full border-collapse space-y-1",
         weekdays: "flex",
-        weekday: "text-mforeground rounded-md w-9 font-normal text-[0.8rem]", // updated
-        week: "flex w-full mt-2", // updated
-        day: "h-9 w-9 text-center text-sm p-0 relative [&:has([aria-selected].range_end)]:rounded-r-md [&:has([aria-selected].outside)]:bg-accent/50 [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20", // was `cell`
+        weekday: "text-gray-600 rounded-md w-9 font-normal text-[0.8rem]",
+        week: "flex w-full mt-2",
+        day: "h-9 w-9 text-center text-sm p-0 relative [&:has([aria-selected].range_end)]:rounded-r-md [&:has([aria-selected].outside)]:bg-gray-100 [&:has([aria-selected])]:bg-gray-100 first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
         day_button: cn(
           buttonVariants({ variant: "ghost" }),
           "h-9 w-9 p-0 font-normal aria-selected:opacity-100"
         ),
-        selected:
-          "bg-primary text-pforeground hover:bg-primary hover:text-pforeground focus:bg-primary focus:text-pforeground", // updated
-        today: "bg-accent text-aforeground", // updated
-        outside:
-          "outside text-mforeground opacity-50 aria-selected:bg-accent/50 aria-selected:text-mforeground aria-selected:opacity-30", // updated
-        disabled: "text-mforeground opacity-50", // updated
-        range_middle: "aria-selected:bg-accent aria-selected:text-aforeground", // updated
-        hidden: "invisible", // updated
+        selected: "bg-black text-white hover:bg-gray-800 hover:text-white focus:bg-black focus:text-white",
+        today: "bg-gray-200 text-black",
+        outside: "outside text-gray-400 opacity-50 aria-selected:bg-gray-100 aria-selected:text-gray-400 aria-selected:opacity-30",
+        disabled: "text-gray-400 opacity-50",
+        range_middle: "aria-selected:bg-gray-100 aria-selected:text-black",
+        hidden: "invisible",
         ...classNames,
       }}
       components={{

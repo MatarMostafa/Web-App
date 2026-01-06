@@ -77,7 +77,7 @@ router.get('/customers/me/activities', roleMiddleware(['CUSTOMER', 'CUSTOMER_SUB
             code: true,
             description: true,
             unit: true,
-            defaultPrice: true
+
           }
         }
       },
@@ -113,9 +113,9 @@ router.get('/customers/me/activities', roleMiddleware(['CUSTOMER', 'CUSTOMER_SUB
           code: activity.code,
           description: activity.description,
           unit: activity.unit,
-          defaultPrice: activity.defaultPrice
+          defaultPrice: 50.00
         },
-        unitPrice: activity.customerPrices[0]?.price || activity.defaultPrice,
+        unitPrice: activity.customerPrices[0]?.price || 50.00,
         quantity: 1,
         isActive: true
       }));

@@ -2,10 +2,11 @@ import React, { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui";
 import { Badge } from "@/components/ui";
-import { Building, ShoppingCart, Users } from "lucide-react";
+import { Building, ShoppingCart, Users, Activity } from "lucide-react";
 import { Customer } from "@/types/customer";
 import AdminCustomerSubAccountsTab from "@/components/admin/AdminCustomerSubAccountsTab";
 import CustomerTemplateTab from "@/components/admin/CustomerTemplateTab";
+import CustomerActivitiesTab from "@/components/admin/CustomerActivitiesTab";
 import { useTranslation } from '@/hooks/useTranslation';
 
 interface CustomerProfileProps {
@@ -30,9 +31,10 @@ const CustomerProfile: React.FC<CustomerProfileProps> = ({
   return (
     <div className="space-y-6">
       <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="overview">{t('admin.customerDetails.tabs.overview')}</TabsTrigger>
           <TabsTrigger value="orders">{t('admin.customerDetails.tabs.orders')}</TabsTrigger>
+          <TabsTrigger value="activities">{t('activities.title')}</TabsTrigger>
           <TabsTrigger value="subaccounts">{t('admin.customerDetails.tabs.subAccounts')}</TabsTrigger>
           <TabsTrigger value="template">{t('admin.customerDetails.template.title')}</TabsTrigger>
         </TabsList>
@@ -98,6 +100,10 @@ const CustomerProfile: React.FC<CustomerProfileProps> = ({
               )}
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="activities" className="space-y-6">
+          <CustomerActivitiesTab customerId={customer.id} />
         </TabsContent>
 
         <TabsContent value="subaccounts" className="space-y-6">

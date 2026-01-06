@@ -735,7 +735,42 @@
         "validationError": "Bitte beheben Sie die Validierungsfehler",
         "createError": "Fehler beim Erstellen des Auftrags",
         "updateError": "Fehler beim Aktualisieren des Auftrags",
-        "deleteError": "Fehler beim Löschen des Auftrags"
+        "deleteError": "Fehler beim Löschen des Auftrags",
+        "stepTitles": {
+          "step1": "Schritt 1: Kunde auswählen",
+          "step2": "Schritt 2: Aktivitäten auswählen",
+          "step3": "Schritt 3: Mengen",
+          "step4": "Schritt 4: Auftragsdetails"
+        },
+        "stepDescriptions": {
+          "step1": "Wählen Sie den Kunden für diesen Auftrag",
+          "step2": "Wählen Sie Aktivitäten für diesen Auftrag",
+          "step3": "Geben Sie Karton- und Artikelmengen ein",
+          "step4": "Vervollständigen Sie die Auftragsinformationen"
+        },
+        "activities": "Aktivitäten",
+        "activitiesSelected": "Aktivitäten ausgewählt",
+        "noActivitiesAvailable": "Keine Aktivitäten für diesen Kunden verfügbar",
+        "cartonQuantity": "Kartonmenge",
+        "articleQuantity": "Artikelmenge",
+        "cartonQuantityRequired": "Kartonmenge ist erforderlich",
+        "articleQuantityRequired": "Artikelmenge ist erforderlich",
+        "enterCartonQuantity": "Kartonmenge eingeben",
+        "enterArticleQuantity": "Artikelmenge eingeben",
+        "priceCalculation": "Preisberechnung",
+        "basedOnCartonQuantity": "Basierend auf Kartonmenge",
+        "basePrice": "Grundpreis",
+        "totalPrice": "Gesamtpreis",
+        "priceRanges": "Preisbereiche",
+        "validFrom": "Gültig ab",
+        "type": "Typ",
+        "unit": "Einheit",
+        "previous": "Zurück",
+        "next": "Weiter",
+        "orderCreatedSuccess": "Auftrag erfolgreich erstellt",
+        "selectAtLeastOneActivity": "Bitte wählen Sie mindestens eine Aktivität aus",
+        "enterValidCartonQuantity": "Bitte geben Sie eine gültige Kartonmenge ein",
+        "employeesSelectedCount": "{{count}} Mitarbeiter ausgewählt"
       },
       "activities": {
         "containerUnloading": "Container entladen",
@@ -810,6 +845,7 @@
         "fieldPlaceholder": "Feldbezeichnung eingeben (z.B. Container, Gewicht, etc.)",
         "employeePlaceholder": "Mitarbeiter wird dieses Feld ausfüllen",
         "saving": "Wird gespeichert...",
+        "createTemplate": "Vorlage erstellen",
         "updateTemplate": "Vorlage aktualisieren",
         "confirmDelete": "Sind Sie sicher, dass Sie diese Vorlage löschen möchten?",
         "useCustomDescription": "Benutzerdefinierte Beschreibung verwenden",
@@ -818,7 +854,6 @@
         "customDescriptionPlaceholder": "Benutzerdefinierte Beschreibung eingeben",
         "loading": "Vorlage wird geladen...",
         "readOnlyWarning":"Diese Beschreibung basiert auf einer Vorlage und kann nicht bearbeitet werden."
-
       }
     },
     "customers": {
@@ -1487,6 +1522,13 @@
       "needHelpMessage": "Wenn Sie Fragen zu diesem Auftrag haben, wenden Sie sich bitte an unser Support-Team.",
       "contactSupport": "Support kontaktieren",
       "viewFaq": "FAQ anzeigen",
+      "quantities": "Mengen",
+      "cartonQuantity": "Kartonmenge",
+      "articleQuantity": "Artikelmenge",
+      "orderPricing": "Auftragspreise",
+      "activity": "Aktivität",
+      "quantity": "Menge",
+      "total": "Gesamt",
       "statusDescription": {
         "planned": "Ihr Auftrag wurde geplant und wartet auf die Ausführung.",
         "inprogress": "Ihr Auftrag wird derzeit von unserem Team bearbeitet.",
@@ -1840,6 +1882,8 @@
     "deleteActivity": "Aktivität löschen",
     "confirmDelete": "Sind Sie sicher, dass Sie diese Aktivität löschen möchten?",
     "noActivitiesFound": "Keine Aktivitäten gefunden",
+    "noActivities": "Keine Aktivitäten gefunden",
+    "noActivitiesDesc": "Aktivitäten werden hier angezeigt, wenn verfügbar",
     "getStartedMessage": "Beginnen Sie, indem Sie Ihre erste Aktivität hinzufügen",
     "table": {
       "name": "Name",
@@ -1849,7 +1893,8 @@
       "status": "Status",
       "actions": "Aktionen",
       "active": "Aktiv",
-      "inactive": "Inaktiv"
+      "inactive": "Inaktiv",
+      "type": "Typ"
     },
     "form": {
       "customer": "Kunde",
@@ -1859,6 +1904,8 @@
       "name": "Name",
       "nameRequired": "Name ist erforderlich",
       "code": "Code",
+      "type": "Typ",
+      "selectType": "Typ auswählen",
       "defaultPrice": "Standardpreis (EUR)",
       "defaultPriceRequired": "Standardpreis ist erforderlich",
       "unit": "Einheit",
@@ -1874,7 +1921,9 @@
       "createError": "Fehler beim Speichern der Aktivität",
       "updateError": "Fehler beim Speichern der Aktivität",
       "deleteError": "Fehler beim Löschen der Aktivität",
-      "loadError": "Fehler beim Laden der Aktivitäten"
+      "loadError": "Fehler beim Laden der Aktivitäten",
+      "noActivities": "Keine Aktivitäten gefunden",
+      "noActivitiesDesc": "Aktivitäten werden hier angezeigt, wenn verfügbar"
     }
   },
   "customerExport": {
