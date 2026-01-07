@@ -13,7 +13,7 @@
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate dev",
     "db:seed": "ts-node prisma/seed.ts",
-    "db:reset": "prisma migrate reset --force && npm run db:seed",
+    "db:reset": "prisma migrate reset --force && yarn db:seed",
     "studio": "prisma studio",
     "dev": "tsc -w",
     "build": "tsc -p ."

@@ -1,20 +1,35 @@
 -- CreateEnum
-CREATE TYPE "UserRole" AS ENUM ('ADMIN', 'TEAM_LEADER', 'EMPLOYEE', 'HR_MANAGER', 'SUPER_ADMIN');
+CREATE TYPE "UserRole" AS ENUM ('ADMIN', 'TEAM_LEADER', 'EMPLOYEE', 'HR_MANAGER', 'SUPER_ADMIN', 'CUSTOMER', 'CUSTOMER_SUB_USER');
 
 -- CreateEnum
 CREATE TYPE "RatingStatus" AS ENUM ('EXCELLENT', 'GOOD', 'NEEDS_IMPROVEMENT');
 
 -- CreateEnum
-CREATE TYPE "OrderStatus" AS ENUM ('DRAFT', 'OPEN', 'ACTIVE', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED', 'EXPIRED');
+CREATE TYPE "OrderStatus" AS ENUM ('DRAFT', 'OPEN', 'ACTIVE', 'IN_PROGRESS', 'IN_REVIEW', 'COMPLETED', 'CANCELLED', 'EXPIRED');
 
 -- CreateEnum
 CREATE TYPE "RequestStatus" AS ENUM ('PENDING', 'APPROVED', 'REJECTED', 'CANCELLED');
 
 -- CreateEnum
+CREATE TYPE "SettingsChangeType" AS ENUM ('FIRST_NAME', 'LAST_NAME', 'EMAIL_ADDRESS', 'COMPANY_NAME', 'TAX_NUMBER');
+
+-- CreateEnum
 CREATE TYPE "AssignmentStatus" AS ENUM ('ASSIGNED', 'ACTIVE', 'COMPLETED', 'CANCELLED', 'OVERDUE');
 
 -- CreateEnum
+CREATE TYPE "AssignmentTier" AS ENUM ('PRIMARY', 'BACKUP', 'FALLBACK');
+
+-- CreateEnum
+CREATE TYPE "DocumentType" AS ENUM ('RESUME', 'ID_CARD', 'PASSPORT', 'CONTRACT', 'CERTIFICATE', 'WORK_EVIDENCE', 'PROFILE_PICTURE', 'OTHER');
+
+-- CreateEnum
+CREATE TYPE "NoteCategory" AS ENUM ('COMPLETION_REQUEST', 'ADMIN_RESPONSE', 'GENERAL_UPDATE', 'ISSUE_REPORT');
+
+-- CreateEnum
 CREATE TYPE "AbsenceType" AS ENUM ('SICK_LEAVE', 'VACATION', 'PERSONAL_LEAVE', 'MATERNITY_LEAVE', 'PATERNITY_LEAVE', 'UNPAID_LEAVE', 'BEREAVEMENT_LEAVE', 'OTHER');
+
+-- CreateEnum
+CREATE TYPE "ActivityType" AS ENUM ('CONTAINER_UNLOADING', 'WRAPPING', 'REPACKING', 'CROSSING', 'LABELING', 'OTHER');
 
 -- CreateEnum
 CREATE TYPE "WorkScheduleType" AS ENUM ('FULL_TIME', 'PART_TIME', 'CONTRACT', 'TEMPORARY', 'INTERN');
@@ -25,7 +40,7 @@ CREATE TYPE "TrafficLight" AS ENUM ('RED', 'YELLOW', 'GREEN');
 -- CreateTable
 CREATE TABLE "users" (
     "id" TEXT NOT NULL,
-    "email" TEXT NOT NULL,
+    "email" TEXT,
     "username" TEXT NOT NULL,
     "password" TEXT NOT NULL,
     "role" "UserRole" NOT NULL DEFAULT 'EMPLOYEE',
@@ -51,16 +66,16 @@ CREATE TABLE "users" (
 CREATE TABLE "employees" (
     "id" TEXT NOT NULL,
     "employeeCode" TEXT NOT NULL,
-    "firstName" TEXT NOT NULL,
-    "lastName" TEXT NOT NULL,
+    "firstName" TEXT,
+    "lastName" TEXT,
     "phoneNumber" TEXT,
     "dateOfBirth" TIMESTAMP(3),
     "address" TEXT,
     "emergencyContact" JSONB,
     "hireDate" TIMESTAMP(3) NOT NULL,
     "terminationDate" TIMESTAMP(3),
-    "departmentId" TEXT NOT NULL,
-    "positionId" TEXT NOT NULL,
+    "departmentId" TEXT,
+    "positionId" TEXT,
     "managerId" TEXT,
     "scheduleType" "WorkScheduleType" NOT NULL DEFAULT 'FULL_TIME',
     "hourlyRate" DECIMAL(10,2),
@@ -154,6 +169,7 @@ CREATE TABLE "customers" (
     "isActive" BOOLEAN NOT NULL DEFAULT true,
     "industry" TEXT,
     "taxNumber" TEXT,
+    "userId" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -167,8 +183,11 @@ CREATE TABLE "sub_accounts" (
     "code" TEXT,
     "isActive" BOOLEAN NOT NULL DEFAULT true,
     "customerId" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "createdBy" TEXT,
+    "updatedBy" TEXT,
 
     CONSTRAINT "sub_accounts_pkey" PRIMARY KEY ("id")
 );
@@ -177,7 +196,7 @@ CREATE TABLE "sub_accounts" (
 CREATE TABLE "orders" (
     "id" TEXT NOT NULL,
     "orderNumber" TEXT NOT NULL,
-    "title" TEXT NOT NULL,
+    "title" TEXT,
     "description" TEXT,
     "scheduledDate" TIMESTAMP(3) NOT NULL,
     "startTime" TIMESTAMP(3),
@@ -188,7 +207,16 @@ CREATE TABLE "orders" (
     "priority" INTEGER NOT NULL DEFAULT 1,
     "specialInstructions" TEXT,
     "status" "OrderStatus" NOT NULL DEFAULT 'DRAFT',
-    "customerId" TEXT,
+    "isArchived" BOOLEAN NOT NULL DEFAULT false,
+    "archivedAt" TIMESTAMP(3),
+    "estimatedHours" DECIMAL(5,2),
+    "actualHours" DECIMAL(5,2),
+    "usesTemplate" BOOLEAN NOT NULL DEFAULT false,
+    "cartonQuantity" INTEGER,
+    "articleQuantity" INTEGER,
+    "customerId" TEXT NOT NULL,
+    "createdBySubAccountId" TEXT,
+    "teamId" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "createdBy" TEXT,
@@ -229,12 +257,66 @@ CREATE TABLE "employee_qualifications" (
 );
 
 -- CreateTable
+CREATE TABLE "activities" (
+    "id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "type" "ActivityType" NOT NULL,
+    "code" TEXT,
+    "description" TEXT,
+    "unit" TEXT NOT NULL DEFAULT 'hour',
+    "isActive" BOOLEAN NOT NULL DEFAULT true,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "activities_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "customer_prices" (
+    "id" TEXT NOT NULL,
+    "customerId" TEXT NOT NULL,
+    "activityId" TEXT NOT NULL,
+    "minQuantity" INTEGER NOT NULL,
+    "maxQuantity" INTEGER NOT NULL,
+    "price" DECIMAL(10,2) NOT NULL,
+    "currency" TEXT NOT NULL DEFAULT 'EUR',
+    "effectiveFrom" TIMESTAMP(3) NOT NULL,
+    "effectiveTo" TIMESTAMP(3),
+    "isActive" BOOLEAN NOT NULL DEFAULT true,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "customer_prices_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "customer_activities" (
+    "id" TEXT NOT NULL,
+    "customerId" TEXT NOT NULL,
+    "activityId" TEXT NOT NULL,
+    "orderId" TEXT,
+    "quantity" INTEGER NOT NULL,
+    "unitPrice" DECIMAL(10,2) NOT NULL,
+    "lineTotal" DECIMAL(12,2) NOT NULL,
+    "isActive" BOOLEAN NOT NULL DEFAULT true,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "customer_activities_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "order_qualifications" (
     "id" TEXT NOT NULL,
     "orderId" TEXT NOT NULL,
     "qualificationId" TEXT NOT NULL,
+    "activityId" TEXT,
     "required" BOOLEAN NOT NULL DEFAULT true,
     "minProficiency" INTEGER NOT NULL DEFAULT 1,
+    "unit" TEXT,
+    "unitPrice" DECIMAL(10,2),
+    "quantity" INTEGER NOT NULL,
+    "lineTotal" DECIMAL(12,2),
 
     CONSTRAINT "order_qualifications_pkey" PRIMARY KEY ("id")
 );
@@ -248,6 +330,7 @@ CREATE TABLE "assignments" (
     "startDate" TIMESTAMP(3),
     "endDate" TIMESTAMP(3),
     "status" "AssignmentStatus" NOT NULL DEFAULT 'ASSIGNED',
+    "tier" "AssignmentTier" NOT NULL DEFAULT 'PRIMARY',
     "estimatedHours" DECIMAL(5,2),
     "actualHours" DECIMAL(5,2),
     "notes" TEXT,
@@ -404,6 +487,110 @@ CREATE TABLE "notification_preferences" (
 );
 
 -- CreateTable
+CREATE TABLE "order_notes" (
+    "id" TEXT NOT NULL,
+    "orderId" TEXT NOT NULL,
+    "authorId" TEXT NOT NULL,
+    "content" TEXT NOT NULL,
+    "triggersStatus" "OrderStatus",
+    "category" "NoteCategory" NOT NULL DEFAULT 'GENERAL_UPDATE',
+    "isInternal" BOOLEAN NOT NULL DEFAULT false,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "order_notes_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "files" (
+    "id" TEXT NOT NULL,
+    "filename" TEXT NOT NULL,
+    "originalName" TEXT NOT NULL,
+    "mimeType" TEXT NOT NULL,
+    "size" INTEGER NOT NULL,
+    "path" TEXT NOT NULL,
+    "documentType" "DocumentType" NOT NULL DEFAULT 'OTHER',
+    "description" TEXT,
+    "expiryDate" TIMESTAMP(3),
+    "employeeId" TEXT,
+    "orderId" TEXT,
+    "assignmentId" TEXT,
+    "uploadedBy" TEXT,
+    "isVerified" BOOLEAN NOT NULL DEFAULT false,
+    "isPublic" BOOLEAN NOT NULL DEFAULT false,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "files_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "settings_change_requests" (
+    "id" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "requestType" "SettingsChangeType" NOT NULL,
+    "currentValue" TEXT,
+    "requestedValue" TEXT NOT NULL,
+    "reason" TEXT,
+    "status" "RequestStatus" NOT NULL DEFAULT 'PENDING',
+    "reviewedBy" TEXT,
+    "reviewedAt" TIMESTAMP(3),
+    "reviewNotes" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "settings_change_requests_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "teams" (
+    "id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "description" TEXT,
+    "isActive" BOOLEAN NOT NULL DEFAULT true,
+    "teamLeaderId" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "teams_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "team_members" (
+    "id" TEXT NOT NULL,
+    "teamId" TEXT NOT NULL,
+    "employeeId" TEXT NOT NULL,
+    "joinedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "leftAt" TIMESTAMP(3),
+    "isActive" BOOLEAN NOT NULL DEFAULT true,
+
+    CONSTRAINT "team_members_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "customer_description_templates" (
+    "id" TEXT NOT NULL,
+    "customerId" TEXT NOT NULL,
+    "templateLines" TEXT[],
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "createdBy" TEXT,
+
+    CONSTRAINT "customer_description_templates_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "order_description_data" (
+    "id" TEXT NOT NULL,
+    "orderId" TEXT NOT NULL,
+    "descriptionData" JSONB NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "order_description_data_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "system_config" (
     "id" TEXT NOT NULL,
     "key" TEXT NOT NULL,
@@ -464,16 +651,52 @@ CREATE UNIQUE INDEX "positions_title_departmentId_key" ON "positions"("title", "
 CREATE UNIQUE INDEX "customers_taxNumber_key" ON "customers"("taxNumber");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "customers_userId_key" ON "customers"("userId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "sub_accounts_userId_key" ON "sub_accounts"("userId");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "sub_accounts_customerId_name_key" ON "sub_accounts"("customerId", "name");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "orders_orderNumber_key" ON "orders"("orderNumber");
 
 -- CreateIndex
+CREATE INDEX "orders_isArchived_scheduledDate_idx" ON "orders"("isArchived", "scheduledDate");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "qualifications_name_key" ON "qualifications"("name");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "employee_qualifications_employeeId_qualificationId_key" ON "employee_qualifications"("employeeId", "qualificationId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "activities_name_key" ON "activities"("name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "activities_code_key" ON "activities"("code");
+
+-- CreateIndex
+CREATE INDEX "customer_prices_customerId_idx" ON "customer_prices"("customerId");
+
+-- CreateIndex
+CREATE INDEX "customer_prices_activityId_idx" ON "customer_prices"("activityId");
+
+-- CreateIndex
+CREATE INDEX "customer_prices_customerId_activityId_idx" ON "customer_prices"("customerId", "activityId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "customer_prices_customerId_activityId_minQuantity_maxQuanti_key" ON "customer_prices"("customerId", "activityId", "minQuantity", "maxQuantity", "effectiveFrom");
+
+-- CreateIndex
+CREATE INDEX "customer_activities_customerId_idx" ON "customer_activities"("customerId");
+
+-- CreateIndex
+CREATE INDEX "customer_activities_orderId_idx" ON "customer_activities"("orderId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "customer_activities_customerId_activityId_orderId_key" ON "customer_activities"("customerId", "activityId", "orderId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "order_qualifications_orderId_qualificationId_key" ON "order_qualifications"("orderId", "qualificationId");
@@ -498,6 +721,30 @@ CREATE INDEX "notification_outbox_lockedUntil_idx" ON "notification_outbox"("loc
 
 -- CreateIndex
 CREATE UNIQUE INDEX "notification_preferences_userId_key" ON "notification_preferences"("userId");
+
+-- CreateIndex
+CREATE INDEX "order_notes_orderId_createdAt_idx" ON "order_notes"("orderId", "createdAt");
+
+-- CreateIndex
+CREATE INDEX "settings_change_requests_userId_status_idx" ON "settings_change_requests"("userId", "status");
+
+-- CreateIndex
+CREATE INDEX "settings_change_requests_status_createdAt_idx" ON "settings_change_requests"("status", "createdAt");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "teams_name_key" ON "teams"("name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "teams_teamLeaderId_key" ON "teams"("teamLeaderId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "team_members_teamId_employeeId_key" ON "team_members"("teamId", "employeeId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "customer_description_templates_customerId_key" ON "customer_description_templates"("customerId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "order_description_data_orderId_key" ON "order_description_data"("orderId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "system_config_key_key" ON "system_config"("key");
@@ -536,10 +783,22 @@ ALTER TABLE "departments" ADD CONSTRAINT "departments_parentId_fkey" FOREIGN KEY
 ALTER TABLE "positions" ADD CONSTRAINT "positions_departmentId_fkey" FOREIGN KEY ("departmentId") REFERENCES "departments"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "customers" ADD CONSTRAINT "customers_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "sub_accounts" ADD CONSTRAINT "sub_accounts_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "customers"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "sub_accounts" ADD CONSTRAINT "sub_accounts_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "orders" ADD CONSTRAINT "orders_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "customers"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "orders" ADD CONSTRAINT "orders_createdBySubAccountId_fkey" FOREIGN KEY ("createdBySubAccountId") REFERENCES "sub_accounts"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "orders" ADD CONSTRAINT "orders_teamId_fkey" FOREIGN KEY ("teamId") REFERENCES "teams"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "employee_qualifications" ADD CONSTRAINT "employee_qualifications_employeeId_fkey" FOREIGN KEY ("employeeId") REFERENCES "employees"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -548,10 +807,28 @@ ALTER TABLE "employee_qualifications" ADD CONSTRAINT "employee_qualifications_em
 ALTER TABLE "employee_qualifications" ADD CONSTRAINT "employee_qualifications_qualificationId_fkey" FOREIGN KEY ("qualificationId") REFERENCES "qualifications"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "customer_prices" ADD CONSTRAINT "customer_prices_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "customers"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "customer_prices" ADD CONSTRAINT "customer_prices_activityId_fkey" FOREIGN KEY ("activityId") REFERENCES "activities"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "customer_activities" ADD CONSTRAINT "customer_activities_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "customers"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "customer_activities" ADD CONSTRAINT "customer_activities_activityId_fkey" FOREIGN KEY ("activityId") REFERENCES "activities"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "customer_activities" ADD CONSTRAINT "customer_activities_orderId_fkey" FOREIGN KEY ("orderId") REFERENCES "orders"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "order_qualifications" ADD CONSTRAINT "order_qualifications_orderId_fkey" FOREIGN KEY ("orderId") REFERENCES "orders"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "order_qualifications" ADD CONSTRAINT "order_qualifications_qualificationId_fkey" FOREIGN KEY ("qualificationId") REFERENCES "qualifications"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "order_qualifications" ADD CONSTRAINT "order_qualifications_activityId_fkey" FOREIGN KEY ("activityId") REFERENCES "activities"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "assignments" ADD CONSTRAINT "assignments_orderId_fkey" FOREIGN KEY ("orderId") REFERENCES "orders"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -591,3 +868,36 @@ ALTER TABLE "notification_outbox" ADD CONSTRAINT "notification_outbox_notificati
 
 -- AddForeignKey
 ALTER TABLE "notification_preferences" ADD CONSTRAINT "notification_preferences_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "order_notes" ADD CONSTRAINT "order_notes_orderId_fkey" FOREIGN KEY ("orderId") REFERENCES "orders"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "order_notes" ADD CONSTRAINT "order_notes_authorId_fkey" FOREIGN KEY ("authorId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "files" ADD CONSTRAINT "files_employeeId_fkey" FOREIGN KEY ("employeeId") REFERENCES "employees"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "files" ADD CONSTRAINT "files_orderId_fkey" FOREIGN KEY ("orderId") REFERENCES "orders"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "files" ADD CONSTRAINT "files_assignmentId_fkey" FOREIGN KEY ("assignmentId") REFERENCES "assignments"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "settings_change_requests" ADD CONSTRAINT "settings_change_requests_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "teams" ADD CONSTRAINT "teams_teamLeaderId_fkey" FOREIGN KEY ("teamLeaderId") REFERENCES "employees"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "team_members" ADD CONSTRAINT "team_members_teamId_fkey" FOREIGN KEY ("teamId") REFERENCES "teams"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "team_members" ADD CONSTRAINT "team_members_employeeId_fkey" FOREIGN KEY ("employeeId") REFERENCES "employees"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "customer_description_templates" ADD CONSTRAINT "customer_description_templates_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "customers"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "order_description_data" ADD CONSTRAINT "order_description_data_orderId_fkey" FOREIGN KEY ("orderId") REFERENCES "orders"("id") ON DELETE CASCADE ON UPDATE CASCADE;
