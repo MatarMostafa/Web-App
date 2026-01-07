@@ -43,7 +43,7 @@ router.get('/customers/me/activities', roleMiddleware(['CUSTOMER', 'CUSTOMER_SUB
     const { prisma } = await import("@repo/db");
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      include: { 
+      include: {
         customer: true,
         subAccount: {
           include: { customer: true }
@@ -62,22 +62,12 @@ router.get('/customers/me/activities', roleMiddleware(['CUSTOMER', 'CUSTOMER_SUB
 
     // Get ONLY customer-specific activities (no shared activities)
     const customerActivities = await prisma.customerActivity.findMany({
-      where: { 
+      where: {
         customerId,
         orderId: null,
         isActive: true
       },
-      include: {
-        activity: {
-          select: {
-            id: true,
-            name: true,
-            code: true,
-            description: true,
-            unit: true
-          }
-        }
-      },
+      // include: { activity: true } // Removed
       orderBy: { createdAt: 'desc' }
     });
 

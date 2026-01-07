@@ -26,18 +26,18 @@ const CustomerSummary: React.FC<CustomerSummaryProps> = ({ customer }) => {
   return (
     <Card className="w-full">
       <CardContent className="p-6">
-        <div className="flex flex-col md:flex-row gap-6">
-          <div className="flex items-center gap-4">
-            <Avatar className="h-16 w-16">
-              <AvatarFallback className="text-lg font-semibold">
+        <div className="flex flex-col sm:flex-row gap-6">
+          <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 text-center sm:text-left">
+            <Avatar className="h-20 w-20 sm:h-16 sm:w-16">
+              <AvatarFallback className="text-xl sm:text-lg font-semibold">
                 {getInitials(customer.companyName)}
               </AvatarFallback>
             </Avatar>
             <div>
-              <h1 className="text-2xl font-bold text-foreground">
+              <h1 className="text-2xl sm:text-3xl font-bold text-foreground">
                 {customer.companyName}
               </h1>
-              <div className="flex items-center gap-2 mt-1">
+              <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 mt-2">
                 <Badge
                   variant={customer.isActive !== false ? "default" : "destructive"}
                   className="text-xs"
@@ -71,8 +71,8 @@ const CustomerSummary: React.FC<CustomerSummaryProps> = ({ customer }) => {
                 <div className="flex items-center gap-2 text-sm">
                   <MapPin className="h-4 w-4 text-muted-foreground" />
                   <span className="whitespace-pre-wrap">
-                    {typeof customer.address === 'string' 
-                      ? customer.address 
+                    {typeof customer.address === 'string'
+                      ? customer.address
                       : (customer.address?.street || customer.address?.full || JSON.stringify(customer.address))}
                   </span>
                 </div>

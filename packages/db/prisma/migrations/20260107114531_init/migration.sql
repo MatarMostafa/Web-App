@@ -257,25 +257,10 @@ CREATE TABLE "employee_qualifications" (
 );
 
 -- CreateTable
-CREATE TABLE "activities" (
-    "id" TEXT NOT NULL,
-    "name" TEXT NOT NULL,
-    "type" "ActivityType" NOT NULL,
-    "code" TEXT,
-    "description" TEXT,
-    "unit" TEXT NOT NULL DEFAULT 'hour',
-    "isActive" BOOLEAN NOT NULL DEFAULT true,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "activities_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
 CREATE TABLE "customer_prices" (
     "id" TEXT NOT NULL,
     "customerId" TEXT NOT NULL,
-    "activityId" TEXT NOT NULL,
+    "customerActivityId" TEXT NOT NULL,
     "minQuantity" INTEGER NOT NULL,
     "maxQuantity" INTEGER NOT NULL,
     "price" DECIMAL(10,2) NOT NULL,
@@ -293,11 +278,15 @@ CREATE TABLE "customer_prices" (
 CREATE TABLE "customer_activities" (
     "id" TEXT NOT NULL,
     "customerId" TEXT NOT NULL,
-    "activityId" TEXT NOT NULL,
     "orderId" TEXT,
-    "quantity" INTEGER NOT NULL,
-    "unitPrice" DECIMAL(10,2) NOT NULL,
-    "lineTotal" DECIMAL(12,2) NOT NULL,
+    "name" TEXT NOT NULL,
+    "type" "ActivityType" NOT NULL,
+    "code" TEXT,
+    "description" TEXT,
+    "unit" TEXT NOT NULL DEFAULT 'hour',
+    "quantity" INTEGER,
+    "unitPrice" DECIMAL(10,2),
+    "lineTotal" DECIMAL(12,2),
     "isActive" BOOLEAN NOT NULL DEFAULT true,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -310,7 +299,7 @@ CREATE TABLE "order_qualifications" (
     "id" TEXT NOT NULL,
     "orderId" TEXT NOT NULL,
     "qualificationId" TEXT NOT NULL,
-    "activityId" TEXT,
+    "customerActivityId" TEXT,
     "required" BOOLEAN NOT NULL DEFAULT true,
     "minProficiency" INTEGER NOT NULL DEFAULT 1,
     "unit" TEXT,
@@ -672,31 +661,22 @@ CREATE UNIQUE INDEX "qualifications_name_key" ON "qualifications"("name");
 CREATE UNIQUE INDEX "employee_qualifications_employeeId_qualificationId_key" ON "employee_qualifications"("employeeId", "qualificationId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "activities_name_key" ON "activities"("name");
-
--- CreateIndex
-CREATE UNIQUE INDEX "activities_code_key" ON "activities"("code");
-
--- CreateIndex
 CREATE INDEX "customer_prices_customerId_idx" ON "customer_prices"("customerId");
 
 -- CreateIndex
-CREATE INDEX "customer_prices_activityId_idx" ON "customer_prices"("activityId");
+CREATE INDEX "customer_prices_customerActivityId_idx" ON "customer_prices"("customerActivityId");
 
 -- CreateIndex
-CREATE INDEX "customer_prices_customerId_activityId_idx" ON "customer_prices"("customerId", "activityId");
+CREATE INDEX "customer_prices_customerId_customerActivityId_idx" ON "customer_prices"("customerId", "customerActivityId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "customer_prices_customerId_activityId_minQuantity_maxQuanti_key" ON "customer_prices"("customerId", "activityId", "minQuantity", "maxQuantity", "effectiveFrom");
+CREATE UNIQUE INDEX "customer_prices_customerId_customerActivityId_minQuantity_m_key" ON "customer_prices"("customerId", "customerActivityId", "minQuantity", "maxQuantity", "effectiveFrom");
 
 -- CreateIndex
 CREATE INDEX "customer_activities_customerId_idx" ON "customer_activities"("customerId");
 
 -- CreateIndex
 CREATE INDEX "customer_activities_orderId_idx" ON "customer_activities"("orderId");
-
--- CreateIndex
-CREATE UNIQUE INDEX "customer_activities_customerId_activityId_orderId_key" ON "customer_activities"("customerId", "activityId", "orderId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "order_qualifications_orderId_qualificationId_key" ON "order_qualifications"("orderId", "qualificationId");
@@ -810,13 +790,10 @@ ALTER TABLE "employee_qualifications" ADD CONSTRAINT "employee_qualifications_qu
 ALTER TABLE "customer_prices" ADD CONSTRAINT "customer_prices_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "customers"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "customer_prices" ADD CONSTRAINT "customer_prices_activityId_fkey" FOREIGN KEY ("activityId") REFERENCES "activities"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "customer_prices" ADD CONSTRAINT "customer_prices_customerActivityId_fkey" FOREIGN KEY ("customerActivityId") REFERENCES "customer_activities"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "customer_activities" ADD CONSTRAINT "customer_activities_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "customers"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "customer_activities" ADD CONSTRAINT "customer_activities_activityId_fkey" FOREIGN KEY ("activityId") REFERENCES "activities"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "customer_activities" ADD CONSTRAINT "customer_activities_orderId_fkey" FOREIGN KEY ("orderId") REFERENCES "orders"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -828,7 +805,7 @@ ALTER TABLE "order_qualifications" ADD CONSTRAINT "order_qualifications_orderId_
 ALTER TABLE "order_qualifications" ADD CONSTRAINT "order_qualifications_qualificationId_fkey" FOREIGN KEY ("qualificationId") REFERENCES "qualifications"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "order_qualifications" ADD CONSTRAINT "order_qualifications_activityId_fkey" FOREIGN KEY ("activityId") REFERENCES "activities"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "order_qualifications" ADD CONSTRAINT "order_qualifications_customerActivityId_fkey" FOREIGN KEY ("customerActivityId") REFERENCES "customer_activities"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "assignments" ADD CONSTRAINT "assignments_orderId_fkey" FOREIGN KEY ("orderId") REFERENCES "orders"("id") ON DELETE CASCADE ON UPDATE CASCADE;

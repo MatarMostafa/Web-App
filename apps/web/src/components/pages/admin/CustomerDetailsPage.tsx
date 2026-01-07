@@ -36,7 +36,7 @@ const CustomerDetailsPage = () => {
   }
 
   return (
-    <div className="py-6 bg-gray-50">
+    <div className="py-6 px-4 md:px-6 bg-gray-50 min-h-screen">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
         <div className="grid grid-cols-1 gap-8 w-full">
           <CustomerSummary customer={currentCustomer} />

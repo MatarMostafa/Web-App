@@ -154,13 +154,21 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({
         }
       );
       if (response.ok) {
-        const data = await response.json();
+        const jsonResponse = await response.json();
+        const data = jsonResponse.data || jsonResponse;
+
         const activities = Array.isArray(data)
           ? data.map((item: any) => ({
-              id: item.activity.id,
-              name: item.activity.name,
-              defaultPrice: item.activity.defaultPrice,
-            }))
+            id: item.id, // item is CustomerActivity, so id is top level
+            name: item.name,
+            // Map prices to defaultPrice or find lowest price? 
+            // Original code: defaultPrice: item.activity.defaultPrice
+            // New model: item has prices array.
+            // Let's use unitPrice if available or calculate from prices?
+            // CustomerActivity has no defaultPrice. It has prices array.
+            // Let's check what was mapped before.
+            defaultPrice: item.prices && item.prices.length > 0 ? Number(item.prices[0].price) : 0
+          }))
           : [];
         setActivities(activities);
       }
@@ -202,9 +210,9 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({
       const submitData = {
         description: formData.description || "",
         scheduledDate: new Date(formData.scheduledDate + "T00:00:00").toISOString(),
-        startTime: formData.scheduledDate && startTimeOnly ? 
+        startTime: formData.scheduledDate && startTimeOnly ?
           new Date(`${formData.scheduledDate}T${startTimeOnly}`).toISOString() : null,
-        endTime: formData.scheduledDate && endTimeOnly ? 
+        endTime: formData.scheduledDate && endTimeOnly ?
           new Date(`${formData.scheduledDate}T${endTimeOnly}`).toISOString() : null,
         duration: formData.duration,
         location: formData.location || "",
@@ -239,7 +247,7 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({
 
       const result = await response.json();
       console.log("Order created successfully:", result);
-      
+
       toast.success("Order created successfully");
       setOpen(false);
       resetForm();

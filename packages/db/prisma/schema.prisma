@@ -186,7 +186,7 @@ model Employee {
   departmentId    String?
   position        Position?   @relation(fields: [positionId], references: [id], onDelete: Cascade)
   positionId      String?
-  manager         User?      @relation("ManagerSubordinate", fields: [managerId], references: [id], onDelete: Cascade)
+  manager         User?       @relation("ManagerSubordinate", fields: [managerId], references: [id], onDelete: Cascade)
   managerId       String?
 
   scheduleType WorkScheduleType @default(FULL_TIME)
@@ -383,36 +383,36 @@ model Order {
   specialInstructions String?
 
   status OrderStatus @default(DRAFT)
-  
+
   // Archive fields for weekly archiving
   isArchived Boolean   @default(false)
   archivedAt DateTime?
-  
+
   // Estimated and actual hours for tracking
   estimatedHours Decimal? @db.Decimal(5, 2)
   actualHours    Decimal? @db.Decimal(5, 2)
 
   // Template usage flag
   usesTemplate Boolean @default(false)
-  
+
   // New quantity fields
   cartonQuantity  Int?
   articleQuantity Int?
 
-  customer              Customer   @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  customer              Customer              @relation(fields: [customerId], references: [id], onDelete: Cascade)
   customerId            String
-  createdBySubAccount   SubAccount? @relation("SubAccountCreatedOrders", fields: [createdBySubAccountId], references: [id], onDelete: SetNull)
+  createdBySubAccount   SubAccount?           @relation("SubAccountCreatedOrders", fields: [createdBySubAccountId], references: [id], onDelete: SetNull)
   createdBySubAccountId String?
-  team                  Team?      @relation(fields: [teamId], references: [id], onDelete: SetNull)
+  team                  Team?                 @relation(fields: [teamId], references: [id], onDelete: SetNull)
   teamId                String?
-  qualifications      OrderQualification[]
-  orderAssignments    OrderAssignment[]
-  employeeAssignments Assignment[]
-  ratings             Rating[]
-  files               File[]
-  notes               OrderNote[]
-  customerActivities  CustomerActivity[]
-  descriptionData     OrderDescriptionData?
+  qualifications        OrderQualification[]
+  orderAssignments      OrderAssignment[]
+  employeeAssignments   Assignment[]
+  ratings               Rating[]
+  files                 File[]
+  notes                 OrderNote[]
+  customerActivities    CustomerActivity[]
+  descriptionData       OrderDescriptionData?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -467,29 +467,11 @@ model EmployeeQualification {
   @@map("employee_qualifications")
 }
 
-model Activity {
-  id          String       @id @default(cuid())
-  name        String       @unique
-  type        ActivityType
-  code        String?      @unique
-  description String?
-  unit        String       @default("hour")
-  isActive    Boolean      @default(true)
-
-  customerPrices      CustomerPrice[]
-  orderQualifications OrderQualification[]
-  customerActivities  CustomerActivity[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@map("activities")
-}
-
 model CustomerPrice {
-  id          String  @id @default(cuid())
-  customerId  String
-  activityId  String
+  id                 String @id @default(cuid())
+  customerId         String
+  customerActivityId String
+
   minQuantity Int
   maxQuantity Int
   price       Decimal @db.Decimal(10, 2)
@@ -499,37 +481,55 @@ model CustomerPrice {
   effectiveTo   DateTime?
   isActive      Boolean   @default(true)
 
-  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
-  activity Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  customer         Customer         @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  customerActivity CustomerActivity @relation(fields: [customerActivityId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@unique([customerId, activityId, minQuantity, maxQuantity, effectiveFrom])
+  @@unique([customerId, customerActivityId, minQuantity, maxQuantity, effectiveFrom])
   @@index([customerId])
-  @@index([activityId])
-  @@index([customerId, activityId])
+  @@index([customerActivityId])
+  @@index([customerId, customerActivityId])
   @@map("customer_prices")
 }
 
 model CustomerActivity {
   id         String  @id @default(cuid())
   customerId String
-  activityId String
+  // Relation to order is optional. 
+  // If null, it is an "Activity Definition" (Template) for that customer.
+  // If set, it is an "Activity Instance" (Usage) on an order.
   orderId    String?
-  quantity   Int
-  unitPrice  Decimal @db.Decimal(10, 2)
-  lineTotal  Decimal @db.Decimal(12, 2)
-  isActive   Boolean @default(true)
+
+  // Activity Definition Fields (copied from Activity)
+  name        String
+  type        ActivityType
+  code        String?
+  description String?
+  unit        String       @default("hour")
+
+  // Instance/Usage Fields (nullable for Definitions)
+  quantity  Int?
+  unitPrice Decimal? @db.Decimal(10, 2)
+  lineTotal Decimal? @db.Decimal(12, 2)
+
+  isActive Boolean @default(true)
 
   customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
-  activity Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
   order    Order?   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  // Back relations
+  prices         CustomerPrice[]
+  qualifications OrderQualification[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@unique([customerId, activityId, orderId])
+  // Unique constraint for Definitions: A customer can't have duplicate activity names in their catalog
+  // Note: We can't easily enforce "unique name where orderId is null" with standard prisma @@unique without partial indexes which are DB specific.
+  // For now we will just index.
+
   @@index([customerId])
   @@index([orderId])
   @@map("customer_activities")
@@ -538,12 +538,12 @@ model CustomerActivity {
 model OrderQualification {
   id String @id @default(cuid())
 
-  order           Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  orderId         String
-  qualification   Qualification @relation(fields: [qualificationId], references: [id], onDelete: Cascade)
-  qualificationId String
-  activity        Activity?     @relation(fields: [activityId], references: [id], onDelete: SetNull)
-  activityId      String?
+  order              Order             @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId            String
+  qualification      Qualification     @relation(fields: [qualificationId], references: [id], onDelete: Cascade)
+  qualificationId    String
+  customerActivity   CustomerActivity? @relation(fields: [customerActivityId], references: [id], onDelete: SetNull)
+  customerActivityId String?
 
   required       Boolean @default(true)
   minProficiency Int     @default(1)
@@ -785,20 +785,20 @@ model NotificationPreference {
 // ===============================
 
 model OrderNote {
-  id              String       @id @default(cuid())
-  orderId         String
-  authorId        String
-  content         String
-  triggersStatus  OrderStatus?
-  category        NoteCategory @default(GENERAL_UPDATE)
-  isInternal      Boolean      @default(false)
-  
-  order           Order        @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  author          User         @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  
-  createdAt       DateTime     @default(now())
-  updatedAt       DateTime     @updatedAt
-  
+  id             String       @id @default(cuid())
+  orderId        String
+  authorId       String
+  content        String
+  triggersStatus OrderStatus?
+  category       NoteCategory @default(GENERAL_UPDATE)
+  isInternal     Boolean      @default(false)
+
+  order  Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  author User  @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@index([orderId, createdAt])
   @@map("order_notes")
 }
@@ -808,33 +808,33 @@ model OrderNote {
 // ===============================
 
 model File {
-  id           String       @id @default(cuid())
-  filename     String       // stored filename
-  originalName String       // original uploaded filename
+  id           String @id @default(cuid())
+  filename     String // stored filename
+  originalName String // original uploaded filename
   mimeType     String
-  size         Int          // file size in bytes
-  path         String       // file storage path
-  
+  size         Int // file size in bytes
+  path         String // file storage path
+
   documentType DocumentType @default(OTHER)
   description  String?
   expiryDate   DateTime?
-  
+
   // Relations
-  employee     Employee?    @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  employee     Employee?   @relation(fields: [employeeId], references: [id], onDelete: Cascade)
   employeeId   String?
-  order        Order?       @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  order        Order?      @relation(fields: [orderId], references: [id], onDelete: Cascade)
   orderId      String?
-  assignment   Assignment?  @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  assignment   Assignment? @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
   assignmentId String?
-  
+
   // Metadata
-  uploadedBy   String?      // userId who uploaded
-  isVerified   Boolean      @default(false)
-  isPublic     Boolean      @default(false)
-  
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
-  
+  uploadedBy String? // userId who uploaded
+  isVerified Boolean @default(false)
+  isPublic   Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@map("files")
 }
 
@@ -843,22 +843,22 @@ model File {
 // ===============================
 
 model SettingsChangeRequest {
-  id             String              @id @default(cuid())
+  id             String             @id @default(cuid())
   userId         String
   requestType    SettingsChangeType
   currentValue   String?
   requestedValue String
   reason         String?
-  status         RequestStatus       @default(PENDING)
+  status         RequestStatus      @default(PENDING)
   reviewedBy     String?
   reviewedAt     DateTime?
   reviewNotes    String?
-  
-  user           User                @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  createdAt      DateTime            @default(now())
-  updatedAt      DateTime            @updatedAt
-  
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@index([userId, status])
   @@index([status, createdAt])
   @@map("settings_change_requests")
@@ -910,26 +910,26 @@ model CustomerDescriptionTemplate {
   id            String   @id @default(cuid())
   customerId    String   @unique
   templateLines String[] // Array of text prompts like ['Container', 'Weight', 'Instructions']
-  
-  customer      Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
-  
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  createdBy     String?
-  
+
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  createdBy String?
+
   @@map("customer_description_templates")
 }
 
 model OrderDescriptionData {
   id              String @id @default(cuid())
   orderId         String @unique
-  descriptionData Json   // {"Container": "20ft", "Weight": "15000kg", "Instructions": "Handle with care"}
-  
-  order           Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  
+  descriptionData Json // {"Container": "20ft", "Weight": "15000kg", "Instructions": "Handle with care"}
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@map("order_description_data")
 }
 

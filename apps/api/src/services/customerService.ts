@@ -88,19 +88,7 @@ export const getCustomerOrderByIdService = async (customerId: string, orderId: s
           companyName: true,
         },
       },
-      customerActivities: {
-        include: {
-          activity: {
-            select: {
-              id: true,
-              name: true,
-              code: true,
-              description: true,
-              unit: true
-            }
-          }
-        }
-      },
+      customerActivities: true,
       descriptionData: true
     },
   });
@@ -232,7 +220,7 @@ export const createCustomerOrderService = async (userId: string, orderData: any)
   // Get customer ID from user (works for both CUSTOMER and CUSTOMER_SUB_USER)
   const user = await prisma.user.findUnique({
     where: { id: userId },
-    include: { 
+    include: {
       customer: true,
       subAccount: {
         include: { customer: true }
@@ -242,7 +230,7 @@ export const createCustomerOrderService = async (userId: string, orderData: any)
 
   let customerId: string;
   let createdBySubAccountId: string | undefined;
-  
+
   if (user?.customer) {
     // Direct customer
     customerId = user.customer.id;
@@ -275,10 +263,10 @@ export const createCustomerOrderService = async (userId: string, orderData: any)
 
   // Create the order using the existing order service
   const order = await createOrderService(sanitizedOrderData, userId);
-  
+
   // Send notification to admins about customer order creation
   await notifyAdminCustomerOrderCreated(order.id, userId);
-  
+
   // Return filtered order data for customer
   return filterOrderForCustomer(order);
 };
@@ -296,12 +284,12 @@ export const updateCustomerOrderService = async (orderId: string, orderData: any
     templateData: orderData.templateData
   };
 
-  
+
   const order = await updateOrderService(orderId, sanitizedOrderData);
-  
+
   // Send notification to admins about customer order update
   await notifyAdminCustomerOrderUpdated(orderId);
-  
+
   // Return filtered order data for customer
   return filterOrderForCustomer(order);
 };
