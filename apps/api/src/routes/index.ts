@@ -4,6 +4,7 @@ import employeeStatusRoutes from "./employeeStatusRoutes";
 import employeeDashboardRoutes from "./employeeDashboardRoutes";
 import authRoutes from "./core/authRoutes";
 import customerRoutes from "./customerRoutes";
+import customerActivityRoutes from "./customerActivityRoutes";
 import orderRoutes from "./orderRoutes";
 import employeePerformanceRoutes from "./employeePerformanceRoutes";
 import performanceThresholdRoutes from "./performanceThresholdRoutes";
@@ -39,6 +40,7 @@ router.use("/managers", managerRoutes);
 
 // Customers
 router.use("/customers", customerRoutes);
+router.use("/customer-activities", customerActivityRoutes);
 
 // Orders
 router.use("/orders", orderRoutes);
