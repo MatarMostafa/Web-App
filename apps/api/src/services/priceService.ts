@@ -4,7 +4,7 @@ import { prisma } from '@repo/db';
 export interface PriceResult {
   price: Decimal;
   currency: string;
-  activityId: string;
+  customerActivityId: string;
   unit: string;
   tier: {
     minQuantity: number;
@@ -14,7 +14,7 @@ export interface PriceResult {
 
 export async function getPriceForCustomer(
   customerId: string,
-  activityId: string,
+  customerActivityId: string,
   quantity: number,
   date: Date = new Date()
 ): Promise<PriceResult> {
@@ -25,7 +25,7 @@ export async function getPriceForCustomer(
   const customerPrice = await prisma.customerPrice.findFirst({
     where: {
       customerId,
-      activityId,
+      customerActivityId,
       isActive: true,
       minQuantity: { lte: quantity },
       maxQuantity: { gte: quantity },
@@ -36,15 +36,15 @@ export async function getPriceForCustomer(
       ]
     },
     orderBy: { effectiveFrom: 'desc' },
-    include: { activity: true }
+    include: { customerActivity: true }
   });
 
   if (customerPrice) {
     return {
       price: new Decimal(customerPrice.price.toString()),
       currency: customerPrice.currency,
-      activityId,
-      unit: customerPrice.activity.unit,
+      customerActivityId,
+      unit: customerPrice.customerActivity.unit,
       tier: {
         minQuantity: customerPrice.minQuantity,
         maxQuantity: customerPrice.maxQuantity
@@ -53,19 +53,19 @@ export async function getPriceForCustomer(
   }
 
   // Fallback: Create a default pricing tier if none exists
-  const activity = await prisma.activity.findUnique({
-    where: { id: activityId }
+  const customerActivity = await prisma.customerActivity.findUnique({
+    where: { id: customerActivityId }
   });
 
-  if (!activity) {
-    throw new Error(`Activity ${activityId} not found`);
+  if (!customerActivity) {
+    throw new Error(`Activity ${customerActivityId} not found`);
   }
 
   // Create a default pricing tier for this customer and activity
   const defaultPrice = await prisma.customerPrice.create({
     data: {
       customerId,
-      activityId,
+      customerActivityId,
       minQuantity: 1,
       maxQuantity: 999999,
       price: 25.00, // Default price
@@ -73,14 +73,14 @@ export async function getPriceForCustomer(
       effectiveFrom: new Date(),
       isActive: true
     },
-    include: { activity: true }
+    include: { customerActivity: true }
   });
 
   return {
     price: new Decimal(defaultPrice.price.toString()),
     currency: defaultPrice.currency,
-    activityId,
-    unit: defaultPrice.activity.unit,
+    customerActivityId,
+    unit: defaultPrice.customerActivity.unit,
     tier: {
       minQuantity: defaultPrice.minQuantity,
       maxQuantity: defaultPrice.maxQuantity
@@ -90,7 +90,7 @@ export async function getPriceForCustomer(
 
 export async function validatePriceTierOverlap(
   customerId: string,
-  activityId: string,
+  customerActivityId: string,
   minQuantity: number,
   maxQuantity: number,
   effectiveFrom: Date,
@@ -104,7 +104,7 @@ export async function validatePriceTierOverlap(
   const overlapping = await prisma.customerPrice.findFirst({
     where: {
       customerId,
-      activityId,
+      customerActivityId,
       id: excludePriceId ? { not: excludePriceId } : undefined,
       isActive: true,
       AND: [

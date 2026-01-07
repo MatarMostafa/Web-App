@@ -7,11 +7,11 @@ export class CustomerActivityService {
   /**
    * Validate that an activity is available for a specific customer
    */
-  static async validateActivityForCustomer(customerId: string, activityId: string): Promise<boolean> {
+  static async validateActivityForCustomer(customerId: string, customerActivityId: string): Promise<boolean> {
     const hasValidPricing = await prisma.customerPrice.findFirst({
       where: {
         customerId,
-        activityId,
+        customerActivityId,
         isActive: true,
         effectiveFrom: { lte: new Date() },
         OR: [
@@ -28,10 +28,14 @@ export class CustomerActivityService {
    * Get activities available for a specific customer
    */
   static async getCustomerActivities(customerId: string) {
-    return prisma.activity.findMany({
+    return prisma.customerActivity.findMany({
       where: {
+        customerId, // Ensure we check customer ownership of definition
+        orderId: null, // Definitions only
         isActive: true,
-        customerPrices: {
+        // We might valid pricing check or just return all definitions?
+        // Let's keep pricing check logic if we want "available" activities.
+        prices: {
           some: {
             customerId,
             isActive: true,
@@ -44,7 +48,7 @@ export class CustomerActivityService {
         }
       },
       include: {
-        customerPrices: {
+        prices: {
           where: {
             customerId,
             isActive: true,
@@ -96,17 +100,7 @@ export class CustomerActivityService {
         customerId: order.customerId, // Ensure activities belong to the same customer
         isActive: true
       },
-      include: {
-        activity: {
-          select: {
-            id: true,
-            name: true,
-            code: true,
-            description: true,
-            unit: true
-          }
-        }
-      },
+      // Activity fields are now on the model itself, no need to include activity
       orderBy: { createdAt: 'desc' }
     });
   }
@@ -116,16 +110,25 @@ export class CustomerActivityService {
    */
   static async createCustomerActivity(data: {
     customerId: string;
-    activityId: string;
+    customerActivityId: string; // The Definition ID
     orderId?: string;
     quantity: number;
     unitPrice: number;
     lineTotal: number;
   }) {
     // Validate that the activity is available for this customer
-    const isValid = await this.validateActivityForCustomer(data.customerId, data.activityId);
+    const isValid = await this.validateActivityForCustomer(data.customerId, data.customerActivityId);
     if (!isValid) {
       throw new Error('Activity is not available for this customer');
+    }
+
+    // Fetch the definition to copy fields
+    const definition = await prisma.customerActivity.findUnique({
+      where: { id: data.customerActivityId }
+    });
+
+    if (!definition || definition.orderId !== null) {
+      throw new Error('Invalid Activity Definition');
     }
 
     // If orderId is provided, validate that the order belongs to the same customer
@@ -143,12 +146,19 @@ export class CustomerActivityService {
     return prisma.customerActivity.create({
       data: {
         customerId: data.customerId,
-        activityId: data.activityId,
+        // No relation link to definition? We copy fields.
         orderId: data.orderId,
         quantity: data.quantity,
         unitPrice: data.unitPrice,
         lineTotal: data.lineTotal,
-        isActive: true
+        isActive: true,
+
+        // Copied fields
+        name: definition.name,
+        type: definition.type,
+        code: definition.code,
+        description: definition.description,
+        unit: definition.unit
       }
     });
   }
@@ -229,12 +239,26 @@ export class CustomerActivityService {
     }
 
     if (options?.activityIds?.length) {
-      whereClause.activityId = { in: options.activityIds };
+      // Filtering by ID for statistics might be tricky if we don't link to definition.
+      // But assuming we want stats for *instances* created from these *definitions*...
+      // If we didn't link them, we can't easily filter by "Original Definition ID".
+      // We'd have to filter by Name?
+      // For now, let's assume we can filter by 'name' if we fetch definitions first.
+      // OR we skip this filter implementation for now or use name matching.
+      const definitions = await prisma.customerActivity.findMany({
+        where: { id: { in: options.activityIds } },
+        select: { name: true }
+      });
+      const names = definitions.map(d => d.name);
+      whereClause.name = { in: names };
     }
 
     const stats = await prisma.customerActivity.groupBy({
-      by: ['activityId'],
-      where: whereClause,
+      by: ['name', 'unit', 'code', 'type'], // Group by multiple fields to be safe? Or just name.
+      where: {
+        ...whereClause,
+        orderId: { not: null } // Only instances
+      },
       _sum: {
         quantity: true,
         lineTotal: true
@@ -244,18 +268,16 @@ export class CustomerActivityService {
       }
     });
 
-    // Get activity details
-    const activityIds = stats.map(stat => stat.activityId);
-    const activities = await prisma.activity.findMany({
-      where: { id: { in: activityIds } },
-      select: { id: true, name: true, code: true, unit: true }
-    });
-
-    // Combine stats with activity details
+    // We don't need to fetch "activity details" separately because we have them in the group key!
     return stats.map(stat => {
-      const activity = activities.find(a => a.id === stat.activityId);
       return {
-        activity,
+        activity: {
+          id: 'aggregate', // Dummy ID
+          name: stat.name,
+          code: stat.code,
+          unit: stat.unit,
+          type: stat.type
+        },
         totalQuantity: stat._sum.quantity || 0,
         totalValue: stat._sum.lineTotal || 0,
         orderCount: stat._count.id
