@@ -174,6 +174,25 @@ export const createOrderService = async (data: OrderCreateInput & { assignedEmpl
       console.log(`Creating ${activities.length} customer activities for order ${newOrder.id}`);
       for (const activity of activities) {
         try {
+          // Verify that the activity has pricing configured for this customer
+          const hasValidPricing = await tx.customerPrice.findFirst({
+            where: {
+              customerId: customerId!,
+              activityId: activity.activityId,
+              isActive: true,
+              effectiveFrom: { lte: orderData.scheduledDate as Date },
+              OR: [
+                { effectiveTo: null },
+                { effectiveTo: { gte: orderData.scheduledDate as Date } }
+              ]
+            }
+          });
+
+          if (!hasValidPricing) {
+            console.warn(`Activity ${activity.activityId} has no valid pricing for customer ${customerId}, skipping`);
+            continue;
+          }
+
           const priceResult = await getPriceForCustomer(
             customerId!,
             activity.activityId,
@@ -326,13 +345,35 @@ export const updateOrderService = async (
     if (activities !== undefined) {
       // Remove existing customer activities for this order
       await tx.customerActivity.deleteMany({
-        where: { orderId: id }
+        where: { 
+          orderId: id,
+          customerId: updatedOrder.customerId // Ensure we only delete activities for this customer
+        }
       });
 
       // Create new customer activities
       if (activities.length > 0) {
         for (const activity of activities) {
           try {
+            // Verify that the activity has pricing configured for this customer
+            const hasValidPricing = await tx.customerPrice.findFirst({
+              where: {
+                customerId: updatedOrder.customerId,
+                activityId: activity.activityId,
+                isActive: true,
+                effectiveFrom: { lte: updatedOrder.scheduledDate },
+                OR: [
+                  { effectiveTo: null },
+                  { effectiveTo: { gte: updatedOrder.scheduledDate } }
+                ]
+              }
+            });
+
+            if (!hasValidPricing) {
+              console.warn(`Activity ${activity.activityId} has no valid pricing for customer ${updatedOrder.customerId}, skipping`);
+              continue;
+            }
+
             const priceResult = await getPriceForCustomer(
               updatedOrder.customerId,
               activity.activityId,
@@ -908,9 +949,27 @@ export const deleteOrderRatingService = async (id: string) => {
 
 // -------------------- Order Activities --------------------
 export const getOrderActivitiesService = async (orderId: string) => {
-  // Get customer activities for this order
+  // First get the order to ensure we have the customer context
+  const order = await prisma.order.findUnique({
+    where: { id: orderId },
+    select: {
+      id: true,
+      customerId: true,
+      createdAt: true,
+      createdBy: true
+    }
+  });
+
+  if (!order) {
+    throw new Error('Order not found');
+  }
+
+  // Get customer activities for this order (filtered by customer)
   const customerActivities = await prisma.customerActivity.findMany({
-    where: { orderId },
+    where: { 
+      orderId,
+      customerId: order.customerId // Ensure activities belong to the same customer
+    },
     include: {
       activity: {
         select: {
@@ -965,31 +1024,20 @@ export const getOrderActivitiesService = async (orderId: string) => {
     orderBy: { createdAt: 'desc' }
   });
 
-  // Get order creation info
-  const order = await prisma.order.findUnique({
-    where: { id: orderId },
-    select: {
-      createdAt: true,
-      createdBy: true
-    }
-  });
-
   const activities = [];
 
   // Add order creation activity
-  if (order) {
-    activities.push({
-      id: `order-created-${orderId}`,
-      type: 'ORDER_CREATED' as const,
-      description: 'Auftrag wurde erstellt',
-      authorId: order.createdBy || 'system',
-      authorName: 'System',
-      timestamp: order.createdAt.toISOString(),
-      metadata: {}
-    });
-  }
+  activities.push({
+    id: `order-created-${orderId}`,
+    type: 'ORDER_CREATED' as const,
+    description: 'Auftrag wurde erstellt',
+    authorId: order.createdBy || 'system',
+    authorName: 'System',
+    timestamp: order.createdAt.toISOString(),
+    metadata: {}
+  });
 
-  // Add customer activities
+  // Add customer activities (already filtered by customer)
   customerActivities.forEach(customerActivity => {
     activities.push({
       id: `customer-activity-${customerActivity.id}`,

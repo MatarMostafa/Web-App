@@ -512,20 +512,13 @@ async function main() {
     }),
   ]);
 
+  // Clear existing customer prices first
+  await prisma.customerPrice.deleteMany({});
+
   // Create customer pricing tiers
   await Promise.all([
-    prisma.customerPrice.upsert({
-      where: {
-        customerId_activityId_minQuantity_maxQuantity_effectiveFrom: {
-          customerId: customers[0].id,
-          activityId: activities[0].id,
-          minQuantity: 1,
-          maxQuantity: 10,
-          effectiveFrom: new Date("2024-01-01")
-        }
-      },
-      update: {},
-      create: {
+    prisma.customerPrice.create({
+      data: {
         customerId: customers[0].id,
         activityId: activities[0].id,
         minQuantity: 1,
@@ -535,39 +528,19 @@ async function main() {
         effectiveFrom: new Date("2024-01-01")
       },
     }),
-    prisma.customerPrice.upsert({
-      where: {
-        customerId_activityId_minQuantity_maxQuantity_effectiveFrom: {
-          customerId: customers[0].id,
-          activityId: activities[0].id,
-          minQuantity: 11,
-          maxQuantity: 999999,
-          effectiveFrom: new Date("2024-01-01")
-        }
-      },
-      update: {},
-      create: {
+    prisma.customerPrice.create({
+      data: {
         customerId: customers[0].id,
         activityId: activities[0].id,
         minQuantity: 11,
         maxQuantity: 999999,
         price: 22.00,
         currency: "EUR",
-        effectiveFrom: new Date("2024-01-01")
+        effectiveFrom: new Date("2024-01-02") // Different date to avoid constraint
       },
     }),
-    prisma.customerPrice.upsert({
-      where: {
-        customerId_activityId_minQuantity_maxQuantity_effectiveFrom: {
-          customerId: customers[1].id,
-          activityId: activities[1].id,
-          minQuantity: 1,
-          maxQuantity: 50,
-          effectiveFrom: new Date("2024-01-01")
-        }
-      },
-      update: {},
-      create: {
+    prisma.customerPrice.create({
+      data: {
         customerId: customers[1].id,
         activityId: activities[1].id,
         minQuantity: 1,
@@ -577,25 +550,15 @@ async function main() {
         effectiveFrom: new Date("2024-01-01")
       },
     }),
-    prisma.customerPrice.upsert({
-      where: {
-        customerId_activityId_minQuantity_maxQuantity_effectiveFrom: {
-          customerId: customers[1].id,
-          activityId: activities[1].id,
-          minQuantity: 51,
-          maxQuantity: 999999,
-          effectiveFrom: new Date("2024-01-01")
-        }
-      },
-      update: {},
-      create: {
+    prisma.customerPrice.create({
+      data: {
         customerId: customers[1].id,
         activityId: activities[1].id,
         minQuantity: 51,
         maxQuantity: 999999,
         price: 12.00,
         currency: "EUR",
-        effectiveFrom: new Date("2024-01-01")
+        effectiveFrom: new Date("2024-01-02") // Different date to avoid constraint
       },
     }),
   ]);

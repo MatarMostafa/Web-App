@@ -43,20 +43,19 @@ router.get(
 
       let customerId: string;
       if (user?.customer) {
-        // Direct customer
         customerId = user.customer.id;
       } else if (user?.subAccount?.customer) {
-        // Sub-user accessing parent customer's data
         customerId = user.subAccount.customer.id;
       } else {
         return res.status(404).json({ message: "Customer profile not found" });
       }
 
-      // Get customer activities with pricing
+      // Get ONLY customer-specific activities (no shared activities)
+      // Only return activities that have pricing configured for this customer
       const customerActivities = await prisma.customerActivity.findMany({
         where: { 
           customerId,
-          orderId: null, // Only get general activities, not order-specific ones
+          orderId: null, // Only standalone activities, not order-specific ones
           isActive: true
         },
         include: {
@@ -66,54 +65,47 @@ router.get(
               name: true,
               code: true,
               description: true,
-              unit: true,
-
+              unit: true
             }
           }
         },
         orderBy: { createdAt: 'desc' }
       });
 
-      // If no customer-specific activities, get default activities with customer pricing
-      if (customerActivities.length === 0) {
-        const activities = await prisma.activity.findMany({
-          where: { isActive: true },
-          include: {
-            customerPrices: {
-              where: {
-                customerId,
-                isActive: true,
-                effectiveFrom: { lte: new Date() },
-                OR: [
-                  { effectiveTo: null },
-                  { effectiveTo: { gte: new Date() } }
-                ]
-              },
-              orderBy: { effectiveFrom: 'desc' },
-              take: 1
+      // Alternative: Get activities that have customer pricing configured
+      const activitiesWithPricing = await prisma.activity.findMany({
+        where: {
+          isActive: true,
+          customerPrices: {
+            some: {
+              customerId,
+              isActive: true,
+              effectiveFrom: { lte: new Date() },
+              OR: [
+                { effectiveTo: null },
+                { effectiveTo: { gte: new Date() } }
+              ]
             }
           }
-        });
+        },
+        include: {
+          customerPrices: {
+            where: {
+              customerId,
+              isActive: true,
+              effectiveFrom: { lte: new Date() },
+              OR: [
+                { effectiveTo: null },
+                { effectiveTo: { gte: new Date() } }
+              ]
+            },
+            orderBy: { minQuantity: 'asc' }
+          }
+        },
+        orderBy: { name: 'asc' }
+      });
 
-        const activitiesWithPricing = activities.map(activity => ({
-          id: `default-${activity.id}`,
-          activity: {
-            id: activity.id,
-            name: activity.name,
-            code: activity.code,
-            description: activity.description,
-            unit: activity.unit,
-            defaultPrice: 50.00
-          },
-          unitPrice: activity.customerPrices[0]?.price || 50.00,
-          quantity: 1,
-          isActive: true
-        }));
-
-        return res.json({ success: true, data: activitiesWithPricing });
-      }
-
-      res.json({ success: true, data: customerActivities });
+      res.json({ success: true, data: activitiesWithPricing });
     } catch (error) {
       console.error("Get customer activities error:", error);
       res.status(500).json({

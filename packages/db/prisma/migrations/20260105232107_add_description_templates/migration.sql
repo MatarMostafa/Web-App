@@ -1,5 +1,7 @@
 -- AlterTable
 ALTER TABLE "orders" ADD COLUMN     "usesTemplate" BOOLEAN NOT NULL DEFAULT false;
+ALTER TABLE "orders" ADD COLUMN     "cartonQuantity" INTEGER;
+ALTER TABLE "orders" ADD COLUMN     "articleQuantity" INTEGER;
 
 -- CreateTable
 CREATE TABLE "customer_description_templates" (
