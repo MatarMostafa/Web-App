@@ -49,11 +49,11 @@ const AdminSubAccountTableView: React.FC<AdminSubAccountTableViewProps> = ({
         <Table>
           <TableHeader className="sticky top-0 bg-background z-10">
             <TableRow className="border-b">
-              <TableHead className="w-[200px]">{t("admin.customerDetails.subAccounts.table.name")}</TableHead>
+              <TableHead className="w-[180px] sm:w-[200px]">{t("admin.customerDetails.subAccounts.table.name")}</TableHead>
               <TableHead className="w-[200px]">{t("admin.customerDetails.subAccounts.table.email")}</TableHead>
-              <TableHead className="w-[150px]">{t("admin.customerDetails.subAccounts.table.username")}</TableHead>
+              <TableHead className="w-[150px] hidden lg:table-cell">{t("admin.customerDetails.subAccounts.table.username")}</TableHead>
               <TableHead className="w-[100px]">{t("admin.customerDetails.subAccounts.table.status")}</TableHead>
-              <TableHead className="w-[150px]">{t("admin.customerDetails.subAccounts.table.created")}</TableHead>
+              <TableHead className="w-[150px] hidden md:table-cell">{t("admin.customerDetails.subAccounts.table.created")}</TableHead>
               <TableHead className="w-[120px] text-center">{t("admin.customerDetails.subAccounts.table.actions")}</TableHead>
             </TableRow>
           </TableHeader>
@@ -92,7 +92,7 @@ const AdminSubAccountTableView: React.FC<AdminSubAccountTableViewProps> = ({
                     </span>
                   </TableCell>
 
-                  <TableCell>
+                  <TableCell className="hidden lg:table-cell">
                     <span className="text-sm text-muted-foreground">
                       {subAccount.user?.username || "—"}
                     </span>
@@ -107,7 +107,7 @@ const AdminSubAccountTableView: React.FC<AdminSubAccountTableViewProps> = ({
                     </Badge>
                   </TableCell>
 
-                  <TableCell>
+                  <TableCell className="hidden md:table-cell">
                     <span className="text-sm text-muted-foreground">
                       {format(new Date(subAccount.createdAt), "MMM d, yyyy")}
                     </span>

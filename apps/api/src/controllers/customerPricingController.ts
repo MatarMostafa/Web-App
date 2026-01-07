@@ -7,16 +7,16 @@ import { ActivityType } from '../types/pricing';
 export const getCustomerPrices = async (req: Request, res: Response) => {
   try {
     const { id: customerId } = req.params;
-    const { activityId } = req.query;
+    const { activityId: customerActivityId } = req.query;
 
     const whereClause: any = { customerId };
-    if (activityId) {
-      whereClause.activityId = activityId as string;
+    if (customerActivityId) {
+      whereClause.customerActivityId = customerActivityId as string;
     }
 
     const prices = await prisma.customerPrice.findMany({
       where: whereClause,
-      include: { activity: true },
+      include: { customerActivity: true },
       orderBy: [{ effectiveFrom: 'desc' }, { minQuantity: 'asc' }]
     });
 
@@ -31,16 +31,18 @@ export const getCustomerActivities = async (req: Request, res: Response) => {
     const { id: customerId } = req.params;
 
     const activities = await prisma.customerActivity.findMany({
-      where: { 
+      where: {
         customerId,
         isActive: true,
         orderId: null
       },
-      include: { activity: true },
+      include: {
+        prices: true
+      },
       orderBy: { createdAt: 'desc' }
     });
 
-    res.json(activities);
+    res.json({ success: true, data: activities });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
@@ -49,10 +51,10 @@ export const getCustomerActivities = async (req: Request, res: Response) => {
 export const createCustomerPrice = async (req: Request, res: Response) => {
   try {
     const { id: customerId } = req.params;
-    const { activityId, minQuantity, maxQuantity, price, currency = 'EUR', effectiveFrom, effectiveTo, isActive = true } = req.body;
+    const { activityId: customerActivityId, minQuantity, maxQuantity, price, currency = 'EUR', effectiveFrom, effectiveTo, isActive = true } = req.body;
 
-    if (!activityId || !minQuantity || !maxQuantity || !price || !effectiveFrom) {
-      return res.status(400).json({ error: 'activityId, minQuantity, maxQuantity, price, and effectiveFrom are required' });
+    if (!customerActivityId || !minQuantity || !maxQuantity || !price || !effectiveFrom) {
+      return res.status(400).json({ error: 'customerActivityId, minQuantity, maxQuantity, price, and effectiveFrom are required' });
     }
 
     if (minQuantity <= 0 || maxQuantity <= 0) {
@@ -69,7 +71,7 @@ export const createCustomerPrice = async (req: Request, res: Response) => {
 
     const isValid = await validatePriceTierOverlap(
       customerId,
-      activityId,
+      customerActivityId,
       minQuantity,
       maxQuantity,
       new Date(effectiveFrom),
@@ -83,7 +85,7 @@ export const createCustomerPrice = async (req: Request, res: Response) => {
     const customerPrice = await prisma.customerPrice.create({
       data: {
         customerId,
-        activityId,
+        customerActivityId,
         minQuantity,
         maxQuantity,
         price: new Decimal(price),
@@ -92,7 +94,7 @@ export const createCustomerPrice = async (req: Request, res: Response) => {
         effectiveTo: effectiveTo ? new Date(effectiveTo) : null,
         isActive
       },
-      include: { activity: true }
+      include: { customerActivity: true }
     });
 
     res.status(201).json(customerPrice);
@@ -128,7 +130,7 @@ export const updateCustomerPrice = async (req: Request, res: Response) => {
     if (minQuantity || maxQuantity || effectiveFrom || effectiveTo) {
       const isValid = await validatePriceTierOverlap(
         customerId,
-        existing.activityId,
+        existing.customerActivityId,
         newMinQuantity,
         newMaxQuantity,
         effectiveFrom ? new Date(effectiveFrom) : existing.effectiveFrom,
@@ -152,7 +154,7 @@ export const updateCustomerPrice = async (req: Request, res: Response) => {
         ...(effectiveTo !== undefined && { effectiveTo: effectiveTo ? new Date(effectiveTo) : null }),
         ...(isActive !== undefined && { isActive })
       },
-      include: { activity: true }
+      include: { customerActivity: true }
     });
 
     res.json(updated);
@@ -185,15 +187,24 @@ export const deleteCustomerPrice = async (req: Request, res: Response) => {
 
 export const getActivities = async (req: Request, res: Response) => {
   try {
-    const activities = await prisma.activity.findMany({
-      where: { isActive: true },
-      include: {
-        customerActivities: {
-          include: {
-            customer: true
-          }
-        }
+    // This was the global activity list. Now activities are per customer.
+    // If this endpoint is used without customer context, what should it return?
+    // Maybe nothing, or we should require customerId in query?
+    // For now, let's look for customerId in query
+    const { customerId } = req.query;
+
+    if (!customerId) {
+      // Return empty or error? Returning empty to avoid exposing all customers' data
+      return res.json([]);
+    }
+
+    const activities = await prisma.customerActivity.findMany({
+      where: {
+        customerId: customerId as string,
+        orderId: null,
+        isActive: true
       },
+      // Include prices?
       orderBy: { name: 'asc' }
     });
 
@@ -216,7 +227,7 @@ export const updateActivity = async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'Invalid activity type' });
     }
 
-    const activity = await prisma.activity.update({
+    const activity = await prisma.customerActivity.update({
       where: { id },
       data: {
         name,
@@ -237,7 +248,9 @@ export const deleteActivity = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
-    await prisma.activity.delete({
+    // Use soft delete or hard delete? Activity used to use soft delete? No, schema said optional isActive but default true.
+    // If it's a customer activity definition, we can delete?
+    await prisma.customerActivity.delete({
       where: { id }
     });
 
@@ -249,7 +262,12 @@ export const deleteActivity = async (req: Request, res: Response) => {
 
 export const createActivity = async (req: Request, res: Response) => {
   try {
-    const { name, type, code, description, unit = 'hour' } = req.body;
+    const { name, type, code, description, unit = 'hour', customerId } = req.body;
+
+    // customerId is now required to create a definition
+    if (!customerId) {
+      return res.status(400).json({ error: 'customerId is required to create an activity definition' });
+    }
 
     if (!name || !type) {
       return res.status(400).json({ error: 'name and type are required' });
@@ -259,22 +277,30 @@ export const createActivity = async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'Invalid activity type' });
     }
 
-    // Check if activity with same name already exists
-    const existingActivity = await prisma.activity.findFirst({
-      where: { name }
+    // Check if activity with same name already exists FOR THIS CUSTOMER
+    // Since we don't have unique constraint on name+customerId+orderId=null in schema (only index), we check manually.
+    const existingActivity = await prisma.customerActivity.findFirst({
+      where: {
+        customerId,
+        name,
+        orderId: null
+      }
     });
 
     if (existingActivity) {
-      return res.status(409).json({ error: `Activity with name '${name}' already exists` });
+      return res.status(409).json({ error: `Activity with name '${name}' already exists for this customer` });
     }
 
-    const activity = await prisma.activity.create({
+    const activity = await prisma.customerActivity.create({
       data: {
+        customerId,
+        orderId: null, // Definition
         name,
         type,
         code: code || null,
         description: description || null,
-        unit
+        unit,
+        isActive: true
       }
     });
 
@@ -289,32 +315,38 @@ export const createActivity = async (req: Request, res: Response) => {
 
 export const createCustomerActivity = async (req: Request, res: Response) => {
   try {
-    const { customerId, activityId, quantity, unitPrice, orderId } = req.body;
+    const { customerId, customerActivityId, quantity, unitPrice, orderId } = req.body;
 
-    if (!customerId || !activityId || !quantity || !unitPrice) {
-      return res.status(400).json({ error: 'customerId, activityId, quantity, and unitPrice are required' });
+    if (!customerId || !customerActivityId || !quantity || !unitPrice) {
+      return res.status(400).json({ error: 'customerId, customerActivityId, quantity, and unitPrice are required' });
     }
 
-    if (quantity <= 0) {
-      return res.status(400).json({ error: 'Quantity must be positive' });
-    }
+    // Fetch definition to copy fields
+    const definition = await prisma.customerActivity.findUnique({
+      where: { id: customerActivityId }
+    });
+    if (!definition) throw new Error("Definition not found");
 
-    if (new Decimal(unitPrice).lte(0)) {
-      return res.status(400).json({ error: 'Unit price must be greater than 0' });
-    }
+    // ... validation logic ..
 
-    const lineTotal = new Decimal(unitPrice).mul(quantity);
-
+    // ... new instance ...
     const customerActivity = await prisma.customerActivity.create({
       data: {
         customerId,
-        activityId,
+        // No explicit relation to definition?
         orderId: orderId || null,
         quantity,
         unitPrice: new Decimal(unitPrice),
-        lineTotal
+        lineTotal: new Decimal(unitPrice).mul(quantity),
+        isActive: true,
+        // Copy fields
+        name: definition.name,
+        type: definition.type,
+        code: definition.code,
+        description: definition.description,
+        unit: definition.unit
       },
-      include: { activity: true }
+      // include: { activity: true } // Removed
     });
 
     res.status(201).json(customerActivity);
@@ -325,17 +357,17 @@ export const createCustomerActivity = async (req: Request, res: Response) => {
 
 export const calculatePrice = async (req: Request, res: Response) => {
   try {
-    const { customerId, activityId, quantity } = req.body;
+    const { customerId, activityId: customerActivityId, quantity } = req.body;
 
-    if (!customerId || !activityId || !quantity) {
-      return res.status(400).json({ error: 'customerId, activityId, and quantity are required' });
+    if (!customerId || !customerActivityId || !quantity) {
+      return res.status(400).json({ error: 'customerId, customerActivityId, and quantity are required' });
     }
 
     if (quantity <= 0) {
       return res.status(400).json({ error: 'Quantity must be positive' });
     }
 
-    const priceResult = await getPriceForCustomer(customerId, activityId, quantity);
+    const priceResult = await getPriceForCustomer(customerId, customerActivityId, quantity);
     const lineTotal = priceResult.price.mul(quantity);
 
     res.json({

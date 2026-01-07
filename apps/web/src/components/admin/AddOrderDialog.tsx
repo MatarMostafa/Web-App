@@ -37,7 +37,7 @@ interface AddOrderDialogProps {
 const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
   const { t, ready } = useTranslation();
   const { data: session } = useSession();
-  
+
   if (!ready) {
     return null;
   }
@@ -81,34 +81,29 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
   const fetchActivities = async () => {
     if (!formData.customerId) return;
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/pricing/activities`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/pricing/customers/${formData.customerId}/activities`, {
         headers: { Authorization: `Bearer ${session?.accessToken}` },
       });
       if (response.ok) {
-        const data = await response.json();
-        // Fetch customer prices for each activity
-        const activitiesWithPrices = await Promise.all(
-          data.map(async (activity: any) => {
-            try {
-              const pricesResponse = await fetch(
-                `${process.env.NEXT_PUBLIC_API_URL}/api/pricing/customers/${formData.customerId}/prices?activityId=${activity.id}`,
-                { headers: { Authorization: `Bearer ${session?.accessToken}` } }
-              );
-              if (pricesResponse.ok) {
-                const prices = await pricesResponse.json();
-                const lowestPrice = prices.length > 0 ? Math.min(...prices.map((p: any) => Number(p.price))) : 0;
-                return { ...activity, customerPrices: prices, unitPrice: lowestPrice };
-              }
-              return activity;
-            } catch {
-              return activity;
-            }
-          })
-        );
-        setActivities(activitiesWithPrices);
+        const jsonResponse = await response.json();
+        // Handle wrapped response { success: true, data: [...] } or direct array
+        const data = jsonResponse.data || jsonResponse;
+
+        if (Array.isArray(data)) {
+          const processedActivities = data.map((activity: any) => {
+            // Map 'prices' to 'customerPrices' and calculate lowest price
+            const prices = activity.prices || [];
+            const lowestPrice = prices.length > 0 ? Math.min(...prices.map((p: any) => Number(p.price))) : 0;
+            return { ...activity, customerPrices: prices, unitPrice: lowestPrice };
+          });
+          setActivities(processedActivities);
+        } else {
+          setActivities([]);
+        }
       }
     } catch (error) {
       console.error("Error fetching activities:", error);
+      toast.error(t("activities.messages.loadError"));
     }
   };
 
@@ -123,8 +118,8 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
           typeof selectedCustomer.address === "string"
             ? selectedCustomer.address
             : Object.values(selectedCustomer.address)
-                .filter(Boolean)
-                .join(", ");
+              .filter(Boolean)
+              .join(", ");
         setFormData((prev) => ({ ...prev, location: addressStr }));
       }
       fetchActivities();
@@ -199,9 +194,9 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
     if (!formData.priority || formData.priority < 1) newErrors.priority = t("admin.orders.form.priorityRequired");
     if (!cartonQuantity || cartonQuantity < 1) newErrors.cartonQuantity = "Carton quantity is required";
     if (!articleQuantity || articleQuantity < 1) newErrors.articleQuantity = "Article quantity is required";
-    
+
     setErrors(newErrors);
-    
+
     if (Object.keys(newErrors).length > 0) {
       toast.error(t("admin.orders.form.validationError"));
       return;
@@ -209,7 +204,7 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
     setLoading(true);
 
     try {
-      const submitData = { 
+      const submitData = {
         ...formData,
         activities: selectedActivities.map(activityId => ({
           activityId,
@@ -255,7 +250,7 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
   const handleEmployeeToggle = (employeeId: string, checked: boolean) => {
     setFormData((prev) => {
       const currentAssigned = prev.assignedEmployeeIds || [];
-      
+
       if (checked) {
         const employeeExists = employees.some(emp => emp.id === employeeId);
         if (!employeeExists) {
@@ -276,7 +271,7 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
   };
 
   const handleActivityToggle = (activityId: string, checked: boolean) => {
-    setSelectedActivities(prev => 
+    setSelectedActivities(prev =>
       checked
         ? [...prev, activityId]
         : prev.filter(id => id !== activityId)
@@ -285,21 +280,21 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
 
   const getTotalPrice = () => {
     if (cartonQuantity === 0) return 0;
-    
+
     return selectedActivities.reduce((total, activityId) => {
       const activity = activities.find(a => a.id === activityId);
       if (!activity) return total;
-      
+
       // Find price based on carton quantity range
       if (activity.customerPrices && activity.customerPrices.length > 0) {
-        const applicablePrice = activity.customerPrices.find((p: any) => 
+        const applicablePrice = activity.customerPrices.find((p: any) =>
           cartonQuantity >= p.minQuantity && cartonQuantity <= p.maxQuantity
         );
         if (applicablePrice) {
           return total + Number(applicablePrice.price);
         }
       }
-      
+
       return total + (Number(activity.unitPrice) || 0);
     }, 0);
   };
@@ -400,7 +395,7 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
         <h3 className="text-lg font-semibold">Step 3: Quantities</h3>
         <p className="text-sm text-muted-foreground">Enter carton and article quantities</p>
       </div>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <Label htmlFor="cartonQuantity">Carton Quantity *</Label>
@@ -437,7 +432,7 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
           {errors.articleQuantity && <p className="text-sm text-red-500 mt-1">{errors.articleQuantity}</p>}
         </div>
       </div>
-      
+
       {cartonQuantity > 0 && (
         <div className="bg-muted/50 p-4 rounded-lg">
           <h4 className="font-medium mb-2">Price Calculation</h4>
@@ -448,12 +443,12 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
             {selectedActivities.map(activityId => {
               const activity = activities.find(a => a.id === activityId);
               if (!activity) return null;
-              
+
               let price = 0;
               let priceInfo = "Base price";
-              
+
               if (activity.customerPrices && activity.customerPrices.length > 0) {
-                const applicablePrice = activity.customerPrices.find((p: any) => 
+                const applicablePrice = activity.customerPrices.find((p: any) =>
                   cartonQuantity >= p.minQuantity && cartonQuantity <= p.maxQuantity
                 );
                 if (applicablePrice) {
@@ -463,7 +458,7 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
               } else {
                 price = Number(activity.unitPrice) || 0;
               }
-              
+
               return (
                 <div key={activityId} className="flex justify-between text-sm">
                   <span>{activity.name} ({priceInfo})</span>
@@ -487,14 +482,14 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
         <h3 className="text-lg font-semibold">Step 4: Order Details</h3>
         <p className="text-sm text-muted-foreground">Complete the order information</p>
       </div>
-      
+
       <OrderDescriptionForm
         customerId={formData.customerId}
         description={formData.description || ""}
         onDescriptionChange={(description) => handleInputChange("description", description)}
         onTemplateDataChange={setTemplateData}
       />
-      
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <Label htmlFor="scheduledDate">{t("admin.orders.form.scheduledDate")} *</Label>
@@ -619,20 +614,18 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
             <div className="flex items-center space-x-2">
               {[1, 2, 3, 4].map((step) => (
                 <div key={step} className="flex items-center">
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-                    currentStep >= step ? 'bg-primary text-white' : 'bg-muted text-muted-foreground'
-                  }`}>
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${currentStep >= step ? 'bg-primary text-white' : 'bg-muted text-muted-foreground'
+                    }`}>
                     {step}
                   </div>
-                  {step < 4 && <div className={`w-8 h-0.5 ${
-                    currentStep > step ? 'bg-primary' : 'bg-muted'
-                  }`} />}
+                  {step < 4 && <div className={`w-8 h-0.5 ${currentStep > step ? 'bg-primary' : 'bg-muted'
+                    }`} />}
                 </div>
               ))}
             </div>
           </div>
         </DialogHeader>
-        
+
         <div className="space-y-6">
           {currentStep === 1 && renderStep1()}
           {currentStep === 2 && renderStep2()}
@@ -653,7 +646,7 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
               <ChevronLeft className="w-4 h-4 mr-1" />
               Previous
             </Button>
-            
+
             <div className="flex gap-2">
               <Button
                 type="button"
@@ -665,7 +658,7 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
               >
                 Cancel
               </Button>
-              
+
               {currentStep < 4 ? (
                 <Button type="button" onClick={handleNext}>
                   Next

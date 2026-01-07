@@ -13,13 +13,13 @@ interface CustomerTemplateTabProps {
 
 const CustomerTemplateTab: React.FC<CustomerTemplateTabProps> = ({ customerId }) => {
   const { t } = useTranslation();
-  const { 
-    customerTemplate, 
-    loading, 
-    fetchCustomerTemplate, 
-    createCustomerTemplate, 
-    updateCustomerTemplate, 
-    deleteCustomerTemplate 
+  const {
+    customerTemplate,
+    loading,
+    fetchCustomerTemplate,
+    createCustomerTemplate,
+    updateCustomerTemplate,
+    deleteCustomerTemplate
   } = useTemplateStore();
 
   const [templateLines, setTemplateLines] = useState<string[]>([""]);
@@ -59,7 +59,7 @@ const CustomerTemplateTab: React.FC<CustomerTemplateTabProps> = ({ customerId })
 
   const handleSave = async () => {
     const filteredLines = templateLines.filter(line => line.trim() !== "");
-    
+
     if (filteredLines.length === 0) {
       return;
     }
@@ -116,13 +116,13 @@ const CustomerTemplateTab: React.FC<CustomerTemplateTabProps> = ({ customerId })
             <FileText className="h-5 w-5" />
             {t("admin.customerDetails.template.title")}
           </CardTitle>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2 w-full sm:w-auto">
             {customerTemplate && !isEditing && (
               <>
-                <Button variant="outline" onClick={handleEdit}>
+                <Button variant="outline" onClick={handleEdit} className="flex-1 sm:flex-none">
                   {t("admin.customerDetails.template.editTemplate")}
                 </Button>
-                <Button variant="outline" onClick={handleDelete} className="text-red-600 hover:text-red-700">
+                <Button variant="outline" onClick={handleDelete} className="text-red-600 hover:text-red-700 flex-1 sm:flex-none">
                   <Trash2 className="h-4 w-4 mr-2" />
                   {t("admin.customerDetails.template.deleteTemplate")}
                 </Button>
@@ -173,7 +173,7 @@ const CustomerTemplateTab: React.FC<CustomerTemplateTabProps> = ({ customerId })
                   )}
                 </div>
               ))}
-              
+
               {isEditing && (
                 <Button variant="outline" onClick={handleAddLine} className="w-full">
                   <Plus className="h-4 w-4 mr-2" />
@@ -218,8 +218,8 @@ const CustomerTemplateTab: React.FC<CustomerTemplateTabProps> = ({ customerId })
                 <Button onClick={handleCancel} variant="outline">
                   {t("common.cancel")}
                 </Button>
-                <Button 
-                  onClick={handleSave} 
+                <Button
+                  onClick={handleSave}
                   disabled={loading || templateLines.every(line => line.trim() === "")}
                 >
                   {loading ? t("admin.customerDetails.template.saving") : customerTemplate ? t("admin.customerDetails.template.updateTemplate") : t("admin.customerDetails.template.createTemplate")}

@@ -1,8 +1,8 @@
 import express from "express";
 import { authMiddleware } from "../middleware/authMiddleware";
 import { roleMiddleware } from "../middleware/roleMiddleware";
-import { 
-  getCustomerOrdersService, 
+import {
+  getCustomerOrdersService,
   getCustomerOrderByIdService,
   getCustomerProfileService,
   updateCustomerProfileService,
@@ -33,7 +33,7 @@ router.get(
       const { prisma } = await import("@repo/db");
       const user = await prisma.user.findUnique({
         where: { id: userId },
-        include: { 
+        include: {
           customer: true,
           subAccount: {
             include: { customer: true }
@@ -53,32 +53,23 @@ router.get(
       // Get ONLY customer-specific activities (no shared activities)
       // Only return activities that have pricing configured for this customer
       const customerActivities = await prisma.customerActivity.findMany({
-        where: { 
+        where: {
           customerId,
           orderId: null, // Only standalone activities, not order-specific ones
           isActive: true
         },
-        include: {
-          activity: {
-            select: {
-              id: true,
-              name: true,
-              code: true,
-              description: true,
-              unit: true
-            }
-          }
-        },
+        // include: { activity: true } // Removed
         orderBy: { createdAt: 'desc' }
       });
 
       // Alternative: Get activities that have customer pricing configured
-      const activitiesWithPricing = await prisma.activity.findMany({
+      const activitiesWithPricing = await prisma.customerActivity.findMany({
         where: {
+          customerId,
+          orderId: null,
           isActive: true,
-          customerPrices: {
+          prices: {
             some: {
-              customerId,
               isActive: true,
               effectiveFrom: { lte: new Date() },
               OR: [
@@ -89,9 +80,8 @@ router.get(
           }
         },
         include: {
-          customerPrices: {
+          prices: {
             where: {
-              customerId,
               isActive: true,
               effectiveFrom: { lte: new Date() },
               OR: [
@@ -132,7 +122,7 @@ router.get(
       const { prisma } = await import("@repo/db");
       const user = await prisma.user.findUnique({
         where: { id: userId },
-        include: { 
+        include: {
           customer: true,
           subAccount: {
             include: { customer: true }
@@ -181,7 +171,7 @@ router.get(
       const { prisma } = await import("@repo/db");
       const user = await prisma.user.findUnique({
         where: { id: userId },
-        include: { 
+        include: {
           customer: true,
           subAccount: {
             include: { customer: true }
@@ -257,7 +247,7 @@ router.put(
       const { prisma } = await import("@repo/db");
       const user = await prisma.user.findUnique({
         where: { id: userId },
-        include: { 
+        include: {
           customer: true,
           subAccount: {
             include: { customer: true }
@@ -288,8 +278,8 @@ router.put(
 
       // Only allow editing DRAFT and OPEN orders (both show as 'planned' to customers)
       if (existingOrder.status !== 'DRAFT' && existingOrder.status !== 'OPEN') {
-        return res.status(403).json({ 
-          message: "Only draft orders can be edited" 
+        return res.status(403).json({
+          message: "Only draft orders can be edited"
         });
       }
 
@@ -342,8 +332,8 @@ router.put(
       }
 
       const updatedProfile = await updateCustomerProfileService(userId, req.body);
-      res.json({ 
-        success: true, 
+      res.json({
+        success: true,
         data: updatedProfile,
         message: "Profile updated successfully"
       });
@@ -418,9 +408,9 @@ router.post(
     try {
       const { username, password, ...customerData } = req.body;
       const { prisma } = await import("@repo/db");
-      
+
       let customer;
-      
+
       if (username && password) {
         // Create customer with login account
         const result = await registerCustomer({
@@ -429,7 +419,7 @@ router.post(
           email: customerData.contactEmail,
           ...customerData,
         });
-        
+
         // Get the created customer with user relation
         customer = await prisma.customer.findFirst({
           where: { contactEmail: customerData.contactEmail },
@@ -460,7 +450,7 @@ router.post(
           },
         });
       }
-      
+
       res.status(201).json(customer);
     } catch (error) {
       console.error("Create customer error:", error);
@@ -482,17 +472,17 @@ router.put(
       const { id } = req.params;
       const { contactEmail, ...customerData } = req.body;
       const { prisma } = await import("@repo/db");
-      
+
       // Get current customer to check if it has a user account
       const currentCustomer = await prisma.customer.findUnique({
         where: { id },
         include: { user: true },
       });
-      
+
       if (!currentCustomer) {
         return res.status(404).json({ message: "Customer not found" });
       }
-      
+
       // Update customer data
       const customer = await prisma.customer.update({
         where: { id },
@@ -511,14 +501,14 @@ router.put(
           },
         },
       });
-      
+
       // If customer has a user account and email changed, update user email too
       if (currentCustomer.userId && contactEmail && contactEmail !== currentCustomer.user?.email) {
         await prisma.user.update({
           where: { id: currentCustomer.userId },
           data: { email: contactEmail },
         });
-        
+
         // Refresh customer data to get updated user email
         const updatedCustomer = await prisma.customer.findUnique({
           where: { id },
@@ -533,21 +523,21 @@ router.put(
             },
           },
         });
-        
+
         const customerWithCorrectEmail = {
           ...updatedCustomer,
           contactEmail: updatedCustomer?.user?.email || updatedCustomer?.contactEmail,
         };
-        
+
         return res.json(customerWithCorrectEmail);
       }
-      
+
       // Prioritize user email over customer contactEmail
       const customerWithCorrectEmail = {
         ...customer,
         contactEmail: customer.user?.email || customer.contactEmail,
       };
-      
+
       res.json(customerWithCorrectEmail);
     } catch (error) {
       console.error("Update customer error:", error);
@@ -570,28 +560,28 @@ router.post(
       const { reason } = req.body;
       const { prisma } = await import("@repo/db");
 
-      
+
       const customer = await prisma.customer.findUnique({
         where: { id },
         include: { user: true },
       });
-      
+
       if (!customer) {
         return res.status(404).json({ message: "Customer not found" });
       }
-      
+
       if (!customer.userId) {
         return res.status(400).json({ message: "Customer has no user account to block" });
       }
-      
+
       await prisma.customer.update({
         where: { id },
         data: { isActive: false },
       });
-      
+
       // Send notification to customer
       await notifyCustomerBlocked(id, reason, req.user?.id);
-      
+
       res.json({ message: "Customer blocked successfully" });
     } catch (error) {
       console.error("Block customer error:", error);
@@ -613,28 +603,28 @@ router.post(
       const { id } = req.params;
       const { prisma } = await import("@repo/db");
 
-      
+
       const customer = await prisma.customer.findUnique({
         where: { id },
         include: { user: true },
       });
-      
+
       if (!customer) {
         return res.status(404).json({ message: "Customer not found" });
       }
-      
+
       if (!customer.userId) {
         return res.status(400).json({ message: "Customer has no user account to unblock" });
       }
-      
+
       await prisma.customer.update({
         where: { id },
         data: { isActive: true },
       });
-      
+
       // Send notification to customer
       await notifyCustomerUnblocked(id, req.user?.id);
-      
+
       res.json({ message: "Customer unblocked successfully" });
     } catch (error) {
       console.error("Unblock customer error:", error);
@@ -654,7 +644,7 @@ router.get(
   async (req, res) => {
     try {
       const { customerId, startDate, endDate, format = 'xlsx' } = req.query;
-      
+
       if (!startDate || !endDate) {
         return res.status(400).json({ message: "Start and end dates are required" });
       }
@@ -667,10 +657,10 @@ router.get(
       };
 
       const exportData = await customerExportService.exportCustomerData(filters);
-      
+
       const fileExtension = format === 'csv' ? 'csv' : 'xlsx';
       const filename = `customer-data-${new Date().toISOString().split('T')[0]}.${fileExtension}`;
-      
+
       if (format === 'csv') {
         res.setHeader('Content-Type', 'text/csv');
       } else {
@@ -694,29 +684,29 @@ router.delete(
     try {
       const { id } = req.params;
       const { prisma } = await import("@repo/db");
-      
+
       // Get customer with user relation
       const customer = await prisma.customer.findUnique({
         where: { id },
         include: { user: true },
       });
-      
+
       if (!customer) {
         return res.status(404).json({ message: "Customer not found" });
       }
-      
+
       // Delete customer first (due to foreign key constraint)
       await prisma.customer.delete({
         where: { id },
       });
-      
+
       // Delete associated user account if exists
       if (customer.userId) {
         await prisma.user.delete({
           where: { id: customer.userId },
         });
       }
-      
+
       res.json({ message: "Customer deleted successfully" });
     } catch (error) {
       console.error("Delete customer error:", error);

@@ -195,16 +195,16 @@ router.post(
     try {
       const { orderId } = req.params;
       const { employeeIds } = req.body;
-      
+
       // Remove existing assignments
       await prisma.assignment.deleteMany({ where: { orderId } });
-      
+
       // Update order's requiredEmployees count
       await prisma.order.update({
         where: { id: orderId },
         data: { requiredEmployees: employeeIds.length || 1 }
       });
-      
+
       // Create new assignments
       const assignments = await Promise.all(
         employeeIds.map((employeeId: string) =>
@@ -218,12 +218,12 @@ router.post(
           })
         )
       );
-      
+
       res.json({ message: "Mitarbeiter erfolgreich zugewiesen", assignments });
     } catch (error) {
       console.error("Bulk assignment error:", error);
-      res.status(400).json({ 
-        message: "Fehler beim Zuweisen der Mitarbeiter", 
+      res.status(400).json({
+        message: "Fehler beim Zuweisen der Mitarbeiter",
         error: error instanceof Error ? error.message : String(error)
       });
     }
@@ -380,41 +380,41 @@ router.get(
     try {
       const { orderId } = req.params;
       console.log(`Fetching activity IDs for order: ${orderId}`);
-      
+
       // First get the order to ensure we have the customer context
       const order = await prisma.order.findUnique({
         where: { id: orderId },
         select: { customerId: true }
       });
-      
+
       if (!order) {
-        return res.status(404).json({ 
-          success: false, 
-          message: "Order not found" 
+        return res.status(404).json({
+          success: false,
+          message: "Order not found"
         });
       }
-      
+
       // Get customer activities that belong to this specific customer and order
       const customerActivities = await prisma.customerActivity.findMany({
-        where: { 
+        where: {
           orderId,
           customerId: order.customerId, // Ensure activities belong to the same customer
           isActive: true
         },
-        select: { activityId: true }
+        select: { id: true }
       });
-      
+
       console.log(`Found ${customerActivities.length} customer activities for order ${orderId}:`, customerActivities);
-      
-      const activityIds = customerActivities.map(ca => ca.activityId);
+
+      const activityIds = customerActivities.map(ca => ca.id);
       console.log(`Returning activity IDs:`, activityIds);
-      
+
       res.json({ success: true, data: activityIds });
     } catch (error) {
       console.error("Get order activity IDs error:", error);
-      res.status(500).json({ 
+      res.status(500).json({
         success: false,
-        message: "Fehler beim Abrufen der Aktivitäts-IDs", 
+        message: "Fehler beim Abrufen der Aktivitäts-IDs",
         error: error instanceof Error ? error.message : String(error)
       });
     }
@@ -431,17 +431,17 @@ router.get(
   async (req: Request, res: Response) => {
     try {
       const { startDate, endDate } = req.query;
-      
+
       const dateRange = startDate && endDate ? {
         start: new Date(startDate as string),
         end: new Date(endDate as string)
       } : undefined;
-      
+
       const analytics = await OrderAnalyticsService.getStartMethodAnalytics(dateRange);
       res.json({ success: true, data: analytics });
     } catch (error) {
       console.error("Start method analytics error:", error);
-      res.status(500).json({ 
+      res.status(500).json({
         success: false,
         message: "Failed to get start method analytics",
         error: String(error)
@@ -457,17 +457,17 @@ router.get(
   async (req: Request, res: Response) => {
     try {
       const { startDate, endDate } = req.query;
-      
+
       const dateRange = startDate && endDate ? {
         start: new Date(startDate as string),
         end: new Date(endDate as string)
       } : undefined;
-      
+
       const analytics = await OrderAnalyticsService.getCompletionAnalytics(dateRange);
       res.json({ success: true, data: analytics });
     } catch (error) {
       console.error("Completion analytics error:", error);
-      res.status(500).json({ 
+      res.status(500).json({
         success: false,
         message: "Failed to get completion analytics",
         error: String(error)

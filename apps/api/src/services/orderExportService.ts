@@ -25,7 +25,7 @@ export async function exportOrdersToCSV(startDate: Date, endDate: Date): Promise
       customer: true,
       qualifications: {
         include: {
-          activity: true,
+          customerActivity: true,
           qualification: true
         }
       }
@@ -43,7 +43,7 @@ export async function exportOrdersToCSV(startDate: Date, endDate: Date): Promise
           orderNumber: order.orderNumber,
           customerName: order.customer.companyName,
           scheduledDate: order.scheduledDate,
-          activityName: qual.activity?.name || qual.qualification.name,
+          activityName: qual.customerActivity?.name || qual.qualification.name,
           unit: qual.unit,
           quantity: qual.quantity,
           unitPrice: new Decimal(qual.unitPrice.toString()).toFixed(2),
@@ -76,7 +76,7 @@ export async function getOrderRevenue(orderId: string): Promise<{ total: Decimal
     where: { id: orderId },
     include: {
       qualifications: {
-        include: { activity: true, qualification: true }
+        include: { customerActivity: true, qualification: true }
       }
     }
   });
@@ -91,7 +91,7 @@ export async function getOrderRevenue(orderId: string): Promise<{ total: Decimal
       const amount = new Decimal(qual.lineTotal.toString());
       total = total.add(amount);
       breakdown.push({
-        activity: qual.activity?.name || qual.qualification.name,
+        activity: qual.customerActivity?.name || qual.qualification.name,
         amount
       });
     }

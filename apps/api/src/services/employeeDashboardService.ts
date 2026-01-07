@@ -6,15 +6,15 @@ const getCurrentWeekRange = () => {
   const now = new Date();
   const dayOfWeek = now.getDay(); // 0 = Sunday, 1 = Monday, etc.
   const daysToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1; // If Sunday, go back 6 days to Monday
-  
+
   const startOfWeek = new Date(now);
   startOfWeek.setDate(now.getDate() - daysToMonday);
   startOfWeek.setHours(0, 0, 0, 0);
-  
+
   const endOfWeek = new Date(startOfWeek);
   endOfWeek.setDate(startOfWeek.getDate() + 6);
   endOfWeek.setHours(23, 59, 59, 999);
-  
+
   return { startOfWeek, endOfWeek };
 };
 
@@ -32,11 +32,7 @@ export const getCurrentWeekOrders = async (userId: string) => {
       include: {
         order: {
           include: {
-            customerActivities: {
-              include: {
-                activity: true
-              }
-            }
+            customerActivities: true
           }
         },
       },
@@ -81,11 +77,7 @@ export const getArchivedOrders = async (userId: string) => {
       include: {
         order: {
           include: {
-            customerActivities: {
-              include: {
-                activity: true
-              }
-            }
+            customerActivities: true
           }
         },
       },
@@ -197,7 +189,7 @@ export const getDashboardStats = async (userId: string) => {
     // Upcoming deadlines (orders scheduled in next 7 days)
     const nextWeek = new Date();
     nextWeek.setDate(nextWeek.getDate() + 7);
-    
+
     const upcomingDeadlinesCount = await prisma.assignment.count({
       where: {
         employeeId: employee.id,

@@ -475,90 +475,99 @@ async function main() {
     }),
   ]);
 
-  // Create activities
-  const activities = await Promise.all([
-    prisma.activity.upsert({
-      where: { name: "Container Unloading" },
-      update: {},
-      create: {
-        name: "Container Unloading",
-        type: "CONTAINER_UNLOADING",
-        code: "CU001",
-        unit: "hour",
-        description: "Unloading containers from trucks"
-      },
-    }),
-    prisma.activity.upsert({
-      where: { name: "Wrapping" },
-      update: {},
-      create: {
-        name: "Wrapping",
-        type: "WRAPPING",
-        code: "WR001",
-        unit: "piece",
-        description: "Wrapping goods for shipment"
-      },
-    }),
-    prisma.activity.upsert({
-      where: { name: "Repacking" },
-      update: {},
-      create: {
-        name: "Repacking",
-        type: "REPACKING",
-        code: "RP001",
-        unit: "hour",
-        description: "Repacking items for distribution"
-      },
-    }),
-  ]);
+  // Clear existing customer activities (will cascade delete prices)
+  await prisma.customerActivity.deleteMany({});
 
-  // Clear existing customer prices first
-  await prisma.customerPrice.deleteMany({});
+  // Create Customer Activities and Pricing
+  const customerActivity1 = await prisma.customerActivity.create({
+    data: {
+      customerId: customers[0].id,
+      name: "Container Unloading",
+      type: "CONTAINER_UNLOADING",
+      code: "CU001",
+      unit: "hour",
+      description: "Unloading containers from trucks",
+      orderId: null, // Definition
+      isActive: true
+    }
+  });
+
+  const customerActivity2 = await prisma.customerActivity.create({
+    data: {
+      customerId: customers[1].id,
+      name: "Wrapping",
+      type: "WRAPPING",
+      code: "WR001",
+      unit: "piece",
+      description: "Wrapping goods for shipment",
+      orderId: null, // Definition
+      isActive: true
+    }
+  });
+
+  const customerActivity3 = await prisma.customerActivity.create({
+    data: {
+      customerId: customers[0].id, // Assign to customer 0 for now as example
+      name: "Repacking",
+      type: "REPACKING",
+      code: "RP001",
+      unit: "hour",
+      description: "Repacking items for distribution",
+      orderId: null, // Definition
+      isActive: true
+    }
+  });
 
   // Create customer pricing tiers
   await Promise.all([
+    // Customer 0 - Container Unloading
     prisma.customerPrice.create({
       data: {
         customerId: customers[0].id,
-        activityId: activities[0].id,
+        customerActivityId: customerActivity1.id,
         minQuantity: 1,
         maxQuantity: 10,
         price: 25.00,
         currency: "EUR",
-        effectiveFrom: new Date("2024-01-01")
+        effectiveFrom: new Date("2024-01-01"),
+        isActive: true
       },
     }),
     prisma.customerPrice.create({
       data: {
         customerId: customers[0].id,
-        activityId: activities[0].id,
+        customerActivityId: customerActivity1.id,
         minQuantity: 11,
         maxQuantity: 999999,
         price: 22.00,
         currency: "EUR",
-        effectiveFrom: new Date("2024-01-02") // Different date to avoid constraint
+        effectiveFrom: new Date("2024-01-02"),
+        isActive: true
       },
     }),
+    // Customer 1 - Wrapping
     prisma.customerPrice.create({
       data: {
         customerId: customers[1].id,
-        activityId: activities[1].id,
+        customerActivityId: customerActivity2.id,
         minQuantity: 1,
         maxQuantity: 50,
         price: 15.00,
         currency: "EUR",
-        effectiveFrom: new Date("2024-01-01")
+        effectiveFrom: new Date("2024-01-01"),
+        isActive: true
       },
     }),
     prisma.customerPrice.create({
       data: {
         customerId: customers[1].id,
-        activityId: activities[1].id,
+        customerActivityId: customerActivity2.id,
         minQuantity: 51,
         maxQuantity: 999999,
         price: 12.00,
         currency: "EUR",
-        effectiveFrom: new Date("2024-01-02") // Different date to avoid constraint
+        effectiveFrom: new Date("2024-01-02"),
+        isActive: true
       },
     }),
   ]);

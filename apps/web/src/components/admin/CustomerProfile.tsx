@@ -15,14 +15,14 @@ interface CustomerProfileProps {
   onTabChange?: (tab: string) => void;
 }
 
-const CustomerProfile: React.FC<CustomerProfileProps> = ({ 
-  customer, 
+const CustomerProfile: React.FC<CustomerProfileProps> = ({
+  customer,
   initialTab = "overview",
-  onTabChange 
+  onTabChange
 }) => {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState(initialTab);
-  
+
   const handleTabChange = (tab: string) => {
     setActiveTab(tab);
     onTabChange?.(tab);
@@ -31,12 +31,12 @@ const CustomerProfile: React.FC<CustomerProfileProps> = ({
   return (
     <div className="space-y-6">
       <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-        <TabsList className="grid w-full grid-cols-5">
-          <TabsTrigger value="overview">{t('admin.customerDetails.tabs.overview')}</TabsTrigger>
-          <TabsTrigger value="orders">{t('admin.customerDetails.tabs.orders')}</TabsTrigger>
-          <TabsTrigger value="activities">{t('activities.title')}</TabsTrigger>
-          <TabsTrigger value="subaccounts">{t('admin.customerDetails.tabs.subAccounts')}</TabsTrigger>
-          <TabsTrigger value="template">{t('admin.customerDetails.template.title')}</TabsTrigger>
+        <TabsList className="flex flex-col sm:grid sm:grid-cols-5 w-full h-auto p-1 bg-muted/50">
+          <TabsTrigger value="overview" className="w-full justify-start sm:justify-center py-2 px-4">{t('admin.customerDetails.tabs.overview')}</TabsTrigger>
+          <TabsTrigger value="orders" className="w-full justify-start sm:justify-center py-2 px-4">{t('admin.customerDetails.tabs.orders')}</TabsTrigger>
+          <TabsTrigger value="activities" className="w-full justify-start sm:justify-center py-2 px-4">{t('activities.title')}</TabsTrigger>
+          <TabsTrigger value="subaccounts" className="w-full justify-start sm:justify-center py-2 px-4">{t('admin.customerDetails.tabs.subAccounts')}</TabsTrigger>
+          <TabsTrigger value="template" className="w-full justify-start sm:justify-center py-2 px-4">{t('admin.customerDetails.template.title')}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">

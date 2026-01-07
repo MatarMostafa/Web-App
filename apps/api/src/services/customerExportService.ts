@@ -37,12 +37,12 @@ export const exportCustomerData = async (filters: ExportFilters): Promise<string
         qualifications: {
           include: {
             qualification: true,
-            activity: true,
+            customerActivity: true,
           },
         },
         customerActivities: {
           include: {
-            activity: true,
+            // no include needed for activity fields, they are on the model
           },
         },
         orderAssignments: {
@@ -63,9 +63,9 @@ export const exportCustomerData = async (filters: ExportFilters): Promise<string
     });
 
     const csvData = orders.map(order => {
-      const activities = order.customerActivities.map(ca => ca.activity.name).join('; ');
+      const activities = order.customerActivities.map(ca => ca.name).join('; ');
       const qualifications = order.qualifications.map(q => q.qualification.name).join('; ');
-      
+
       const totalHours = Number(order.actualHours) || Number(order.estimatedHours) || 0;
       const totalPrice = order.qualifications.reduce((sum, q) => sum + (Number(q.lineTotal) || 0), 0);
       const activityTotal = order.customerActivities.reduce((sum, ca) => sum + (Number(ca.lineTotal) || 0), 0);

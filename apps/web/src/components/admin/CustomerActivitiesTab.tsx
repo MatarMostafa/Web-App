@@ -20,7 +20,7 @@ interface Activity {
   code?: string;
   unit: string;
   isActive: boolean;
-  customerPrices?: Array<{
+  prices?: Array<{
     id: string;
     minQuantity: number;
     maxQuantity: number;
@@ -60,7 +60,7 @@ export const CustomerActivitiesTab = ({ customerId }: CustomerActivitiesTabProps
   const fetchActivities = async () => {
     try {
       // Fetch only activities available for this specific customer
-      const response = await apiClient.get<{success: boolean, data: Activity[]}>(`/api/pricing/customers/${customerId}/activities`);
+      const response = await apiClient.get<{ success: boolean, data: Activity[] }>(`/api/pricing/customers/${customerId}/activities`);
       setActivities(response.data || []);
     } catch (error) {
       toast.error(t('activities.messages.loadError'));
@@ -80,7 +80,8 @@ export const CustomerActivitiesTab = ({ customerId }: CustomerActivitiesTabProps
         name: data.name,
         type: data.type,
         code: data.code || undefined,
-        unit: data.unit
+        unit: data.unit,
+        customerId
       });
 
       // Create customer prices
@@ -124,9 +125,9 @@ export const CustomerActivitiesTab = ({ customerId }: CustomerActivitiesTabProps
       });
 
       // Delete existing customer prices
-      if (editingActivity.customerPrices) {
+      if (editingActivity.prices) {
         await Promise.all(
-          editingActivity.customerPrices.map(price =>
+          editingActivity.prices.map(price =>
             apiClient.delete(`/api/pricing/customers/${customerId}/prices/${price.id}`)
           )
         );
@@ -170,7 +171,7 @@ export const CustomerActivitiesTab = ({ customerId }: CustomerActivitiesTabProps
     }
   };
 
-  const formatPriceRanges = (prices?: Activity['customerPrices']) => {
+  const formatPriceRanges = (prices?: Activity['prices']) => {
     if (!prices || prices.length === 0) return 'No pricing';
     return prices.map(p => {
       const validFrom = p.effectiveFrom ? ` (from ${new Date(p.effectiveFrom).toLocaleDateString()})` : '';
@@ -181,17 +182,19 @@ export const CustomerActivitiesTab = ({ customerId }: CustomerActivitiesTabProps
   return (
     <Card>
       <CardHeader>
-        <div className="flex justify-between items-center">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <CardTitle className="flex items-center gap-2">
             <ActivityIcon className="h-5 w-5" />
             {t('activities.title')}
           </CardTitle>
-          <AddActivityDialog
-            open={addDialogOpen}
-            onOpenChange={setAddDialogOpen}
-            customerId={customerId}
-            onSubmit={handleAddSubmit}
-          />
+          <div className="w-full sm:w-auto">
+            <AddActivityDialog
+              open={addDialogOpen}
+              onOpenChange={setAddDialogOpen}
+              customerId={customerId}
+              onSubmit={handleAddSubmit}
+            />
+          </div>
         </div>
       </CardHeader>
       <CardContent>
@@ -201,27 +204,27 @@ export const CustomerActivitiesTab = ({ customerId }: CustomerActivitiesTabProps
               <TableHeader>
                 <TableRow>
                   <TableHead>{t('activities.table.name')}</TableHead>
-                  <TableHead>{t('activities.table.type')}</TableHead>
-                  <TableHead>{t('activities.table.code')}</TableHead>
-                  <TableHead>{t('activities.table.unit')}</TableHead>
-                  <TableHead>Price Ranges (Valid From)</TableHead>
-                  <TableHead>{t('activities.table.status')}</TableHead>
-                  <TableHead>{t('activities.table.actions')}</TableHead>
+                  <TableHead className="hidden sm:table-cell">{t('activities.table.type')}</TableHead>
+                  <TableHead className="hidden lg:table-cell">{t('activities.table.code')}</TableHead>
+                  <TableHead className="hidden sm:table-cell">{t('activities.table.unit')}</TableHead>
+                  <TableHead>Price Ranges</TableHead>
+                  <TableHead className="hidden md:table-cell">{t('activities.table.status')}</TableHead>
+                  <TableHead className="text-right">{t('activities.table.actions')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {activities.map((activity: Activity) => (
                   <TableRow key={activity.id}>
                     <TableCell className="font-medium">{activity.name}</TableCell>
-                    <TableCell>{ACTIVITY_TYPE_LABELS[activity.type]}</TableCell>
-                    <TableCell>{activity.code || '-'}</TableCell>
-                    <TableCell>{activity.unit}</TableCell>
-                    <TableCell className="max-w-xs truncate" title={formatPriceRanges(activity.customerPrices)}>
-                      {formatPriceRanges(activity.customerPrices)}
+                    <TableCell className="hidden sm:table-cell">{ACTIVITY_TYPE_LABELS[activity.type]}</TableCell>
+                    <TableCell className="hidden lg:table-cell">{activity.code || '-'}</TableCell>
+                    <TableCell className="hidden sm:table-cell">{activity.unit}</TableCell>
+                    <TableCell className="max-w-[120px] sm:max-w-xs truncate" title={formatPriceRanges(activity.prices)}>
+                      {formatPriceRanges(activity.prices)}
                     </TableCell>
-                    <TableCell>{activity.isActive ? t('activities.table.active') : t('activities.table.inactive')}</TableCell>
-                    <TableCell>
-                      <div className="flex gap-2">
+                    <TableCell className="hidden md:table-cell">{activity.isActive ? t('activities.table.active') : t('activities.table.inactive')}</TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex gap-2 justify-end">
                         <Button variant="outline" size="sm" onClick={() => handleEdit(activity)}>
                           <Edit className="w-4 h-4" />
                         </Button>

@@ -41,13 +41,13 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
 }) => {
   const { t, ready } = useTranslation();
   const { data: session } = useSession();
-  
+
   if (!ready) return null;
-  
+
   const { updateOrder, getOrderAssignments } = useOrderStore();
   const { employees, fetchEmployees } = useEmployeeStore();
   const { customers, fetchCustomers } = useCustomerStore();
-  
+
   const [loading, setLoading] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -78,11 +78,11 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
   useEffect(() => {
     if (order && open) {
       console.log('Initializing with order:', order);
-      
+
       const scheduledDate = new Date(order.scheduledDate).toISOString().split('T')[0];
       const startTime = order.startTime ? new Date(order.startTime).toTimeString().slice(0, 5) : "09:00";
       const endTime = order.endTime ? new Date(order.endTime).toTimeString().slice(0, 5) : "";
-      
+
       setFormData({
         description: order.description || "",
         scheduledDate,
@@ -96,16 +96,16 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
         status: order.status,
         customerId: order.customerId,
       });
-      
+
       setStartTimeOnly(startTime);
       setEndTimeOnly(endTime);
       setCartonQuantity(order.cartonQuantity || 0);
       setArticleQuantity(order.articleQuantity || 0);
-      
+
       if (order.descriptionData?.descriptionData) {
         setTemplateData(order.descriptionData.descriptionData);
       }
-      
+
       fetchEmployees();
       fetchCustomers();
       loadOrderData();
@@ -118,10 +118,10 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
         getOrderAssignments(order.id),
         fetchOrderActivities(order.id)
       ]);
-      
+
       setAssignedEmployeeIds(employeeIds);
       setSelectedActivities(activityIds);
-      
+
       if (order.customerId) {
         await fetchActivities(order.customerId);
       }
@@ -148,32 +148,29 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
   const fetchActivities = async (customerId: string) => {
     if (!customerId) return;
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/pricing/activities`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/pricing/customers/${customerId}/activities`, {
         headers: { Authorization: `Bearer ${session?.accessToken}` },
       });
       if (response.ok) {
-        const allActivities = await response.json();
-        const customerActivities = await Promise.all(
-          allActivities.map(async (activity: any) => {
-            try {
-              const pricesResponse = await fetch(
-                `${process.env.NEXT_PUBLIC_API_URL}/api/pricing/customers/${customerId}/prices?activityId=${activity.id}`,
-                { headers: { Authorization: `Bearer ${session?.accessToken}` } }
-              );
-              if (pricesResponse.ok) {
-                const prices = await pricesResponse.json();
-                if (prices.length > 0) {
-                  const lowestPrice = Math.min(...prices.map((p: any) => Number(p.price)));
-                  return { ...activity, customerPrices: prices, unitPrice: lowestPrice };
-                }
-              }
-              return null;
-            } catch {
-              return null;
+        const jsonResponse = await response.json();
+        // Handle wrapped response { success: true, data: [...] } or direct array
+        const data = jsonResponse.data || jsonResponse;
+
+        if (Array.isArray(data)) {
+          const processedActivities = data.map((activity: any) => {
+            // Map 'prices' to 'customerPrices' and calculate lowest price
+            const prices = activity.prices || [];
+            if (prices.length > 0) {
+              const lowestPrice = Math.min(...prices.map((p: any) => Number(p.price)));
+              return { ...activity, customerPrices: prices, unitPrice: lowestPrice };
             }
-          })
-        );
-        setActivities(customerActivities.filter(Boolean));
+            return null; // The original code filtered formatted activities, assuming only priced ones are valid?
+            // Actually, original code returned null if fetch failed or price length was 0.
+          });
+          setActivities(processedActivities.filter(Boolean));
+        } else {
+          setActivities([]);
+        }
       }
     } catch (error) {
       console.error("Error fetching activities:", error);
@@ -227,9 +224,9 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
     if (!formData.priority || formData.priority < 1) newErrors.priority = "Priority is required";
     if (!cartonQuantity || cartonQuantity < 1) newErrors.cartonQuantity = "Carton quantity is required";
     if (!articleQuantity || articleQuantity < 1) newErrors.articleQuantity = "Article quantity is required";
-    
+
     setErrors(newErrors);
-    
+
     if (Object.keys(newErrors).length > 0) {
       toast.error("Please fix validation errors");
       return;
@@ -238,7 +235,7 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
     setLoading(true);
 
     try {
-      const submitData = { 
+      const submitData = {
         ...formData,
         activities: selectedActivities.map(activityId => ({
           activityId,
@@ -282,15 +279,15 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
   };
 
   const handleEmployeeToggle = (employeeId: string, checked: boolean) => {
-    setAssignedEmployeeIds(prev => 
-      checked 
+    setAssignedEmployeeIds(prev =>
+      checked
         ? [...prev, employeeId]
         : prev.filter(id => id !== employeeId)
     );
   };
 
   const handleActivityToggle = (activityId: string, checked: boolean) => {
-    setSelectedActivities(prev => 
+    setSelectedActivities(prev =>
       checked
         ? [...prev, activityId]
         : prev.filter(id => id !== activityId)
@@ -299,20 +296,20 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
 
   const getTotalPrice = () => {
     if (cartonQuantity === 0) return 0;
-    
+
     return selectedActivities.reduce((total, activityId) => {
       const activity = activities.find(a => a.id === activityId);
       if (!activity) return total;
-      
+
       if (activity.customerPrices && activity.customerPrices.length > 0) {
-        const applicablePrice = activity.customerPrices.find((p: any) => 
+        const applicablePrice = activity.customerPrices.find((p: any) =>
           cartonQuantity >= p.minQuantity && cartonQuantity <= p.maxQuantity
         );
         if (applicablePrice) {
           return total + Number(applicablePrice.price);
         }
       }
-      
+
       return total + (Number(activity.unitPrice) || 0);
     }, 0);
   };
@@ -402,7 +399,7 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
         <h3 className="text-lg font-semibold">Step 3: Quantities</h3>
         <p className="text-sm text-muted-foreground">Enter carton and article quantities</p>
       </div>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <Label htmlFor="cartonQuantity">Carton Quantity *</Label>
@@ -439,7 +436,7 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
           {errors.articleQuantity && <p className="text-sm text-red-500 mt-1">{errors.articleQuantity}</p>}
         </div>
       </div>
-      
+
       {cartonQuantity > 0 && (
         <div className="bg-muted/50 p-4 rounded-lg">
           <h4 className="font-medium mb-2">Price Calculation</h4>
@@ -450,12 +447,12 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
             {selectedActivities.map(activityId => {
               const activity = activities.find(a => a.id === activityId);
               if (!activity) return null;
-              
+
               let price = 0;
               let priceInfo = "Base price";
-              
+
               if (activity.customerPrices && activity.customerPrices.length > 0) {
-                const applicablePrice = activity.customerPrices.find((p: any) => 
+                const applicablePrice = activity.customerPrices.find((p: any) =>
                   cartonQuantity >= p.minQuantity && cartonQuantity <= p.maxQuantity
                 );
                 if (applicablePrice) {
@@ -465,7 +462,7 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
               } else {
                 price = Number(activity.unitPrice) || 0;
               }
-              
+
               return (
                 <div key={activityId} className="flex justify-between text-sm">
                   <span>{activity.name} ({priceInfo})</span>
@@ -489,7 +486,7 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
         <h3 className="text-lg font-semibold">Step 4: Order Details</h3>
         <p className="text-sm text-muted-foreground">Complete the order information</p>
       </div>
-      
+
       <OrderDescriptionForm
         customerId={formData.customerId || ""}
         description={formData.description || ""}
@@ -497,7 +494,7 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
         onTemplateDataChange={setTemplateData}
         orderDescriptionData={templateData}
       />
-      
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <Label htmlFor="scheduledDate">Scheduled Date *</Label>
@@ -615,20 +612,18 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
             <div className="flex items-center space-x-2">
               {[1, 2, 3, 4].map((step) => (
                 <div key={step} className="flex items-center">
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-                    currentStep >= step ? 'bg-primary text-white' : 'bg-muted text-muted-foreground'
-                  }`}>
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${currentStep >= step ? 'bg-primary text-white' : 'bg-muted text-muted-foreground'
+                    }`}>
                     {step}
                   </div>
-                  {step < 4 && <div className={`w-8 h-0.5 ${
-                    currentStep > step ? 'bg-primary' : 'bg-muted'
-                  }`} />}
+                  {step < 4 && <div className={`w-8 h-0.5 ${currentStep > step ? 'bg-primary' : 'bg-muted'
+                    }`} />}
                 </div>
               ))}
             </div>
           </div>
         </DialogHeader>
-        
+
         <div className="space-y-6">
           {currentStep === 1 && renderStep1()}
           {currentStep === 2 && renderStep2()}
@@ -649,7 +644,7 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
               <ChevronLeft className="w-4 h-4 mr-1" />
               Previous
             </Button>
-            
+
             <div className="flex gap-2">
               <Button
                 type="button"
@@ -658,7 +653,7 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
               >
                 Cancel
               </Button>
-              
+
               {currentStep < 4 ? (
                 <Button type="button" onClick={(e) => {
                   e.preventDefault();

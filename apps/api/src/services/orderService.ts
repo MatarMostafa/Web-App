@@ -44,18 +44,14 @@ export const getAllOrdersService = async () => {
   const orders = await prisma.order.findMany({
     include: {
       customer: true,
-      customerActivities: {
-        include: {
-          activity: true
-        }
-      },
+      customerActivities: true,
       orderAssignments: true,
       employeeAssignments: true,
       ratings: true,
       descriptionData: true
     },
   });
-  
+
   console.log(`Fetched ${orders.length} orders with quantities`);
   return orders;
 };
@@ -65,18 +61,14 @@ export const getOrderByIdService = async (id: string) => {
     where: { id },
     include: {
       customer: true,
-      customerActivities: {
-        include: {
-          activity: true
-        }
-      },
+      customerActivities: true,
       orderAssignments: true,
       employeeAssignments: true,
       ratings: true,
       descriptionData: true,
     },
   });
-  
+
   if (order) {
     console.log('Order fetched with quantities:', {
       id: order.id,
@@ -84,34 +76,34 @@ export const getOrderByIdService = async (id: string) => {
       articleQuantity: order.articleQuantity
     });
   }
-  
+
   return order;
 };
 
 export const createOrderService = async (data: OrderCreateInput & { assignedEmployeeIds?: string[]; activities?: Array<{ activityId: string; quantity?: number }>; customerId: string; templateData?: Record<string, string> | null; createdBySubAccountId?: string; cartonQuantity?: number; articleQuantity?: number }, createdBy?: string) => {
   let { assignedEmployeeIds, activities, customerId, templateData, createdBySubAccountId, cartonQuantity, articleQuantity, ...orderData } = data;
-  
+
   if (!customerId) {
     throw new Error('Customer ID is required');
   }
-  
+
   // Clean empty strings to undefined for optional DateTime fields
   if (orderData.startTime === '') orderData.startTime = undefined;
   if (orderData.endTime === '') orderData.endTime = undefined;
   if (orderData.location === '') orderData.location = undefined;
   if (orderData.specialInstructions === '') orderData.specialInstructions = undefined;
   if (orderData.description === '') orderData.description = undefined;
-  
+
   // Auto-set startTime to scheduledDate if not provided
   if (!orderData.startTime && orderData.scheduledDate) {
     orderData.startTime = orderData.scheduledDate;
   }
-  
+
   // Auto-generate order number if not provided
   if (!orderData.orderNumber) {
     const now = new Date();
     const yearMonth = `${now.getFullYear()}${(now.getMonth() + 1).toString().padStart(2, '0')}`;
-    
+
     // Find the highest order number for this month
     const lastOrder = await prisma.order.findFirst({
       where: {
@@ -122,7 +114,7 @@ export const createOrderService = async (data: OrderCreateInput & { assignedEmpl
       orderBy: { orderNumber: 'desc' },
       select: { orderNumber: true }
     });
-    
+
     let nextSequence = 1;
     if (lastOrder?.orderNumber) {
       const match = lastOrder.orderNumber.match(new RegExp(`${yearMonth}-(\\d+)`));
@@ -130,15 +122,15 @@ export const createOrderService = async (data: OrderCreateInput & { assignedEmpl
         nextSequence = parseInt(match[1]) + 1;
       }
     }
-    
+
     orderData.orderNumber = `${yearMonth}-${nextSequence.toString().padStart(3, '0')}`;
   }
-  
+
   // Auto-set status to DRAFT if not provided
   if (!orderData.status) {
     orderData.status = 'DRAFT';
   }
-  
+
   const order = await prisma.$transaction(async (tx) => {
     const newOrder = await tx.order.create({
       data: {
@@ -174,11 +166,21 @@ export const createOrderService = async (data: OrderCreateInput & { assignedEmpl
       console.log(`Creating ${activities.length} customer activities for order ${newOrder.id}`);
       for (const activity of activities) {
         try {
+          // Fetch definition
+          const definition = await tx.customerActivity.findUnique({
+            where: { id: activity.activityId }
+          });
+
+          if (!definition) {
+            console.warn(`Definition ${activity.activityId} not found, skipping`);
+            continue;
+          }
+
           // Verify that the activity has pricing configured for this customer
           const hasValidPricing = await tx.customerPrice.findFirst({
             where: {
               customerId: customerId!,
-              activityId: activity.activityId,
+              customerActivityId: activity.activityId, // Definition ID
               isActive: true,
               effectiveFrom: { lte: orderData.scheduledDate as Date },
               OR: [
@@ -203,11 +205,20 @@ export const createOrderService = async (data: OrderCreateInput & { assignedEmpl
           const customerActivity = await tx.customerActivity.create({
             data: {
               customerId: customerId!,
-              activityId: activity.activityId,
+              // No activityId field anymore. We use definition ID implicitly via copied data or prices lookup usage.
+              // We could store definition ID if we had a field, but we copy fields.
               orderId: newOrder.id,
               quantity: activity.quantity ?? 1,
               unitPrice: priceResult.price.toNumber(),
-              lineTotal: priceResult.price.toNumber()
+              lineTotal: priceResult.price.toNumber(),
+
+              // Copied fields
+              name: definition.name,
+              type: definition.type,
+              code: definition.code,
+              description: definition.description,
+              unit: definition.unit,
+              isActive: true
             }
           });
           console.log(`Created customer activity ${customerActivity.id} for order ${newOrder.id}`);
@@ -235,10 +246,10 @@ export const createOrderService = async (data: OrderCreateInput & { assignedEmpl
       where: { id: { in: assignedEmployeeIds } },
       select: { id: true }
     });
-    
+
     const existingIds = existingEmployees.map(e => e.id);
     const invalidIds = assignedEmployeeIds.filter(id => !existingIds.includes(id));
-    
+
     if (invalidIds.length > 0) {
       // Filter out invalid IDs and continue with valid ones
       const validIds = assignedEmployeeIds.filter(id => existingIds.includes(id));
@@ -248,7 +259,7 @@ export const createOrderService = async (data: OrderCreateInput & { assignedEmpl
       console.warn(`Ungültige Mitarbeiter-IDs ignoriert: ${invalidIds.join(', ')}`);
       assignedEmployeeIds = validIds;
     }
-    
+
     const assignments = await Promise.all(
       assignedEmployeeIds.map(employeeId =>
         prisma.assignment.create({
@@ -264,15 +275,15 @@ export const createOrderService = async (data: OrderCreateInput & { assignedEmpl
         })
       )
     );
-    
+
     // Send notifications for new assignments (only if employees assigned)
     await Promise.all(
-      assignments.map(assignment => 
+      assignments.map(assignment =>
         notifyAssignmentCreated(assignment.id, createdBy)
       )
     );
   }
-  
+
   // Update order status if it changed
   if (newStatus !== order.status) {
     await prisma.order.update({
@@ -294,19 +305,19 @@ export const updateOrderService = async (
   updatedBy?: string
 ) => {
   let { assignedEmployeeIds, activities, templateData, cartonQuantity, articleQuantity, ...orderData } = data;
-  
+
   // Clean empty strings to undefined for optional DateTime fields
   if (orderData.startTime === '') orderData.startTime = undefined;
   if (orderData.endTime === '') orderData.endTime = undefined;
   if (orderData.location === '') orderData.location = undefined;
   if (orderData.specialInstructions === '') orderData.specialInstructions = undefined;
   if (orderData.description === '') orderData.description = undefined;
-  
+
   // Auto-set startTime to scheduledDate if scheduledDate is updated but startTime is not provided
   if (orderData.scheduledDate && !orderData.startTime) {
     orderData.startTime = orderData.scheduledDate;
   }
-  
+
   const order = await prisma.$transaction(async (tx) => {
     const updatedOrder = await tx.order.update({
       where: { id },
@@ -345,7 +356,7 @@ export const updateOrderService = async (
     if (activities !== undefined) {
       // Remove existing customer activities for this order
       await tx.customerActivity.deleteMany({
-        where: { 
+        where: {
           orderId: id,
           customerId: updatedOrder.customerId // Ensure we only delete activities for this customer
         }
@@ -355,11 +366,21 @@ export const updateOrderService = async (
       if (activities.length > 0) {
         for (const activity of activities) {
           try {
+            // Fetch definition
+            const definition = await tx.customerActivity.findUnique({
+              where: { id: activity.activityId }
+            });
+
+            if (!definition) {
+              console.warn(`Definition ${activity.activityId} not found, skipping`);
+              continue;
+            }
+
             // Verify that the activity has pricing configured for this customer
             const hasValidPricing = await tx.customerPrice.findFirst({
               where: {
                 customerId: updatedOrder.customerId,
-                activityId: activity.activityId,
+                customerActivityId: activity.activityId,
                 isActive: true,
                 effectiveFrom: { lte: updatedOrder.scheduledDate },
                 OR: [
@@ -384,11 +405,19 @@ export const updateOrderService = async (
             await tx.customerActivity.create({
               data: {
                 customerId: updatedOrder.customerId,
-                activityId: activity.activityId,
+                // activityId: activity.activityId, // Removed
                 orderId: id,
                 quantity: activity.quantity ?? 1,
                 unitPrice: priceResult.price.toNumber(),
-                lineTotal: priceResult.price.toNumber()
+                lineTotal: priceResult.price.toNumber(),
+
+                // Copied fields
+                name: definition.name,
+                type: definition.type,
+                code: definition.code,
+                description: definition.description,
+                unit: definition.unit,
+                isActive: true
               }
             });
           } catch (error) {
@@ -416,10 +445,10 @@ export const updateOrderService = async (
         where: { id: { in: assignedEmployeeIds } },
         select: { id: true }
       });
-      
+
       const existingIds = existingEmployees.map(e => e.id);
       const invalidIds = assignedEmployeeIds.filter(id => !existingIds.includes(id));
-      
+
       if (invalidIds.length > 0) {
         // Filter out invalid IDs and continue with valid ones
         const validIds = assignedEmployeeIds.filter(id => existingIds.includes(id));
@@ -431,7 +460,7 @@ export const updateOrderService = async (
           assignedEmployeeIds = validIds;
         }
       }
-      
+
       const assignments = await Promise.all(
         assignedEmployeeIds.map(employeeId =>
           prisma.assignment.create({
@@ -447,16 +476,16 @@ export const updateOrderService = async (
           })
         )
       );
-      
+
       // Send notifications for new assignments
       await Promise.all(
-        assignments.map(assignment => 
+        assignments.map(assignment =>
           notifyAssignmentCreated(assignment.id, updatedBy)
         )
       );
     }
   }
-  
+
   // Always update order status based on assignments (whether assignments were updated or not)
   await updateOrderStatusBasedOnAssignments(id);
 
@@ -478,24 +507,24 @@ export const updateOrderStatusService = async (
     where: { id },
     data: { status },
   });
-  
+
   // Send status change notification to employees/admins
   await notifyOrderStatusChanged(id, status, createdBy);
-  
+
   // Send status change notification to customer
   await notifyCustomerOrderStatusChanged(id, status, createdBy);
-  
+
   // Send completion notifications
   if (status === 'COMPLETED') {
     await notifyOrderCompleted(id, createdBy);
     await notifyCustomerOrderCompleted(id, createdBy);
   }
-  
+
   // Send cancellation notification to customer
   if (status === 'CANCELLED') {
     await notifyCustomerOrderCancelled(id, undefined, createdBy);
   }
-  
+
   return order;
 };
 
@@ -516,14 +545,14 @@ export const getOrderSummaryService = async (id: string) => {
     completionRate:
       order.employeeAssignments.length > 0
         ? order.employeeAssignments.filter((a) => a.status === "COMPLETED")
-            .length / order.employeeAssignments.length
+          .length / order.employeeAssignments.length
         : 0,
   };
 };
 
 // -------------------- Assignments --------------------
 export const getAssignmentsService = async (orderId: string) => {
-  return prisma.assignment.findMany({ 
+  return prisma.assignment.findMany({
     where: { orderId },
     include: {
       employee: {
@@ -562,10 +591,10 @@ export const createAssignmentService = async (
   const assignment = await prisma.assignment.create({
     data: { ...data, orderId },
   });
-  
+
   // Send notification to assigned employee
   await notifyAssignmentCreated(assignment.id, createdBy);
-  
+
   return assignment;
 };
 
@@ -578,10 +607,10 @@ export const updateAssignmentService = async (
     where: { id },
     data,
   });
-  
+
   // Send notification to assigned employee
   await notifyAssignmentUpdated(id, createdBy);
-  
+
   return assignment;
 };
 
@@ -591,21 +620,21 @@ export const deleteAssignmentService = async (id: string, createdBy?: string) =>
     where: { id },
     include: { order: true }
   });
-  
+
   const result = await prisma.assignment.delete({
     where: { id },
   });
-  
+
   // Send cancellation notification
   if (assignment) {
     await notifyAssignmentCancelled(
-      id, 
-      assignment.employeeId, 
+      id,
+      assignment.employeeId,
       assignment.order?.orderNumber || 'Unknown',
       createdBy
     );
   }
-  
+
   return result;
 };
 
@@ -617,12 +646,12 @@ export const updateAssignmentStatusService = async (
     where: { id },
     data: { status },
   });
-  
+
   // Auto-update order status based on assignment changes
   if (assignment.orderId) {
     await updateOrderStatusBasedOnAssignments(assignment.orderId);
   }
-  
+
   return assignment;
 };
 
@@ -632,18 +661,18 @@ const updateOrderStatusBasedOnAssignments = async (orderId: string) => {
     where: { id: orderId },
     include: { employeeAssignments: true }
   });
-  
+
   if (!order) return;
-  
+
   const assignments = order.employeeAssignments;
   let newStatus = order.status;
-  
+
   if (assignments.length === 0) {
     newStatus = 'OPEN';
   } else {
     const activeAssignments = assignments.filter(a => a.status === 'ACTIVE');
     const completedAssignments = assignments.filter(a => a.status === 'COMPLETED');
-    
+
     if (completedAssignments.length === assignments.length && assignments.length > 0) {
       newStatus = 'COMPLETED';
     } else if (activeAssignments.length > 0) {
@@ -652,17 +681,17 @@ const updateOrderStatusBasedOnAssignments = async (orderId: string) => {
       newStatus = 'ACTIVE';
     }
   }
-  
+
   if (newStatus !== order.status) {
     await prisma.order.update({
       where: { id: orderId },
       data: { status: newStatus }
     });
-    
+
     // Send status change notifications
     await notifyOrderStatusChanged(orderId, newStatus);
     await notifyCustomerOrderStatusChanged(orderId, newStatus);
-    
+
     // Send completion notifications
     if (newStatus === 'COMPLETED') {
       await notifyOrderCompleted(orderId);
@@ -966,20 +995,11 @@ export const getOrderActivitiesService = async (orderId: string) => {
 
   // Get customer activities for this order (filtered by customer)
   const customerActivities = await prisma.customerActivity.findMany({
-    where: { 
+    where: {
       orderId,
       customerId: order.customerId // Ensure activities belong to the same customer
     },
     include: {
-      activity: {
-        select: {
-          id: true,
-          name: true,
-          code: true,
-          description: true,
-          unit: true
-        }
-      },
       customer: {
         select: {
           id: true,
@@ -1042,17 +1062,17 @@ export const getOrderActivitiesService = async (orderId: string) => {
     activities.push({
       id: `customer-activity-${customerActivity.id}`,
       type: 'ACTIVITY_ASSIGNED' as const,
-      description: `Aktivität "${customerActivity.activity.name}" zugewiesen (Menge: ${customerActivity.quantity})`,
+      description: `Aktivität "${customerActivity.name}" zugewiesen (Menge: ${customerActivity.quantity})`,
       authorId: 'system',
       authorName: 'System',
       timestamp: customerActivity.createdAt.toISOString(),
       metadata: {
-        activityName: customerActivity.activity.name,
-        activityCode: customerActivity.activity.code,
+        activityName: customerActivity.name,
+        activityCode: customerActivity.code,
         quantity: customerActivity.quantity,
-        unitPrice: customerActivity.unitPrice,
-        lineTotal: customerActivity.lineTotal,
-        unit: customerActivity.activity.unit,
+        unitPrice: customerActivity.unitPrice?.toNumber() ?? 0,
+        lineTotal: customerActivity.lineTotal?.toNumber() ?? 0,
+        unit: customerActivity.unit,
         priceValidFrom: customerActivity.createdAt.toISOString()
       }
     });
@@ -1060,14 +1080,14 @@ export const getOrderActivitiesService = async (orderId: string) => {
 
   // Add note activities
   notes.forEach(note => {
-    const authorName = note.author.employee 
+    const authorName = note.author.employee
       ? `${note.author.employee.firstName || ''} ${note.author.employee.lastName || ''}`.trim()
       : note.author.username;
 
     activities.push({
       id: note.id,
       type: note.triggersStatus ? 'STATUS_CHANGE' : 'NOTE_ADDED' as const,
-      description: note.triggersStatus 
+      description: note.triggersStatus
         ? `Status geändert zu ${note.triggersStatus}`
         : 'Notiz hinzugefügt',
       authorId: note.authorId,
@@ -1084,7 +1104,7 @@ export const getOrderActivitiesService = async (orderId: string) => {
   // Add assignment activities
   assignments.forEach(assignment => {
     const employeeName = `${assignment.employee.firstName || ''} ${assignment.employee.lastName || ''}`.trim();
-    
+
     activities.push({
       id: `assignment-${assignment.id}`,
       type: 'ASSIGNMENT_CHANGED' as const,
