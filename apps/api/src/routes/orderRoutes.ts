@@ -381,8 +381,26 @@ router.get(
       const { orderId } = req.params;
       console.log(`Fetching activity IDs for order: ${orderId}`);
       
+      // First get the order to ensure we have the customer context
+      const order = await prisma.order.findUnique({
+        where: { id: orderId },
+        select: { customerId: true }
+      });
+      
+      if (!order) {
+        return res.status(404).json({ 
+          success: false, 
+          message: "Order not found" 
+        });
+      }
+      
+      // Get customer activities that belong to this specific customer and order
       const customerActivities = await prisma.customerActivity.findMany({
-        where: { orderId },
+        where: { 
+          orderId,
+          customerId: order.customerId, // Ensure activities belong to the same customer
+          isActive: true
+        },
         select: { activityId: true }
       });
       

@@ -4,6 +4,7 @@ import { createOrderService } from "./orderService";
 import { getPriceForCustomer } from "./priceService";
 import { updateOrderService } from "./orderService";
 import { notifyAdminCustomerOrderCreated, notifyAdminCustomerOrderUpdated } from "./notificationHelpers";
+import { CustomerActivityService } from "./customerActivityService";
 
 // Customer-specific order filtering
 export const filterOrderForCustomer = (order: any) => {
@@ -108,9 +109,12 @@ export const getCustomerOrderByIdService = async (customerId: string, orderId: s
     throw new Error('Order not found');
   }
 
+  // Get customer activities for this order (filtered by customer)
+  const customerActivities = await CustomerActivityService.getOrderCustomerActivities(orderId);
+
   return {
     ...filterOrderForCustomer(order),
-    customerActivities: order.customerActivities,
+    customerActivities: customerActivities,
     descriptionData: order.descriptionData
   };
 };
