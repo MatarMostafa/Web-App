@@ -59,19 +59,9 @@ export const CustomerActivitiesTab = ({ customerId }: CustomerActivitiesTabProps
 
   const fetchActivities = async () => {
     try {
-      const data = await apiClient.get<Activity[]>('/api/pricing/activities');
-      // Fetch customer-specific prices for each activity
-      const activitiesWithPrices = await Promise.all(
-        data.map(async (activity: Activity) => {
-          try {
-            const prices = await apiClient.get<any[]>(`/api/pricing/customers/${customerId}/prices?activityId=${activity.id}`);
-            return { ...activity, customerPrices: prices };
-          } catch {
-            return activity;
-          }
-        })
-      );
-      setActivities(activitiesWithPrices);
+      // Fetch only activities available for this specific customer
+      const response = await apiClient.get<{success: boolean, data: Activity[]}>(`/api/pricing/customers/${customerId}/activities`);
+      setActivities(response.data || []);
     } catch (error) {
       toast.error(t('activities.messages.loadError'));
     }
