@@ -408,7 +408,7 @@ export const EmployeeOrderDetailPage: React.FC<
                   >
                     <div>
                       <p className="font-medium">
-                        {customerActivity.activity?.name ||
+                        {customerActivity.name ||
                           t("employee.orderDetail.unknownActivity")}
                       </p>
                       <p className="text-sm text-muted-foreground">
