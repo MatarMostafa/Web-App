@@ -25,14 +25,19 @@ interface EditOrderDialogProps {
 
 interface CustomerActivity {
   id: string;
-  activity: {
+  name: string;
+  type: string;
+  code?: string;
+  description?: string;
+  unit: string;
+  unitPrice?: number;
+  prices?: Array<{
     id: string;
-    name: string;
-    code?: string;
-    description?: string;
-    unit: string;
-  };
-  unitPrice: number;
+    minQuantity: number;
+    maxQuantity: number;
+    price: number;
+    currency: string;
+  }>;
 }
 
 const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
@@ -115,7 +120,7 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
         // Load existing activities
         if (orderData.customerActivities) {
           const existingActivityIds = orderData.customerActivities.map(
-            (ca: any) => ca.activity.id
+            (ca: any) => ca.id
           );
           setSelectedActivities(existingActivityIds);
         }
@@ -312,7 +317,7 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
 
   const getTotalPrice = () => {
     return selectedActivities.reduce((total, activityId) => {
-      const activity = activities.find((a) => a.activity.id === activityId);
+      const activity = activities.find((a) => a.id === activityId);
       return total + (activity ? Number(activity.unitPrice) : 0);
     }, 0);
   };
@@ -418,22 +423,22 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
                 >
                   <div className="flex items-center space-x-2">
                     <Checkbox
-                      id={`activity-${customerActivity.activity.id}`}
+                      id={`activity-${customerActivity.id}`}
                       checked={selectedActivities.includes(
-                        customerActivity.activity.id
+                        customerActivity.id
                       )}
                       onCheckedChange={(checked) =>
                         handleActivityToggle(
-                          customerActivity.activity.id,
+                          customerActivity.id,
                           checked as boolean
                         )
                       }
                     />
                     <Label
-                      htmlFor={`activity-${customerActivity.activity.id}`}
+                      htmlFor={`activity-${customerActivity.id}`}
                       className="text-sm"
                     >
-                      {customerActivity.activity.name}
+                      {customerActivity.name}
                     </Label>
                   </div>
                   <span className="text-sm text-muted-foreground">

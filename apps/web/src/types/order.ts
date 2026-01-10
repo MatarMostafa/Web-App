@@ -22,20 +22,10 @@ export interface DescriptionData {
   [key: string]: string;
 }
 
-export interface Activity {
-  id: string;
-  name: string;
-  type: ActivityType;
-  code?: string;
-  description?: string;
-  unit: string;
-  isActive: boolean;
-}
-
 export interface CustomerPriceTier {
   id: string;
   customerId: string;
-  activityId: string;
+  customerActivityId: string;
   minQuantity: number;
   maxQuantity: number;
   price: number;
@@ -43,7 +33,6 @@ export interface CustomerPriceTier {
   effectiveFrom: string;
   effectiveTo?: string;
   isActive: boolean;
-  activity?: Activity;
 }
 
 export interface Order {

@@ -294,7 +294,7 @@ export const OrderDetailPage: React.FC<OrderDetailPageProps> = ({
                 <div key={index} className="flex items-center justify-between p-3 bg-muted rounded-lg">
                   <div>
                     <p className="font-medium">
-                      {customerActivity.activity?.name || t("order.unknownActivity")}
+                      {customerActivity.name || t("order.unknownActivity")}
                     </p>
                     <p className="text-sm text-muted-foreground">
                       {t("order.quantity")}: {customerActivity.quantity || 1}
