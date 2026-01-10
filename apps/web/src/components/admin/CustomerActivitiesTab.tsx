@@ -8,6 +8,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { toast } from 'react-hot-toast';
 import { apiClient } from '@/lib/api-client';
 import { useSession } from 'next-auth/react';
+import { AddActivityDialog } from '@/components/activities/AddActivityDialog';
+import { EditActivityDialog } from '@/components/activities/EditActivityDialog';
 import { useTranslation } from '@/hooks/useTranslation';
 import { ActivityType } from '@/types/order';
 
@@ -186,9 +188,12 @@ export const CustomerActivitiesTab = ({ customerId }: CustomerActivitiesTabProps
             {t('activities.title')}
           </CardTitle>
           <div className="w-full sm:w-auto">
-            <Button onClick={() => setAddDialogOpen(true)}>
-              Add Activity
-            </Button>
+            <AddActivityDialog
+              open={addDialogOpen}
+              onOpenChange={setAddDialogOpen}
+              customerId={customerId}
+              onSubmit={handleAddSubmit}
+            />
           </div>
         </div>
       </CardHeader>
@@ -242,7 +247,13 @@ export const CustomerActivitiesTab = ({ customerId }: CustomerActivitiesTabProps
         )}
       </CardContent>
 
-      {/* TODO: Replace with inline forms or new dialog components */}
+      <EditActivityDialog
+        open={editDialogOpen}
+        onOpenChange={setEditDialogOpen}
+        activity={editingActivity}
+        customerId={customerId}
+        onSubmit={handleEditSubmit}
+      />
     </Card>
   );
 };
