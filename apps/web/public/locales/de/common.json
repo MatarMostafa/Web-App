@@ -2079,5 +2079,45 @@
       "waitingForReview": "Warten auf Admin-Überprüfung.",
       "orderAssigned": "Dieser Auftrag ist Ihnen zugewiesen. Fügen Sie eine Notiz hinzu und klicken Sie auf \"Arbeit beginnen\" um zu starten."
     }
+  },
+  "containers": {
+    "container": "Container",
+    "containers": "Container",
+    "myContainers": "Meine Container",
+    "assigned": "zugewiesen",
+    "totalCartons": "Gesamte Kartons",
+    "reportedCartons": "Gemeldete Kartons",
+    "totalArticles": "Gesamte Artikel",
+    "reportedArticles": "Gemeldete Artikel",
+    "completed": "Abgeschlossen",
+    "activeWork": "Aktive Arbeit",
+    "completedWork": "Abgeschlossene Arbeit",
+    "noAssignments": "Keine Container zugewiesen",
+    "noAssignmentsDesc": "Ihnen sind derzeit keine Container zugewiesen",
+    "order": "Auftrag",
+    "reportCartons": "Kartons melden",
+    "reportArticles": "Artikel melden",
+    "notes": "Notizen",
+    "notesPlaceholder": "Fügen Sie Notizen zu Ihrer Arbeit hinzu...",
+    "updateProgress": "Fortschritt aktualisieren",
+    "markComplete": "Als abgeschlossen markieren",
+    "updating": "Wird aktualisiert...",
+    "completing": "Wird abgeschlossen...",
+    "completedAt": "Abgeschlossen am",
+    "finalNotes": "Abschließende Notizen",
+    "progress": {
+      "updateSuccess": "Fortschritt erfolgreich aktualisiert",
+      "updateSuccessDesc": "Ihr Container-Fortschritt wurde gespeichert",
+      "updateError": "Fehler beim Aktualisieren",
+      "updateErrorDesc": "Container-Fortschritt konnte nicht aktualisiert werden"
+    },
+    "complete": {
+      "success": "Container abgeschlossen",
+      "successDesc": "Container-Arbeit wurde als abgeschlossen markiert",
+      "error": "Fehler beim Abschließen",
+      "errorDesc": "Container-Arbeit konnte nicht abgeschlossen werden"
+    },
+    "loadError": "Fehler beim Laden der Container",
+    "loadErrorDesc": "Container konnten nicht geladen werden"
   }
 }

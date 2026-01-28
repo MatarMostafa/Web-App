@@ -28,7 +28,21 @@ import { useTranslation } from "@/hooks/useTranslation";
 import TimeOnlyInput from "@/components/ui/TimeOnlyInput";
 import { useSession } from "next-auth/react";
 import OrderDescriptionForm from "./OrderDescriptionForm";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Plus, Trash2 } from "lucide-react";
+
+interface Container {
+  id?: string;
+  serialNumber: string;
+  cartonQuantity: number;
+  articleQuantity: number;
+  cartonPrice: number;
+  articlePrice: number;
+  articles: Array<{
+    articleName: string;
+    quantity: number;
+    price: number;
+  }>;
+}
 
 interface AddOrderDialogProps {
   trigger: React.ReactNode;
@@ -51,6 +65,7 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
   const [activities, setActivities] = useState<any[]>([]);
   const [selectedActivities, setSelectedActivities] = useState<string[]>([]);
   const [templateData, setTemplateData] = useState<Record<string, string> | null>(null);
+  const [containers, setContainers] = useState<Container[]>([]);
   const [cartonQuantity, setCartonQuantity] = useState<number>(0);
   const [articleQuantity, setArticleQuantity] = useState<number>(0);
 
@@ -161,6 +176,7 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
     setEndTimeOnly("");
     setSelectedActivities([]);
     setTemplateData(null);
+    setContainers([]);
     setCartonQuantity(0);
     setArticleQuantity(0);
     setCurrentStep(1);
@@ -172,8 +188,8 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
       toast.error("Please select at least one activity");
       return;
     }
-    if (currentStep === 3 && (!cartonQuantity || cartonQuantity < 1)) {
-      toast.error("Please enter a valid carton quantity");
+    if (currentStep === 3 && containers.length === 0) {
+      toast.error("Please add at least one container");
       return;
     }
     if (currentStep < 4) setCurrentStep(currentStep + 1);
@@ -192,8 +208,7 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
     if (!formData.customerId) newErrors.customerId = t("admin.orders.form.customerRequired");
     if (!formData.scheduledDate) newErrors.scheduledDate = t("admin.orders.form.scheduledDateRequired");
     if (!formData.priority || formData.priority < 1) newErrors.priority = t("admin.orders.form.priorityRequired");
-    if (!cartonQuantity || cartonQuantity < 1) newErrors.cartonQuantity = "Carton quantity is required";
-    if (!articleQuantity || articleQuantity < 1) newErrors.articleQuantity = "Article quantity is required";
+    if (containers.length === 0) newErrors.containers = "At least one container is required";
 
     setErrors(newErrors);
 
@@ -206,14 +221,21 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
     try {
       const submitData = {
         ...formData,
-        activities: selectedActivities.map(activityId => ({
-          activityId,
-          quantity: cartonQuantity
-        })),
-        cartonQuantity,
-        articleQuantity,
+        activities: selectedActivities.map(activityId => {
+          const activity = activities.find(a => a.id === activityId);
+          return {
+            activityId,
+            quantity: containers.reduce((sum, c) => sum + c.cartonQuantity, 0),
+            basePrice: Number(activity?.basePrice) || 0
+          };
+        }),
+        containers,
+        cartonQuantity: containers.reduce((sum, c) => sum + c.cartonQuantity, 0),
+        articleQuantity: containers.reduce((sum, c) => sum + c.articleQuantity, 0),
         templateData: templateData
       };
+
+      console.log('Submitting order with containers:', containers); // Debug log
 
       // Convert date and datetime-local to ISO format
       if (submitData.scheduledDate) {
@@ -271,24 +293,37 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
   };
 
   const handleActivityToggle = (activityId: string, checked: boolean) => {
-    setSelectedActivities(prev =>
-      checked
+    setSelectedActivities(prev => {
+      const newActivities = checked
         ? [...prev, activityId]
-        : prev.filter(id => id !== activityId)
-    );
+        : prev.filter(id => id !== activityId);
+      
+      // Update carton prices for all containers when activities change
+      setTimeout(() => {
+        setContainers(currentContainers => 
+          currentContainers.map(container => ({
+            ...container,
+            cartonPrice: calculateCartonPriceForQuantity(container.cartonQuantity)
+          }))
+        );
+      }, 0);
+      
+      return newActivities;
+    });
   };
 
-  const getTotalPrice = () => {
-    if (cartonQuantity === 0) return 0;
+  const getActivityAndBasePrices = () => {
+    const totalCartons = containers.reduce((sum, c) => sum + c.cartonQuantity, 0);
+    if (totalCartons === 0) return 0;
 
-    return selectedActivities.reduce((total, activityId) => {
+    const activityPrices = selectedActivities.reduce((total, activityId) => {
       const activity = activities.find(a => a.id === activityId);
       if (!activity) return total;
 
-      // Find price based on carton quantity range
+      // Find price based on total carton quantity range
       if (activity.customerPrices && activity.customerPrices.length > 0) {
         const applicablePrice = activity.customerPrices.find((p: any) =>
-          cartonQuantity >= p.minQuantity && cartonQuantity <= p.maxQuantity
+          totalCartons >= p.minQuantity && totalCartons <= p.maxQuantity
         );
         if (applicablePrice) {
           return total + Number(applicablePrice.price);
@@ -297,6 +332,25 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
 
       return total + (Number(activity.unitPrice) || 0);
     }, 0);
+
+    const basePrices = selectedActivities.reduce((total, activityId) => {
+      const activity = activities.find(a => a.id === activityId);
+      return total + (Number(activity?.basePrice) || 0);
+    }, 0);
+
+    return activityPrices + basePrices;
+  };
+
+  const getContainerPrices = () => {
+    return containers.reduce((sum, c) => {
+      const articleTotal = c.articleQuantity * c.articlePrice;
+      const articlesTotal = c.articles.reduce((aSum, a) => aSum + (a.quantity * a.price), 0);
+      return sum + articleTotal + articlesTotal;
+    }, 0);
+  };
+
+  const getTotalPrice = () => {
+    return getActivityAndBasePrices() + getContainerPrices();
   };
 
   const renderStep1 = () => (
@@ -360,6 +414,11 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
                     </p>
                   </div>
                 </div>
+                <div className="text-right">
+                  <div className="text-sm font-medium">
+                    Base: €{Number(activity.basePrice || 0).toFixed(2)}
+                  </div>
+                </div>
               </div>
               {activity.customerPrices && activity.customerPrices.length > 0 ? (
                 <div className="ml-6">
@@ -389,92 +448,257 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
     </div>
   );
 
-  const renderStep3 = () => (
-    <div className="space-y-4">
-      <div className="text-center mb-6">
-        <h3 className="text-lg font-semibold">Step 3: Quantities</h3>
-        <p className="text-sm text-muted-foreground">Enter carton and article quantities</p>
-      </div>
+  const calculateCartonPriceForQuantity = (cartonQuantity: number) => {
+    return selectedActivities.reduce((total, activityId) => {
+      const activity = activities.find(a => a.id === activityId);
+      if (!activity) return total;
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <Label htmlFor="cartonQuantity">Carton Quantity *</Label>
-          <Input
-            id="cartonQuantity"
-            type="number"
-            min="1"
-            value={cartonQuantity || ""}
-            onChange={(e) => {
-              const value = Number(e.target.value);
-              setCartonQuantity(value);
-              if (errors.cartonQuantity) setErrors(prev => ({ ...prev, cartonQuantity: "" }));
-            }}
-            className={errors.cartonQuantity ? "border-red-500" : ""}
-            placeholder="Enter carton quantity"
-          />
-          {errors.cartonQuantity && <p className="text-sm text-red-500 mt-1">{errors.cartonQuantity}</p>}
-        </div>
-        <div>
-          <Label htmlFor="articleQuantity">Article Quantity *</Label>
-          <Input
-            id="articleQuantity"
-            type="number"
-            min="1"
-            value={articleQuantity || ""}
-            onChange={(e) => {
-              const value = Number(e.target.value);
-              setArticleQuantity(value);
-              if (errors.articleQuantity) setErrors(prev => ({ ...prev, articleQuantity: "" }));
-            }}
-            className={errors.articleQuantity ? "border-red-500" : ""}
-            placeholder="Enter article quantity"
-          />
-          {errors.articleQuantity && <p className="text-sm text-red-500 mt-1">{errors.articleQuantity}</p>}
-        </div>
-      </div>
+      // Find price based on carton quantity range
+      if (activity.customerPrices && activity.customerPrices.length > 0) {
+        const applicablePrice = activity.customerPrices.find((p: any) =>
+          cartonQuantity >= p.minQuantity && cartonQuantity <= p.maxQuantity
+        );
+        if (applicablePrice) {
+          return total + Number(applicablePrice.price);
+        }
+      }
 
-      {cartonQuantity > 0 && (
-        <div className="bg-muted/50 p-4 rounded-lg">
-          <h4 className="font-medium mb-2">Price Calculation</h4>
-          <div className="text-sm text-muted-foreground mb-2">
-            Based on carton quantity: {cartonQuantity}
+      return total + (Number(activity.unitPrice) || 0);
+    }, 0);
+  };
+
+  const renderStep3 = () => {
+    const addContainer = () => {
+      const newContainer: Container = {
+        serialNumber: `CONT-${Date.now()}`,
+        cartonQuantity: 1,
+        articleQuantity: 1,
+        cartonPrice: calculateCartonPriceForQuantity(1),
+        articlePrice: 0,
+        articles: []
+      };
+      setContainers([...containers, newContainer]);
+    };
+
+    const updateContainer = (index: number, field: keyof Container, value: any) => {
+      const updated = [...containers];
+      updated[index] = { ...updated[index], [field]: value };
+      
+      // Auto-calculate carton price when carton quantity changes
+      if (field === 'cartonQuantity') {
+        const cartonPrice = calculateCartonPriceForQuantity(value);
+        updated[index].cartonPrice = cartonPrice;
+      }
+      
+      setContainers(updated);
+    };
+
+    const removeContainer = (index: number) => {
+      setContainers(containers.filter((_, i) => i !== index));
+    };
+
+    const addArticleToContainer = (containerIndex: number) => {
+      const updated = [...containers];
+      updated[containerIndex].articles.push({
+        articleName: '',
+        quantity: 1,
+        price: 0
+      });
+      setContainers(updated);
+    };
+
+    const updateArticle = (containerIndex: number, articleIndex: number, field: string, value: any) => {
+      const updated = [...containers];
+      updated[containerIndex].articles[articleIndex] = {
+        ...updated[containerIndex].articles[articleIndex],
+        [field]: value
+      };
+      setContainers(updated);
+    };
+
+    const removeArticle = (containerIndex: number, articleIndex: number) => {
+      const updated = [...containers];
+      updated[containerIndex].articles.splice(articleIndex, 1);
+      setContainers(updated);
+    };
+
+    return (
+      <div className="space-y-4">
+        <div className="text-center mb-6">
+          <h3 className="text-lg font-semibold">Step 3: Container Management</h3>
+          <p className="text-sm text-muted-foreground">Add containers with their details</p>
+        </div>
+
+        <div className="flex justify-between items-center">
+          <h4 className="font-medium">Containers ({containers.length})</h4>
+          <Button type="button" onClick={addContainer} size="sm">
+            <Plus className="w-4 h-4 mr-2" />
+            Add Container
+          </Button>
+        </div>
+
+        {containers.length === 0 ? (
+          <div className="text-center py-8 text-muted-foreground border-2 border-dashed rounded-lg">
+            <p>No containers added yet</p>
+            <p className="text-sm">Click "Add Container" to get started</p>
           </div>
-          <div className="space-y-1">
-            {selectedActivities.map(activityId => {
-              const activity = activities.find(a => a.id === activityId);
-              if (!activity) return null;
-
-              let price = 0;
-              let priceInfo = "Base price";
-
-              if (activity.customerPrices && activity.customerPrices.length > 0) {
-                const applicablePrice = activity.customerPrices.find((p: any) =>
-                  cartonQuantity >= p.minQuantity && cartonQuantity <= p.maxQuantity
-                );
-                if (applicablePrice) {
-                  price = Number(applicablePrice.price);
-                  priceInfo = `${applicablePrice.minQuantity}-${applicablePrice.maxQuantity} range`;
-                }
-              } else {
-                price = Number(activity.unitPrice) || 0;
-              }
-
-              return (
-                <div key={activityId} className="flex justify-between text-sm">
-                  <span>{activity.name} ({priceInfo})</span>
-                  <span>€{price.toFixed(2)}</span>
+        ) : (
+          <div className="space-y-4 max-h-96 overflow-y-auto">
+            {containers.map((container, containerIndex) => (
+              <div key={containerIndex} className="border rounded-lg p-4 space-y-4">
+                <div className="flex justify-between items-start">
+                  <h5 className="font-medium">Container {containerIndex + 1}</h5>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => removeContainer(containerIndex)}
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
                 </div>
-              );
-            })}
-            <div className="border-t pt-1 mt-2 flex justify-between font-medium">
-              <span>Total Price:</span>
-              <span>€{getTotalPrice().toFixed(2)}</span>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label>Serial Number</Label>
+                    <Input
+                      value={container.serialNumber}
+                      onChange={(e) => updateContainer(containerIndex, 'serialNumber', e.target.value)}
+                      placeholder="Container serial number"
+                    />
+                  </div>
+                  <div>
+                    <Label>Carton Quantity</Label>
+                    <Input
+                      type="number"
+                      min="1"
+                      value={container.cartonQuantity}
+                      onChange={(e) => updateContainer(containerIndex, 'cartonQuantity', parseInt(e.target.value) || 1)}
+                    />
+                  </div>
+                  <div>
+                    <Label>Carton Price (€) - Auto-calculated</Label>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      value={container.cartonPrice}
+                      readOnly
+                      className="bg-gray-50"
+                    />
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Based on selected activities and quantity
+                    </p>
+                  </div>
+                  <div>
+                    <Label>Article Quantity</Label>
+                    <Input
+                      type="number"
+                      min="1"
+                      value={container.articleQuantity}
+                      onChange={(e) => updateContainer(containerIndex, 'articleQuantity', parseInt(e.target.value) || 1)}
+                    />
+                  </div>
+                  <div>
+                    <Label>Article Price (€)</Label>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      value={container.articlePrice}
+                      onChange={(e) => updateContainer(containerIndex, 'articlePrice', parseFloat(e.target.value) || 0)}
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <div className="flex justify-between items-center mb-2">
+                    <Label>Articles (Optional)</Label>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => addArticleToContainer(containerIndex)}
+                    >
+                      <Plus className="w-4 h-4 mr-1" />
+                      Add Article
+                    </Button>
+                  </div>
+                  {container.articles.map((article, articleIndex) => (
+                    <div key={articleIndex} className="grid grid-cols-4 gap-2 mb-2 items-end">
+                      <div>
+                        <Label className="text-xs">Name</Label>
+                        <Input
+                          value={article.articleName}
+                          onChange={(e) => updateArticle(containerIndex, articleIndex, 'articleName', e.target.value)}
+                          placeholder="Article name"
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-xs">Quantity</Label>
+                        <Input
+                          type="number"
+                          min="1"
+                          value={article.quantity}
+                          onChange={(e) => updateArticle(containerIndex, articleIndex, 'quantity', parseInt(e.target.value) || 1)}
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-xs">Price (€)</Label>
+                        <Input
+                          type="number"
+                          step="0.01"
+                          min="0"
+                          value={article.price}
+                          onChange={(e) => updateArticle(containerIndex, articleIndex, 'price', parseFloat(e.target.value) || 0)}
+                        />
+                      </div>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => removeArticle(containerIndex, articleIndex)}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="bg-muted/50 p-3 rounded">
+                  <div className="text-sm font-medium">Container Total: €{(container.cartonPrice + (container.articleQuantity * container.articlePrice) + container.articles.reduce((sum, a) => sum + (a.quantity * a.price), 0)).toFixed(2)}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {containers.length > 0 && (
+          <div className="bg-muted/50 p-4 rounded-lg">
+            <h4 className="font-medium mb-2">Order Summary</h4>
+            <div className="space-y-1 text-sm">
+              <div className="flex justify-between">
+                <span>Total Containers:</span>
+                <span>{containers.length}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Total Cartons:</span>
+                <span>{containers.reduce((sum, c) => sum + c.cartonQuantity, 0)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Total Articles:</span>
+                <span>{containers.reduce((sum, c) => sum + c.articleQuantity, 0)}</span>
+              </div>
+              <div className="border-t pt-1 mt-2 flex justify-between font-medium">
+                <span>Container Total:</span>
+                <span>€{containers.reduce((sum, c) => sum + c.cartonPrice + (c.articleQuantity * c.articlePrice) + c.articles.reduce((aSum, a) => aSum + (a.quantity * a.price), 0), 0).toFixed(2)}</span>
+              </div>
             </div>
           </div>
-        </div>
-      )}
-    </div>
-  );
+        )}
+      </div>
+    );
+  };
 
   const renderStep4 = () => (
     <div className="space-y-4">
@@ -598,6 +822,26 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
           )}
         </div>
       </div>
+
+      {/* Order Total Display */}
+      {(selectedActivities.length > 0 || containers.length > 0) && (
+        <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+          <div className="flex justify-between items-center">
+            <span className="text-lg font-semibold text-green-800">Order Total:</span>
+            <span className="text-2xl font-bold text-green-600">€{getTotalPrice().toFixed(2)}</span>
+          </div>
+          <div className="mt-2 text-sm text-green-700">
+            <div className="flex justify-between">
+              <span>Activities & Carton Price:</span>
+              <span>€{getActivityAndBasePrices().toFixed(2)}</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Articles Total Price:</span>
+              <span>€{getContainerPrices().toFixed(2)}</span>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 

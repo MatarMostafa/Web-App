@@ -303,9 +303,12 @@ export const OrderDetailPage: React.FC<OrderDetailPageProps> = ({
                   <div className="text-right">
                     {customerActivity.unitPrice && (
                       <>
-                        <p className="font-medium">€{Number(customerActivity.unitPrice).toFixed(2)}</p>
+                        <p className="font-medium text-lg">€{Number(customerActivity.unitPrice).toFixed(2)}</p>
+                        <p className="text-xs text-muted-foreground">
+                          Unit Price
+                        </p>
                         {customerActivity.lineTotal && (
-                          <p className="text-sm text-muted-foreground">
+                          <p className="text-sm font-semibold text-green-600 mt-1">
                             {t("order.total")}: €{Number(customerActivity.lineTotal).toFixed(2)}
                           </p>
                         )}
@@ -315,10 +318,10 @@ export const OrderDetailPage: React.FC<OrderDetailPageProps> = ({
                 </div>
               ))}
               {orderActivities.some(ca => ca.lineTotal) && (
-                <div className="border-t pt-3 mt-3">
-                  <div className="flex justify-between items-center font-semibold">
-                    <span>{t("order.totalOrderValue")}:</span>
-                    <span>€{orderActivities.reduce((sum, ca) => sum + (Number(ca.lineTotal) || 0), 0).toFixed(2)}</span>
+                <div className="border-t pt-4 mt-4">
+                  <div className="flex justify-between items-center p-4 bg-green-50 rounded-lg border border-green-200">
+                    <span className="text-lg font-semibold text-green-800">{t("order.totalOrderValue")}:</span>
+                    <span className="text-2xl font-bold text-green-600">€{orderActivities.reduce((sum, ca) => sum + (Number(ca.lineTotal) || 0), 0).toFixed(2)}</span>
                   </div>
                 </div>
               )}

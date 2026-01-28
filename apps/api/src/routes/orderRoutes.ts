@@ -421,6 +421,44 @@ router.get(
   }
 );
 
+router.post(
+  "/:orderId/report-quantities",
+  authMiddleware,
+  roleMiddleware(["EMPLOYEE"]),
+  async (req: Request, res: Response) => {
+    try {
+      const { orderId } = req.params;
+      const { employeeId, reportedCartonQuantity, reportedArticleQuantity, notes } = req.body;
+
+      // Update container employee records
+      await prisma.containerEmployee.updateMany({
+        where: {
+          employeeId,
+          container: {
+            orderId
+          }
+        },
+        data: {
+          reportedCartonQuantity,
+          reportedArticleQuantity,
+          notes,
+          isCompleted: true,
+          completedAt: new Date()
+        }
+      });
+
+      res.json({ success: true, message: "Quantities reported successfully" });
+    } catch (error) {
+      console.error("Report quantities error:", error);
+      res.status(500).json({
+        success: false,
+        message: "Failed to report quantities",
+        error: error instanceof Error ? error.message : String(error)
+      });
+    }
+  }
+);
+
 /**
  * @section Analytics
  */

@@ -18,6 +18,7 @@ interface AddActivityDialogProps {
     type: ActivityType;
     code: string;
     unit: string;
+    basePrice: number;
     priceRanges: Array<{ minQuantity: number; maxQuantity: number; price: number; validFrom: string }>;
   }) => Promise<void>;
 }
@@ -27,7 +28,8 @@ export const AddActivityDialog = ({ open, onOpenChange, customerId, onSubmit }: 
     name: '',
     type: ActivityType.CONTAINER_UNLOADING,
     code: '',
-    unit: 'hour'
+    unit: 'hour',
+    basePrice: 0
   });
   const [priceRanges, setPriceRanges] = useState([
     { minQuantity: 1, maxQuantity: 10, price: 0, validFrom: new Date().toISOString().split('T')[0] }
@@ -39,7 +41,7 @@ export const AddActivityDialog = ({ open, onOpenChange, customerId, onSubmit }: 
     setLoading(true);
     try {
       await onSubmit({ ...formData, priceRanges });
-      setFormData({ name: '', type: ActivityType.CONTAINER_UNLOADING, code: '', unit: 'hour' });
+      setFormData({ name: '', type: ActivityType.CONTAINER_UNLOADING, code: '', unit: 'hour', basePrice: 0 });
       setPriceRanges([{ minQuantity: 1, maxQuantity: 10, price: 0, validFrom: new Date().toISOString().split('T')[0] }]);
     } catch (error) {
       // Error handled by parent
@@ -112,6 +114,20 @@ export const AddActivityDialog = ({ open, onOpenChange, customerId, onSubmit }: 
               />
             </div>
           </div>
+          
+          {(formData.type === ActivityType.CONTAINER_LOADING || formData.type === ActivityType.CONTAINER_UNLOADING) && (
+            <div>
+              <Label>Base Price (€)</Label>
+              <Input
+                type="number"
+                step="0.01"
+                min="0"
+                value={formData.basePrice}
+                onChange={(e) => setFormData({ ...formData, basePrice: parseFloat(e.target.value) || 0 })}
+                placeholder="Base price for container loading/unloading"
+              />
+            </div>
+          )}
           
           <div>
             <div className="flex justify-between items-center mb-2">

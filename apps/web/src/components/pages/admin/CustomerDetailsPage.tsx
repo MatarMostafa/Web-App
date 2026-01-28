@@ -9,7 +9,7 @@ import { LoadingSpinnerWithText } from "@/components/ui";
 import { useTranslation } from '@/hooks/useTranslation';
 
 const CustomerDetailsPage = () => {
-  const { t } = useTranslation();
+  const { t, ready } = useTranslation();
   const params = useParams();
   const searchParams = useSearchParams();
   const id = params?.id as string;
@@ -23,10 +23,10 @@ const CustomerDetailsPage = () => {
     }
   }, [id, fetchCustomerById]);
 
-  if (loading) {
+  if (!ready || loading) {
     return (
       <div className="w-full h-full min-h-[calc(100vh-130px)] flex items-center justify-center">
-        <LoadingSpinnerWithText text={t('admin.customerDetails.loading')} />
+        <LoadingSpinnerWithText text={ready ? t('admin.customerDetails.loading') : 'Loading...'} />
       </div>
     );
   }

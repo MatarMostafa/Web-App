@@ -17,7 +17,21 @@ import toast from "react-hot-toast";
 import { useTranslation } from "@/hooks/useTranslation";
 import TimeOnlyInput from "@/components/ui/TimeOnlyInput";
 import { useSession } from "next-auth/react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Plus, Trash2 } from "lucide-react";
+
+interface Container {
+  id?: string;
+  serialNumber: string;
+  cartonQuantity: number;
+  articleQuantity: number;
+  cartonPrice: number;
+  articlePrice: number;
+  articles: Array<{
+    articleName: string;
+    quantity: number;
+    price: number;
+  }>;
+}
 
 interface CreateOrderDialogProps {
   trigger: React.ReactNode;
@@ -31,14 +45,6 @@ interface CustomerActivity {
   code?: string;
   description?: string;
   unit: string;
-  unitPrice?: number;
-  prices?: Array<{
-    id: string;
-    minQuantity: number;
-    maxQuantity: number;
-    price: number;
-    currency: string;
-  }>;
 }
 
 const CreateOrderDialog: React.FC<CreateOrderDialogProps> = ({
@@ -56,13 +62,9 @@ const CreateOrderDialog: React.FC<CreateOrderDialogProps> = ({
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [activities, setActivities] = useState<CustomerActivity[]>([]);
   const [selectedActivities, setSelectedActivities] = useState<string[]>([]);
-  const [templateData, setTemplateData] = useState<Record<
-    string,
-    string
-  > | null>(null);
+  const [templateData, setTemplateData] = useState<Record<string, string> | null>(null);
   const [templateLines, setTemplateLines] = useState<string[]>([]);
-  const [cartonQuantity, setCartonQuantity] = useState<number>(0);
-  const [articleQuantity, setArticleQuantity] = useState<number>(0);
+  const [containers, setContainers] = useState<Container[]>([]);
 
   const [formData, setFormData] = useState<CreateOrderData>({
     description: "",
@@ -85,41 +87,29 @@ const CreateOrderDialog: React.FC<CreateOrderDialogProps> = ({
 
   const fetchCustomerData = async () => {
     try {
-      console.log('Fetching customer data...');
-      // Get customer profile and activities
       const [profileResponse, activitiesResponse] = await Promise.all([
         fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/customers/me`, {
           headers: { Authorization: `Bearer ${session?.accessToken}` },
         }),
-        fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/customers/me/activities`,
-          {
-            headers: { Authorization: `Bearer ${session?.accessToken}` },
-          }
-        ),
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/customers/me/activities`, {
+          headers: { Authorization: `Bearer ${session?.accessToken}` },
+        }),
       ]);
-
-      console.log('Profile response status:', profileResponse.status);
-      console.log('Activities response status:', activitiesResponse.status);
 
       if (profileResponse.ok) {
         const profileData = await profileResponse.json();
-        console.log('Profile data:', profileData);
         const customer = profileData.data;
 
-        // Set customer ID and location
         setFormData((prev) => ({
           ...prev,
           customerId: customer.id,
-          location:
-            typeof customer.address === "string"
-              ? customer.address
-              : Object.values(customer.address || {})
-                  .filter(Boolean)
-                  .join(", "),
+          location: typeof customer.address === "string"
+            ? customer.address
+            : Object.values(customer.address || {})
+                .filter(Boolean)
+                .join(", "),
         }));
 
-        // Set template lines if available
         if (customer.descriptionTemplate?.templateLines) {
           setTemplateLines(customer.descriptionTemplate.templateLines);
           const initialTemplateData: Record<string, string> = {};
@@ -128,26 +118,11 @@ const CreateOrderDialog: React.FC<CreateOrderDialogProps> = ({
           });
           setTemplateData(initialTemplateData);
         }
-      } else {
-        console.error('Profile fetch failed:', profileResponse.status, profileResponse.statusText);
-        const errorText = await profileResponse.text();
-        console.error('Profile error response:', errorText);
       }
 
       if (activitiesResponse.ok) {
         const activitiesData = await activitiesResponse.json();
-        console.log('Activities response:', activitiesData);
-        const processedActivities = (activitiesData.data || []).map((activity: any) => {
-          // Map 'prices' to 'customerPrices' and calculate lowest price
-          const prices = activity.prices || [];
-          const lowestPrice = prices.length > 0 ? Math.min(...prices.map((p: any) => Number(p.price))) : 0;
-          return { ...activity, customerPrices: prices, unitPrice: lowestPrice };
-        });
-        setActivities(processedActivities);
-      } else {
-        console.error('Activities fetch failed:', activitiesResponse.status, activitiesResponse.statusText);
-        const errorText = await activitiesResponse.text();
-        console.error('Activities error response:', errorText);
+        setActivities(activitiesData.data || []);
       }
     } catch (error) {
       console.error("Error fetching customer data:", error);
@@ -155,7 +130,6 @@ const CreateOrderDialog: React.FC<CreateOrderDialogProps> = ({
     }
   };
 
-  // Combine date and time when either changes
   useEffect(() => {
     if (formData.scheduledDate && startTimeOnly) {
       setFormData((prev) => ({
@@ -191,8 +165,7 @@ const CreateOrderDialog: React.FC<CreateOrderDialogProps> = ({
     setEndTimeOnly("");
     setSelectedActivities([]);
     setTemplateData(null);
-    setCartonQuantity(0);
-    setArticleQuantity(0);
+    setContainers([]);
     setCurrentStep(1);
     setErrors({});
   };
@@ -203,8 +176,8 @@ const CreateOrderDialog: React.FC<CreateOrderDialogProps> = ({
       toast.error("Please select at least one activity");
       return;
     }
-    if (currentStep === 2 && (!cartonQuantity || cartonQuantity < 1)) {
-      toast.error("Please enter a valid carton quantity");
+    if (currentStep === 2 && containers.length === 0) {
+      toast.error("Please add at least one container");
       return;
     }
     if (currentStep < 3) setCurrentStep(currentStep + 1);
@@ -223,13 +196,8 @@ const CreateOrderDialog: React.FC<CreateOrderDialogProps> = ({
       return;
     }
 
-    if (!cartonQuantity || cartonQuantity < 1) {
-      toast.error("Carton quantity is required");
-      return;
-    }
-
-    if (!articleQuantity || articleQuantity < 1) {
-      toast.error("Article quantity is required");
+    if (containers.length === 0) {
+      toast.error("At least one container is required");
       return;
     }
 
@@ -248,10 +216,11 @@ const CreateOrderDialog: React.FC<CreateOrderDialogProps> = ({
         customerId: formData.customerId,
         activities: selectedActivities.map(activityId => ({
           activityId,
-          quantity: cartonQuantity
+          quantity: containers.reduce((sum, c) => sum + c.cartonQuantity, 0)
         })),
-        cartonQuantity,
-        articleQuantity,
+        containers,
+        cartonQuantity: containers.reduce((sum, c) => sum + c.cartonQuantity, 0),
+        articleQuantity: containers.reduce((sum, c) => sum + c.articleQuantity, 0),
         templateData: templateData
       };
 
@@ -300,31 +269,11 @@ const CreateOrderDialog: React.FC<CreateOrderDialogProps> = ({
     );
   };
 
-  const handleTemplateDataChange = (field: string, value: string) => {
-    setTemplateData((prev) =>
-      prev ? { ...prev, [field]: value } : { [field]: value }
-    );
-  };
-
-  const getTotalPrice = () => {
-    if (cartonQuantity === 0) return 0;
-
-    return selectedActivities.reduce((total, activityId) => {
-      const activity = activities.find(a => a.id === activityId);
-      if (!activity) return total;
-
-      // Find price based on carton quantity range
-      if (activity.prices && activity.prices.length > 0) {
-        const applicablePrice = activity.prices.find((p: any) =>
-          cartonQuantity >= p.minQuantity && cartonQuantity <= p.maxQuantity
-        );
-        if (applicablePrice) {
-          return total + Number(applicablePrice.price);
-        }
-      }
-
-      return total + (Number(activity.unitPrice) || 0);
-    }, 0);
+  const handleTemplateDataChange = (line: string, value: string) => {
+    setTemplateData(prev => ({
+      ...prev,
+      [line]: value
+    }));
   };
 
   const renderStep1 = () => (
@@ -364,122 +313,179 @@ const CreateOrderDialog: React.FC<CreateOrderDialogProps> = ({
                   </div>
                 </div>
               </div>
-              {activity.prices && activity.prices.length > 0 ? (
-                <div className="ml-6">
-                  <p className="text-xs font-medium text-muted-foreground mb-1">Price Ranges:</p>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 text-xs">
-                    {activity.prices.map((price: any, idx: number) => (
-                      <div key={idx} className="bg-muted/50 px-2 py-1 rounded">
-                        {price.minQuantity}-{price.maxQuantity}: €{Number(price.price).toFixed(2)}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ) : (
-                <div className="ml-6">
-                  <p className="text-xs text-muted-foreground">
-                    Base Price: €{Number(activity.unitPrice || 0).toFixed(2)}
-                  </p>
-                </div>
-              )}
             </div>
           ))}
           {activities.length === 0 && (
-            <p className="text-sm text-gray-500">
-              {t("customerPortal.createOrder.noActivitiesAvailable")}
-            </p>
+            <p className="text-sm text-gray-500">No activities available</p>
           )}
         </div>
       </div>
     </div>
   );
 
-  const renderStep2 = () => (
-    <div className="space-y-4">
-      <div className="text-center mb-6">
-        <h3 className="text-lg font-semibold">Step 2: Quantities</h3>
-        <p className="text-sm text-muted-foreground">Enter carton and article quantities</p>
-      </div>
+  const renderStep2 = () => {
+    const addContainer = () => {
+      const newContainer: Container = {
+        serialNumber: `CONT-${Date.now()}`,
+        cartonQuantity: 1,
+        articleQuantity: 1,
+        cartonPrice: 0,
+        articlePrice: 0,
+        articles: []
+      };
+      setContainers([...containers, newContainer]);
+    };
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <Label htmlFor="cartonQuantity">Carton Quantity *</Label>
-          <Input
-            id="cartonQuantity"
-            type="number"
-            min="1"
-            value={cartonQuantity || ""}
-            onChange={(e) => {
-              const value = Number(e.target.value);
-              setCartonQuantity(value);
-              if (errors.cartonQuantity) setErrors(prev => ({ ...prev, cartonQuantity: "" }));
-            }}
-            className={errors.cartonQuantity ? "border-red-500" : ""}
-            placeholder="Enter carton quantity"
-          />
-          {errors.cartonQuantity && <p className="text-sm text-red-500 mt-1">{errors.cartonQuantity}</p>}
-        </div>
-        <div>
-          <Label htmlFor="articleQuantity">Article Quantity *</Label>
-          <Input
-            id="articleQuantity"
-            type="number"
-            min="1"
-            value={articleQuantity || ""}
-            onChange={(e) => {
-              const value = Number(e.target.value);
-              setArticleQuantity(value);
-              if (errors.articleQuantity) setErrors(prev => ({ ...prev, articleQuantity: "" }));
-            }}
-            className={errors.articleQuantity ? "border-red-500" : ""}
-            placeholder="Enter article quantity"
-          />
-          {errors.articleQuantity && <p className="text-sm text-red-500 mt-1">{errors.articleQuantity}</p>}
-        </div>
-      </div>
+    const updateContainer = (index: number, field: keyof Container, value: any) => {
+      const updated = [...containers];
+      updated[index] = { ...updated[index], [field]: value };
+      setContainers(updated);
+    };
 
-      {cartonQuantity > 0 && (
-        <div className="bg-muted/50 p-4 rounded-lg">
-          <h4 className="font-medium mb-2">Price Calculation</h4>
-          <div className="text-sm text-muted-foreground mb-2">
-            Based on carton quantity: {cartonQuantity}
+    const removeContainer = (index: number) => {
+      setContainers(containers.filter((_, i) => i !== index));
+    };
+
+    const addArticleToContainer = (containerIndex: number) => {
+      const updated = [...containers];
+      updated[containerIndex].articles.push({
+        articleName: '',
+        quantity: 1,
+        price: 0
+      });
+      setContainers(updated);
+    };
+
+    const updateArticle = (containerIndex: number, articleIndex: number, field: string, value: any) => {
+      const updated = [...containers];
+      updated[containerIndex].articles[articleIndex] = {
+        ...updated[containerIndex].articles[articleIndex],
+        [field]: value
+      };
+      setContainers(updated);
+    };
+
+    const removeArticle = (containerIndex: number, articleIndex: number) => {
+      const updated = [...containers];
+      updated[containerIndex].articles.splice(articleIndex, 1);
+      setContainers(updated);
+    };
+
+    return (
+      <div className="space-y-4">
+        <div className="text-center mb-6">
+          <h3 className="text-lg font-semibold">Step 2: Container Management</h3>
+          <p className="text-sm text-muted-foreground">Add containers with their details</p>
+        </div>
+
+        <div className="flex justify-between items-center">
+          <h4 className="font-medium">Containers ({containers.length})</h4>
+          <Button type="button" onClick={addContainer} size="sm">
+            <Plus className="w-4 h-4 mr-2" />
+            Add Container
+          </Button>
+        </div>
+
+        {containers.length === 0 ? (
+          <div className="text-center py-8 text-muted-foreground border-2 border-dashed rounded-lg">
+            <p>No containers added yet</p>
+            <p className="text-sm">Click "Add Container" to get started</p>
           </div>
-          <div className="space-y-1">
-            {selectedActivities.map(activityId => {
-              const activity = activities.find(a => a.id === activityId);
-              if (!activity) return null;
-
-              let price = 0;
-              let priceInfo = "Base price";
-
-              if (activity.prices && activity.prices.length > 0) {
-                const applicablePrice = activity.prices.find((p: any) =>
-                  cartonQuantity >= p.minQuantity && cartonQuantity <= p.maxQuantity
-                );
-                if (applicablePrice) {
-                  price = Number(applicablePrice.price);
-                  priceInfo = `${applicablePrice.minQuantity}-${applicablePrice.maxQuantity} range`;
-                }
-              } else {
-                price = Number(activity.unitPrice) || 0;
-              }
-
-              return (
-                <div key={activityId} className="flex justify-between text-sm">
-                  <span>{activity.name} ({priceInfo})</span>
-                  <span>€{price.toFixed(2)}</span>
+        ) : (
+          <div className="space-y-4 max-h-96 overflow-y-auto">
+            {containers.map((container, containerIndex) => (
+              <div key={containerIndex} className="border rounded-lg p-4 space-y-4">
+                <div className="flex justify-between items-start">
+                  <h5 className="font-medium">Container {containerIndex + 1}</h5>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => removeContainer(containerIndex)}
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
                 </div>
-              );
-            })}
-            <div className="border-t pt-1 mt-2 flex justify-between font-medium">
-              <span>Total Price:</span>
-              <span>€{getTotalPrice().toFixed(2)}</span>
-            </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label>Serial Number</Label>
+                    <Input
+                      value={container.serialNumber}
+                      onChange={(e) => updateContainer(containerIndex, 'serialNumber', e.target.value)}
+                      placeholder="Container serial number"
+                    />
+                  </div>
+                  <div>
+                    <Label>Carton Quantity</Label>
+                    <Input
+                      type="number"
+                      min="1"
+                      value={container.cartonQuantity}
+                      onChange={(e) => updateContainer(containerIndex, 'cartonQuantity', parseInt(e.target.value) || 1)}
+                    />
+                  </div>
+                  <div>
+                    <Label>Article Quantity</Label>
+                    <Input
+                      type="number"
+                      min="1"
+                      value={container.articleQuantity}
+                      onChange={(e) => updateContainer(containerIndex, 'articleQuantity', parseInt(e.target.value) || 1)}
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <div className="flex justify-between items-center mb-2">
+                    <Label>Articles (Optional)</Label>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => addArticleToContainer(containerIndex)}
+                    >
+                      <Plus className="w-4 h-4 mr-1" />
+                      Add Article
+                    </Button>
+                  </div>
+                  {container.articles.map((article, articleIndex) => (
+                    <div key={articleIndex} className="grid grid-cols-3 gap-2 mb-2 items-end">
+                      <div>
+                        <Label className="text-xs">Name</Label>
+                        <Input
+                          value={article.articleName}
+                          onChange={(e) => updateArticle(containerIndex, articleIndex, 'articleName', e.target.value)}
+                          placeholder="Article name"
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-xs">Quantity</Label>
+                        <Input
+                          type="number"
+                          min="1"
+                          value={article.quantity}
+                          onChange={(e) => updateArticle(containerIndex, articleIndex, 'quantity', parseInt(e.target.value) || 1)}
+                        />
+                      </div>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => removeArticle(containerIndex, articleIndex)}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
           </div>
-        </div>
-      )}
-    </div>
-  );
+        )}
+      </div>
+    );
+  };
 
   const renderStep3 = () => (
     <div className="space-y-4">

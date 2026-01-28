@@ -126,6 +126,28 @@ export const OrderActivities: React.FC<OrderActivitiesProps> = ({ orderId }) => 
                   {activity.metadata?.noteContent && (
                     <div className="mt-2 p-2 bg-muted rounded text-sm">
                       {activity.metadata.noteContent}
+                      {/* Display reported quantities if present */}
+                      {activity.metadata.noteContent.includes('Reported quantities:') && (
+                        <div className="mt-2 pt-2 border-t border-muted-foreground/20">
+                          <div className="text-xs font-medium text-muted-foreground mb-1">Work Completion Report:</div>
+                          {(() => {
+                            const match = activity.metadata.noteContent.match(/Reported quantities: (\d+) cartons, (\d+) articles/);
+                            if (match) {
+                              return (
+                                <div className="grid grid-cols-2 gap-2 text-xs">
+                                  <div className="bg-background p-2 rounded">
+                                    <span className="font-medium">Cartons:</span> {match[1]}
+                                  </div>
+                                  <div className="bg-background p-2 rounded">
+                                    <span className="font-medium">Articles:</span> {match[2]}
+                                  </div>
+                                </div>
+                              );
+                            }
+                            return null;
+                          })()} 
+                        </div>
+                      )}
                     </div>
                   )}
                   {activity.metadata?.oldStatus && activity.metadata?.newStatus && (

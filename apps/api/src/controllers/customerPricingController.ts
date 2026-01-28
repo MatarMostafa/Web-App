@@ -262,7 +262,7 @@ export const deleteActivity = async (req: Request, res: Response) => {
 
 export const createActivity = async (req: Request, res: Response) => {
   try {
-    const { name, type, code, description, unit = 'hour', customerId } = req.body;
+    const { name, type, code, description, unit = 'hour', customerId, basePrice } = req.body;
 
     // customerId is now required to create a definition
     if (!customerId) {
@@ -300,6 +300,7 @@ export const createActivity = async (req: Request, res: Response) => {
         code: code || null,
         description: description || null,
         unit,
+        basePrice: (type === 'CONTAINER_LOADING' || type === 'CONTAINER_UNLOADING') && basePrice ? new Decimal(basePrice) : new Decimal(0),
         isActive: true
       }
     });
@@ -315,7 +316,7 @@ export const createActivity = async (req: Request, res: Response) => {
 
 export const createCustomerActivity = async (req: Request, res: Response) => {
   try {
-    const { customerId, customerActivityId, quantity, unitPrice, orderId } = req.body;
+    const { customerId, customerActivityId, quantity, unitPrice, orderId, basePrice } = req.body;
 
     if (!customerId || !customerActivityId || !quantity || !unitPrice) {
       return res.status(400).json({ error: 'customerId, customerActivityId, quantity, and unitPrice are required' });
@@ -338,6 +339,7 @@ export const createCustomerActivity = async (req: Request, res: Response) => {
         quantity,
         unitPrice: new Decimal(unitPrice),
         lineTotal: new Decimal(unitPrice).mul(quantity),
+        basePrice: basePrice ? new Decimal(basePrice) : new Decimal(0),
         isActive: true,
         // Copy fields
         name: definition.name,

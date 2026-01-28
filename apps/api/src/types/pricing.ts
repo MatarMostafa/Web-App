@@ -2,6 +2,7 @@ import { Decimal } from 'decimal.js';
 
 export enum ActivityType {
   CONTAINER_UNLOADING = 'CONTAINER_UNLOADING',
+  CONTAINER_LOADING = 'CONTAINER_LOADING',
   WRAPPING = 'WRAPPING',
   REPACKING = 'REPACKING',
   CROSSING = 'CROSSING',

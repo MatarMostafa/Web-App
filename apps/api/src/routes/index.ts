@@ -22,6 +22,8 @@ import teamRoutes from "./teamRoutes";
 import teamLeaderRoutes from "./teamLeaderRoutes";
 import customerPricingRoutes from "./customerPricingRoutes";
 import templateRoutes from "./templateRoutes";
+import containerRoutes from "./containerRoutes";
+import containerEmployeeRoutes from "./containerEmployeeRoutes";
 
 const router = express.Router();
 
@@ -82,5 +84,11 @@ router.use("/pricing", customerPricingRoutes);
 
 // Template routes
 router.use("/", templateRoutes);
+
+// Container routes
+router.use("/containers", containerRoutes);
+
+// Container Employee routes
+router.use("/api", containerEmployeeRoutes);
 
 export default router;
