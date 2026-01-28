@@ -32,6 +32,7 @@ interface Activity {
 
 const ACTIVITY_TYPE_LABELS = {
   [ActivityType.CONTAINER_UNLOADING]: 'Container Unloading',
+  [ActivityType.CONTAINER_LOADING]: 'Container Loading',
   [ActivityType.WRAPPING]: 'Wrapping',
   [ActivityType.REPACKING]: 'Repacking',
   [ActivityType.CROSSING]: 'Crossing',
@@ -72,6 +73,7 @@ export const CustomerActivitiesTab = ({ customerId }: CustomerActivitiesTabProps
     type: ActivityType;
     code: string;
     unit: string;
+    basePrice: number;
     priceRanges: Array<{ minQuantity: number; maxQuantity: number; price: number; validFrom: string }>;
   }): Promise<void> => {
     try {
@@ -81,6 +83,7 @@ export const CustomerActivitiesTab = ({ customerId }: CustomerActivitiesTabProps
         type: data.type,
         code: data.code || undefined,
         unit: data.unit,
+        basePrice: data.basePrice,
         customerId
       });
 
@@ -112,6 +115,7 @@ export const CustomerActivitiesTab = ({ customerId }: CustomerActivitiesTabProps
     type: ActivityType;
     code: string;
     unit: string;
+    basePrice: number;
     priceRanges: Array<{ minQuantity: number; maxQuantity: number; price: number; validFrom: string }>;
   }) => {
     if (!editingActivity) return;

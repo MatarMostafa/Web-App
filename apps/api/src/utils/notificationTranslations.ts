@@ -130,6 +130,16 @@ const translations = {
         body: "Your customer account has been unblocked. You can now access the system normally."
       }
     },
+    container: {
+      progress: {
+        title: "Container Progress Reported",
+        body: "{{employeeName}} has reported progress on container {{containerSerial}}"
+      },
+      completed: {
+        title: "Container Work Completed",
+        body: "{{employeeName}} has completed work on container {{containerSerial}}"
+      }
+    },
     admin: {
       customerOrderCreated: {
         title: "New Customer Order",
@@ -273,6 +283,16 @@ const translations = {
       accountUnblocked: {
         title: "Konto entsperrt",
         body: "Ihr Kundenkonto wurde entsperrt. Sie können das System nun normal nutzen."
+      }
+    },
+    container: {
+      progress: {
+        title: "Container-Fortschritt gemeldet",
+        body: "{{employeeName}} hat Fortschritt für Container {{containerSerial}} gemeldet"
+      },
+      completed: {
+        title: "Container-Arbeit abgeschlossen",
+        body: "{{employeeName}} hat die Arbeit an Container {{containerSerial}} abgeschlossen"
       }
     },
     admin: {

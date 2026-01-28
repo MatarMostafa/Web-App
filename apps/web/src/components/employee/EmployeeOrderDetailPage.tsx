@@ -27,6 +27,8 @@ import toast from "react-hot-toast";
 import OrderDescriptionTemplate from "./OrderDescriptionTemplate";
 import OrderDescriptionForm from "@/components/admin/OrderDescriptionForm";
 import { useTranslation } from "@/hooks/useTranslation";
+import { ContainerSelectionDialog } from "./ContainerSelectionDialog";
+import { ReportQuantitiesDialog } from "./ReportQuantitiesDialog";
 
 interface EmployeeOrderDetailPageProps {
   orderId: string;
@@ -95,6 +97,8 @@ export const EmployeeOrderDetailPage: React.FC<
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [refreshActivities, setRefreshActivities] = useState(0);
   const [orderWithTemplate, setOrderWithTemplate] = useState<any>(null);
+  const [showContainerDialog, setShowContainerDialog] = useState(false);
+  const [showReportDialog, setShowReportDialog] = useState(false);
 
   const { employeeAssignments, fetchEmployeeAssignments } =
     useEmployeeOrderStore();
@@ -194,12 +198,11 @@ export const EmployeeOrderDetailPage: React.FC<
   };
 
   const handleActionClick = (actionKey: string) => {
+    console.log('Action clicked:', actionKey); // Debug log
     switch (actionKey) {
       case "start":
-        handleStatusChange(
-          OrderStatus.IN_PROGRESS,
-          t("employee.orderDetail.workStartedNote")
-        );
+        console.log('Setting showContainerDialog to true'); // Debug log
+        setShowContainerDialog(true);
         break;
       case "pause":
         handleStatusChange(
@@ -208,11 +211,97 @@ export const EmployeeOrderDetailPage: React.FC<
         );
         break;
       case "review":
-        handleStatusChange(
-          OrderStatus.IN_REVIEW,
-          t("employee.orderDetail.reviewRequestedNote")
-        );
+        setShowReportDialog(true);
         break;
+    }
+  };
+
+  const handleReportSubmit = async (data: { reportedCartonQuantity: number; reportedArticleQuantity: number; notes?: string }) => {
+    setIsSubmitting(true);
+    try {
+      const { getSession } = await import("next-auth/react");
+      const session = await getSession();
+      const assignment = employeeAssignments.find((a) => a.order.id === orderId);
+      
+      if (!assignment) {
+        toast.error("Employee assignment not found");
+        return;
+      }
+
+      // Update container employee records with reported quantities
+      await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/orders/${orderId}/report-quantities`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${session?.accessToken}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            employeeId: assignment.employeeId,
+            reportedCartonQuantity: data.reportedCartonQuantity,
+            reportedArticleQuantity: data.reportedArticleQuantity,
+            notes: data.notes,
+          }),
+        }
+      );
+
+      // Create note with reported quantities
+      const noteContent = `Work completed. Reported quantities: ${data.reportedCartonQuantity} cartons, ${data.reportedArticleQuantity} articles.${data.notes ? ` Notes: ${data.notes}` : ''}`;
+      
+      await handleStatusChange(
+        OrderStatus.IN_REVIEW,
+        noteContent
+      );
+    } catch (error) {
+      console.error("Failed to submit report:", error);
+      toast.error("Failed to submit work report");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleContainerSelected = async (containerId: string) => {
+    setIsSubmitting(true);
+    try {
+      const { getSession } = await import("next-auth/react");
+      const session = await getSession();
+
+      // Get the current employee assignment to get employeeId
+      const assignment = employeeAssignments.find(
+        (a) => a.order.id === orderId
+      );
+      
+      if (!assignment) {
+        toast.error("Employee assignment not found");
+        return;
+      }
+
+      // Assign employee to container
+      await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/containers/${containerId}/employees`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${session?.accessToken}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            employeeId: assignment.employeeId,
+          }),
+        }
+      );
+
+      // Start work on the order
+      await handleStatusChange(
+        OrderStatus.IN_PROGRESS,
+        t("employee.orderDetail.workStartedNote")
+      );
+    } catch (error) {
+      console.error("Failed to assign container:", error);
+      toast.error("Failed to assign container");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -549,6 +638,20 @@ export const EmployeeOrderDetailPage: React.FC<
           </Card>
         </div>
       </div>
+      
+      <ContainerSelectionDialog
+        isOpen={showContainerDialog}
+        onClose={() => setShowContainerDialog(false)}
+        orderId={orderId}
+        onContainerSelected={handleContainerSelected}
+      />
+      
+      <ReportQuantitiesDialog
+        isOpen={showReportDialog}
+        onClose={() => setShowReportDialog(false)}
+        orderId={orderId}
+        onSubmit={handleReportSubmit}
+      />
     </div>
   );
 };

@@ -39,6 +39,7 @@ interface CustomerPriceTier {
 
 const ACTIVITY_TYPE_LABELS = {
   [ActivityType.CONTAINER_UNLOADING]: 'Container Unloading',
+  [ActivityType.CONTAINER_LOADING]: 'Container Loading',
   [ActivityType.WRAPPING]: 'Wrapping',
   [ActivityType.REPACKING]: 'Repacking',
   [ActivityType.CROSSING]: 'Crossing',

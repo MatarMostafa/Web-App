@@ -76,7 +76,19 @@ export const createOrderSchema = z.object({
     })).optional(),
     cartonQuantity: z.number().int().positive().optional(),
     articleQuantity: z.number().int().positive().optional(),
-    templateData: z.record(z.string(), z.string()).nullable().optional()
+    templateData: z.record(z.string(), z.string()).nullable().optional(),
+    containers: z.array(z.object({
+      serialNumber: z.string().min(1),
+      cartonQuantity: z.number().int().positive(),
+      articleQuantity: z.number().int().positive(),
+      cartonPrice: z.number().positive(),
+      articlePrice: z.number().positive(),
+      articles: z.array(z.object({
+        articleName: z.string().min(1),
+        quantity: z.number().int().positive(),
+        price: z.number().positive()
+      })).optional().default([])
+    })).optional()
   })
 });
 

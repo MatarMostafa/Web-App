@@ -80,8 +80,10 @@ export const getOrderByIdService = async (id: string) => {
   return order;
 };
 
-export const createOrderService = async (data: OrderCreateInput & { assignedEmployeeIds?: string[]; activities?: Array<{ activityId: string; quantity?: number }>; customerId: string; templateData?: Record<string, string> | null; createdBySubAccountId?: string; cartonQuantity?: number; articleQuantity?: number }, createdBy?: string) => {
-  let { assignedEmployeeIds, activities, customerId, templateData, createdBySubAccountId, cartonQuantity, articleQuantity, ...orderData } = data;
+export const createOrderService = async (data: OrderCreateInput & { assignedEmployeeIds?: string[]; activities?: Array<{ activityId: string; quantity?: number; basePrice?: number }>; customerId: string; templateData?: Record<string, string> | null; createdBySubAccountId?: string; cartonQuantity?: number; articleQuantity?: number; containers?: Array<{ serialNumber: string; cartonQuantity: number; articleQuantity: number; cartonPrice: number; articlePrice: number; articles: Array<{ articleName: string; quantity: number; price: number }> }> }, createdBy?: string) => {
+  let { assignedEmployeeIds, activities, customerId, templateData, createdBySubAccountId, cartonQuantity, articleQuantity, containers, ...orderData } = data;
+
+  console.log('Creating order with data:', { containers: containers?.length || 0, containerData: containers }); // Debug log
 
   if (!customerId) {
     throw new Error('Customer ID is required');
@@ -205,12 +207,11 @@ export const createOrderService = async (data: OrderCreateInput & { assignedEmpl
           const customerActivity = await tx.customerActivity.create({
             data: {
               customerId: customerId!,
-              // No activityId field anymore. We use definition ID implicitly via copied data or prices lookup usage.
-              // We could store definition ID if we had a field, but we copy fields.
               orderId: newOrder.id,
               quantity: activity.quantity ?? 1,
               unitPrice: priceResult.price.toNumber(),
               lineTotal: priceResult.price.toNumber(),
+              basePrice: activity.basePrice ? new Decimal(activity.basePrice) : new Decimal(0),
 
               // Copied fields
               name: definition.name,
@@ -227,6 +228,34 @@ export const createOrderService = async (data: OrderCreateInput & { assignedEmpl
           throw error;
         }
       }
+    }
+
+    // Create containers if provided
+    if (containers && containers.length > 0) {
+      console.log(`Creating ${containers.length} containers for order ${newOrder.id}`);
+      for (const containerData of containers) {
+        console.log('Creating container:', containerData);
+        const container = await tx.container.create({
+          data: {
+            serialNumber: containerData.serialNumber,
+            orderId: newOrder.id,
+            cartonQuantity: containerData.cartonQuantity,
+            articleQuantity: containerData.articleQuantity,
+            cartonPrice: new Decimal(containerData.cartonPrice),
+            articlePrice: new Decimal(containerData.articlePrice),
+            articles: {
+              create: containerData.articles?.map(article => ({
+                articleName: article.articleName,
+                quantity: article.quantity,
+                price: new Decimal(article.price)
+              })) || []
+            }
+          }
+        });
+        console.log(`Created container ${container.id} for order ${newOrder.id}`);
+      }
+    } else {
+      console.log('No containers provided for order creation');
     }
 
     return newOrder;
@@ -301,10 +330,10 @@ export const createOrderService = async (data: OrderCreateInput & { assignedEmpl
 
 export const updateOrderService = async (
   id: string,
-  data: OrderUpdateInput & { assignedEmployeeIds?: string[]; activities?: Array<{ activityId: string; quantity?: number }>; templateData?: Record<string, string> | null; cartonQuantity?: number; articleQuantity?: number },
+  data: OrderUpdateInput & { assignedEmployeeIds?: string[]; activities?: Array<{ activityId: string; quantity?: number; basePrice?: number }>; templateData?: Record<string, string> | null; cartonQuantity?: number; articleQuantity?: number; containers?: Array<{ serialNumber: string; cartonQuantity: number; articleQuantity: number; cartonPrice: number; articlePrice: number; articles: Array<{ articleName: string; quantity: number; price: number }> }> },
   updatedBy?: string
 ) => {
-  let { assignedEmployeeIds, activities, templateData, cartonQuantity, articleQuantity, ...orderData } = data;
+  let { assignedEmployeeIds, activities, templateData, cartonQuantity, articleQuantity, containers, ...orderData } = data;
 
   // Clean empty strings to undefined for optional DateTime fields
   if (orderData.startTime === '') orderData.startTime = undefined;
@@ -405,11 +434,11 @@ export const updateOrderService = async (
             await tx.customerActivity.create({
               data: {
                 customerId: updatedOrder.customerId,
-                // activityId: activity.activityId, // Removed
                 orderId: id,
                 quantity: activity.quantity ?? 1,
                 unitPrice: priceResult.price.toNumber(),
                 lineTotal: priceResult.price.toNumber(),
+                basePrice: activity.basePrice ? new Decimal(activity.basePrice) : new Decimal(0),
 
                 // Copied fields
                 name: definition.name,
@@ -424,6 +453,38 @@ export const updateOrderService = async (
             console.error(`Error updating customer activity for activity ${activity.activityId}:`, error);
             throw error;
           }
+        }
+      }
+    }
+
+    // Handle containers update if provided
+    if (containers !== undefined) {
+      console.log(`Updating containers for order ${id}:`, containers);
+      // Remove existing containers for this order
+      await tx.container.deleteMany({
+        where: { orderId: id }
+      });
+
+      // Create new containers
+      if (containers.length > 0) {
+        for (const containerData of containers) {
+          await tx.container.create({
+            data: {
+              serialNumber: containerData.serialNumber,
+              orderId: id,
+              cartonQuantity: containerData.cartonQuantity,
+              articleQuantity: containerData.articleQuantity,
+              cartonPrice: new Decimal(containerData.cartonPrice),
+              articlePrice: new Decimal(containerData.articlePrice),
+              articles: {
+                create: containerData.articles?.map(article => ({
+                  articleName: article.articleName,
+                  quantity: article.quantity,
+                  price: new Decimal(article.price)
+                })) || []
+              }
+            }
+          });
         }
       }
     }

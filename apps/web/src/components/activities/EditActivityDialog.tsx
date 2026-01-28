@@ -34,6 +34,7 @@ interface EditActivityDialogProps {
     type: ActivityType;
     code: string;
     unit: string;
+    basePrice: number;
     priceRanges: Array<{ minQuantity: number; maxQuantity: number; price: number; validFrom: string }>;
   }) => Promise<void>;
 }
@@ -43,7 +44,8 @@ export const EditActivityDialog = ({ open, onOpenChange, activity, customerId, o
     name: '',
     type: ActivityType.CONTAINER_UNLOADING,
     code: '',
-    unit: 'hour'
+    unit: 'hour',
+    basePrice: 0
   });
   const [priceRanges, setPriceRanges] = useState([
     { minQuantity: 1, maxQuantity: 10, price: 0, validFrom: new Date().toISOString().split('T')[0] }
@@ -56,7 +58,8 @@ export const EditActivityDialog = ({ open, onOpenChange, activity, customerId, o
         name: activity.name,
         type: activity.type,
         code: activity.code || '',
-        unit: activity.unit
+        unit: activity.unit,
+        basePrice: (activity as any).basePrice || 0
       });
       
       if (activity.prices && activity.prices.length > 0) {
@@ -145,6 +148,20 @@ export const EditActivityDialog = ({ open, onOpenChange, activity, customerId, o
               />
             </div>
           </div>
+          
+          {(formData.type === ActivityType.CONTAINER_LOADING || formData.type === ActivityType.CONTAINER_UNLOADING) && (
+            <div>
+              <Label>Base Price (€)</Label>
+              <Input
+                type="number"
+                step="0.01"
+                min="0"
+                value={formData.basePrice}
+                onChange={(e) => setFormData({ ...formData, basePrice: parseFloat(e.target.value) || 0 })}
+                placeholder="Base price for container loading/unloading"
+              />
+            </div>
+          )}
           
           <div>
             <div className="flex justify-between items-center mb-2">

@@ -103,6 +103,7 @@ enum AbsenceType {
 
 enum ActivityType {
   CONTAINER_UNLOADING
+  CONTAINER_LOADING
   WRAPPING
   REPACKING
   CROSSING
@@ -210,8 +211,9 @@ model Employee {
   absences         Absence[]
   ratings          Rating[]
   workStatistics   WorkStatistic[]
-  orderAssignments OrderAssignment[]
-  files            File[]
+  orderAssignments      OrderAssignment[]
+  files                 File[]
+  containerAssignments  ContainerEmployee[]
 
   // Team relationships
   teamMemberships TeamMember[]
@@ -399,6 +401,7 @@ model Order {
   cartonQuantity  Int?
   articleQuantity Int?
 
+  containers            Container[]
   customer              Customer              @relation(fields: [customerId], references: [id], onDelete: Cascade)
   customerId            String
   createdBySubAccount   SubAccount?           @relation("SubAccountCreatedOrders", fields: [createdBySubAccountId], references: [id], onDelete: SetNull)
@@ -513,6 +516,7 @@ model CustomerActivity {
   quantity  Int?
   unitPrice Decimal? @db.Decimal(10, 2)
   lineTotal Decimal? @db.Decimal(12, 2)
+  basePrice Decimal? @db.Decimal(10, 2) @default(0)
 
   isActive Boolean @default(true)
 
@@ -973,4 +977,67 @@ model AuditLog {
   @@index([tableName, recordId])
   @@index([userId, timestamp])
   @@map("audit_logs")
+}
+
+// ===============================
+// CONTAINER MANAGEMENT
+// ===============================
+
+model Container {
+  id           String @id @default(cuid())
+  serialNumber String @unique
+  
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId String
+  
+  cartonQuantity  Int
+  articleQuantity Int
+  cartonPrice     Decimal @db.Decimal(10, 2)
+  articlePrice    Decimal @db.Decimal(10, 2)
+  
+  articles           ContainerArticle[]
+  employeeAssignments ContainerEmployee[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("containers")
+}
+
+model ContainerArticle {
+  id          String @id @default(cuid())
+  
+  container   Container @relation(fields: [containerId], references: [id], onDelete: Cascade)
+  containerId String
+  
+  articleName String
+  quantity    Int
+  price       Decimal @db.Decimal(10, 2)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("container_articles")
+}
+
+model ContainerEmployee {
+  id String @id @default(cuid())
+  
+  container   Container @relation(fields: [containerId], references: [id], onDelete: Cascade)
+  containerId String
+  employee    Employee  @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  employeeId  String
+  
+  assignedAt DateTime @default(now())
+  role       String?
+  
+  // Employee reporting fields
+  reportedCartonQuantity  Int?     @default(0)
+  reportedArticleQuantity Int?     @default(0)
+  isCompleted            Boolean  @default(false)
+  completedAt            DateTime?
+  notes                  String?
+  
+  @@unique([containerId, employeeId])
+  @@map("container_employees")
 }

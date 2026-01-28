@@ -100,7 +100,7 @@ const EmployeeDashboardPage = () => {
       <div className="p-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[...Array(6)].map((_, i) => (
-            <Card key={i} className="animate-pulse">
+            <Card key={`mounted-${i}`} className="animate-pulse">
               <CardHeader className="pb-2">
                 <div className="h-4 bg-muted rounded w-1/2"></div>
               </CardHeader>
@@ -122,7 +122,7 @@ const EmployeeDashboardPage = () => {
       <div className="p-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[...Array(6)].map((_, i) => (
-            <Card key={i} className="animate-pulse">
+            <Card key={`loading-${i}`} className="animate-pulse">
               <CardHeader className="pb-2">
                 <div className="h-4 bg-muted rounded w-1/2"></div>
               </CardHeader>
@@ -285,9 +285,9 @@ const EmployeeDashboardPage = () => {
             </div>
           ) : currentWeekOrders.length > 0 ? (
             <div className="space-y-4">
-              {currentWeekOrders.map((order) => (
+              {currentWeekOrders.map((order, index) => (
                 <div
-                  key={order.id}
+                  key={`current-${order.id}-${index}`}
                   className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
                 >
                   <div className="flex-1">
@@ -390,9 +390,9 @@ const EmployeeDashboardPage = () => {
         <CardContent>
           {archivedOrders.length > 0 ? (
             <div className="space-y-3 max-h-96 overflow-y-auto">
-              {archivedOrders.slice(0, 10).map((order) => (
+              {archivedOrders.slice(0, 10).map((order, index) => (
                 <div
-                  key={order.id}
+                  key={`archived-${order.id}-${index}`}
                   className="flex items-center justify-between p-3 border rounded-lg bg-muted/30"
                 >
                   <div className="flex-1">
