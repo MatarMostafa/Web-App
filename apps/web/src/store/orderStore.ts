@@ -17,6 +17,7 @@ interface OrderState {
   getOrderById: (id: string) => Promise<Order | null>;
   getOrderAssignments: (orderId: string) => Promise<string[]>;
   getOrderEmployeeNames: (orderId: string) => Promise<string>;
+  getOrderContainers: (orderId: string) => Promise<any[]>;
   createOrder: (data: CreateOrderData) => Promise<Order>;
   updateOrder: (id: string, data: UpdateOrderData) => Promise<void>;
   updateOrderStatus: (id: string, status: string) => void;
@@ -103,6 +104,16 @@ export const useOrderStore = create<OrderState>((set, get) => ({
     } catch (error) {
       console.error('Failed to fetch employee names:', error);
       return 'Unknown';
+    }
+  },
+
+  getOrderContainers: async (orderId: string) => {
+    try {
+      const response = await apiClient.get<any>(`/api/orders/${orderId}/containers`);
+      return response.data || response || [];
+    } catch (error) {
+      console.error('Failed to fetch order containers:', error);
+      return [];
     }
   },
 

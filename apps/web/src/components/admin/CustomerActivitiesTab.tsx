@@ -125,7 +125,8 @@ export const CustomerActivitiesTab = ({ customerId }: CustomerActivitiesTabProps
         name: data.name,
         type: data.type,
         code: data.code,
-        unit: data.unit
+        unit: data.unit,
+        basePrice: data.basePrice
       });
 
       // Delete existing customer prices

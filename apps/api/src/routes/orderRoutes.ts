@@ -379,7 +379,7 @@ router.get(
   async (req: Request, res: Response) => {
     try {
       const { orderId } = req.params;
-      console.log(`Fetching activity IDs for order: ${orderId}`);
+      console.log(`Fetching activity definition IDs for order: ${orderId}`);
 
       // First get the order to ensure we have the customer context
       const order = await prisma.order.findUnique({
@@ -394,27 +394,103 @@ router.get(
         });
       }
 
-      // Get customer activities that belong to this specific customer and order
+      // Get customer activities and find their original definition IDs
       const customerActivities = await prisma.customerActivity.findMany({
         where: {
           orderId,
-          customerId: order.customerId, // Ensure activities belong to the same customer
-          isActive: true
+          customerId: order.customerId,
+          isActive: true,
+          orderId: { not: null } // Only get order instances, not definitions
         },
-        select: { id: true }
+        select: { 
+          id: true,
+          name: true,
+          code: true,
+          type: true,
+          unit: true
+        }
       });
 
-      console.log(`Found ${customerActivities.length} customer activities for order ${orderId}:`, customerActivities);
+      console.log(`Found ${customerActivities.length} customer activities for order ${orderId}`);
 
-      const activityIds = customerActivities.map(ca => ca.id);
-      console.log(`Returning activity IDs:`, activityIds);
+      // Find matching activity definitions by matching name, type, and unit
+      const activityDefinitions = await prisma.customerActivity.findMany({
+        where: {
+          customerId: order.customerId,
+          orderId: null, // Only get definitions
+          isActive: true
+        },
+        select: {
+          id: true,
+          name: true,
+          code: true,
+          type: true,
+          unit: true
+        }
+      });
 
-      res.json({ success: true, data: activityIds });
+      const definitionIds = [...new Set(customerActivities.map(orderActivity => {
+        const definition = activityDefinitions.find(def => 
+          def.name === orderActivity.name && 
+          def.type === orderActivity.type &&
+          def.unit === orderActivity.unit
+        );
+        return definition?.id;
+      }).filter(Boolean))];
+
+      console.log(`Returning activity definition IDs:`, definitionIds);
+
+      res.json({ success: true, data: definitionIds });
     } catch (error) {
       console.error("Get order activity IDs error:", error);
       res.status(500).json({
         success: false,
         message: "Fehler beim Abrufen der Aktivitäts-IDs",
+        error: error instanceof Error ? error.message : String(error)
+      });
+    }
+  }
+);
+
+router.get(
+  "/:orderId/containers",
+  authMiddleware,
+  roleMiddleware(["ADMIN", "TEAM_LEADER"]),
+  async (req: Request, res: Response) => {
+    try {
+      const { orderId } = req.params;
+      console.log(`Fetching containers for order: ${orderId}`);
+
+      const containers = await prisma.container.findMany({
+        where: { orderId },
+        include: {
+          articles: true
+        },
+        orderBy: { createdAt: 'asc' }
+      });
+
+      console.log(`Found ${containers.length} containers for order ${orderId}`);
+
+      const formattedContainers = containers.map(container => ({
+        id: container.id,
+        serialNumber: container.serialNumber,
+        cartonQuantity: container.cartonQuantity,
+        articleQuantity: container.articleQuantity,
+        cartonPrice: Number(container.cartonPrice),
+        articlePrice: Number(container.articlePrice),
+        articles: container.articles.map(article => ({
+          articleName: article.articleName,
+          quantity: article.quantity,
+          price: Number(article.price)
+        }))
+      }));
+
+      res.json({ success: true, data: formattedContainers });
+    } catch (error) {
+      console.error("Get order containers error:", error);
+      res.status(500).json({
+        success: false,
+        message: "Fehler beim Abrufen der Container",
         error: error instanceof Error ? error.message : String(error)
       });
     }

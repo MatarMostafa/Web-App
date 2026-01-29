@@ -217,7 +217,7 @@ export const getActivities = async (req: Request, res: Response) => {
 export const updateActivity = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const { name, type, code, description, unit } = req.body;
+    const { name, type, code, description, unit, basePrice } = req.body;
 
     if (!name || !type) {
       return res.status(400).json({ error: 'name and type are required' });
@@ -227,15 +227,25 @@ export const updateActivity = async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'Invalid activity type' });
     }
 
+    const updateData: any = {
+      name,
+      type,
+      code,
+      description,
+      unit
+    };
+
+    // Update basePrice if provided
+    if (basePrice !== undefined && basePrice !== null) {
+      if (basePrice < 0) {
+        return res.status(400).json({ error: 'basePrice must be 0 or greater' });
+      }
+      updateData.basePrice = new Decimal(basePrice);
+    }
+
     const activity = await prisma.customerActivity.update({
       where: { id },
-      data: {
-        name,
-        type,
-        code,
-        description,
-        unit
-      }
+      data: updateData
     });
 
     res.json(activity);
@@ -273,6 +283,14 @@ export const createActivity = async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'name and type are required' });
     }
 
+    if (basePrice === undefined || basePrice === null) {
+      return res.status(400).json({ error: 'basePrice is required' });
+    }
+
+    if (basePrice < 0) {
+      return res.status(400).json({ error: 'basePrice must be 0 or greater' });
+    }
+
     if (!Object.values(ActivityType).includes(type)) {
       return res.status(400).json({ error: 'Invalid activity type' });
     }
@@ -300,7 +318,7 @@ export const createActivity = async (req: Request, res: Response) => {
         code: code || null,
         description: description || null,
         unit,
-        basePrice: (type === 'CONTAINER_LOADING' || type === 'CONTAINER_UNLOADING') && basePrice ? new Decimal(basePrice) : new Decimal(0),
+        basePrice: new Decimal(basePrice),
         isActive: true
       }
     });

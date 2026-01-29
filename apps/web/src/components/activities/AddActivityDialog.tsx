@@ -115,19 +115,21 @@ export const AddActivityDialog = ({ open, onOpenChange, customerId, onSubmit }: 
             </div>
           </div>
           
-          {(formData.type === ActivityType.CONTAINER_LOADING || formData.type === ActivityType.CONTAINER_UNLOADING) && (
-            <div>
-              <Label>Base Price (€)</Label>
-              <Input
-                type="number"
-                step="0.01"
-                min="0"
-                value={formData.basePrice}
-                onChange={(e) => setFormData({ ...formData, basePrice: parseFloat(e.target.value) || 0 })}
-                placeholder="Base price for container loading/unloading"
-              />
-            </div>
-          )}
+          <div>
+            <Label>Article Base Price (€) *</Label>
+            <Input
+              type="number"
+              step="0.01"
+              min="0"
+              value={formData.basePrice}
+              onChange={(e) => setFormData({ ...formData, basePrice: parseFloat(e.target.value) || 0 })}
+              placeholder="Base price for articles in this activity"
+              required
+            />
+            <p className="text-xs text-muted-foreground mt-1">
+              This price will be used as the default article price when creating orders
+            </p>
+          </div>
           
           <div>
             <div className="flex justify-between items-center mb-2">

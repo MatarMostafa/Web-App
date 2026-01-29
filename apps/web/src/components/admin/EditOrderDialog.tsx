@@ -58,7 +58,7 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
 
   if (!ready) return null;
 
-  const { updateOrder, getOrderAssignments } = useOrderStore();
+  const { updateOrder, getOrderAssignments, getOrderContainers } = useOrderStore();
   const { employees, fetchEmployees } = useEmployeeStore();
   const { customers, fetchCustomers } = useCustomerStore();
 
@@ -114,7 +114,7 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
 
       setStartTimeOnly(startTime);
       setEndTimeOnly(endTime);
-      setContainers([]); // Initialize empty containers for now
+      setContainers([]); // Will be loaded by loadOrderData
       setCartonQuantity(order.cartonQuantity || 0);
       setArticleQuantity(order.articleQuantity || 0);
 
@@ -130,17 +130,20 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
 
   const loadOrderData = async () => {
     try {
-      const [employeeIds, activityIds] = await Promise.all([
+      // Load activities first, then load selected activities and containers
+      if (order.customerId) {
+        await fetchActivities(order.customerId);
+      }
+
+      const [employeeIds, activityIds, containerData] = await Promise.all([
         getOrderAssignments(order.id),
-        fetchOrderActivities(order.id)
+        fetchOrderActivities(order.id),
+        getOrderContainers(order.id)
       ]);
 
       setAssignedEmployeeIds(employeeIds);
       setSelectedActivities(activityIds);
-
-      if (order.customerId) {
-        await fetchActivities(order.customerId);
-      }
+      setContainers(containerData);
     } catch (error) {
       console.error("Error loading order data:", error);
     }
@@ -161,6 +164,8 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
     return [];
   };
 
+
+
   const fetchActivities = async (customerId: string) => {
     if (!customerId) return;
     try {
@@ -176,14 +181,10 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
           const processedActivities = data.map((activity: any) => {
             // Map 'prices' to 'customerPrices' and calculate lowest price
             const prices = activity.prices || [];
-            if (prices.length > 0) {
-              const lowestPrice = Math.min(...prices.map((p: any) => Number(p.price)));
-              return { ...activity, customerPrices: prices, unitPrice: lowestPrice };
-            }
-            return null; // The original code filtered formatted activities, assuming only priced ones are valid?
-            // Actually, original code returned null if fetch failed or price length was 0.
+            const lowestPrice = prices.length > 0 ? Math.min(...prices.map((p: any) => Number(p.price))) : 0;
+            return { ...activity, customerPrices: prices, unitPrice: lowestPrice };
           });
-          setActivities(processedActivities.filter(Boolean));
+          setActivities(processedActivities);
         } else {
           setActivities([]);
         }

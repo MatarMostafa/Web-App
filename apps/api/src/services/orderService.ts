@@ -80,7 +80,7 @@ export const getOrderByIdService = async (id: string) => {
   return order;
 };
 
-export const createOrderService = async (data: OrderCreateInput & { assignedEmployeeIds?: string[]; activities?: Array<{ activityId: string; quantity?: number; basePrice?: number }>; customerId: string; templateData?: Record<string, string> | null; createdBySubAccountId?: string; cartonQuantity?: number; articleQuantity?: number; containers?: Array<{ serialNumber: string; cartonQuantity: number; articleQuantity: number; cartonPrice: number; articlePrice: number; articles: Array<{ articleName: string; quantity: number; price: number }> }> }, createdBy?: string) => {
+export const createOrderService = async (data: OrderCreateInput & { assignedEmployeeIds?: string[]; activities?: Array<{ activityId: string; quantity?: number; basePrice?: number }>; customerId: string; templateData?: Record<string, string> | null; createdBySubAccountId?: string; cartonQuantity?: number; articleQuantity?: number; containers?: Array<{ serialNumber: string; cartonQuantity: number; articleQuantity: number; cartonPrice: number; articlePrice: number }> }, createdBy?: string) => {
   let { assignedEmployeeIds, activities, customerId, templateData, createdBySubAccountId, cartonQuantity, articleQuantity, containers, ...orderData } = data;
 
   console.log('Creating order with data:', { containers: containers?.length || 0, containerData: containers }); // Debug log
@@ -242,14 +242,7 @@ export const createOrderService = async (data: OrderCreateInput & { assignedEmpl
             cartonQuantity: containerData.cartonQuantity,
             articleQuantity: containerData.articleQuantity,
             cartonPrice: new Decimal(containerData.cartonPrice),
-            articlePrice: new Decimal(containerData.articlePrice),
-            articles: {
-              create: containerData.articles?.map(article => ({
-                articleName: article.articleName,
-                quantity: article.quantity,
-                price: new Decimal(article.price)
-              })) || []
-            }
+            articlePrice: new Decimal(containerData.articlePrice)
           }
         });
         console.log(`Created container ${container.id} for order ${newOrder.id}`);
@@ -330,7 +323,7 @@ export const createOrderService = async (data: OrderCreateInput & { assignedEmpl
 
 export const updateOrderService = async (
   id: string,
-  data: OrderUpdateInput & { assignedEmployeeIds?: string[]; activities?: Array<{ activityId: string; quantity?: number; basePrice?: number }>; templateData?: Record<string, string> | null; cartonQuantity?: number; articleQuantity?: number; containers?: Array<{ serialNumber: string; cartonQuantity: number; articleQuantity: number; cartonPrice: number; articlePrice: number; articles: Array<{ articleName: string; quantity: number; price: number }> }> },
+  data: OrderUpdateInput & { assignedEmployeeIds?: string[]; activities?: Array<{ activityId: string; quantity?: number; basePrice?: number }>; templateData?: Record<string, string> | null; cartonQuantity?: number; articleQuantity?: number; containers?: Array<{ serialNumber: string; cartonQuantity: number; articleQuantity: number; cartonPrice: number; articlePrice: number }> },
   updatedBy?: string
 ) => {
   let { assignedEmployeeIds, activities, templateData, cartonQuantity, articleQuantity, containers, ...orderData } = data;
@@ -475,14 +468,7 @@ export const updateOrderService = async (
               cartonQuantity: containerData.cartonQuantity,
               articleQuantity: containerData.articleQuantity,
               cartonPrice: new Decimal(containerData.cartonPrice),
-              articlePrice: new Decimal(containerData.articlePrice),
-              articles: {
-                create: containerData.articles?.map(article => ({
-                  articleName: article.articleName,
-                  quantity: article.quantity,
-                  price: new Decimal(article.price)
-                })) || []
-              }
+              articlePrice: new Decimal(containerData.articlePrice)
             }
           });
         }

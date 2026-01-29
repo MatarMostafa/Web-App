@@ -37,11 +37,6 @@ interface Container {
   articleQuantity: number;
   cartonPrice: number;
   articlePrice: number;
-  articles: Array<{
-    articleName: string;
-    quantity: number;
-    price: number;
-  }>;
 }
 
 interface AddOrderDialogProps {
@@ -344,8 +339,7 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
   const getContainerPrices = () => {
     return containers.reduce((sum, c) => {
       const articleTotal = c.articleQuantity * c.articlePrice;
-      const articlesTotal = c.articles.reduce((aSum, a) => aSum + (a.quantity * a.price), 0);
-      return sum + articleTotal + articlesTotal;
+      return sum + articleTotal;
     }, 0);
   };
 
@@ -469,13 +463,18 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
 
   const renderStep3 = () => {
     const addContainer = () => {
+      // Calculate default article price from selected activities' base prices
+      const defaultArticlePrice = selectedActivities.reduce((total, activityId) => {
+        const activity = activities.find(a => a.id === activityId);
+        return total + (Number(activity?.basePrice) || 0);
+      }, 0);
+
       const newContainer: Container = {
         serialNumber: `CONT-${Date.now()}`,
         cartonQuantity: 1,
         articleQuantity: 1,
         cartonPrice: calculateCartonPriceForQuantity(1),
-        articlePrice: 0,
-        articles: []
+        articlePrice: defaultArticlePrice
       };
       setContainers([...containers, newContainer]);
     };
@@ -495,31 +494,6 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
 
     const removeContainer = (index: number) => {
       setContainers(containers.filter((_, i) => i !== index));
-    };
-
-    const addArticleToContainer = (containerIndex: number) => {
-      const updated = [...containers];
-      updated[containerIndex].articles.push({
-        articleName: '',
-        quantity: 1,
-        price: 0
-      });
-      setContainers(updated);
-    };
-
-    const updateArticle = (containerIndex: number, articleIndex: number, field: string, value: any) => {
-      const updated = [...containers];
-      updated[containerIndex].articles[articleIndex] = {
-        ...updated[containerIndex].articles[articleIndex],
-        [field]: value
-      };
-      setContainers(updated);
-    };
-
-    const removeArticle = (containerIndex: number, articleIndex: number) => {
-      const updated = [...containers];
-      updated[containerIndex].articles.splice(articleIndex, 1);
-      setContainers(updated);
     };
 
     return (
@@ -600,73 +574,23 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
                     />
                   </div>
                   <div>
-                    <Label>Article Price (€)</Label>
+                    <Label>Article Price (€) - From Activity Base Price</Label>
                     <Input
                       type="number"
                       step="0.01"
                       min="0"
                       value={container.articlePrice}
-                      onChange={(e) => updateContainer(containerIndex, 'articlePrice', parseFloat(e.target.value) || 0)}
+                      readOnly
+                      className="bg-gray-50"
                     />
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Based on selected activities' base prices
+                    </p>
                   </div>
-                </div>
-
-                <div>
-                  <div className="flex justify-between items-center mb-2">
-                    <Label>Articles (Optional)</Label>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => addArticleToContainer(containerIndex)}
-                    >
-                      <Plus className="w-4 h-4 mr-1" />
-                      Add Article
-                    </Button>
-                  </div>
-                  {container.articles.map((article, articleIndex) => (
-                    <div key={articleIndex} className="grid grid-cols-4 gap-2 mb-2 items-end">
-                      <div>
-                        <Label className="text-xs">Name</Label>
-                        <Input
-                          value={article.articleName}
-                          onChange={(e) => updateArticle(containerIndex, articleIndex, 'articleName', e.target.value)}
-                          placeholder="Article name"
-                        />
-                      </div>
-                      <div>
-                        <Label className="text-xs">Quantity</Label>
-                        <Input
-                          type="number"
-                          min="1"
-                          value={article.quantity}
-                          onChange={(e) => updateArticle(containerIndex, articleIndex, 'quantity', parseInt(e.target.value) || 1)}
-                        />
-                      </div>
-                      <div>
-                        <Label className="text-xs">Price (€)</Label>
-                        <Input
-                          type="number"
-                          step="0.01"
-                          min="0"
-                          value={article.price}
-                          onChange={(e) => updateArticle(containerIndex, articleIndex, 'price', parseFloat(e.target.value) || 0)}
-                        />
-                      </div>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => removeArticle(containerIndex, articleIndex)}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  ))}
                 </div>
 
                 <div className="bg-muted/50 p-3 rounded">
-                  <div className="text-sm font-medium">Container Total: €{(container.cartonPrice + (container.articleQuantity * container.articlePrice) + container.articles.reduce((sum, a) => sum + (a.quantity * a.price), 0)).toFixed(2)}</div>
+                  <div className="text-sm font-medium">Container Total: €{(container.cartonPrice + (container.articleQuantity * container.articlePrice)).toFixed(2)}</div>
                 </div>
               </div>
             ))}
@@ -691,7 +615,7 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
               </div>
               <div className="border-t pt-1 mt-2 flex justify-between font-medium">
                 <span>Container Total:</span>
-                <span>€{containers.reduce((sum, c) => sum + c.cartonPrice + (c.articleQuantity * c.articlePrice) + c.articles.reduce((aSum, a) => aSum + (a.quantity * a.price), 0), 0).toFixed(2)}</span>
+                <span>€{containers.reduce((sum, c) => sum + c.cartonPrice + (c.articleQuantity * c.articlePrice), 0).toFixed(2)}</span>
               </div>
             </div>
           </div>

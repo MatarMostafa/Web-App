@@ -51,11 +51,16 @@ export const createPerformanceThresholdSchema = z.object({
 });
 
 // ✅ Update Performance Threshold (partial + consistent)
-export const updatePerformanceThresholdSchema = z.object({
-  params: z.object({
-    id: z.string().min(1, { message: "Threshold ID is required" }),
-  }),
-  body: thresholdBody.partial().refine(
+const partialThresholdBody = z
+  .object({
+    redMin: scoreField.optional(),
+    redMax: scoreField.optional(),
+    yellowMin: scoreField.optional(),
+    yellowMax: scoreField.optional(),
+    greenMin: scoreField.optional(),
+    greenMax: scoreField.optional(),
+  })
+  .refine(
     (d) => {
       // Only validate if both values are present
       if (d.redMin !== undefined && d.redMax !== undefined && d.redMin > d.redMax) {
@@ -70,7 +75,13 @@ export const updatePerformanceThresholdSchema = z.object({
       return true;
     },
     { message: "One or more ranges are invalid (min > max)" }
-  ),
+  );
+
+export const updatePerformanceThresholdSchema = z.object({
+  params: z.object({
+    id: z.string().min(1, { message: "Threshold ID is required" }),
+  }),
+  body: partialThresholdBody,
 });
 
 // ✅ Delete Performance Threshold
