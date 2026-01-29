@@ -6,8 +6,23 @@ import { useCustomerStore } from "@/store/customerStore";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Calendar, MapPin, Clock, Package } from "lucide-react";
+import { ArrowLeft, Calendar, MapPin, Clock, Package, Box } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
+import { apiClient } from "@/lib/api-client";
+
+interface Container {
+  id: string;
+  serialNumber: string;
+  cartonQuantity: number;
+  articleQuantity: number;
+  cartonPrice: number;
+  articlePrice: number;
+  articles: Array<{
+    articleName: string;
+    quantity: number;
+    price: number;
+  }>;
+}
 
 export default function CustomerOrderDetailPage() {
   const { t } = useTranslation();
@@ -15,6 +30,7 @@ export default function CustomerOrderDetailPage() {
   const router = useRouter();
   const { fetchOrderById, loading } = useCustomerStore();
   const [order, setOrder] = useState<any>(null);
+  const [containers, setContainers] = useState<Container[]>([]);
 
   const orderId = params.id as string;
 
@@ -22,7 +38,18 @@ export default function CustomerOrderDetailPage() {
     const loadOrder = async () => {
       if (orderId) {
         const orderData = await fetchOrderById(orderId);
+        console.log('Order data received:', orderData); // Debug log
+        console.log('Containers in order data:', orderData?.containers); // Debug log
         setOrder(orderData);
+        
+        // Set containers from order data if available
+        if (orderData?.containers) {
+          console.log('Setting containers:', orderData.containers); // Debug log
+          setContainers(orderData.containers);
+        } else {
+          console.log('No containers found, setting empty array'); // Debug log
+          setContainers([]);
+        }
       }
     };
     loadOrder();
@@ -157,24 +184,6 @@ export default function CustomerOrderDetailPage() {
                 </p>
               </div>
             </div>
-
-            {(order.cartonQuantity || order.articleQuantity) && (
-              <div className="pt-3 sm:pt-4 border-t">
-                <p className="font-medium mb-2 text-sm sm:text-base">Quantities</p>
-                <div className="space-y-1">
-                  {order.cartonQuantity && (
-                    <p className="text-xs sm:text-sm text-muted-foreground">
-                      Carton Quantity: {order.cartonQuantity}
-                    </p>
-                  )}
-                  {order.articleQuantity && (
-                    <p className="text-xs sm:text-sm text-muted-foreground">
-                      Article Quantity: {order.articleQuantity}
-                    </p>
-                  )}
-                </div>
-              </div>
-            )}
           </CardContent>
         </Card>
 
@@ -216,31 +225,102 @@ export default function CustomerOrderDetailPage() {
         </Card>
       </div>
 
-      {/* Pricing Information */}
-      {order.customerActivities && order.customerActivities.length > 0 && (
+      {/* Containers Detail */}
+      {containers.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle className="text-base sm:text-lg">Order Pricing</CardTitle>
+            <CardTitle className="text-base sm:text-lg flex items-center gap-2">
+              <Box className="h-4 w-4 sm:h-5 sm:w-5" />
+              {t('customerPortal.orderDetail.containersDetail')}
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-2 sm:space-y-3">
-              {order.customerActivities.map((activity: any) => (
-                <div key={activity.id} className="flex flex-col sm:flex-row sm:justify-between sm:items-center py-2 border-b last:border-b-0 gap-1 sm:gap-0">
-                  <div className="min-w-0 flex-1">
-                    <p className="font-medium text-sm sm:text-base">{activity.name || 'Activity'}</p>
-                    <p className="text-xs sm:text-sm text-muted-foreground">
-                      Quantity: {activity.quantity}
-                    </p>
+            <div className="space-y-4">
+              
+              {containers.map((container, index) => (
+                  <div key={container.id} className="border rounded-lg p-4 space-y-3">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                      <h4 className="font-medium text-sm sm:text-base">
+                        {t('customerPortal.orderDetail.container')} {index + 1}
+                      </h4>
+                      <div className="text-xs sm:text-sm text-muted-foreground">
+                        {t('customerPortal.orderDetail.serialNumber')}: {container.serialNumber}
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="bg-muted/50 p-3 rounded">
+                        <div className="text-xs sm:text-sm font-medium text-muted-foreground mb-1">
+                          {t('customerPortal.orderDetail.cartonQuantity')}
+                        </div>
+                        <div className="text-lg sm:text-xl font-semibold">
+                          {container.cartonQuantity}
+                        </div>
+                      </div>
+                      
+                      <div className="bg-muted/50 p-3 rounded">
+                        <div className="text-xs sm:text-sm font-medium text-muted-foreground mb-1">
+                          {t('customerPortal.orderDetail.articleQuantity')}
+                        </div>
+                        <div className="text-lg sm:text-xl font-semibold">
+                          {container.articleQuantity}
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {container.articles && container.articles.length > 0 && (
+                      <div>
+                        <div className="text-xs sm:text-sm font-medium text-muted-foreground mb-2">
+                          {t('customerPortal.orderDetail.articles')}:
+                        </div>
+                        <div className="space-y-1">
+                          {container.articles.map((article, articleIndex) => (
+                            <div key={articleIndex} className="flex justify-between items-center text-xs sm:text-sm bg-muted/30 px-2 py-1 rounded">
+                              <span>{article.articleName}</span>
+                              <span className="text-muted-foreground">
+                                {t('customerPortal.orderDetail.quantity')}: {article.quantity}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
-                  <div className="text-left sm:text-right">
-                    <p className="font-medium text-sm sm:text-base">€{Number(activity.unitPrice).toFixed(2)}</p>
+                ))}
+                
+                <div className="bg-muted/50 p-4 rounded-lg">
+                  <h4 className="font-medium mb-2 text-sm sm:text-base">{t('common.total')}</h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                    <div className="flex justify-between">
+                      <span>{t('customerPortal.orderDetail.cartonQuantity')}:</span>
+                      <span className="font-medium">{containers.reduce((sum, c) => sum + c.cartonQuantity, 0)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>{t('customerPortal.orderDetail.articleQuantity')}:</span>
+                      <span className="font-medium">{containers.reduce((sum, c) => sum + c.articleQuantity, 0)}</span>
+                    </div>
                   </div>
                 </div>
-              ))}
-              <div className="flex justify-between items-center pt-2 sm:pt-3 border-t font-semibold text-base sm:text-lg">
-                <span>Total</span>
-                <span>€{order.customerActivities.reduce((total: number, activity: any) => total + Number(activity.unitPrice), 0).toFixed(2)}</span>
               </div>
+          </CardContent>
+        </Card>
+      )}
+      
+      {containers.length === 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base sm:text-lg flex items-center gap-2">
+              <Box className="h-4 w-4 sm:h-5 sm:w-5" />
+              {t('customerPortal.orderDetail.containersDetail')}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-col items-center justify-center py-8 text-center">
+              <Package className="h-8 w-8 sm:h-12 sm:w-12 text-muted-foreground mb-4" />
+              <h3 className="text-base sm:text-lg font-medium mb-2">{t('customerPortal.orderDetail.noContainers')}</h3>
+              <p className="text-muted-foreground text-sm sm:text-base">
+                {t('customerPortal.orderDetail.noContainersMessage')}
+              </p>
             </div>
           </CardContent>
         </Card>

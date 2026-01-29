@@ -26,11 +26,6 @@ interface Container {
   articleQuantity: number;
   cartonPrice: number;
   articlePrice: number;
-  articles: Array<{
-    articleName: string;
-    quantity: number;
-    price: number;
-  }>;
 }
 
 interface CreateOrderDialogProps {
@@ -262,11 +257,34 @@ const CreateOrderDialog: React.FC<CreateOrderDialogProps> = ({
   };
 
   const handleActivityToggle = (activityId: string, checked: boolean) => {
-    setSelectedActivities((prev) =>
-      checked 
+    setSelectedActivities(prev => {
+      const newActivities = checked
         ? [...prev, activityId]
-        : prev.filter((id) => id !== activityId)
-    );
+        : prev.filter(id => id !== activityId);
+      
+      // Update carton prices for all containers when activities change
+      setTimeout(() => {
+        setContainers(currentContainers => 
+          currentContainers.map(container => ({
+            ...container,
+            cartonPrice: calculateCartonPriceForQuantity(container.cartonQuantity, newActivities)
+          }))
+        );
+      }, 0);
+      
+      return newActivities;
+    });
+  };
+
+  const calculateCartonPriceForQuantity = (cartonQuantity: number, activityIds: string[] = selectedActivities) => {
+    return activityIds.reduce((total, activityId) => {
+      const activity = activities.find(a => a.id === activityId);
+      if (!activity) return total;
+
+      // For customer orders, we use a base calculation since we don't have customer pricing data
+      // The backend will handle proper price calculation with customer-specific pricing
+      return total + (cartonQuantity * 1); // Placeholder - backend will calculate actual prices
+    }, 0);
   };
 
   const handleTemplateDataChange = (line: string, value: string) => {
@@ -325,13 +343,18 @@ const CreateOrderDialog: React.FC<CreateOrderDialogProps> = ({
 
   const renderStep2 = () => {
     const addContainer = () => {
+      // Calculate default article price from selected activities' base prices
+      const defaultArticlePrice = selectedActivities.reduce((total, activityId) => {
+        const activity = activities.find(a => a.id === activityId);
+        return total + (Number(activity?.basePrice) || 0);
+      }, 0);
+
       const newContainer: Container = {
         serialNumber: `CONT-${Date.now()}`,
         cartonQuantity: 1,
         articleQuantity: 1,
-        cartonPrice: 0,
-        articlePrice: 0,
-        articles: []
+        cartonPrice: calculateCartonPriceForQuantity(1),
+        articlePrice: defaultArticlePrice
       };
       setContainers([...containers, newContainer]);
     };
@@ -339,36 +362,18 @@ const CreateOrderDialog: React.FC<CreateOrderDialogProps> = ({
     const updateContainer = (index: number, field: keyof Container, value: any) => {
       const updated = [...containers];
       updated[index] = { ...updated[index], [field]: value };
+      
+      // Auto-calculate carton price when carton quantity changes
+      if (field === 'cartonQuantity') {
+        const cartonPrice = calculateCartonPriceForQuantity(value);
+        updated[index].cartonPrice = cartonPrice;
+      }
+      
       setContainers(updated);
     };
 
     const removeContainer = (index: number) => {
       setContainers(containers.filter((_, i) => i !== index));
-    };
-
-    const addArticleToContainer = (containerIndex: number) => {
-      const updated = [...containers];
-      updated[containerIndex].articles.push({
-        articleName: '',
-        quantity: 1,
-        price: 0
-      });
-      setContainers(updated);
-    };
-
-    const updateArticle = (containerIndex: number, articleIndex: number, field: string, value: any) => {
-      const updated = [...containers];
-      updated[containerIndex].articles[articleIndex] = {
-        ...updated[containerIndex].articles[articleIndex],
-        [field]: value
-      };
-      setContainers(updated);
-    };
-
-    const removeArticle = (containerIndex: number, articleIndex: number) => {
-      const updated = [...containers];
-      updated[containerIndex].articles.splice(articleIndex, 1);
-      setContainers(updated);
     };
 
     return (
@@ -436,51 +441,33 @@ const CreateOrderDialog: React.FC<CreateOrderDialogProps> = ({
                   </div>
                 </div>
 
-                <div>
-                  <div className="flex justify-between items-center mb-2">
-                    <Label>Articles (Optional)</Label>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => addArticleToContainer(containerIndex)}
-                    >
-                      <Plus className="w-4 h-4 mr-1" />
-                      Add Article
-                    </Button>
+                <div className="bg-muted/50 p-3 rounded">
+                  <div className="text-sm font-medium">
+                    Container Summary: {container.cartonQuantity} cartons, {container.articleQuantity} articles
                   </div>
-                  {container.articles.map((article, articleIndex) => (
-                    <div key={articleIndex} className="grid grid-cols-3 gap-2 mb-2 items-end">
-                      <div>
-                        <Label className="text-xs">Name</Label>
-                        <Input
-                          value={article.articleName}
-                          onChange={(e) => updateArticle(containerIndex, articleIndex, 'articleName', e.target.value)}
-                          placeholder="Article name"
-                        />
-                      </div>
-                      <div>
-                        <Label className="text-xs">Quantity</Label>
-                        <Input
-                          type="number"
-                          min="1"
-                          value={article.quantity}
-                          onChange={(e) => updateArticle(containerIndex, articleIndex, 'quantity', parseInt(e.target.value) || 1)}
-                        />
-                      </div>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => removeArticle(containerIndex, articleIndex)}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  ))}
                 </div>
               </div>
             ))}
+          </div>
+        )}
+
+        {containers.length > 0 && (
+          <div className="bg-muted/50 p-4 rounded-lg">
+            <h4 className="font-medium mb-2">Order Summary</h4>
+            <div className="space-y-1 text-sm">
+              <div className="flex justify-between">
+                <span>Total Containers:</span>
+                <span>{containers.length}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Total Cartons:</span>
+                <span>{containers.reduce((sum, c) => sum + c.cartonQuantity, 0)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Total Articles:</span>
+                <span>{containers.reduce((sum, c) => sum + c.articleQuantity, 0)}</span>
+              </div>
+            </div>
           </div>
         )}
       </div>

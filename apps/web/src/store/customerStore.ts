@@ -13,6 +13,17 @@ interface CustomerOrder {
   status: string;
   createdAt: string;
   updatedAt: string;
+  containers?: Array<{
+    id: string;
+    serialNumber: string;
+    cartonQuantity: number;
+    articleQuantity: number;
+    articles: Array<{
+      articleName: string;
+      quantity: number;
+    }>;
+  }>;
+  descriptionData?: any;
 }
 
 interface CustomerProfile {
