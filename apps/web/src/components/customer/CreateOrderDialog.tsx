@@ -344,10 +344,7 @@ const CreateOrderDialog: React.FC<CreateOrderDialogProps> = ({
   const renderStep2 = () => {
     const addContainer = () => {
       // Calculate default article price from selected activities' base prices
-      const defaultArticlePrice = selectedActivities.reduce((total, activityId) => {
-        const activity = activities.find(a => a.id === activityId);
-        return total + (Number(activity?.basePrice) || 0);
-      }, 0);
+      const defaultArticlePrice = 0; // Placeholder - backend will calculate actual prices
 
       const newContainer: Container = {
         serialNumber: `CONT-${Date.now()}`,
