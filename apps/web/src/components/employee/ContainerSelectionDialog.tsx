@@ -5,6 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Package, Users } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
 import toast from "react-hot-toast";
@@ -116,6 +117,10 @@ export const ContainerSelectionDialog: React.FC<ContainerSelectionDialogProps> =
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
+                        <Checkbox
+                          checked={selectedContainer === container.id}
+                          onChange={() => setSelectedContainer(container.id)}
+                        />
                         <Package className="h-5 w-5 text-muted-foreground" />
                         <div>
                           <p className="font-medium">{container.serialNumber}</p>
