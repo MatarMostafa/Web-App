@@ -180,11 +180,11 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
   const handleNext = (e?: React.MouseEvent) => {
     e?.preventDefault();
     if (currentStep === 2 && selectedActivities.length === 0) {
-      toast.error("Please select at least one activity");
+      toast.error(t("admin.orders.form.selectActivityRequired"));
       return;
     }
     if (currentStep === 3 && containers.length === 0) {
-      toast.error("Please add at least one container");
+      toast.error(t("admin.orders.form.addContainerRequired"));
       return;
     }
     if (currentStep < 4) setCurrentStep(currentStep + 1);
@@ -203,7 +203,7 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
     if (!formData.customerId) newErrors.customerId = t("admin.orders.form.customerRequired");
     if (!formData.scheduledDate) newErrors.scheduledDate = t("admin.orders.form.scheduledDateRequired");
     if (!formData.priority || formData.priority < 1) newErrors.priority = t("admin.orders.form.priorityRequired");
-    if (containers.length === 0) newErrors.containers = "At least one container is required";
+    if (containers.length === 0) newErrors.containers = t("admin.orders.form.containerRequired");
 
     setErrors(newErrors);
 
@@ -251,7 +251,7 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
       const newOrder = await createOrder(submitData);
       setOpen(false);
       resetFormData();
-      toast.success("Order created successfully");
+      toast.success(t("admin.orders.form.createSuccess"));
     } catch (error) {
       console.error("Error creating order:", error);
       toast.error(t("admin.orders.form.createError"));
@@ -271,7 +271,7 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
       if (checked) {
         const employeeExists = employees.some(emp => emp.id === employeeId);
         if (!employeeExists) {
-          toast.error("Employee not available");
+          toast.error(t("admin.orders.form.employeeNotAvailable"));
           return prev;
         }
         return {
@@ -350,8 +350,8 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
   const renderStep1 = () => (
     <div className="space-y-4">
       <div className="text-center mb-6">
-        <h3 className="text-lg font-semibold">Step 1: Select Customer</h3>
-        <p className="text-sm text-muted-foreground">Choose the customer for this order</p>
+        <h3 className="text-lg font-semibold">{t("admin.orders.form.step1Title")}</h3>
+        <p className="text-sm text-muted-foreground">{t("admin.orders.form.step1Description")}</p>
       </div>
       <div>
         <Label htmlFor="customerId">{t("admin.orders.form.customer")} *</Label>
@@ -381,13 +381,13 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
   const renderStep2 = () => (
     <div className="space-y-4">
       <div className="text-center mb-6">
-        <h3 className="text-lg font-semibold">Step 2: Select Activities</h3>
-        <p className="text-sm text-muted-foreground">Choose activities for this order</p>
+        <h3 className="text-lg font-semibold">{t("admin.orders.form.step2Title")}</h3>
+        <p className="text-sm text-muted-foreground">{t("admin.orders.form.step2Description")}</p>
       </div>
       <div>
-        <Label>Activities</Label>
+        <Label>{t("admin.orders.form.activities")}</Label>
         <div className="text-sm text-muted-foreground mb-2">
-          {selectedActivities.length} activities selected
+          {t("admin.orders.form.activitiesSelected", { count: selectedActivities.length })}
         </div>
         <div className="max-h-60 overflow-y-auto border rounded-md p-3 space-y-3">
           {activities.map((activity) => (
@@ -404,19 +404,19 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
                       {activity.name}
                     </Label>
                     <p className="text-xs text-muted-foreground">
-                      Type: {activity.type?.replace('_', ' ')} | Unit: {activity.unit}
+                      {t("admin.orders.form.activityType")}: {activity.type?.replace('_', ' ')} | {t("admin.orders.form.activityUnit")}: {activity.unit}
                     </p>
                   </div>
                 </div>
                 <div className="text-right">
                   <div className="text-sm font-medium">
-                    Base: €{Number(activity.basePrice || 0).toFixed(2)}
+                    {t("admin.orders.form.basePrice")}: €{Number(activity.basePrice || 0).toFixed(2)}
                   </div>
                 </div>
               </div>
               {activity.customerPrices && activity.customerPrices.length > 0 ? (
                 <div className="ml-6">
-                  <p className="text-xs font-medium text-muted-foreground mb-1">Price Ranges:</p>
+                  <p className="text-xs font-medium text-muted-foreground mb-1">{t("admin.orders.form.priceRanges")}:</p>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 text-xs">
                     {activity.customerPrices.map((price: any, idx: number) => (
                       <div key={idx} className="bg-muted/50 px-2 py-1 rounded">
@@ -428,14 +428,14 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
               ) : (
                 <div className="ml-6">
                   <p className="text-xs text-muted-foreground">
-                    Base Price: €{Number(activity.unitPrice || 0).toFixed(2)}
+                    {t("admin.orders.form.basePrice")}: €{Number(activity.unitPrice || 0).toFixed(2)}
                   </p>
                 </div>
               )}
             </div>
           ))}
           {activities.length === 0 && (
-            <p className="text-sm text-gray-500">No activities available for this customer</p>
+            <p className="text-sm text-gray-500">{t("admin.orders.form.noActivitiesAvailable")}</p>
           )}
         </div>
       </div>
@@ -499,29 +499,29 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
     return (
       <div className="space-y-4">
         <div className="text-center mb-6">
-          <h3 className="text-lg font-semibold">Step 3: Container Management</h3>
-          <p className="text-sm text-muted-foreground">Add containers with their details</p>
+          <h3 className="text-lg font-semibold">{t("admin.orders.form.step3Title")}</h3>
+          <p className="text-sm text-muted-foreground">{t("admin.orders.form.step3Description")}</p>
         </div>
 
         <div className="flex justify-between items-center">
-          <h4 className="font-medium">Containers ({containers.length})</h4>
+          <h4 className="font-medium">{t("admin.orders.form.containers")} ({containers.length})</h4>
           <Button type="button" onClick={addContainer} size="sm">
             <Plus className="w-4 h-4 mr-2" />
-            Add Container
+            {t("admin.orders.form.addContainer")}
           </Button>
         </div>
 
         {containers.length === 0 ? (
           <div className="text-center py-8 text-muted-foreground border-2 border-dashed rounded-lg">
-            <p>No containers added yet</p>
-            <p className="text-sm">Click "Add Container" to get started</p>
+            <p>{t("admin.orders.form.noContainersAdded")}</p>
+            <p className="text-sm">{t("admin.orders.form.clickAddContainer")}</p>
           </div>
         ) : (
           <div className="space-y-4 max-h-96 overflow-y-auto">
             {containers.map((container, containerIndex) => (
               <div key={containerIndex} className="border rounded-lg p-4 space-y-4">
                 <div className="flex justify-between items-start">
-                  <h5 className="font-medium">Container {containerIndex + 1}</h5>
+                  <h5 className="font-medium">{t("admin.orders.form.container")} {containerIndex + 1}</h5>
                   <Button
                     type="button"
                     variant="outline"
@@ -534,15 +534,15 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <Label>Serial Number</Label>
+                    <Label>{t("admin.orders.form.serialNumber")}</Label>
                     <Input
                       value={container.serialNumber}
                       onChange={(e) => updateContainer(containerIndex, 'serialNumber', e.target.value)}
-                      placeholder="Container serial number"
+                      placeholder={t("admin.orders.form.serialNumberPlaceholder")}
                     />
                   </div>
                   <div>
-                    <Label>Carton Quantity</Label>
+                    <Label>{t("admin.orders.form.cartonQuantity")}</Label>
                     <Input
                       type="number"
                       min="1"
@@ -551,7 +551,7 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
                     />
                   </div>
                   <div>
-                    <Label>Carton Price (€) - Auto-calculated</Label>
+                    <Label>{t("admin.orders.form.cartonPrice")} (€) - {t("admin.orders.form.autoCalculated")}</Label>
                     <Input
                       type="number"
                       step="0.01"
@@ -561,11 +561,11 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
                       className="bg-gray-50"
                     />
                     <p className="text-xs text-muted-foreground mt-1">
-                      Based on selected activities and quantity
+                      {t("admin.orders.form.basedOnActivitiesQuantity")}
                     </p>
                   </div>
                   <div>
-                    <Label>Article Quantity</Label>
+                    <Label>{t("admin.orders.form.articleQuantity")}</Label>
                     <Input
                       type="number"
                       min="1"
@@ -574,7 +574,7 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
                     />
                   </div>
                   <div>
-                    <Label>Article Price (€) - From Activity Base Price</Label>
+                    <Label>{t("admin.orders.form.articlePrice")} (€) - {t("admin.orders.form.fromActivityBasePrice")}</Label>
                     <Input
                       type="number"
                       step="0.01"
@@ -584,13 +584,13 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
                       className="bg-gray-50"
                     />
                     <p className="text-xs text-muted-foreground mt-1">
-                      Based on selected activities' base prices
+                      {t("admin.orders.form.basedOnActivitiesBasePrice")}
                     </p>
                   </div>
                 </div>
 
                 <div className="bg-muted/50 p-3 rounded">
-                  <div className="text-sm font-medium">Container Total: €{(container.cartonPrice + (container.articleQuantity * container.articlePrice)).toFixed(2)}</div>
+                  <div className="text-sm font-medium">{t("admin.orders.form.containerTotal")}: €{(container.cartonPrice + (container.articleQuantity * container.articlePrice)).toFixed(2)}</div>
                 </div>
               </div>
             ))}
@@ -599,22 +599,22 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
 
         {containers.length > 0 && (
           <div className="bg-muted/50 p-4 rounded-lg">
-            <h4 className="font-medium mb-2">Order Summary</h4>
+            <h4 className="font-medium mb-2">{t("admin.orders.form.orderSummary")}</h4>
             <div className="space-y-1 text-sm">
               <div className="flex justify-between">
-                <span>Total Containers:</span>
+                <span>{t("admin.orders.form.totalContainers")}:</span>
                 <span>{containers.length}</span>
               </div>
               <div className="flex justify-between">
-                <span>Total Cartons:</span>
+                <span>{t("admin.orders.form.totalCartons")}:</span>
                 <span>{containers.reduce((sum, c) => sum + c.cartonQuantity, 0)}</span>
               </div>
               <div className="flex justify-between">
-                <span>Total Articles:</span>
+                <span>{t("admin.orders.form.totalArticles")}:</span>
                 <span>{containers.reduce((sum, c) => sum + c.articleQuantity, 0)}</span>
               </div>
               <div className="border-t pt-1 mt-2 flex justify-between font-medium">
-                <span>Container Total:</span>
+                <span>{t("admin.orders.form.containerTotal")}:</span>
                 <span>€{containers.reduce((sum, c) => sum + c.cartonPrice + (c.articleQuantity * c.articlePrice), 0).toFixed(2)}</span>
               </div>
             </div>
@@ -627,8 +627,8 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
   const renderStep4 = () => (
     <div className="space-y-4">
       <div className="text-center mb-6">
-        <h3 className="text-lg font-semibold">Step 4: Order Details</h3>
-        <p className="text-sm text-muted-foreground">Complete the order information</p>
+        <h3 className="text-lg font-semibold">{t("admin.orders.form.step4Title")}</h3>
+        <p className="text-sm text-muted-foreground">{t("admin.orders.form.step4Description")}</p>
       </div>
 
       <OrderDescriptionForm
@@ -673,7 +673,7 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
           />
         </div>
         <div>
-          <Label htmlFor="endTime">{t("admin.orders.form.endDateTime")} (Optional)</Label>
+          <Label htmlFor="endTime">{t("admin.orders.form.endDateTime")} ({t("admin.orders.form.optional")})</Label>
           <TimeOnlyInput
             value={endTimeOnly}
             onChange={setEndTimeOnly}
@@ -751,16 +751,16 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
       {(selectedActivities.length > 0 || containers.length > 0) && (
         <div className="bg-green-50 border border-green-200 rounded-lg p-4">
           <div className="flex justify-between items-center">
-            <span className="text-lg font-semibold text-green-800">Order Total:</span>
+            <span className="text-lg font-semibold text-green-800">{t("admin.orders.form.orderTotal")}:</span>
             <span className="text-2xl font-bold text-green-600">€{getTotalPrice().toFixed(2)}</span>
           </div>
           <div className="mt-2 text-sm text-green-700">
             <div className="flex justify-between">
-              <span>Activities & Carton Price:</span>
+              <span>{t("admin.orders.form.activitiesCartonPrice")}:</span>
               <span>€{getActivityAndBasePrices().toFixed(2)}</span>
             </div>
             <div className="flex justify-between">
-              <span>Articles Total Price:</span>
+              <span>{t("admin.orders.form.articlesTotalPrice")}:</span>
               <span>€{getContainerPrices().toFixed(2)}</span>
             </div>
           </div>
@@ -812,7 +812,7 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
               disabled={currentStep === 1}
             >
               <ChevronLeft className="w-4 h-4 mr-1" />
-              Previous
+              {t("admin.orders.form.previous")}
             </Button>
 
             <div className="flex gap-2">
@@ -824,17 +824,17 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
                   setOpen(false);
                 }}
               >
-                Cancel
+                {t("admin.orders.form.cancel")}
               </Button>
 
               {currentStep < 4 ? (
                 <Button type="button" onClick={handleNext}>
-                  Next
+                  {t("admin.orders.form.next")}
                   <ChevronRight className="w-4 h-4 ml-1" />
                 </Button>
               ) : (
                 <Button type="submit" disabled={loading} form="order-form">
-                  {loading ? "Creating..." : "Create Order"}
+                  {loading ? t("admin.orders.form.creating") : t("admin.orders.form.createOrder")}
                 </Button>
               )}
             </div>

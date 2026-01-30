@@ -186,11 +186,11 @@ const CreateOrderDialog: React.FC<CreateOrderDialogProps> = ({
   const handleNext = (e?: React.MouseEvent) => {
     e?.preventDefault();
     if (currentStep === 1 && selectedActivities.length === 0) {
-      toast.error("Please select at least one activity");
+      toast.error(t("customerPortal.createOrder.activitiesRequired"));
       return;
     }
     if (currentStep === 2 && containers.length === 0) {
-      toast.error("Please add at least one container");
+      toast.error(t("customerPortal.createOrder.containerRequired"));
       return;
     }
     if (currentStep < 3) setCurrentStep(currentStep + 1);
@@ -205,12 +205,12 @@ const CreateOrderDialog: React.FC<CreateOrderDialogProps> = ({
     e.preventDefault();
 
     if (!formData.scheduledDate) {
-      toast.error("Scheduled date is required");
+      toast.error(t("customerPortal.createOrder.scheduledDateRequired"));
       return;
     }
 
     if (containers.length === 0) {
-      toast.error("At least one container is required");
+      toast.error(t("customerPortal.createOrder.containerRequired"));
       return;
     }
 
@@ -262,13 +262,13 @@ const CreateOrderDialog: React.FC<CreateOrderDialogProps> = ({
       const result = await response.json();
       console.log("Order created successfully:", result);
       
-      toast.success("Order created successfully!");
+      toast.success(t("customerPortal.createOrder.orderCreatedSuccess"));
       setOpen(false);
       resetFormData();
       onOrderCreated?.();
     } catch (error) {
       console.error("Error creating order:", error);
-      toast.error(error instanceof Error ? error.message : "Failed to create order");
+      toast.error(error instanceof Error ? error.message : t("customerPortal.createOrder.orderCreationFailed"));
     } finally {
       setLoading(false);
     }
@@ -336,8 +336,8 @@ const CreateOrderDialog: React.FC<CreateOrderDialogProps> = ({
   const renderStep1 = () => (
     <div className="space-y-4">
       <div className="text-center mb-6">
-        <h3 className="text-lg font-semibold">Step 1: Select Activities</h3>
-        <p className="text-sm text-muted-foreground">Choose activities for this order</p>
+        <h3 className="text-lg font-semibold">{t("customerPortal.createOrder.step1Title")}</h3>
+        <p className="text-sm text-muted-foreground">{t("customerPortal.createOrder.step1Description")}</p>
       </div>
       <div>
         <Label>{t("customerPortal.createOrder.selectActivities")}</Label>
@@ -365,7 +365,7 @@ const CreateOrderDialog: React.FC<CreateOrderDialogProps> = ({
                       {activity.name}
                     </Label>
                     <p className="text-xs text-muted-foreground">
-                      Type: {activity.type?.replace('_', ' ')} | Unit: {activity.unit}
+                      {t("admin.orders.form.activityType")}: {activity.type?.replace('_', ' ')} | {t("admin.orders.form.activityUnit")}: {activity.unit}
                     </p>
                   </div>
                 </div>
@@ -373,7 +373,7 @@ const CreateOrderDialog: React.FC<CreateOrderDialogProps> = ({
             </div>
           ))}
           {activities.length === 0 && (
-            <p className="text-sm text-gray-500">No activities available</p>
+            <p className="text-sm text-gray-500">{t("customerPortal.createOrder.noActivitiesAvailable")}</p>
           )}
         </div>
       </div>
@@ -427,29 +427,29 @@ const CreateOrderDialog: React.FC<CreateOrderDialogProps> = ({
     return (
       <div className="space-y-4">
         <div className="text-center mb-6">
-          <h3 className="text-lg font-semibold">Step 2: Container Management</h3>
-          <p className="text-sm text-muted-foreground">Add containers with their details</p>
+          <h3 className="text-lg font-semibold">{t("customerPortal.createOrder.step2Title")}</h3>
+          <p className="text-sm text-muted-foreground">{t("customerPortal.createOrder.step2Description")}</p>
         </div>
 
         <div className="flex justify-between items-center">
-          <h4 className="font-medium">Containers ({containers.length})</h4>
+          <h4 className="font-medium">{t("admin.orders.form.containers")} ({containers.length})</h4>
           <Button type="button" onClick={addContainer} size="sm">
             <Plus className="w-4 h-4 mr-2" />
-            Add Container
+            {t("admin.orders.form.addContainer")}
           </Button>
         </div>
 
         {containers.length === 0 ? (
           <div className="text-center py-8 text-muted-foreground border-2 border-dashed rounded-lg">
-            <p>No containers added yet</p>
-            <p className="text-sm">Click "Add Container" to get started</p>
+            <p>{t("admin.orders.form.noContainersAdded")}</p>
+            <p className="text-sm">{t("admin.orders.form.clickAddContainer")}</p>
           </div>
         ) : (
           <div className="space-y-4 max-h-96 overflow-y-auto">
             {containers.map((container, containerIndex) => (
               <div key={containerIndex} className="border rounded-lg p-4 space-y-4">
                 <div className="flex justify-between items-start">
-                  <h5 className="font-medium">Container {containerIndex + 1}</h5>
+                  <h5 className="font-medium">{t("admin.orders.form.container")} {containerIndex + 1}</h5>
                   <Button
                     type="button"
                     variant="outline"
@@ -462,15 +462,15 @@ const CreateOrderDialog: React.FC<CreateOrderDialogProps> = ({
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <Label>Serial Number</Label>
+                    <Label>{t("admin.orders.form.serialNumber")}</Label>
                     <Input
                       value={container.serialNumber}
                       onChange={(e) => updateContainer(containerIndex, 'serialNumber', e.target.value)}
-                      placeholder="Container serial number"
+                      placeholder={t("admin.orders.form.serialNumberPlaceholder")}
                     />
                   </div>
                   <div>
-                    <Label>Carton Quantity</Label>
+                    <Label>{t("admin.orders.form.cartonQuantity")}</Label>
                     <Input
                       type="number"
                       min="1"
@@ -479,7 +479,7 @@ const CreateOrderDialog: React.FC<CreateOrderDialogProps> = ({
                     />
                   </div>
                   <div>
-                    <Label>Article Quantity</Label>
+                    <Label>{t("admin.orders.form.articleQuantity")}</Label>
                     <Input
                       type="number"
                       min="1"
@@ -491,7 +491,7 @@ const CreateOrderDialog: React.FC<CreateOrderDialogProps> = ({
 
                 <div className="bg-muted/50 p-3 rounded">
                   <div className="text-sm font-medium">
-                    Container Summary: {container.cartonQuantity} cartons, {container.articleQuantity} articles
+                    {t("customerPortal.createOrder.containerSummary")}: {container.cartonQuantity} {t("customerPortal.createOrder.cartons")}, {container.articleQuantity} {t("customerPortal.createOrder.articles")}
                   </div>
                 </div>
               </div>
@@ -501,18 +501,18 @@ const CreateOrderDialog: React.FC<CreateOrderDialogProps> = ({
 
         {containers.length > 0 && (
           <div className="bg-muted/50 p-4 rounded-lg">
-            <h4 className="font-medium mb-2">Order Summary</h4>
+            <h4 className="font-medium mb-2">{t("admin.orders.form.orderSummary")}</h4>
             <div className="space-y-1 text-sm">
               <div className="flex justify-between">
-                <span>Total Containers:</span>
+                <span>{t("admin.orders.form.totalContainers")}:</span>
                 <span>{containers.length}</span>
               </div>
               <div className="flex justify-between">
-                <span>Total Cartons:</span>
+                <span>{t("admin.orders.form.totalCartons")}:</span>
                 <span>{containers.reduce((sum, c) => sum + c.cartonQuantity, 0)}</span>
               </div>
               <div className="flex justify-between">
-                <span>Total Articles:</span>
+                <span>{t("admin.orders.form.totalArticles")}:</span>
                 <span>{containers.reduce((sum, c) => sum + c.articleQuantity, 0)}</span>
               </div>
             </div>
@@ -525,8 +525,8 @@ const CreateOrderDialog: React.FC<CreateOrderDialogProps> = ({
   const renderStep3 = () => (
     <div className="space-y-4">
       <div className="text-center mb-6">
-        <h3 className="text-lg font-semibold">Step 3: Order Details</h3>
-        <p className="text-sm text-muted-foreground">Complete the order information</p>
+        <h3 className="text-lg font-semibold">{t("customerPortal.createOrder.step3Title")}</h3>
+        <p className="text-sm text-muted-foreground">{t("customerPortal.createOrder.step3Description")}</p>
       </div>
 
       {/* Scheduled Date */}
@@ -602,7 +602,7 @@ const CreateOrderDialog: React.FC<CreateOrderDialogProps> = ({
                   onChange={(e) =>
                     handleTemplateDataChange(line, e.target.value)
                   }
-                  placeholder={`Enter ${line.toLowerCase()}`}
+                  placeholder={`${t("customerPortal.createOrder.enter")} ${line.toLowerCase()}`}
                 />
               </div>
             ))}
@@ -674,7 +674,7 @@ const CreateOrderDialog: React.FC<CreateOrderDialogProps> = ({
               disabled={currentStep === 1}
             >
               <ChevronLeft className="w-4 h-4 mr-1" />
-              Previous
+              {t("common.previous")}
             </Button>
 
             <div className="flex gap-2">
@@ -691,7 +691,7 @@ const CreateOrderDialog: React.FC<CreateOrderDialogProps> = ({
 
               {currentStep < 3 ? (
                 <Button type="button" onClick={handleNext}>
-                  Next
+                  {t("common.next")}
                   <ChevronRight className="w-4 h-4 ml-1" />
                 </Button>
               ) : (
