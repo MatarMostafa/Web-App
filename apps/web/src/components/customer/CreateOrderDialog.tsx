@@ -40,6 +40,13 @@ interface CustomerActivity {
   code?: string;
   description?: string;
   unit: string;
+  basePrice?: number;
+  unitPrice?: number;
+  customerPrices?: Array<{
+    minQuantity: number;
+    maxQuantity: number;
+    price: number;
+  }>;
 }
 
 const CreateOrderDialog: React.FC<CreateOrderDialogProps> = ({
@@ -117,7 +124,18 @@ const CreateOrderDialog: React.FC<CreateOrderDialogProps> = ({
 
       if (activitiesResponse.ok) {
         const activitiesData = await activitiesResponse.json();
-        setActivities(activitiesData.data || []);
+        const data = activitiesData.data || activitiesData;
+        
+        if (Array.isArray(data)) {
+          const processedActivities = data.map((activity: any) => {
+            const prices = activity.prices || [];
+            const lowestPrice = prices.length > 0 ? Math.min(...prices.map((p: any) => Number(p.price))) : 0;
+            return { ...activity, customerPrices: prices, unitPrice: lowestPrice };
+          });
+          setActivities(processedActivities);
+        } else {
+          setActivities([]);
+        }
       }
     } catch (error) {
       console.error("Error fetching customer data:", error);
@@ -209,10 +227,14 @@ const CreateOrderDialog: React.FC<CreateOrderDialogProps> = ({
         location: formData.location || "",
         specialInstructions: formData.specialInstructions || "",
         customerId: formData.customerId,
-        activities: selectedActivities.map(activityId => ({
-          activityId,
-          quantity: containers.reduce((sum, c) => sum + c.cartonQuantity, 0)
-        })),
+        activities: selectedActivities.map(activityId => {
+          const activity = activities.find(a => a.id === activityId);
+          return {
+            activityId,
+            quantity: containers.reduce((sum, c) => sum + c.cartonQuantity, 0),
+            basePrice: Number(activity?.basePrice) || 0
+          };
+        }),
         containers,
         cartonQuantity: containers.reduce((sum, c) => sum + c.cartonQuantity, 0),
         articleQuantity: containers.reduce((sum, c) => sum + c.articleQuantity, 0),
@@ -262,13 +284,22 @@ const CreateOrderDialog: React.FC<CreateOrderDialogProps> = ({
         ? [...prev, activityId]
         : prev.filter(id => id !== activityId);
       
-      // Update carton prices for all containers when activities change
+      // Update both carton and article prices for all containers when activities change
       setTimeout(() => {
         setContainers(currentContainers => 
-          currentContainers.map(container => ({
-            ...container,
-            cartonPrice: calculateCartonPriceForQuantity(container.cartonQuantity, newActivities)
-          }))
+          currentContainers.map(container => {
+            const cartonPrice = calculateCartonPriceForQuantity(container.cartonQuantity, newActivities);
+            const articlePrice = newActivities.reduce((total, activityId) => {
+              const activity = activities.find(a => a.id === activityId);
+              return total + (Number(activity?.basePrice) || 0);
+            }, 0);
+            
+            return {
+              ...container,
+              cartonPrice,
+              articlePrice
+            };
+          })
         );
       }, 0);
       
@@ -281,9 +312,17 @@ const CreateOrderDialog: React.FC<CreateOrderDialogProps> = ({
       const activity = activities.find(a => a.id === activityId);
       if (!activity) return total;
 
-      // For customer orders, we use a base calculation since we don't have customer pricing data
-      // The backend will handle proper price calculation with customer-specific pricing
-      return total + (cartonQuantity * 1); // Placeholder - backend will calculate actual prices
+      // Find price based on carton quantity range
+      if (activity.customerPrices && activity.customerPrices.length > 0) {
+        const applicablePrice = activity.customerPrices.find((p: any) =>
+          cartonQuantity >= p.minQuantity && cartonQuantity <= p.maxQuantity
+        );
+        if (applicablePrice) {
+          return total + Number(applicablePrice.price);
+        }
+      }
+
+      return total + (Number(activity.unitPrice) || 0);
     }, 0);
   };
 
@@ -344,7 +383,10 @@ const CreateOrderDialog: React.FC<CreateOrderDialogProps> = ({
   const renderStep2 = () => {
     const addContainer = () => {
       // Calculate default article price from selected activities' base prices
-      const defaultArticlePrice = 0; // Placeholder - backend will calculate actual prices
+      const defaultArticlePrice = selectedActivities.reduce((total, activityId) => {
+        const activity = activities.find(a => a.id === activityId);
+        return total + (Number(activity?.basePrice) || 0);
+      }, 0);
 
       const newContainer: Container = {
         serialNumber: `CONT-${Date.now()}`,
@@ -360,10 +402,19 @@ const CreateOrderDialog: React.FC<CreateOrderDialogProps> = ({
       const updated = [...containers];
       updated[index] = { ...updated[index], [field]: value };
       
-      // Auto-calculate carton price when carton quantity changes
+      // Auto-calculate prices when quantities change
       if (field === 'cartonQuantity') {
         const cartonPrice = calculateCartonPriceForQuantity(value);
         updated[index].cartonPrice = cartonPrice;
+      }
+      
+      // Update article price based on selected activities' base prices
+      if (field === 'articleQuantity') {
+        const articlePrice = selectedActivities.reduce((total, activityId) => {
+          const activity = activities.find(a => a.id === activityId);
+          return total + (Number(activity?.basePrice) || 0);
+        }, 0);
+        updated[index].articlePrice = articlePrice;
       }
       
       setContainers(updated);
