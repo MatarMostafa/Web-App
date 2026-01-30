@@ -62,6 +62,7 @@ const TeamLeaderOrderDetail = ({ params }: { params: Promise<{ id: string }> }) 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [notesDialogOpen, setNotesDialogOpen] = useState(false);
+  const [containers, setContainers] = useState<any[]>([]);
   const { id } = React.use(params);
 
   useEffect(() => {
@@ -78,6 +79,8 @@ const TeamLeaderOrderDetail = ({ params }: { params: Promise<{ id: string }> }) 
           const foundOrder = orders.find((o: Order) => o.id === id);
           if (foundOrder) {
             setOrder(foundOrder);
+            // Fetch containers for this order
+            fetchOrderContainers(foundOrder.id);
           } else {
             setError(t('teamLeader.orders.orderNotFoundDesc'));
           }
@@ -89,6 +92,24 @@ const TeamLeaderOrderDetail = ({ params }: { params: Promise<{ id: string }> }) 
         setError(t('teamLeader.orders.errorFetching'));
       } finally {
         setLoading(false);
+      }
+    };
+
+    const fetchOrderContainers = async (orderId: string) => {
+      try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/orders/${orderId}/containers`, {
+          headers: {
+            Authorization: `Bearer ${session?.accessToken}`,
+          },
+        });
+        
+        if (response.ok) {
+          const containerData = await response.json();
+          setContainers(containerData.data || containerData || []);
+        }
+      } catch (error) {
+        console.error("Error fetching containers:", error);
+        setContainers([]);
       }
     };
 
@@ -279,6 +300,109 @@ const TeamLeaderOrderDetail = ({ params }: { params: Promise<{ id: string }> }) 
           )
         )}
       </div>
+
+      {/* Containers Pricing */}
+      {containers && containers.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>{t('order.containersPricing')}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {containers.map((container: any, index: number) => (
+                <div key={container.id} className="border rounded-lg p-4 space-y-3">
+                  <div className="flex justify-between items-center">
+                    <h4 className="font-medium">
+                      {t('order.container')} {index + 1} - {container.serialNumber}
+                    </h4>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="bg-muted/50 p-3 rounded">
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <p className="text-sm font-medium">{t('order.cartonQuantity')}</p>
+                          <p className="text-lg font-semibold">{container.cartonQuantity}</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-sm text-muted-foreground">{t('order.totalPrice')}</p>
+                          <p className="text-sm font-semibold text-green-600">
+                            {t('order.total')}: €{Number(container.cartonPrice).toFixed(2)}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            ({t('order.basedOnActivitiesQuantity')})
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="bg-muted/50 p-3 rounded">
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <p className="text-sm font-medium">{t('order.articleQuantity')}</p>
+                          <p className="text-lg font-semibold">{container.articleQuantity}</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-sm text-muted-foreground">{t('order.unitPrice')}</p>
+                          <p className="font-medium">€{Number(container.articlePrice).toFixed(2)}</p>
+                          <p className="text-sm font-semibold text-green-600">
+                            {t('order.total')}: €{(container.articleQuantity * Number(container.articlePrice)).toFixed(2)}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="border-t pt-3">
+                    <div className="flex justify-between items-center font-semibold">
+                      <span>{t('order.containerTotal')}:</span>
+                      <span className="text-green-600">
+                        €{(
+                          Number(container.cartonPrice) +
+                          (container.articleQuantity * Number(container.articlePrice))
+                        ).toFixed(2)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Grand Total */}
+      {containers?.length > 0 && (
+        <Card>
+          <CardContent className="p-6">
+            <div className="space-y-4">
+              <div className="flex justify-between items-center">
+                <span className="text-lg font-medium">{t('order.containersTotal')}:</span>
+                <span className="text-xl font-semibold text-blue-600">
+                  €{containers.reduce((sum: number, container: any) => 
+                    sum + 
+                    Number(container.cartonPrice) +
+                    (container.articleQuantity * Number(container.articlePrice))
+                  , 0).toFixed(2)}
+                </span>
+              </div>
+              
+              <div className="border-t pt-4">
+                <div className="flex justify-between items-center p-4 bg-green-50 rounded-lg border border-green-200">
+                  <span className="text-2xl font-bold text-green-800">{t('order.grandTotal')}:</span>
+                  <span className="text-3xl font-bold text-green-600">
+                    €{containers.reduce((sum: number, container: any) => 
+                      sum + 
+                      Number(container.cartonPrice) +
+                      (container.articleQuantity * Number(container.articlePrice))
+                    , 0).toFixed(2)}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Assigned Employees */}
       {order.employeeAssignments.length > 0 && (
