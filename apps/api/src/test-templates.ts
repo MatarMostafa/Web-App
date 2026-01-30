@@ -17,7 +17,6 @@ async function testTemplateImplementation() {
           industry: "Logistics"
         }
       });
-      console.log("✅ Created test customer:", customer.companyName);
     } else {
       console.log("✅ Using existing test customer:", customer.companyName);
     }
@@ -30,7 +29,6 @@ async function testTemplateImplementation() {
         createdBy: "test-admin"
       }
     });
-    console.log("✅ Created customer template with lines:", template.templateLines);
 
     // 3. Create a test order
     const order = await prisma.order.create({
@@ -42,7 +40,6 @@ async function testTemplateImplementation() {
         usesTemplate: true
       }
     });
-    console.log("✅ Created test order:", order.orderNumber);
 
     // 4. Create order description data
     const orderData = await prisma.orderDescriptionData.create({
