@@ -19,10 +19,22 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui";
-import { useSession } from "next-auth/react";
+import { CreateOrderData, OrderStatus } from "@/types/order";
 import toast from "react-hot-toast";
+import { useTranslation } from "@/hooks/useTranslation";
 import TimeOnlyInput from "@/components/ui/TimeOnlyInput";
+import { useSession } from "next-auth/react";
 import OrderDescriptionForm from "../admin/OrderDescriptionForm";
+import { ChevronLeft, ChevronRight, Plus, Trash2 } from "lucide-react";
+
+interface Container {
+  id?: string;
+  serialNumber: string;
+  cartonQuantity: number;
+  articleQuantity: number;
+  cartonPrice: number;
+  articlePrice: number;
+}
 
 interface AddOrderDialogProps {
   trigger: React.ReactNode;
@@ -33,77 +45,53 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({
   trigger,
   onOrderCreated,
 }) => {
+  const { t, ready } = useTranslation();
   const { data: session } = useSession();
+
+  if (!ready) {
+    return null;
+  }
+
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [currentStep, setCurrentStep] = useState(1);
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [customers, setCustomers] = useState<any[]>([]);
   const [employees, setEmployees] = useState<any[]>([]);
   const [activities, setActivities] = useState<any[]>([]);
   const [selectedActivities, setSelectedActivities] = useState<string[]>([]);
-  const [templateData, setTemplateData] = useState<Record<
-    string,
-    string
-  > | null>(null);
-  const [formData, setFormData] = useState({
+  const [templateData, setTemplateData] = useState<Record<string, string> | null>(null);
+  const [containers, setContainers] = useState<Container[]>([]);
+
+  const [formData, setFormData] = useState<CreateOrderData>({
     description: "",
     scheduledDate: "",
     startTime: "",
     endTime: "",
-    duration: null as number | null,
+    duration: null,
     location: "",
+    requiredEmployees: 1,
     priority: 1,
     specialInstructions: "",
+    status: OrderStatus.DRAFT,
     customerId: "",
-    assignedEmployeeIds: [] as string[],
+    assignedEmployeeIds: [],
   });
   const [startTimeOnly, setStartTimeOnly] = useState("09:00");
   const [endTimeOnly, setEndTimeOnly] = useState("");
 
   useEffect(() => {
-    if (open && session?.accessToken) {
+    if (open) {
       fetchCustomers();
       fetchEmployees();
     }
-  }, [open, session?.accessToken]);
-
-  useEffect(() => {
-    if (formData.customerId) {
-      fetchActivities(formData.customerId);
-    } else {
-      setActivities([]);
-      setSelectedActivities([]);
-    }
-  }, [formData.customerId, session?.accessToken]);
-
-  useEffect(() => {
-    if (formData.scheduledDate && startTimeOnly) {
-      setFormData((prev) => ({
-        ...prev,
-        startTime: `${formData.scheduledDate}T${startTimeOnly}`,
-      }));
-    }
-  }, [formData.scheduledDate, startTimeOnly]);
-
-  useEffect(() => {
-    if (formData.scheduledDate && endTimeOnly) {
-      setFormData((prev) => ({
-        ...prev,
-        endTime: `${formData.scheduledDate}T${endTimeOnly}`,
-      }));
-    } else if (!endTimeOnly) {
-      setFormData((prev) => ({ ...prev, endTime: "" }));
-    }
-  }, [formData.scheduledDate, endTimeOnly]);
+  }, [open]);
 
   const fetchCustomers = async () => {
-    if (!session?.accessToken) return;
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/customers`,
-        {
-          headers: { Authorization: `Bearer ${session.accessToken}` },
-        }
-      );
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/customers`, {
+        headers: { Authorization: `Bearer ${session?.accessToken}` },
+      });
       if (response.ok) {
         const result = await response.json();
         const data = result.success ? result.data : result;
@@ -115,14 +103,10 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({
   };
 
   const fetchEmployees = async () => {
-    if (!session?.accessToken) return;
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/team-leader/employees`,
-        {
-          headers: { Authorization: `Bearer ${session.accessToken}` },
-        }
-      );
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/team-leader/employees`, {
+        headers: { Authorization: `Bearer ${session?.accessToken}` },
+      });
       if (response.ok) {
         const data = await response.json();
         const teamMembers = (data.teams || []).flatMap(
@@ -141,44 +125,67 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({
     }
   };
 
-  const fetchActivities = async (customerId?: string) => {
-    if (!session?.accessToken || !customerId) {
-      setActivities([]);
-      return;
-    }
+  const fetchActivities = async () => {
+    if (!formData.customerId) return;
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/pricing/customers/${customerId}/activities`,
-        {
-          headers: { Authorization: `Bearer ${session.accessToken}` },
-        }
-      );
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/pricing/customers/${formData.customerId}/activities`, {
+        headers: { Authorization: `Bearer ${session?.accessToken}` },
+      });
       if (response.ok) {
         const jsonResponse = await response.json();
         const data = jsonResponse.data || jsonResponse;
 
-        const activities = Array.isArray(data)
-          ? data.map((item: any) => ({
-            id: item.id, // item is CustomerActivity, so id is top level
-            name: item.name,
-            // Map prices to defaultPrice or find lowest price? 
-            // Original code: defaultPrice: item.activity.defaultPrice
-            // New model: item has prices array.
-            // Let's use unitPrice if available or calculate from prices?
-            // CustomerActivity has no defaultPrice. It has prices array.
-            // Let's check what was mapped before.
-            defaultPrice: item.prices && item.prices.length > 0 ? Number(item.prices[0].price) : 0
-          }))
-          : [];
-        setActivities(activities);
+        if (Array.isArray(data)) {
+          const processedActivities = data.map((activity: any) => {
+            const prices = activity.prices || [];
+            const lowestPrice = prices.length > 0 ? Math.min(...prices.map((p: any) => Number(p.price))) : 0;
+            return { ...activity, customerPrices: prices, unitPrice: lowestPrice };
+          });
+          setActivities(processedActivities);
+        } else {
+          setActivities([]);
+        }
       }
     } catch (error) {
       console.error("Error fetching activities:", error);
-      setActivities([]);
+      toast.error("Failed to load activities");
     }
   };
 
-  const resetForm = () => {
+  useEffect(() => {
+    if (formData.customerId) {
+      const selectedCustomer = customers.find(
+        (c) => c.id === formData.customerId
+      );
+      if (selectedCustomer?.address) {
+        const addressStr =
+          typeof selectedCustomer.address === "string"
+            ? selectedCustomer.address
+            : Object.values(selectedCustomer.address)
+              .filter(Boolean)
+              .join(", ");
+        setFormData((prev) => ({ ...prev, location: addressStr }));
+      }
+      fetchActivities();
+      setSelectedActivities([]);
+    }
+  }, [formData.customerId, customers]);
+
+  useEffect(() => {
+    if (formData.scheduledDate && startTimeOnly) {
+      setFormData(prev => ({ ...prev, startTime: `${formData.scheduledDate}T${startTimeOnly}` }));
+    }
+  }, [formData.scheduledDate, startTimeOnly]);
+
+  useEffect(() => {
+    if (formData.scheduledDate && endTimeOnly) {
+      setFormData(prev => ({ ...prev, endTime: `${formData.scheduledDate}T${endTimeOnly}` }));
+    } else if (!endTimeOnly) {
+      setFormData(prev => ({ ...prev, endTime: "" }));
+    }
+  }, [formData.scheduledDate, endTimeOnly]);
+
+  const resetFormData = () => {
     setFormData({
       description: "",
       scheduledDate: "",
@@ -186,46 +193,87 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({
       endTime: "",
       duration: null,
       location: "",
+      requiredEmployees: 1,
       priority: 1,
       specialInstructions: "",
+      status: OrderStatus.DRAFT,
       customerId: "",
       assignedEmployeeIds: [],
     });
-    setSelectedActivities([]);
-    setTemplateData(null);
     setStartTimeOnly("09:00");
     setEndTimeOnly("");
+    setSelectedActivities([]);
+    setTemplateData(null);
+    setContainers([]);
+    setCurrentStep(1);
+  };
+
+  const handleNext = (e?: React.MouseEvent) => {
+    e?.preventDefault();
+    if (currentStep === 2 && selectedActivities.length === 0) {
+      toast.error("Please select at least one activity");
+      return;
+    }
+    if (currentStep === 3 && containers.length === 0) {
+      toast.error("Please add at least one container");
+      return;
+    }
+    if (currentStep < 4) setCurrentStep(currentStep + 1);
+  };
+
+  const handlePrevious = (e?: React.MouseEvent) => {
+    e?.preventDefault();
+    if (currentStep > 1) setCurrentStep(currentStep - 1);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.customerId || !formData.scheduledDate) {
-      toast.error("Customer and scheduled date are required");
+    const newErrors: Record<string, string> = {};
+    if (!formData.customerId) newErrors.customerId = "Customer is required";
+    if (!formData.scheduledDate) newErrors.scheduledDate = "Scheduled date is required";
+    if (!formData.priority || formData.priority < 1) newErrors.priority = "Priority is required";
+    if (containers.length === 0) newErrors.containers = "At least one container is required";
+
+    setErrors(newErrors);
+
+    if (Object.keys(newErrors).length > 0) {
+      toast.error("Please fix validation errors");
       return;
     }
-
     setLoading(true);
+
     try {
       const submitData = {
-        description: formData.description || "",
-        scheduledDate: new Date(formData.scheduledDate + "T00:00:00").toISOString(),
-        startTime: formData.scheduledDate && startTimeOnly ?
-          new Date(`${formData.scheduledDate}T${startTimeOnly}`).toISOString() : null,
-        endTime: formData.scheduledDate && endTimeOnly ?
-          new Date(`${formData.scheduledDate}T${endTimeOnly}`).toISOString() : null,
-        duration: formData.duration,
-        location: formData.location || "",
-        priority: formData.priority,
-        specialInstructions: formData.specialInstructions || "",
-        customerId: formData.customerId,
-        assignedEmployeeIds: formData.assignedEmployeeIds,
-        activities: selectedActivities.map((activityId) => ({
-          activityId,
-          quantity: 1,
-        })),
-        templateData: templateData,
+        ...formData,
+        activities: selectedActivities.map(activityId => {
+          const activity = activities.find(a => a.id === activityId);
+          return {
+            activityId,
+            quantity: containers.reduce((sum, c) => sum + c.cartonQuantity, 0),
+            basePrice: Number(activity?.basePrice) || 0
+          };
+        }),
+        containers,
+        cartonQuantity: containers.reduce((sum, c) => sum + c.cartonQuantity, 0),
+        articleQuantity: containers.reduce((sum, c) => sum + c.articleQuantity, 0),
+        templateData: templateData
       };
+
+      if (submitData.scheduledDate) {
+        const dateStr = submitData.scheduledDate.includes("T")
+          ? submitData.scheduledDate
+          : submitData.scheduledDate + "T00:00:00";
+        submitData.scheduledDate = new Date(dateStr).toISOString();
+      }
+      if (submitData.startTime) {
+        submitData.startTime = new Date(submitData.startTime).toISOString();
+      }
+      if (submitData.endTime && submitData.endTime.trim()) {
+        submitData.endTime = new Date(submitData.endTime).toISOString();
+      } else {
+        submitData.endTime = undefined;
+      }
 
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/team-leader/orders`,
@@ -247,251 +295,628 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({
 
       const result = await response.json();
       console.log("Order created successfully:", result);
-
-      toast.success("Order created successfully");
+      
       setOpen(false);
-      resetForm();
+      resetFormData();
+      toast.success("Order created successfully");
       onOrderCreated?.();
     } catch (error) {
       console.error("Error creating order:", error);
-      toast.error(error instanceof Error ? error.message : "Error creating order");
+      toast.error("Failed to create order");
     } finally {
       setLoading(false);
     }
   };
 
+  const handleInputChange = (field: keyof CreateOrderData, value: any) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
   const handleEmployeeToggle = (employeeId: string, checked: boolean) => {
-    setFormData((prev) => ({
-      ...prev,
-      assignedEmployeeIds: checked
-        ? [...prev.assignedEmployeeIds, employeeId]
-        : prev.assignedEmployeeIds.filter((id) => id !== employeeId),
-    }));
+    setFormData((prev) => {
+      const currentAssigned = prev.assignedEmployeeIds || [];
+
+      if (checked) {
+        const employeeExists = employees.some(emp => emp.id === employeeId);
+        if (!employeeExists) {
+          toast.error("Employee not available");
+          return prev;
+        }
+        return {
+          ...prev,
+          assignedEmployeeIds: [...currentAssigned, employeeId]
+        };
+      } else {
+        return {
+          ...prev,
+          assignedEmployeeIds: currentAssigned.filter((id) => id !== employeeId)
+        };
+      }
+    });
   };
 
   const handleActivityToggle = (activityId: string, checked: boolean) => {
-    setSelectedActivities((prev) =>
-      checked ? [...prev, activityId] : prev.filter((id) => id !== activityId)
-    );
+    setSelectedActivities(prev => {
+      const newActivities = checked
+        ? [...prev, activityId]
+        : prev.filter(id => id !== activityId);
+      
+      setTimeout(() => {
+        setContainers(currentContainers => 
+          currentContainers.map(container => {
+            const cartonPrice = calculateCartonPriceForQuantity(container.cartonQuantity, newActivities);
+            const articlePrice = newActivities.reduce((total, actId) => {
+              const activity = activities.find(a => a.id === actId);
+              return total + (Number(activity?.basePrice) || 0);
+            }, 0);
+            
+            return {
+              ...container,
+              cartonPrice,
+              articlePrice
+            };
+          })
+        );
+      }, 0);
+      
+      return newActivities;
+    });
   };
 
-  const getTotalPrice = () => {
-    return selectedActivities.reduce((total, activityId) => {
-      const activity = activities.find((a) => a.id === activityId);
-      return total + (activity ? Number(activity.defaultPrice) : 0);
+  const calculateCartonPriceForQuantity = (cartonQuantity: number, activityIds: string[] = selectedActivities) => {
+    return activityIds.reduce((total, activityId) => {
+      const activity = activities.find(a => a.id === activityId);
+      if (!activity) return total;
+
+      if (activity.customerPrices && activity.customerPrices.length > 0) {
+        const applicablePrice = activity.customerPrices.find((p: any) =>
+          cartonQuantity >= p.minQuantity && cartonQuantity <= p.maxQuantity
+        );
+        if (applicablePrice) {
+          return total + Number(applicablePrice.price);
+        }
+      }
+
+      return total + (Number(activity.unitPrice) || 0);
     }, 0);
   };
 
+  const getActivityAndBasePrices = () => {
+    const totalCartons = containers.reduce((sum, c) => sum + c.cartonQuantity, 0);
+    if (totalCartons === 0) return 0;
+
+    const activityPrices = selectedActivities.reduce((total, activityId) => {
+      const activity = activities.find(a => a.id === activityId);
+      if (!activity) return total;
+
+      if (activity.customerPrices && activity.customerPrices.length > 0) {
+        const applicablePrice = activity.customerPrices.find((p: any) =>
+          totalCartons >= p.minQuantity && totalCartons <= p.maxQuantity
+        );
+        if (applicablePrice) {
+          return total + Number(applicablePrice.price);
+        }
+      }
+
+      return total + (Number(activity.unitPrice) || 0);
+    }, 0);
+
+    const basePrices = selectedActivities.reduce((total, activityId) => {
+      const activity = activities.find(a => a.id === activityId);
+      return total + (Number(activity?.basePrice) || 0);
+    }, 0);
+
+    return activityPrices + basePrices;
+  };
+
+  const getContainerPrices = () => {
+    return containers.reduce((sum, c) => {
+      const articleTotal = c.articleQuantity * c.articlePrice;
+      return sum + articleTotal;
+    }, 0);
+  };
+
+  const getTotalPrice = () => {
+    return getActivityAndBasePrices() + getContainerPrices();
+  };
+
+  const renderStep1 = () => (
+    <div className="space-y-4">
+      <div className="text-center mb-6">
+        <h3 className="text-lg font-semibold">Step 1: Select Customer</h3>
+        <p className="text-sm text-muted-foreground">Choose the customer for this order</p>
+      </div>
+      <div>
+        <Label htmlFor="customerId">Customer *</Label>
+        <Select
+          value={formData.customerId}
+          onValueChange={(value) => {
+            handleInputChange("customerId", value);
+            if (errors.customerId) setErrors(prev => ({ ...prev, customerId: "" }));
+          }}
+        >
+          <SelectTrigger className={errors.customerId ? "border-red-500" : ""}>
+            <SelectValue placeholder="Select customer" />
+          </SelectTrigger>
+          <SelectContent>
+            {customers.map((customer) => (
+              <SelectItem key={customer.id} value={customer.id}>
+                {customer.companyName}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        {errors.customerId && <p className="text-sm text-red-500 mt-1">{errors.customerId}</p>}
+      </div>
+    </div>
+  );
+
+  const renderStep2 = () => (
+    <div className="space-y-4">
+      <div className="text-center mb-6">
+        <h3 className="text-lg font-semibold">Step 2: Select Activities</h3>
+        <p className="text-sm text-muted-foreground">Choose activities for this order</p>
+      </div>
+      <div>
+        <Label>Activities</Label>
+        <div className="text-sm text-muted-foreground mb-2">
+          {selectedActivities.length} activities selected
+        </div>
+        <div className="max-h-60 overflow-y-auto border rounded-md p-3 space-y-3">
+          {activities.map((activity) => (
+            <div key={activity.id} className="border rounded-lg p-3 space-y-2">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id={`activity-${activity.id}`}
+                    checked={selectedActivities.includes(activity.id)}
+                    onCheckedChange={(checked) => handleActivityToggle(activity.id, checked as boolean)}
+                  />
+                  <div>
+                    <Label htmlFor={`activity-${activity.id}`} className="text-sm font-medium">
+                      {activity.name}
+                    </Label>
+                    <p className="text-xs text-muted-foreground">
+                      Type: {activity.type?.replace('_', ' ')} | Unit: {activity.unit}
+                    </p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="text-sm font-medium">
+                    Base: €{Number(activity.basePrice || 0).toFixed(2)}
+                  </div>
+                </div>
+              </div>
+              {activity.customerPrices && activity.customerPrices.length > 0 ? (
+                <div className="ml-6">
+                  <p className="text-xs font-medium text-muted-foreground mb-1">Price Ranges:</p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 text-xs">
+                    {activity.customerPrices.map((price: any, idx: number) => (
+                      <div key={idx} className="bg-muted/50 px-2 py-1 rounded">
+                        {price.minQuantity}-{price.maxQuantity}: €{Number(price.price).toFixed(2)}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <div className="ml-6">
+                  <p className="text-xs text-muted-foreground">
+                    Base Price: €{Number(activity.unitPrice || 0).toFixed(2)}
+                  </p>
+                </div>
+              )}
+            </div>
+          ))}
+          {activities.length === 0 && (
+            <p className="text-sm text-gray-500">No activities available for this customer</p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderStep3 = () => {
+    const addContainer = () => {
+      const defaultArticlePrice = selectedActivities.reduce((total, activityId) => {
+        const activity = activities.find(a => a.id === activityId);
+        return total + (Number(activity?.basePrice) || 0);
+      }, 0);
+
+      const newContainer: Container = {
+        serialNumber: `CONT-${Date.now()}`,
+        cartonQuantity: 1,
+        articleQuantity: 1,
+        cartonPrice: calculateCartonPriceForQuantity(1),
+        articlePrice: defaultArticlePrice
+      };
+      setContainers([...containers, newContainer]);
+    };
+
+    const updateContainer = (index: number, field: keyof Container, value: any) => {
+      const updated = [...containers];
+      updated[index] = { ...updated[index], [field]: value };
+      
+      // Auto-calculate prices when quantities change
+      if (field === 'cartonQuantity') {
+        const cartonPrice = calculateCartonPriceForQuantity(value);
+        updated[index].cartonPrice = cartonPrice;
+      }
+      
+      // Update article price based on selected activities' base prices
+      if (field === 'articleQuantity') {
+        const articlePrice = selectedActivities.reduce((total, activityId) => {
+          const activity = activities.find(a => a.id === activityId);
+          return total + (Number(activity?.basePrice) || 0);
+        }, 0);
+        updated[index].articlePrice = articlePrice;
+      }
+      
+      setContainers(updated);
+    };
+
+    const removeContainer = (index: number) => {
+      setContainers(containers.filter((_, i) => i !== index));
+    };
+
+    return (
+      <div className="space-y-4">
+        <div className="text-center mb-6">
+          <h3 className="text-lg font-semibold">Step 3: Container Management</h3>
+          <p className="text-sm text-muted-foreground">Add containers with their details</p>
+        </div>
+
+        <div className="flex justify-between items-center">
+          <h4 className="font-medium">Containers ({containers.length})</h4>
+          <Button type="button" onClick={addContainer} size="sm">
+            <Plus className="w-4 h-4 mr-2" />
+            Add Container
+          </Button>
+        </div>
+
+        {containers.length === 0 ? (
+          <div className="text-center py-8 text-muted-foreground border-2 border-dashed rounded-lg">
+            <p>No containers added yet</p>
+            <p className="text-sm">Click "Add Container" to get started</p>
+          </div>
+        ) : (
+          <div className="space-y-4 max-h-96 overflow-y-auto">
+            {containers.map((container, containerIndex) => (
+              <div key={containerIndex} className="border rounded-lg p-4 space-y-4">
+                <div className="flex justify-between items-start">
+                  <h5 className="font-medium">Container {containerIndex + 1}</h5>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => removeContainer(containerIndex)}
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label>Serial Number</Label>
+                    <Input
+                      value={container.serialNumber}
+                      onChange={(e) => updateContainer(containerIndex, 'serialNumber', e.target.value)}
+                      placeholder="Container serial number"
+                    />
+                  </div>
+                  <div>
+                    <Label>Carton Quantity</Label>
+                    <Input
+                      type="number"
+                      min="1"
+                      value={container.cartonQuantity}
+                      onChange={(e) => updateContainer(containerIndex, 'cartonQuantity', parseInt(e.target.value) || 1)}
+                      className="[&::-webkit-outer-spin-button]:opacity-0 hover:[&::-webkit-outer-spin-button]:opacity-100 focus:[&::-webkit-outer-spin-button]:opacity-100 [&::-webkit-inner-spin-button]:opacity-0 hover:[&::-webkit-inner-spin-button]:opacity-100 focus:[&::-webkit-inner-spin-button]:opacity-100"
+                    />
+                  </div>
+                  <div>
+                    <Label>Carton Price (€) - Auto-calculated</Label>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      value={container.cartonPrice}
+                      readOnly
+                      className="bg-gray-50 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
+                    />
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Based on selected activities and quantity
+                    </p>
+                  </div>
+                  <div>
+                    <Label>Article Quantity</Label>
+                    <Input
+                      type="number"
+                      min="1"
+                      value={container.articleQuantity}
+                      onChange={(e) => updateContainer(containerIndex, 'articleQuantity', parseInt(e.target.value) || 1)}
+                      className="[&::-webkit-outer-spin-button]:opacity-0 hover:[&::-webkit-outer-spin-button]:opacity-100 focus:[&::-webkit-outer-spin-button]:opacity-100 [&::-webkit-inner-spin-button]:opacity-0 hover:[&::-webkit-inner-spin-button]:opacity-100 focus:[&::-webkit-inner-spin-button]:opacity-100"
+                    />
+                  </div>
+                  <div>
+                    <Label>Article Price (€) - From Activity Base Price</Label>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      value={container.articlePrice}
+                      readOnly
+                      className="bg-gray-50 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
+                    />
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Based on selected activities' base prices
+                    </p>
+                  </div>
+                </div>
+
+                <div className="bg-muted/50 p-3 rounded">
+                  <div className="text-sm font-medium">Container Total: €{(container.cartonPrice + (container.articleQuantity * container.articlePrice)).toFixed(2)}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {containers.length > 0 && (
+          <div className="bg-muted/50 p-4 rounded-lg">
+            <h4 className="font-medium mb-2">Order Summary</h4>
+            <div className="space-y-1 text-sm">
+              <div className="flex justify-between">
+                <span>Total Containers:</span>
+                <span>{containers.length}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Total Cartons:</span>
+                <span>{containers.reduce((sum, c) => sum + c.cartonQuantity, 0)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Total Articles:</span>
+                <span>{containers.reduce((sum, c) => sum + c.articleQuantity, 0)}</span>
+              </div>
+              <div className="border-t pt-1 mt-2 flex justify-between font-medium">
+                <span>Container Total:</span>
+                <span>€{containers.reduce((sum, c) => sum + c.cartonPrice + (c.articleQuantity * c.articlePrice), 0).toFixed(2)}</span>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  const renderStep4 = () => (
+    <div className="space-y-4">
+      <div className="text-center mb-6">
+        <h3 className="text-lg font-semibold">Step 4: Order Details</h3>
+        <p className="text-sm text-muted-foreground">Complete the order information</p>
+      </div>
+
+      <OrderDescriptionForm
+        customerId={formData.customerId}
+        description={formData.description || ""}
+        onDescriptionChange={(description) => handleInputChange("description", description)}
+        onTemplateDataChange={setTemplateData}
+      />
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <Label htmlFor="scheduledDate">Scheduled Date *</Label>
+          <Input
+            id="scheduledDate"
+            type="date"
+            value={formData.scheduledDate}
+            onChange={(e) => {
+              handleInputChange("scheduledDate", e.target.value);
+              if (errors.scheduledDate) setErrors(prev => ({ ...prev, scheduledDate: "" }));
+            }}
+            className={errors.scheduledDate ? "border-red-500" : ""}
+          />
+          {errors.scheduledDate && <p className="text-sm text-red-500 mt-1">{errors.scheduledDate}</p>}
+        </div>
+        <div>
+          <Label htmlFor="location">Location</Label>
+          <Input
+            id="location"
+            value={formData.location}
+            onChange={(e) => handleInputChange("location", e.target.value)}
+            placeholder="Order location"
+          />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <Label htmlFor="startTime">Start Time</Label>
+          <TimeOnlyInput
+            value={startTimeOnly}
+            onChange={setStartTimeOnly}
+          />
+        </div>
+        <div>
+          <Label htmlFor="endTime">End Time (Optional)</Label>
+          <TimeOnlyInput
+            value={endTimeOnly}
+            onChange={setEndTimeOnly}
+          />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <Label htmlFor="priority">Priority *</Label>
+          <Input
+            id="priority"
+            type="number"
+            min="1"
+            value={formData.priority}
+            onChange={(e) => {
+              handleInputChange("priority", Number(e.target.value));
+              if (errors.priority) setErrors(prev => ({ ...prev, priority: "" }));
+            }}
+            className={errors.priority ? "border-red-500" : ""}
+          />
+          {errors.priority && <p className="text-sm text-red-500 mt-1">{errors.priority}</p>}
+        </div>
+        <div>
+          <Label htmlFor="duration">Duration (hours)</Label>
+          <Input
+            id="duration"
+            type="number"
+            min="0"
+            step="0.5"
+            value={formData.duration || ""}
+            onChange={(e) =>
+              handleInputChange(
+                "duration",
+                e.target.value ? Number(e.target.value) : null
+              )
+            }
+          />
+        </div>
+      </div>
+
+      <div>
+        <Label>Assign Team Members</Label>
+        <div className="text-sm text-muted-foreground mb-2">
+          {`${(formData.assignedEmployeeIds || []).length} employees selected`}
+        </div>
+        <div className="max-h-40 overflow-y-auto border rounded-md p-3 space-y-2">
+          {employees.map((employee) => (
+            <div key={employee.id} className="flex items-center space-x-2">
+              <Checkbox
+                id={`employee-${employee.id}`}
+                checked={(formData.assignedEmployeeIds || []).includes(
+                  employee.id
+                )}
+                onCheckedChange={(checked) =>
+                  handleEmployeeToggle(employee.id, checked as boolean)
+                }
+              />
+              <Label
+                htmlFor={`employee-${employee.id}`}
+                className="text-sm"
+              >
+                {employee.firstName} {employee.lastName} (
+                {employee.employeeCode})
+              </Label>
+            </div>
+          ))}
+          {employees.length === 0 && (
+            <p className="text-sm text-gray-500">No team members available</p>
+          )}
+        </div>
+      </div>
+
+      <div>
+        <Label htmlFor="specialInstructions">Special Instructions</Label>
+        <Textarea
+          id="specialInstructions"
+          value={formData.specialInstructions}
+          onChange={(e) =>
+            handleInputChange("specialInstructions", e.target.value)
+          }
+          rows={3}
+        />
+      </div>
+
+      {(selectedActivities.length > 0 || containers.length > 0) && (
+        <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+          <div className="flex justify-between items-center">
+            <span className="text-lg font-semibold text-green-800">Order Total:</span>
+            <span className="text-2xl font-bold text-green-600">€{getTotalPrice().toFixed(2)}</span>
+          </div>
+          <div className="mt-2 text-sm text-green-700">
+            <div className="flex justify-between">
+              <span>Activities & Carton Price:</span>
+              <span>€{getActivityAndBasePrices().toFixed(2)}</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Articles Total Price:</span>
+              <span>€{getContainerPrices().toFixed(2)}</span>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={(isOpen) => {
+      setOpen(isOpen);
+      if (!isOpen) resetFormData();
+    }}>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogContent className="w-[95vw] max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Create New Order</DialogTitle>
-        </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <Label htmlFor="customerId">Customer *</Label>
-            <Select
-              value={formData.customerId}
-              onValueChange={(value) =>
-                setFormData((prev) => ({ ...prev, customerId: value }))
-              }
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select customer" />
-              </SelectTrigger>
-              <SelectContent>
-                {customers.map((customer) => (
-                  <SelectItem key={customer.id} value={customer.id}>
-                    {customer.companyName}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <OrderDescriptionForm
-            customerId={formData.customerId}
-            description={formData.description}
-            onDescriptionChange={(description) =>
-              setFormData((prev) => ({ ...prev, description }))
-            }
-            onTemplateDataChange={setTemplateData}
-          />
-
-          <div>
-            <Label>Activities</Label>
-            <div className="text-sm text-muted-foreground mb-2">
-              {selectedActivities.length} activities selected - Total: €
-              {getTotalPrice().toFixed(2)}
-            </div>
-            <div className="max-h-40 overflow-y-auto border rounded-md p-3 space-y-2">
-              {activities.map((activity) => (
-                <div
-                  key={activity.id}
-                  className="flex items-center justify-between space-x-2"
-                >
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`activity-${activity.id}`}
-                      checked={selectedActivities.includes(activity.id)}
-                      onCheckedChange={(checked) =>
-                        handleActivityToggle(activity.id, checked as boolean)
-                      }
-                    />
-                    <Label
-                      htmlFor={`activity-${activity.id}`}
-                      className="text-sm"
-                    >
-                      {activity.name}
-                    </Label>
+          <div className="flex justify-center mt-4">
+            <div className="flex items-center space-x-2">
+              {[1, 2, 3, 4].map((step) => (
+                <div key={step} className="flex items-center">
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
+                    currentStep >= step ? 'bg-primary text-white' : 'bg-muted text-muted-foreground'
+                  }`}>
+                    {step}
                   </div>
-                  <span className="text-sm text-muted-foreground">
-                    €{Number(activity.defaultPrice).toFixed(2)}
-                  </span>
+                  {step < 4 && <div className={`w-8 h-0.5 ${
+                    currentStep > step ? 'bg-primary' : 'bg-muted'
+                  }`} />}
                 </div>
               ))}
-              {activities.length === 0 && (
-                <p className="text-sm text-gray-500">No activities available</p>
-              )}
             </div>
           </div>
+        </DialogHeader>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="scheduledDate">Scheduled Date *</Label>
-              <Input
-                id="scheduledDate"
-                type="date"
-                value={formData.scheduledDate}
-                onChange={(e) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    scheduledDate: e.target.value,
-                  }))
-                }
-              />
-            </div>
-            <div>
-              <Label htmlFor="location">Location</Label>
-              <Input
-                id="location"
-                value={formData.location}
-                onChange={(e) =>
-                  setFormData((prev) => ({ ...prev, location: e.target.value }))
-                }
-                placeholder="Order location"
-              />
-            </div>
-          </div>
+        <div className="space-y-6">
+          {currentStep === 1 && renderStep1()}
+          {currentStep === 2 && renderStep2()}
+          {currentStep === 3 && renderStep3()}
+          {currentStep === 4 && (
+            <form id="order-form" onSubmit={handleSubmit} className="space-y-6">
+              {renderStep4()}
+            </form>
+          )}
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="startTime">Start Time</Label>
-              <TimeOnlyInput
-                value={startTimeOnly}
-                onChange={setStartTimeOnly}
-              />
-            </div>
-            <div>
-              <Label htmlFor="endTime">End Time</Label>
-              <TimeOnlyInput value={endTimeOnly} onChange={setEndTimeOnly} />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="priority">Priority</Label>
-              <Input
-                id="priority"
-                type="number"
-                min="1"
-                value={formData.priority}
-                onChange={(e) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    priority: Number(e.target.value),
-                  }))
-                }
-              />
-            </div>
-            <div>
-              <Label htmlFor="duration">Duration (hours)</Label>
-              <Input
-                id="duration"
-                type="number"
-                min="0"
-                step="0.5"
-                value={formData.duration || ""}
-                onChange={(e) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    duration: e.target.value ? Number(e.target.value) : null,
-                  }))
-                }
-              />
-            </div>
-          </div>
-
-          <div>
-            <Label htmlFor="specialInstructions">Special Instructions</Label>
-            <Textarea
-              id="specialInstructions"
-              value={formData.specialInstructions}
-              onChange={(e) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  specialInstructions: e.target.value,
-                }))
-              }
-              rows={2}
-            />
-          </div>
-
-          <div>
-            <Label>Assign Employees</Label>
-            <div className="text-sm text-muted-foreground mb-2">
-              {formData.assignedEmployeeIds.length} employees selected
-            </div>
-            <div className="max-h-40 overflow-y-auto border rounded-md p-3 space-y-2">
-              {employees.map((employee) => (
-                <div key={employee.id} className="flex items-center space-x-2">
-                  <Checkbox
-                    id={`employee-${employee.id}`}
-                    checked={formData.assignedEmployeeIds.includes(employee.id)}
-                    onCheckedChange={(checked) =>
-                      handleEmployeeToggle(employee.id, checked as boolean)
-                    }
-                  />
-                  <Label
-                    htmlFor={`employee-${employee.id}`}
-                    className="text-sm"
-                  >
-                    {employee.firstName} {employee.lastName} (
-                    {employee.employeeCode})
-                  </Label>
-                </div>
-              ))}
-              {employees.length === 0 && (
-                <p className="text-sm text-gray-500">No employees available</p>
-              )}
-            </div>
-          </div>
-
-          <div className="flex justify-end gap-2 pt-4">
+          <div className="flex justify-between pt-4">
             <Button
               type="button"
               variant="outline"
-              onClick={() => setOpen(false)}
+              onClick={handlePrevious}
+              disabled={currentStep === 1}
             >
-              Cancel
+              <ChevronLeft className="w-4 h-4 mr-1" />
+              Previous
             </Button>
-            <Button type="submit" disabled={loading}>
-              {loading ? "Creating..." : "Create Order"}
-            </Button>
+
+            <div className="flex gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => {
+                  resetFormData();
+                  setOpen(false);
+                }}
+              >
+                Cancel
+              </Button>
+
+              {currentStep < 4 ? (
+                <Button type="button" onClick={handleNext}>
+                  Next
+                  <ChevronRight className="w-4 h-4 ml-1" />
+                </Button>
+              ) : (
+                <Button type="submit" disabled={loading} form="order-form">
+                  {loading ? "Creating..." : "Create Order"}
+                </Button>
+              )}
+            </div>
           </div>
-        </form>
+        </div>
       </DialogContent>
     </Dialog>
   );
