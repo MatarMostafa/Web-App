@@ -297,7 +297,6 @@ router.post(
   authMiddleware,
   roleMiddleware(["ADMIN", "TEAM_LEADER"]),
   validateRequest(createOrderRatingSchema),
-
   createOrderRating
 );
 
@@ -399,8 +398,7 @@ router.get(
         where: {
           orderId,
           customerId: order.customerId,
-          isActive: true,
-          orderId: { not: null } // Only get order instances, not definitions
+          isActive: true
         },
         select: { 
           id: true,

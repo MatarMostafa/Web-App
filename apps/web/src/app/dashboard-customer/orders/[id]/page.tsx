@@ -45,7 +45,17 @@ export default function CustomerOrderDetailPage() {
         // Set containers from order data if available
         if (orderData?.containers) {
           console.log('Setting containers:', orderData.containers); // Debug log
-          setContainers(orderData.containers);
+          const formattedContainers = orderData.containers.map((container: any) => ({
+            ...container,
+            cartonPrice: container.cartonPrice || 0,
+            articlePrice: container.articlePrice || 0,
+            articles: container.articles?.map((article: any) => ({
+              articleName: article.articleName,
+              quantity: article.quantity,
+              price: article.price || 0
+            })) || []
+          }));
+          setContainers(formattedContainers);
         } else {
           console.log('No containers found, setting empty array'); // Debug log
           setContainers([]);
