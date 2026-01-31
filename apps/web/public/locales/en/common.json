@@ -1923,11 +1923,34 @@
       "selectType": "Select type",
       "defaultPrice": "Default Price (EUR)",
       "defaultPriceRequired": "Default price is required",
+      "basePrice": "Base Price (€)",
+      "basePricePlaceholder": "Base price for container loading/unloading",
+      "basePriceHelp": "This is the base price for container loading/unloading activities",
+      "articleBasePrice": "Article Base Price (€)",
+      "articleBasePricePlaceholder": "Base price for articles in this activity",
+      "articleBasePriceHelp": "This price will be used as the default article price when creating orders",
+      "priceRanges": "Price Ranges",
+      "addRange": "Add Range",
+      "minQty": "Min Qty",
+      "maxQty": "Max Qty",
+      "price": "Price",
+      "validFrom": "Valid From",
       "unit": "Unit",
       "creating": "Creating...",
       "updating": "Updating...",
       "create": "Create",
-      "update": "Update"
+      "update": "Update",
+      "addTitle": "Add New Activity",
+      "editTitle": "Edit Activity"
+    },
+    "types": {
+      "CONTAINER_UNLOADING": "Container Unloading",
+      "CONTAINER_LOADING": "Container Loading",
+      "WRAPPING": "Wrapping",
+      "REPACKING": "Repacking",
+      "CROSSING": "Crossing",
+      "LABELING": "Labeling",
+      "OTHER": "Other"
     },
     "messages": {
       "createSuccess": "Customer activity created",
@@ -1938,7 +1961,9 @@
       "deleteError": "Failed to delete activity",
       "loadError": "Failed to load activities",
       "noActivities": "No activities found",
-      "noActivitiesDesc": "Activities will appear here when available"
+      "noActivitiesDesc": "Activities will appear here when available",
+      "noPricing": "No pricing",
+      "from": "from"
     }
   },
   "customerExport": {
