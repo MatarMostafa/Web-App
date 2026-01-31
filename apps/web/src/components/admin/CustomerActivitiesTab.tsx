@@ -74,6 +74,7 @@ export const CustomerActivitiesTab = ({ customerId }: CustomerActivitiesTabProps
     code: string;
     unit: string;
     basePrice: number;
+    articleBasePrice: number;
     priceRanges: Array<{ minQuantity: number; maxQuantity: number; price: number; validFrom: string }>;
   }): Promise<void> => {
     try {
@@ -84,6 +85,7 @@ export const CustomerActivitiesTab = ({ customerId }: CustomerActivitiesTabProps
         code: data.code || undefined,
         unit: data.unit,
         basePrice: data.basePrice,
+        articleBasePrice: data.articleBasePrice,
         customerId
       });
 
@@ -116,6 +118,7 @@ export const CustomerActivitiesTab = ({ customerId }: CustomerActivitiesTabProps
     code: string;
     unit: string;
     basePrice: number;
+    articleBasePrice: number;
     priceRanges: Array<{ minQuantity: number; maxQuantity: number; price: number; validFrom: string }>;
   }) => {
     if (!editingActivity) return;
@@ -126,7 +129,8 @@ export const CustomerActivitiesTab = ({ customerId }: CustomerActivitiesTabProps
         type: data.type,
         code: data.code,
         unit: data.unit,
-        basePrice: data.basePrice
+        basePrice: data.basePrice,
+        articleBasePrice: data.articleBasePrice
       });
 
       // Delete existing customer prices

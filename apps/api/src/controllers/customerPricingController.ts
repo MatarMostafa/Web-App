@@ -217,7 +217,7 @@ export const getActivities = async (req: Request, res: Response) => {
 export const updateActivity = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const { name, type, code, description, unit, basePrice } = req.body;
+    const { name, type, code, description, unit, basePrice, articleBasePrice } = req.body;
 
     if (!name || !type) {
       return res.status(400).json({ error: 'name and type are required' });
@@ -235,12 +235,23 @@ export const updateActivity = async (req: Request, res: Response) => {
       unit
     };
 
-    // Update basePrice if provided
+    // Update basePrice if provided (only for container loading/unloading)
     if (basePrice !== undefined && basePrice !== null) {
       if (basePrice < 0) {
         return res.status(400).json({ error: 'basePrice must be 0 or greater' });
       }
       updateData.basePrice = new Decimal(basePrice);
+    } else if (type !== ActivityType.CONTAINER_LOADING && type !== ActivityType.CONTAINER_UNLOADING) {
+      // Set basePrice to 0 for non-container activities
+      updateData.basePrice = new Decimal(0);
+    }
+
+    // Update articleBasePrice if provided
+    if (articleBasePrice !== undefined && articleBasePrice !== null) {
+      if (articleBasePrice < 0) {
+        return res.status(400).json({ error: 'articleBasePrice must be 0 or greater' });
+      }
+      updateData.articleBasePrice = new Decimal(articleBasePrice);
     }
 
     const activity = await prisma.customerActivity.update({
@@ -272,7 +283,7 @@ export const deleteActivity = async (req: Request, res: Response) => {
 
 export const createActivity = async (req: Request, res: Response) => {
   try {
-    const { name, type, code, description, unit = 'hour', customerId, basePrice } = req.body;
+    const { name, type, code, description, unit = 'hour', customerId, basePrice, articleBasePrice } = req.body;
 
     // customerId is now required to create a definition
     if (!customerId) {
@@ -283,20 +294,29 @@ export const createActivity = async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'name and type are required' });
     }
 
-    if (basePrice === undefined || basePrice === null) {
-      return res.status(400).json({ error: 'basePrice is required' });
+    if (articleBasePrice === undefined || articleBasePrice === null) {
+      return res.status(400).json({ error: 'articleBasePrice is required' });
     }
 
-    if (basePrice < 0) {
-      return res.status(400).json({ error: 'basePrice must be 0 or greater' });
+    if (new Decimal(articleBasePrice).lte(0)) {
+      return res.status(400).json({ error: 'articleBasePrice must be greater than 0' });
     }
 
     if (!Object.values(ActivityType).includes(type)) {
       return res.status(400).json({ error: 'Invalid activity type' });
     }
 
+    // For container loading/unloading, basePrice is required
+    if ((type === ActivityType.CONTAINER_LOADING || type === ActivityType.CONTAINER_UNLOADING)) {
+      if (basePrice === undefined || basePrice === null) {
+        return res.status(400).json({ error: 'basePrice is required for container loading/unloading activities' });
+      }
+      if (basePrice < 0) {
+        return res.status(400).json({ error: 'basePrice must be 0 or greater' });
+      }
+    }
+
     // Check if activity with same name already exists FOR THIS CUSTOMER
-    // Since we don't have unique constraint on name+customerId+orderId=null in schema (only index), we check manually.
     const existingActivity = await prisma.customerActivity.findFirst({
       where: {
         customerId,
@@ -318,17 +338,26 @@ export const createActivity = async (req: Request, res: Response) => {
         code: code || null,
         description: description || null,
         unit,
-        basePrice: new Decimal(basePrice),
+        basePrice: (type === ActivityType.CONTAINER_LOADING || type === ActivityType.CONTAINER_UNLOADING) 
+          ? new Decimal(basePrice) 
+          : new Decimal(0),
+        articleBasePrice: new Decimal(articleBasePrice),
         isActive: true
       }
     });
 
     res.status(201).json(activity);
   } catch (error: any) {
+    console.error('Create activity error:', {
+      message: error.message,
+      code: error.code,
+      meta: error.meta,
+      stack: error.stack
+    });
     if (error.code === 'P2002') {
       return res.status(409).json({ error: 'Activity with this name already exists' });
     }
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: error.message || 'Failed to create activity' });
   }
 };
 

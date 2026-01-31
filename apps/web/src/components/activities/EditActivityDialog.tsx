@@ -35,6 +35,7 @@ interface EditActivityDialogProps {
     code: string;
     unit: string;
     basePrice: number;
+    articleBasePrice: number;
     priceRanges: Array<{ minQuantity: number; maxQuantity: number; price: number; validFrom: string }>;
   }) => Promise<void>;
 }
@@ -45,7 +46,8 @@ export const EditActivityDialog = ({ open, onOpenChange, activity, customerId, o
     type: ActivityType.CONTAINER_UNLOADING,
     code: '',
     unit: 'hour',
-    basePrice: 0
+    basePrice: 0,
+    articleBasePrice: 0
   });
   const [priceRanges, setPriceRanges] = useState([
     { minQuantity: 1, maxQuantity: 10, price: 0, validFrom: new Date().toISOString().split('T')[0] }
@@ -59,7 +61,8 @@ export const EditActivityDialog = ({ open, onOpenChange, activity, customerId, o
         type: activity.type,
         code: activity.code || '',
         unit: activity.unit,
-        basePrice: (activity as any).basePrice || 0
+        basePrice: (activity as any).basePrice || 0,
+        articleBasePrice: (activity as any).articleBasePrice || 0
       });
       
       if (activity.prices && activity.prices.length > 0) {
@@ -149,14 +152,33 @@ export const EditActivityDialog = ({ open, onOpenChange, activity, customerId, o
             </div>
           </div>
           
+          {/* Base Price - Only for Container Loading/Unloading */}
+          {(formData.type === ActivityType.CONTAINER_LOADING || formData.type === ActivityType.CONTAINER_UNLOADING) && (
+            <div>
+              <Label>Base Price (€) *</Label>
+              <Input
+                type="number"
+                step="0.01"
+                min="0"
+                value={formData.basePrice}
+                onChange={(e) => setFormData({ ...formData, basePrice: parseFloat(e.target.value) || 0 })}
+                placeholder="Base price for container loading/unloading"
+                required
+              />
+              <p className="text-xs text-muted-foreground mt-1">
+                This is the base price for container loading/unloading activities
+              </p>
+            </div>
+          )}
+          
           <div>
             <Label>Article Base Price (€) *</Label>
             <Input
               type="number"
               step="0.01"
               min="0"
-              value={formData.basePrice}
-              onChange={(e) => setFormData({ ...formData, basePrice: parseFloat(e.target.value) || 0 })}
+              value={formData.articleBasePrice}
+              onChange={(e) => setFormData({ ...formData, articleBasePrice: parseFloat(e.target.value) || 0 })}
               placeholder="Base price for articles in this activity"
               required
             />

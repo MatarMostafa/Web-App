@@ -513,10 +513,11 @@ model CustomerActivity {
   unit        String       @default("hour")
 
   // Instance/Usage Fields (nullable for Definitions)
-  quantity  Int?
-  unitPrice Decimal? @db.Decimal(10, 2)
-  lineTotal Decimal? @db.Decimal(12, 2)
-  basePrice Decimal? @db.Decimal(10, 2) @default(0)
+  quantity         Int?
+  unitPrice        Decimal? @db.Decimal(10, 2)
+  lineTotal        Decimal? @db.Decimal(12, 2)
+  basePrice        Decimal? @db.Decimal(10, 2) @default(0)
+  articleBasePrice Decimal? @db.Decimal(10, 2) @default(0)
 
   isActive Boolean @default(true)
 
