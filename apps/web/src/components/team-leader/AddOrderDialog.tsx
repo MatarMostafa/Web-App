@@ -34,6 +34,7 @@ interface Container {
   articleQuantity: number;
   cartonPrice: number;
   articlePrice: number;
+  basePrice?: number;
 }
 
 interface AddOrderDialogProps {
@@ -109,16 +110,7 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({
       });
       if (response.ok) {
         const data = await response.json();
-        const teamMembers = (data.teams || []).flatMap(
-          (team: any) =>
-            team.members?.map((member: any) => ({
-              id: member.employee.id,
-              firstName: member.employee.firstName,
-              lastName: member.employee.lastName,
-              employeeCode: member.employee.employeeCode,
-            })) || []
-        );
-        setEmployees(teamMembers);
+        setEmployees(Array.isArray(data) ? data : []);
       }
     } catch (error) {
       console.error("Error fetching team employees:", error);
@@ -251,6 +243,7 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({
           return {
             activityId,
             quantity: containers.reduce((sum, c) => sum + c.cartonQuantity, 0),
+            articleBasePrice: Number(activity?.articleBasePrice) || 0,
             basePrice: Number(activity?.basePrice) || 0
           };
         }),
@@ -337,29 +330,27 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({
 
   const handleActivityToggle = (activityId: string, checked: boolean) => {
     setSelectedActivities(prev => {
-      const newActivities = checked
+      const nextActivities = checked
         ? [...prev, activityId]
         : prev.filter(id => id !== activityId);
       
+      // Update all prices for all containers when activities change
       setTimeout(() => {
-        setContainers(currentContainers => 
-          currentContainers.map(container => {
-            const cartonPrice = calculateCartonPriceForQuantity(container.cartonQuantity, newActivities);
-            const articlePrice = newActivities.reduce((total, actId) => {
-              const activity = activities.find(a => a.id === actId);
-              return total + (Number(activity?.basePrice) || 0);
-            }, 0);
-            
-            return {
-              ...container,
-              cartonPrice,
-              articlePrice
-            };
-          })
-        );
+        setContainers(currentContainers => {
+          const updatedActivities = activities.filter(a => nextActivities.includes(a.id));
+          const newArticlePrice = updatedActivities.reduce((total, a) => total + (Number(a.articleBasePrice) || 0), 0);
+          const newBasePrice = updatedActivities.reduce((total, a) => total + (Number(a.basePrice) || 0), 0);
+
+          return currentContainers.map(container => ({
+            ...container,
+            cartonPrice: calculateCartonPriceForQuantity(container.cartonQuantity, nextActivities),
+            articlePrice: newArticlePrice,
+            basePrice: newBasePrice
+          }));
+        });
       }, 0);
       
-      return newActivities;
+      return nextActivities;
     });
   };
 
@@ -381,43 +372,20 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({
     }, 0);
   };
 
-  const getActivityAndBasePrices = () => {
-    const totalCartons = containers.reduce((sum, c) => sum + c.cartonQuantity, 0);
-    if (totalCartons === 0) return 0;
-
-    const activityPrices = selectedActivities.reduce((total, activityId) => {
-      const activity = activities.find(a => a.id === activityId);
-      if (!activity) return total;
-
-      if (activity.customerPrices && activity.customerPrices.length > 0) {
-        const applicablePrice = activity.customerPrices.find((p: any) =>
-          totalCartons >= p.minQuantity && totalCartons <= p.maxQuantity
-        );
-        if (applicablePrice) {
-          return total + Number(applicablePrice.price);
-        }
-      }
-
-      return total + (Number(activity.unitPrice) || 0);
-    }, 0);
-
-    const basePrices = selectedActivities.reduce((total, activityId) => {
-      const activity = activities.find(a => a.id === activityId);
-      return total + (Number(activity?.basePrice) || 0);
-    }, 0);
-
-    return activityPrices + basePrices;
+  const getCartonPriceTotal = () => {
+    return containers.reduce((sum, c) => sum + (c.cartonPrice || 0), 0);
   };
 
-  const getContainerPrices = () => {
-    return containers.reduce((sum, c) => {
-      const articleTotal = c.articleQuantity * c.articlePrice;
-      return sum + articleTotal;
-    }, 0);
+  const getBasePriceTotal = () => {
+    return containers.reduce((sum, c) => sum + (c.basePrice || 0), 0);
+  };
+
+  const getArticlePriceTotal = () => {
+    return containers.reduce((sum, c) => sum + (c.articleQuantity * (c.articlePrice || 0)), 0);
   };
 
   const getTotalPrice = () => {
-    return getActivityAndBasePrices() + getContainerPrices();
+    return getCartonPriceTotal() + getBasePriceTotal() + getArticlePriceTotal();
   };
 
   const renderStep1 = () => (
@@ -483,8 +451,13 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({
                 </div>
                 <div className="text-right">
                   <div className="text-sm font-medium">
-                    {t("admin.orders.form.basePrice")}: €{Number(activity.basePrice || 0).toFixed(2)}
+                    {t("admin.orders.form.articleBasePrice")}: €{Number(activity.articleBasePrice || 0).toFixed(2)}
                   </div>
+                  {Number(activity.basePrice || 0) !== 0 && (
+                    <div className="text-sm font-medium">
+                      {t("admin.orders.form.basePrice")}: €{Number(activity.basePrice || 0).toFixed(2)}
+                    </div>
+                  )}
                 </div>
               </div>
               {activity.customerPrices && activity.customerPrices.length > 0 ? (
@@ -517,17 +490,17 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({
 
   const renderStep3 = () => {
     const addContainer = () => {
-      const defaultArticlePrice = selectedActivities.reduce((total, activityId) => {
-        const activity = activities.find(a => a.id === activityId);
-        return total + (Number(activity?.basePrice) || 0);
-      }, 0);
+      const updatedActivities = activities.filter(a => selectedActivities.includes(a.id));
+      const newArticlePrice = updatedActivities.reduce((total, a) => total + (Number(a.articleBasePrice) || 0), 0);
+      const newBasePrice = updatedActivities.reduce((total, a) => total + (Number(a.basePrice) || 0), 0);
 
       const newContainer: Container = {
         serialNumber: `CONT-${Date.now()}`,
         cartonQuantity: 1,
         articleQuantity: 1,
         cartonPrice: calculateCartonPriceForQuantity(1),
-        articlePrice: defaultArticlePrice
+        articlePrice: newArticlePrice,
+        basePrice: newBasePrice
       };
       setContainers([...containers, newContainer]);
     };
@@ -540,15 +513,6 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({
       if (field === 'cartonQuantity') {
         const cartonPrice = calculateCartonPriceForQuantity(value);
         updated[index].cartonPrice = cartonPrice;
-      }
-      
-      // Update article price based on selected activities' base prices
-      if (field === 'articleQuantity') {
-        const articlePrice = selectedActivities.reduce((total, activityId) => {
-          const activity = activities.find(a => a.id === activityId);
-          return total + (Number(activity?.basePrice) || 0);
-        }, 0);
-        updated[index].articlePrice = articlePrice;
       }
       
       setContainers(updated);
@@ -637,8 +601,21 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({
                       className="[&::-webkit-outer-spin-button]:opacity-0 hover:[&::-webkit-outer-spin-button]:opacity-100 focus:[&::-webkit-outer-spin-button]:opacity-100 [&::-webkit-inner-spin-button]:opacity-0 hover:[&::-webkit-inner-spin-button]:opacity-100 focus:[&::-webkit-inner-spin-button]:opacity-100"
                     />
                   </div>
+                  {containers[containerIndex]?.basePrice !== undefined && containers[containerIndex].basePrice > 0 && (
+                    <div>
+                      <Label>{t("admin.orders.form.basePrice")} (€)</Label>
+                      <Input
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        value={container.basePrice}
+                        readOnly
+                        className="bg-gray-50 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
+                      />
+                    </div>
+                  )}
                   <div>
-                    <Label>{t("admin.orders.form.articlePrice")} (€) - {t("admin.orders.form.fromActivityBasePrice")}</Label>
+                    <Label>{t("admin.orders.form.articlePrice")+" (€)"}</Label>
                     <Input
                       type="number"
                       step="0.01"
@@ -654,7 +631,7 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({
                 </div>
 
                 <div className="bg-muted/50 p-3 rounded">
-                  <div className="text-sm font-medium">{t("admin.orders.form.containerTotal")}: €{(container.cartonPrice + (container.articleQuantity * container.articlePrice)).toFixed(2)}</div>
+                  <div className="text-sm font-medium">{t("admin.orders.form.containerTotal")}: €{(container.cartonPrice + (container.basePrice || 0) + (container.articleQuantity * container.articlePrice)).toFixed(2)}</div>
                 </div>
               </div>
             ))}
@@ -679,7 +656,7 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({
               </div>
               <div className="border-t pt-1 mt-2 flex justify-between font-medium">
                 <span>{t("admin.orders.form.containerTotal")}:</span>
-                <span>€{containers.reduce((sum, c) => sum + c.cartonPrice + (c.articleQuantity * c.articlePrice), 0).toFixed(2)}</span>
+                <span>€{getTotalPrice().toFixed(2)}</span>
               </div>
             </div>
           </div>
@@ -782,7 +759,7 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({
       <div>
         <Label>{t("teamLeader.orders.assignTeamMembers")}</Label>
         <div className="text-sm text-muted-foreground mb-2">
-          {t("admin.orders.form.employeesSelected", { selected: (formData.assignedEmployeeIds || []).length, required: "∞" })}
+          {t("admin.orders.form.employeesSelected", { selected: (formData.assignedEmployeeIds || []).length })}
         </div>
         <div className="max-h-40 overflow-y-auto border rounded-md p-3 space-y-2">
           {employees.map((employee) => (
@@ -823,6 +800,7 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({
         />
       </div>
 
+      {/* Order Total Display */}
       {(selectedActivities.length > 0 || containers.length > 0) && (
         <div className="bg-green-50 border border-green-200 rounded-lg p-4">
           <div className="flex justify-between items-center">
@@ -832,11 +810,17 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({
           <div className="mt-2 text-sm text-green-700">
             <div className="flex justify-between">
               <span>{t("admin.orders.form.activitiesCartonPrice")}:</span>
-              <span>€{getActivityAndBasePrices().toFixed(2)}</span>
+              <span>€{getCartonPriceTotal().toFixed(2)}</span>
             </div>
+            {getBasePriceTotal() !== 0 && (
+              <div className="flex justify-between">
+                <span>{t("admin.orders.form.basePrice")}:</span>
+                <span>€{getBasePriceTotal().toFixed(2)}</span>
+              </div>
+            )}
             <div className="flex justify-between">
               <span>{t("admin.orders.form.articlesTotalPrice")}:</span>
-              <span>€{getContainerPrices().toFixed(2)}</span>
+              <span>€{getArticlePriceTotal().toFixed(2)}</span>
             </div>
           </div>
         </div>
@@ -852,7 +836,7 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({
       <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogContent className="w-[95vw] max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{t("teamLeader.orders.createOrder")}</DialogTitle>
+          <DialogTitle>{t("admin.orders.form.addNewOrder")}</DialogTitle>
           <div className="flex justify-center mt-4">
             <div className="flex items-center space-x-2">
               {[1, 2, 3, 4].map((step) => (

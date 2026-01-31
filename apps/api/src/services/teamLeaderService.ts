@@ -126,7 +126,8 @@ export const getTeamMembersByLeader = async (employeeId: string) => {
   const teamMembers = await prisma.teamMember.findMany({
     where: {
       team: { teamLeaderId: employeeId },
-      isActive: true
+      isActive: true,
+      employeeId: { not: employeeId } // Explicitly exclude the team leader
     },
     select: {
       employee: {
@@ -139,6 +140,7 @@ export const getTeamMembersByLeader = async (employeeId: string) => {
       }
     }
   });
+  
   return teamMembers.map(member => member.employee);
 };
 

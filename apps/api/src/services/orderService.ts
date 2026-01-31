@@ -80,8 +80,8 @@ export const getOrderByIdService = async (id: string) => {
   return order;
 };
 
-export const createOrderService = async (data: OrderCreateInput & { assignedEmployeeIds?: string[]; activities?: Array<{ activityId: string; quantity?: number; basePrice?: number }>; customerId: string; templateData?: Record<string, string> | null; createdBySubAccountId?: string; cartonQuantity?: number; articleQuantity?: number; containers?: Array<{ serialNumber: string; cartonQuantity: number; articleQuantity: number; cartonPrice: number; articlePrice: number }> }, createdBy?: string) => {
-  let { assignedEmployeeIds, activities, customerId, templateData, createdBySubAccountId, cartonQuantity, articleQuantity, containers, ...orderData } = data;
+export const createOrderService = async (data: OrderCreateInput & { assignedEmployeeIds?: string[]; activities?: Array<{ activityId: string; quantity?: number; basePrice?: number; articleBasePrice?: number }>; customerId: string; templateData?: Record<string, string> | null; createdBySubAccountId?: string; cartonQuantity?: number; articleQuantity?: number; containers?: Array<{ serialNumber: string; cartonQuantity: number; articleQuantity: number; cartonPrice: number; articlePrice: number }>; totalPrice?: number }, createdBy?: string) => {
+  let { assignedEmployeeIds, activities, customerId, templateData, createdBySubAccountId, cartonQuantity, articleQuantity, containers, totalPrice, ...orderData } = data;
 
   console.log('Creating order with data:', { containers: containers?.length || 0, containerData: containers }); // Debug log
 
@@ -212,6 +212,7 @@ export const createOrderService = async (data: OrderCreateInput & { assignedEmpl
               unitPrice: priceResult.price.toNumber(),
               lineTotal: priceResult.price.toNumber(),
               basePrice: activity.basePrice ? new Decimal(activity.basePrice) : new Decimal(0),
+              articleBasePrice: activity.articleBasePrice ? new Decimal(activity.articleBasePrice) : new Decimal(0),
 
               // Copied fields
               name: definition.name,
@@ -323,10 +324,10 @@ export const createOrderService = async (data: OrderCreateInput & { assignedEmpl
 
 export const updateOrderService = async (
   id: string,
-  data: OrderUpdateInput & { assignedEmployeeIds?: string[]; activities?: Array<{ activityId: string; quantity?: number; basePrice?: number }>; templateData?: Record<string, string> | null; cartonQuantity?: number; articleQuantity?: number; containers?: Array<{ serialNumber: string; cartonQuantity: number; articleQuantity: number; cartonPrice: number; articlePrice: number }> },
+  data: OrderUpdateInput & { assignedEmployeeIds?: string[]; activities?: Array<{ activityId: string; quantity?: number; basePrice?: number; articleBasePrice?: number }>; templateData?: Record<string, string> | null; cartonQuantity?: number; articleQuantity?: number; containers?: Array<{ serialNumber: string; cartonQuantity: number; articleQuantity: number; cartonPrice: number; articlePrice: number }>; totalPrice?: number },
   updatedBy?: string
 ) => {
-  let { assignedEmployeeIds, activities, templateData, cartonQuantity, articleQuantity, containers, ...orderData } = data;
+  let { assignedEmployeeIds, activities, templateData, cartonQuantity, articleQuantity, containers, totalPrice, ...orderData } = data;
 
   // Clean empty strings to undefined for optional DateTime fields
   if (orderData.startTime === '') orderData.startTime = undefined;
@@ -432,6 +433,7 @@ export const updateOrderService = async (
                 unitPrice: priceResult.price.toNumber(),
                 lineTotal: priceResult.price.toNumber(),
                 basePrice: activity.basePrice ? new Decimal(activity.basePrice) : new Decimal(0),
+                articleBasePrice: activity.articleBasePrice ? new Decimal(activity.articleBasePrice) : new Decimal(0),
 
                 // Copied fields
                 name: definition.name,
