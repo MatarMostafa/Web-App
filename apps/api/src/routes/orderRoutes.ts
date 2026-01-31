@@ -469,6 +469,20 @@ router.get(
 
       console.log(`Found ${containers.length} containers for order ${orderId}`);
 
+      // Fetch order and its activities to calculate basePrice
+      const order = await prisma.order.findUnique({
+        where: { id: orderId },
+        include: {
+          customerActivities: {
+            where: { isActive: true }
+          }
+        }
+      });
+
+      const orderBasePrice = order?.customerActivities.reduce((sum, activity) => {
+        return sum + (Number(activity.basePrice) || 0);
+      }, 0) || 0;
+
       const formattedContainers = containers.map(container => ({
         id: container.id,
         serialNumber: container.serialNumber,
@@ -476,6 +490,7 @@ router.get(
         articleQuantity: container.articleQuantity,
         cartonPrice: Number(container.cartonPrice),
         articlePrice: Number(container.articlePrice),
+        basePrice: orderBasePrice,
         articles: container.articles.map(article => ({
           articleName: article.articleName,
           quantity: article.quantity,
