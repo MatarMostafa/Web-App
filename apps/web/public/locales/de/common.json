@@ -1978,11 +1978,34 @@
       "selectType": "Typ auswählen",
       "defaultPrice": "Standardpreis (EUR)",
       "defaultPriceRequired": "Standardpreis ist erforderlich",
+      "basePrice": "Basispreis (€)",
+      "basePricePlaceholder": "Basispreis für Container-Be-/Entladung",
+      "basePriceHelp": "Dies ist der Basispreis für Container-Be-/Entladeaktivitäten",
+      "articleBasePrice": "Artikel-Basispreis (€)",
+      "articleBasePricePlaceholder": "Basispreis für Artikel in dieser Aktivität",
+      "articleBasePriceHelp": "Dieser Preis wird als Standard-Artikelpreis bei der Auftragserstellung verwendet",
+      "priceRanges": "Preisspannen",
+      "addRange": "Bereich hinzufügen",
+      "minQty": "Min. Menge",
+      "maxQty": "Max. Menge",
+      "price": "Preis",
+      "validFrom": "Gültig ab",
       "unit": "Einheit",
       "creating": "Wird erstellt...",
       "updating": "Wird aktualisiert...",
       "create": "Erstellen",
-      "update": "Aktualisieren"
+      "update": "Aktualisieren",
+      "addTitle": "Neue Aktivität hinzufügen",
+      "editTitle": "Aktivität bearbeiten"
+    },
+    "types": {
+      "CONTAINER_UNLOADING": "Container-Entladung",
+      "CONTAINER_LOADING": "Container-Beladung",
+      "WRAPPING": "Folierung",
+      "REPACKING": "Umpacken",
+      "CROSSING": "Crossing",
+      "LABELING": "Etikettierung",
+      "OTHER": "Sonstiges"
     },
     "messages": {
       "createSuccess": "Kundenaktivität erstellt",
@@ -1993,7 +2016,9 @@
       "deleteError": "Fehler beim Löschen der Aktivität",
       "loadError": "Fehler beim Laden der Aktivitäten",
       "noActivities": "Keine Aktivitäten gefunden",
-      "noActivitiesDesc": "Aktivitäten werden hier angezeigt, wenn verfügbar"
+      "noActivitiesDesc": "Aktivitäten werden hier angezeigt, wenn verfügbar",
+      "noPricing": "Keine Preisgestaltung",
+      "from": "ab"
     }
   },
   "customerExport": {
