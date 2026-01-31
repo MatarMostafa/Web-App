@@ -19,6 +19,7 @@ interface Order {
   description?: string;
   status: string;
   scheduledDate: string;
+  requiredEmployees: number;
   priority: number;
   customerId: string;
   customer: {
@@ -28,7 +29,9 @@ interface Order {
     name: string;
   };
   employeeAssignments: Array<{
+    employeeId?: string;
     employee: {
+      id: string;
       firstName?: string;
       lastName?: string;
       employeeCode: string;

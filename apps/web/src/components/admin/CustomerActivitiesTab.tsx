@@ -30,15 +30,7 @@ interface Activity {
   }>;
 }
 
-const ACTIVITY_TYPE_LABELS = {
-  [ActivityType.CONTAINER_UNLOADING]: 'Container Unloading',
-  [ActivityType.CONTAINER_LOADING]: 'Container Loading',
-  [ActivityType.WRAPPING]: 'Wrapping',
-  [ActivityType.REPACKING]: 'Repacking',
-  [ActivityType.CROSSING]: 'Crossing',
-  [ActivityType.LABELING]: 'Labeling',
-  [ActivityType.OTHER]: 'Other'
-};
+
 
 interface CustomerActivitiesTabProps {
   customerId: string;
@@ -74,6 +66,7 @@ export const CustomerActivitiesTab = ({ customerId }: CustomerActivitiesTabProps
     code: string;
     unit: string;
     basePrice: number;
+    articleBasePrice: number;
     priceRanges: Array<{ minQuantity: number; maxQuantity: number; price: number; validFrom: string }>;
   }): Promise<void> => {
     try {
@@ -84,6 +77,7 @@ export const CustomerActivitiesTab = ({ customerId }: CustomerActivitiesTabProps
         code: data.code || undefined,
         unit: data.unit,
         basePrice: data.basePrice,
+        articleBasePrice: data.articleBasePrice,
         customerId
       });
 
@@ -116,6 +110,7 @@ export const CustomerActivitiesTab = ({ customerId }: CustomerActivitiesTabProps
     code: string;
     unit: string;
     basePrice: number;
+    articleBasePrice: number;
     priceRanges: Array<{ minQuantity: number; maxQuantity: number; price: number; validFrom: string }>;
   }) => {
     if (!editingActivity) return;
@@ -126,7 +121,8 @@ export const CustomerActivitiesTab = ({ customerId }: CustomerActivitiesTabProps
         type: data.type,
         code: data.code,
         unit: data.unit,
-        basePrice: data.basePrice
+        basePrice: data.basePrice,
+        articleBasePrice: data.articleBasePrice
       });
 
       // Delete existing customer prices
@@ -177,9 +173,9 @@ export const CustomerActivitiesTab = ({ customerId }: CustomerActivitiesTabProps
   };
 
   const formatPriceRanges = (prices?: Activity['prices']) => {
-    if (!prices || prices.length === 0) return 'No pricing';
+    if (!prices || prices.length === 0) return t('activities.messages.noPricing');
     return prices.map(p => {
-      const validFrom = p.effectiveFrom ? ` (from ${new Date(p.effectiveFrom).toLocaleDateString()})` : '';
+      const validFrom = p.effectiveFrom ? ` (${t('activities.messages.from')} ${new Date(p.effectiveFrom).toLocaleDateString()})` : '';
       return `${p.minQuantity}-${p.maxQuantity}: €${p.price}${validFrom}`;
     }).join(', ');
   };
@@ -212,7 +208,7 @@ export const CustomerActivitiesTab = ({ customerId }: CustomerActivitiesTabProps
                   <TableHead className="hidden sm:table-cell">{t('activities.table.type')}</TableHead>
                   <TableHead className="hidden lg:table-cell">{t('activities.table.code')}</TableHead>
                   <TableHead className="hidden sm:table-cell">{t('activities.table.unit')}</TableHead>
-                  <TableHead>Price Ranges</TableHead>
+                  <TableHead>{t('activities.form.priceRanges')}</TableHead>
                   <TableHead className="hidden md:table-cell">{t('activities.table.status')}</TableHead>
                   <TableHead className="text-right">{t('activities.table.actions')}</TableHead>
                 </TableRow>
@@ -221,7 +217,7 @@ export const CustomerActivitiesTab = ({ customerId }: CustomerActivitiesTabProps
                 {activities.map((activity: Activity) => (
                   <TableRow key={activity.id}>
                     <TableCell className="font-medium">{activity.name}</TableCell>
-                    <TableCell className="hidden sm:table-cell">{ACTIVITY_TYPE_LABELS[activity.type]}</TableCell>
+                    <TableCell className="hidden sm:table-cell">{t(`activities.types.${activity.type}`)}</TableCell>
                     <TableCell className="hidden lg:table-cell">{activity.code || '-'}</TableCell>
                     <TableCell className="hidden sm:table-cell">{activity.unit}</TableCell>
                     <TableCell className="max-w-[120px] sm:max-w-xs truncate" title={formatPriceRanges(activity.prices)}>

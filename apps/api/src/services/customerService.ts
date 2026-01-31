@@ -106,6 +106,30 @@ export const getCustomerOrderByIdService = async (customerId: string, orderId: s
   // Get customer activities for this order (filtered by customer)
   const customerActivities = await CustomerActivityService.getOrderCustomerActivities(orderId);
 
+  // Find matching activity definitions by matching name, type, and unit
+  const activityDefinitions = await prisma.customerActivity.findMany({
+    where: {
+      customerId: order.customerId,
+      orderId: null, // Only get definitions
+      isActive: true
+    },
+    select: {
+      id: true,
+      name: true,
+      type: true,
+      unit: true
+    }
+  });
+
+  const activityIds = [...new Set(customerActivities.map((orderActivity: any) => {
+    const matchingDef = activityDefinitions.find(def => 
+      def.name === orderActivity.name && 
+      def.type === orderActivity.type && 
+      def.unit === orderActivity.unit
+    );
+    return matchingDef?.id;
+  }).filter(Boolean))];
+
   // Format containers for customer view (without pricing information)
   const formattedContainers = order.containers.map(container => ({
     id: container.id,
@@ -122,6 +146,7 @@ export const getCustomerOrderByIdService = async (customerId: string, orderId: s
   return {
     ...filterOrderForCustomer(order),
     customerActivities: customerActivities,
+    activityIds: activityIds,
     descriptionData: order.descriptionData,
     containers: formattedContainers
   };
@@ -268,8 +293,9 @@ export const createCustomerOrderService = async (userId: string, orderData: any)
     processedContainers = await Promise.all(
       processedContainers.map(async (container: any) => {
         let cartonPrice = 0;
+        let articlePrice = 0;
         
-        // Calculate carton price based on selected activities and quantity
+        // Calculate prices based on selected activities and quantity
         for (const activity of orderData.activities) {
           try {
             const priceResult = await getPriceForCustomer(
@@ -279,6 +305,14 @@ export const createCustomerOrderService = async (userId: string, orderData: any)
               new Date(orderData.scheduledDate)
             );
             cartonPrice += priceResult.price.toNumber();
+
+            // Fetch activity definition to get articleBasePrice
+            const definition = await prisma.customerActivity.findUnique({
+              where: { id: activity.activityId }
+            });
+            if (definition) {
+              articlePrice += Number(definition.articleBasePrice) || 0;
+            }
           } catch (error) {
             console.warn(`Could not calculate price for activity ${activity.activityId}:`, error);
           }
@@ -286,7 +320,8 @@ export const createCustomerOrderService = async (userId: string, orderData: any)
 
         return {
           ...container,
-          cartonPrice
+          cartonPrice,
+          articlePrice
         };
       })
     );
@@ -307,7 +342,12 @@ export const createCustomerOrderService = async (userId: string, orderData: any)
     },
     customerId: customerId,
     createdBySubAccountId: createdBySubAccountId, // Auto-detected from user
-    activities: orderData.activities || [],
+    activities: orderData.activities.map((a: any) => ({
+      ...a,
+      // Ensure we have the base prices for storing in OrderCustomerActivity
+      basePrice: a.basePrice ?? 0,
+      articleBasePrice: a.articleBasePrice ?? 0
+    })) || [],
     containers: processedContainers,
     cartonQuantity: orderData.cartonQuantity,
     articleQuantity: orderData.articleQuantity,
@@ -342,8 +382,9 @@ export const updateCustomerOrderService = async (orderId: string, orderData: any
     processedContainers = await Promise.all(
       processedContainers.map(async (container: any) => {
         let cartonPrice = 0;
+        let articlePrice = 0;
         
-        // Calculate carton price based on selected activities and quantity
+        // Calculate prices based on selected activities and quantity
         for (const activity of orderData.activities) {
           try {
             const priceResult = await getPriceForCustomer(
@@ -353,6 +394,14 @@ export const updateCustomerOrderService = async (orderId: string, orderData: any
               new Date(orderData.scheduledDate)
             );
             cartonPrice += priceResult.price.toNumber();
+
+            // Fetch activity definition to get articleBasePrice
+            const definition = await prisma.customerActivity.findUnique({
+              where: { id: activity.activityId }
+            });
+            if (definition) {
+              articlePrice += Number(definition.articleBasePrice) || 0;
+            }
           } catch (error) {
             console.warn(`Could not calculate price for activity ${activity.activityId}:`, error);
           }
@@ -360,7 +409,8 @@ export const updateCustomerOrderService = async (orderId: string, orderData: any
 
         return {
           ...container,
-          cartonPrice
+          cartonPrice,
+          articlePrice
         };
       })
     );
@@ -373,7 +423,12 @@ export const updateCustomerOrderService = async (orderId: string, orderData: any
     endTime: orderData.endTime,
     location: orderData.location || "",
     specialInstructions: orderData.specialInstructions || "",
-    activities: orderData.activities || [],
+    activities: orderData.activities.map((a: any) => ({
+      ...a,
+      // Ensure we have the base prices for storing in OrderCustomerActivity
+      basePrice: a.basePrice ?? 0,
+      articleBasePrice: a.articleBasePrice ?? 0
+    })) || [],
     containers: processedContainers,
     cartonQuantity: orderData.cartonQuantity,
     articleQuantity: orderData.articleQuantity,

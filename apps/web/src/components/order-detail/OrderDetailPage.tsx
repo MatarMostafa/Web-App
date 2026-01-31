@@ -342,6 +342,26 @@ export const OrderDetailPage: React.FC<OrderDetailPageProps> = ({
                         </div>
                       </div>
                     </div>
+
+                    {container.basePrice !== 0 && (
+                      <div className="bg-muted/50 p-3 rounded col-span-1 md:col-span-2">
+                        <div className="flex justify-between items-center">
+                          <div>
+                            <p className="text-sm font-medium">{t("order.activityBasePrice")}</p>
+                            <p className="text-lg font-semibold">€{Number(container.basePrice).toFixed(2)}</p>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-sm text-muted-foreground">{t("order.total")}</p>
+                            <p className="text-sm font-semibold text-green-600">
+                              €{Number(container.basePrice).toFixed(2)}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              ({t("admin.orders.form.fromActivityBasePrice")})
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                   
                   {container.articles && container.articles.length > 0 && (
@@ -370,6 +390,7 @@ export const OrderDetailPage: React.FC<OrderDetailPageProps> = ({
                       <span className="text-green-600">
                         €{(
                           Number(container.cartonPrice) +
+                          Number(container.basePrice || 0) +
                           (container.articleQuantity * Number(container.articlePrice)) +
                           (container.articles?.reduce((sum: number, article: any) => 
                             sum + (article.quantity * Number(article.price)), 0) || 0)
@@ -435,6 +456,7 @@ export const OrderDetailPage: React.FC<OrderDetailPageProps> = ({
                   €{containers.reduce((sum: number, container: any) => 
                     sum + 
                     Number(container.cartonPrice) +
+                    Number(container.basePrice || 0) +
                     (container.articleQuantity * Number(container.articlePrice)) +
                     (container.articles?.reduce((articleSum: number, article: any) => 
                       articleSum + (article.quantity * Number(article.price)), 0) || 0)
@@ -449,6 +471,7 @@ export const OrderDetailPage: React.FC<OrderDetailPageProps> = ({
                     €{containers.reduce((sum: number, container: any) => 
                       sum + 
                       Number(container.cartonPrice) +
+                      Number(container.basePrice || 0) +
                       (container.articleQuantity * Number(container.articlePrice)) +
                       (container.articles?.reduce((articleSum: number, article: any) => 
                         articleSum + (article.quantity * Number(article.price)), 0) || 0)
