@@ -26,6 +26,7 @@ interface Container {
   articleQuantity: number;
   cartonPrice: number;
   articlePrice: number;
+  basePrice: number;
 }
 
 interface CreateOrderDialogProps {
@@ -41,6 +42,7 @@ interface CustomerActivity {
   description?: string;
   unit: string;
   basePrice?: number;
+  articleBasePrice?: number;
   unitPrice?: number;
   customerPrices?: Array<{
     minQuantity: number;
@@ -130,7 +132,13 @@ const CreateOrderDialog: React.FC<CreateOrderDialogProps> = ({
           const processedActivities = data.map((activity: any) => {
             const prices = activity.prices || [];
             const lowestPrice = prices.length > 0 ? Math.min(...prices.map((p: any) => Number(p.price))) : 0;
-            return { ...activity, customerPrices: prices, unitPrice: lowestPrice };
+            return { 
+              ...activity, 
+              customerPrices: prices, 
+              unitPrice: lowestPrice,
+              basePrice: Number(activity.basePrice) || 0,
+              articleBasePrice: Number(activity.articleBasePrice) || 0
+            };
           });
           setActivities(processedActivities);
         } else {
@@ -232,7 +240,8 @@ const CreateOrderDialog: React.FC<CreateOrderDialogProps> = ({
           return {
             activityId,
             quantity: containers.reduce((sum, c) => sum + c.cartonQuantity, 0),
-            basePrice: Number(activity?.basePrice) || 0
+            basePrice: Number(activity?.basePrice) || 0,
+            articleBasePrice: Number(activity?.articleBasePrice) || 0
           };
         }),
         containers,
@@ -260,11 +269,12 @@ const CreateOrderDialog: React.FC<CreateOrderDialogProps> = ({
       }
 
       const result = await response.json();
-      console.log("Order created successfully:", result);
+      
       
       toast.success(t("customerPortal.createOrder.orderCreatedSuccess"));
-      setOpen(false);
-      resetFormData();
+
+      setTimeout(() => setOpen(false), 0);
+
       onOrderCreated?.();
     } catch (error) {
       console.error("Error creating order:", error);
@@ -291,13 +301,18 @@ const CreateOrderDialog: React.FC<CreateOrderDialogProps> = ({
             const cartonPrice = calculateCartonPriceForQuantity(container.cartonQuantity, newActivities);
             const articlePrice = newActivities.reduce((total, activityId) => {
               const activity = activities.find(a => a.id === activityId);
+              return total + (Number(activity?.articleBasePrice) || 0);
+            }, 0);
+            const basePrice = newActivities.reduce((total, activityId) => {
+              const activity = activities.find(a => a.id === activityId);
               return total + (Number(activity?.basePrice) || 0);
             }, 0);
             
             return {
               ...container,
               cartonPrice,
-              articlePrice
+              articlePrice,
+              basePrice
             };
           })
         );
@@ -385,6 +400,11 @@ const CreateOrderDialog: React.FC<CreateOrderDialogProps> = ({
       // Calculate default article price from selected activities' base prices
       const defaultArticlePrice = selectedActivities.reduce((total, activityId) => {
         const activity = activities.find(a => a.id === activityId);
+        return total + (Number(activity?.articleBasePrice) || 0);
+      }, 0);
+
+      const defaultBasePrice = selectedActivities.reduce((total, activityId) => {
+        const activity = activities.find(a => a.id === activityId);
         return total + (Number(activity?.basePrice) || 0);
       }, 0);
 
@@ -393,7 +413,8 @@ const CreateOrderDialog: React.FC<CreateOrderDialogProps> = ({
         cartonQuantity: 1,
         articleQuantity: 1,
         cartonPrice: calculateCartonPriceForQuantity(1),
-        articlePrice: defaultArticlePrice
+        articlePrice: defaultArticlePrice,
+        basePrice: defaultBasePrice
       };
       setContainers([...containers, newContainer]);
     };
@@ -408,14 +429,19 @@ const CreateOrderDialog: React.FC<CreateOrderDialogProps> = ({
         updated[index].cartonPrice = cartonPrice;
       }
       
-      // Update article price based on selected activities' base prices
-      if (field === 'articleQuantity') {
-        const articlePrice = selectedActivities.reduce((total, activityId) => {
-          const activity = activities.find(a => a.id === activityId);
-          return total + (Number(activity?.basePrice) || 0);
-        }, 0);
-        updated[index].articlePrice = articlePrice;
-      }
+      // Update article price based on selected activities
+      const calculatedArticlePrice = selectedActivities.reduce((total, activityId) => {
+        const activity = activities.find(a => a.id === activityId);
+        return total + (Number(activity?.articleBasePrice) || 0);
+      }, 0);
+
+      const calculatedBasePrice = selectedActivities.reduce((total, activityId) => {
+        const activity = activities.find(a => a.id === activityId);
+        return total + (Number(activity?.basePrice) || 0);
+      }, 0);
+
+      updated[index].articlePrice = calculatedArticlePrice;
+      updated[index].basePrice = calculatedBasePrice;
       
       setContainers(updated);
     };
