@@ -371,7 +371,7 @@ export const EmployeeOrderDetailPage: React.FC<
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
               <CardTitle className="text-2xl">
-                {t("order.order")} #{order.orderNumber}
+                {order?.customer?.companyName}
               </CardTitle>
               <p className="text-muted-foreground mt-1">
                 {order.description || t("employee.orderDetail.noDescription")}
@@ -428,9 +428,9 @@ export const EmployeeOrderDetailPage: React.FC<
               <div className="flex items-center gap-2">
                 <User className="h-4 w-4 text-muted-foreground" />
                 <div>
-                  <p className="text-sm font-medium">{t("order.company")}</p>
+                  <p className="text-sm font-medium">{t("order.order")}</p>
                   <p className="text-sm text-muted-foreground">
-                    {order.customer.companyName}
+                      #{order.orderNumber}
                   </p>
                 </div>
               </div>

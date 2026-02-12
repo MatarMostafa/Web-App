@@ -119,25 +119,6 @@ export const AddActivityDialog = ({ open, onOpenChange, customerId, onSubmit }: 
             </div>
           </div>
           
-          {/* Base Price - Only for Container Loading/Unloading */}
-          {(formData.type === ActivityType.CONTAINER_LOADING || formData.type === ActivityType.CONTAINER_UNLOADING) && (
-            <div>
-              <Label>{t("activities.form.basePrice")} *</Label>
-              <Input
-                type="number"
-                step="0.01"
-                min="0"
-                value={formData.basePrice}
-                onChange={(e) => setFormData({ ...formData, basePrice: parseFloat(e.target.value) || 0 })}
-                placeholder={t("activities.form.basePricePlaceholder")}
-                required
-              />
-              <p className="text-xs text-muted-foreground mt-1">
-                {t("activities.form.basePriceHelp")}
-              </p>
-            </div>
-          )}
-          
           <div>
             <Label>{t("activities.form.articleBasePrice")} *</Label>
             <Input

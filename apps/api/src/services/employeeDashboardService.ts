@@ -32,7 +32,12 @@ export const getCurrentWeekOrders = async (userId: string) => {
       include: {
         order: {
           include: {
-            customerActivities: true
+            customerActivities: true,
+            customer: {
+              select: {
+                companyName: true
+              }
+            }
           }
         },
       },
@@ -48,6 +53,9 @@ export const getCurrentWeekOrders = async (userId: string) => {
       priority: assignment.order!.priority,
       estimatedHours: assignment.order!.estimatedHours?.toNumber(),
       actualHours: assignment.order!.actualHours?.toNumber(),
+      customer: assignment.order!.customer ? {
+        companyName: assignment.order!.customer.companyName
+      } : undefined,
       assignment: {
         id: assignment.id,
         assignedDate: assignment.assignedDate.toISOString(),
@@ -77,7 +85,12 @@ export const getArchivedOrders = async (userId: string) => {
       include: {
         order: {
           include: {
-            customerActivities: true
+            customerActivities: true,
+            customer: {
+              select: {
+                companyName: true
+              }
+            }
           }
         },
       },
@@ -94,6 +107,9 @@ export const getArchivedOrders = async (userId: string) => {
       priority: assignment.order!.priority,
       estimatedHours: assignment.order!.estimatedHours?.toNumber(),
       actualHours: assignment.order!.actualHours?.toNumber(),
+      customer: assignment.order!.customer ? {
+        companyName: assignment.order!.customer.companyName
+      } : undefined,
       assignment: {
         id: assignment.id,
         assignedDate: assignment.assignedDate.toISOString(),

@@ -235,7 +235,7 @@ export const updateActivity = async (req: Request, res: Response) => {
       unit
     };
 
-    // Update basePrice if provided (only for container loading/unloading)
+    // Update basePrice if provided, defaults to 0
     if (basePrice !== undefined && basePrice !== null) {
       if (basePrice < 0) {
         return res.status(400).json({ error: 'basePrice must be 0 or greater' });
@@ -243,6 +243,9 @@ export const updateActivity = async (req: Request, res: Response) => {
       updateData.basePrice = new Decimal(basePrice);
     } else if (type !== ActivityType.CONTAINER_LOADING && type !== ActivityType.CONTAINER_UNLOADING) {
       // Set basePrice to 0 for non-container activities
+      updateData.basePrice = new Decimal(0);
+    } else {
+      // Default to 0 if not provided
       updateData.basePrice = new Decimal(0);
     }
 
@@ -306,14 +309,13 @@ export const createActivity = async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'Invalid activity type' });
     }
 
-    // For container loading/unloading, basePrice is required
-    if ((type === ActivityType.CONTAINER_LOADING || type === ActivityType.CONTAINER_UNLOADING)) {
-      if (basePrice === undefined || basePrice === null) {
-        return res.status(400).json({ error: 'basePrice is required for container loading/unloading activities' });
-      }
-      if (basePrice < 0) {
-        return res.status(400).json({ error: 'basePrice must be 0 or greater' });
-      }
+    // For container loading/unloading, basePrice is optional, defaults to 0
+    const finalBasePrice = (type === ActivityType.CONTAINER_LOADING || type === ActivityType.CONTAINER_UNLOADING) 
+      ? (basePrice !== undefined && basePrice !== null ? basePrice : 0)
+      : 0;
+
+    if (finalBasePrice < 0) {
+      return res.status(400).json({ error: 'basePrice must be 0 or greater' });
     }
 
     // Check if activity with same name already exists FOR THIS CUSTOMER
@@ -338,9 +340,7 @@ export const createActivity = async (req: Request, res: Response) => {
         code: code || null,
         description: description || null,
         unit,
-        basePrice: (type === ActivityType.CONTAINER_LOADING || type === ActivityType.CONTAINER_UNLOADING) 
-          ? new Decimal(basePrice) 
-          : new Decimal(0),
+        basePrice: new Decimal(finalBasePrice),
         articleBasePrice: new Decimal(articleBasePrice),
         isActive: true
       }

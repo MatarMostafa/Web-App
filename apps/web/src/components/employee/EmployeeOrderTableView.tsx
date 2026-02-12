@@ -19,6 +19,9 @@ interface Assignment {
     scheduledDate: string;
     status: string;
     priority: number;
+    customer?: {
+      companyName: string;
+    };
   };
 }
 
@@ -93,7 +96,7 @@ const EmployeeOrderTableView: React.FC<EmployeeOrderTableViewProps> = ({
               >
                 <td className="p-4">
                   <div>
-                    <div className="font-medium">{assignment.order.description || 'No description'}</div>
+                    <div className="font-medium">{assignment.order.customer?.companyName || 'Kein Kunde'}</div>
                     <button
                       onClick={() => window.location.href = `/dashboard-employee/orders/${assignment.order.id}`}
                       className="text-sm text-primary hover:underline cursor-pointer"
