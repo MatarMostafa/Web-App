@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { useTranslation } from '@/hooks/useTranslation';
 import { ActivityType } from '@/types/order';
 import { Plus, Trash2 } from 'lucide-react';
+import { toast } from 'react-hot-toast';
 
 interface Activity {
   id: string;
@@ -82,6 +83,34 @@ export const EditActivityDialog = ({ open, onOpenChange, activity, customerId, o
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate required fields
+    if (!formData.name.trim()) {
+      toast.error(t('activities.validation.nameRequired'));
+      return;
+    }
+    if (!formData.unit.trim()) {
+      toast.error(t('activities.validation.unitRequired'));
+      return;
+    }
+    
+    // Validate price ranges
+    for (let i = 0; i < priceRanges.length; i++) {
+      const range = priceRanges[i];
+      if (range.minQuantity <= 0 || range.maxQuantity <= 0) {
+        toast.error(t('activities.validation.quantityPositive'));
+        return;
+      }
+      if (range.minQuantity > range.maxQuantity) {
+        toast.error(t('activities.validation.minMaxQuantity'));
+        return;
+      }
+      if (range.price < 0) {
+        toast.error(t('activities.validation.pricePositive'));
+        return;
+      }
+    }
+    
     setLoading(true);
     try {
       await onSubmit({ ...formData, priceRanges });
@@ -155,15 +184,14 @@ export const EditActivityDialog = ({ open, onOpenChange, activity, customerId, o
           </div>
           
           <div>
-            <Label>{t("activities.form.articleBasePrice")} *</Label>
+            <Label>{t("activities.form.articleBasePrice")}</Label>
             <Input
               type="number"
               step="0.01"
               min="0"
-              value={formData.articleBasePrice}
-              onChange={(e) => setFormData({ ...formData, articleBasePrice: parseFloat(e.target.value) || 0 })}
+              value={formData.articleBasePrice || ''}
+              onChange={(e) => setFormData({ ...formData, articleBasePrice: e.target.value ? parseFloat(e.target.value) : 0 })}
               placeholder={t("activities.form.articleBasePricePlaceholder")}
-              required
             />
             <p className="text-xs text-muted-foreground mt-1">
               {t("activities.form.articleBasePriceHelp")}
@@ -184,16 +212,20 @@ export const EditActivityDialog = ({ open, onOpenChange, activity, customerId, o
                   <Label className="text-xs">{t("activities.form.minQty")}</Label>
                   <Input
                     type="number"
+                    min="1"
                     value={range.minQuantity}
                     onChange={(e) => updatePriceRange(index, 'minQuantity', Number(e.target.value))}
+                    required
                   />
                 </div>
                 <div>
                   <Label className="text-xs">{t("activities.form.maxQty")}</Label>
                   <Input
                     type="number"
+                    min="1"
                     value={range.maxQuantity}
                     onChange={(e) => updatePriceRange(index, 'maxQuantity', Number(e.target.value))}
+                    required
                   />
                 </div>
                 <div>
@@ -201,8 +233,10 @@ export const EditActivityDialog = ({ open, onOpenChange, activity, customerId, o
                   <Input
                     type="number"
                     step="0.01"
+                    min="0"
                     value={range.price}
                     onChange={(e) => updatePriceRange(index, 'price', Number(e.target.value))}
+                    required
                   />
                 </div>
                 <div>
@@ -211,6 +245,7 @@ export const EditActivityDialog = ({ open, onOpenChange, activity, customerId, o
                     type="date"
                     value={range.validFrom}
                     onChange={(e) => updatePriceRange(index, 'validFrom', e.target.value)}
+                    required
                   />
                 </div>
                 <Button

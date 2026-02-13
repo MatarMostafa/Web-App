@@ -1964,6 +1964,13 @@
       "noActivitiesDesc": "Activities will appear here when available",
       "noPricing": "No pricing",
       "from": "from"
+    },
+    "validation": {
+      "nameRequired": "Activity name is required",
+      "unitRequired": "Unit is required",
+      "quantityPositive": "Quantities must be positive",
+      "minMaxQuantity": "Minimum quantity cannot be greater than maximum quantity",
+      "pricePositive": "Price must be 0 or greater"
     }
   },
   "customerExport": {
