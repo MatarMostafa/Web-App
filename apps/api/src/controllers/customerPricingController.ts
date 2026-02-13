@@ -249,12 +249,15 @@ export const updateActivity = async (req: Request, res: Response) => {
       updateData.basePrice = new Decimal(0);
     }
 
-    // Update articleBasePrice if provided
+    // Update articleBasePrice if provided, defaults to 0
     if (articleBasePrice !== undefined && articleBasePrice !== null) {
       if (articleBasePrice < 0) {
         return res.status(400).json({ error: 'articleBasePrice must be 0 or greater' });
       }
       updateData.articleBasePrice = new Decimal(articleBasePrice);
+    } else {
+      // Default to 0 if not provided
+      updateData.articleBasePrice = new Decimal(0);
     }
 
     const activity = await prisma.customerActivity.update({
@@ -297,12 +300,11 @@ export const createActivity = async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'name and type are required' });
     }
 
-    if (articleBasePrice === undefined || articleBasePrice === null) {
-      return res.status(400).json({ error: 'articleBasePrice is required' });
-    }
+    // articleBasePrice is optional, defaults to 0
+    const finalArticleBasePrice = (articleBasePrice !== undefined && articleBasePrice !== null) ? articleBasePrice : 0;
 
-    if (new Decimal(articleBasePrice).lte(0)) {
-      return res.status(400).json({ error: 'articleBasePrice must be greater than 0' });
+    if (finalArticleBasePrice < 0) {
+      return res.status(400).json({ error: 'articleBasePrice must be 0 or greater' });
     }
 
     if (!Object.values(ActivityType).includes(type)) {
@@ -341,7 +343,7 @@ export const createActivity = async (req: Request, res: Response) => {
         description: description || null,
         unit,
         basePrice: new Decimal(finalBasePrice),
-        articleBasePrice: new Decimal(articleBasePrice),
+        articleBasePrice: new Decimal(finalArticleBasePrice),
         isActive: true
       }
     });
