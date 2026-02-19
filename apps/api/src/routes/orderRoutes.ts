@@ -453,23 +453,34 @@ router.get(
 router.get(
   "/:orderId/containers",
   authMiddleware,
-  roleMiddleware(["ADMIN", "TEAM_LEADER"]),
+  roleMiddleware(["ADMIN", "TEAM_LEADER", "EMPLOYEE"]),
   async (req: Request, res: Response) => {
     try {
       const { orderId } = req.params;
+      const userId = (req as any).user?.id;
       console.log(`Fetching containers for order: ${orderId}`);
 
       const containers = await prisma.container.findMany({
         where: { orderId },
         include: {
-          articles: true
+          articles: true,
+          employeeAssignments: {
+            include: {
+              employee: {
+                select: {
+                  id: true,
+                  firstName: true,
+                  lastName: true
+                }
+              }
+            }
+          }
         },
         orderBy: { createdAt: 'asc' }
       });
 
       console.log(`Found ${containers.length} containers for order ${orderId}`);
 
-      // Fetch order and its activities to calculate basePrice
       const order = await prisma.order.findUnique({
         where: { id: orderId },
         include: {
@@ -483,20 +494,37 @@ router.get(
         return sum + (Number(activity.basePrice) || 0);
       }, 0) || 0;
 
-      const formattedContainers = containers.map(container => ({
-        id: container.id,
-        serialNumber: container.serialNumber,
-        cartonQuantity: container.cartonQuantity,
-        articleQuantity: container.articleQuantity,
-        cartonPrice: Number(container.cartonPrice),
-        articlePrice: Number(container.articlePrice),
-        basePrice: orderBasePrice,
-        articles: container.articles.map(article => ({
-          articleName: article.articleName,
-          quantity: article.quantity,
-          price: Number(article.price)
-        }))
-      }));
+      // Get current user's employee record if they're an employee
+      let currentEmployeeId = null;
+      if ((req as any).user?.role === 'EMPLOYEE') {
+        const employee = await prisma.employee.findUnique({
+          where: { userId }
+        });
+        currentEmployeeId = employee?.id;
+      }
+
+      const formattedContainers = containers.map(container => {
+        const employeeAssignment = currentEmployeeId 
+          ? container.employeeAssignments.find(a => a.employeeId === currentEmployeeId)
+          : null;
+
+        return {
+          id: container.id,
+          serialNumber: container.serialNumber,
+          cartonQuantity: container.cartonQuantity,
+          articleQuantity: container.articleQuantity,
+          cartonPrice: Number(container.cartonPrice),
+          articlePrice: Number(container.articlePrice),
+          basePrice: orderBasePrice,
+          isStarted: employeeAssignment ? true : false,
+          isCompleted: employeeAssignment?.isCompleted || false,
+          articles: container.articles.map(article => ({
+            articleName: article.articleName,
+            quantity: article.quantity,
+            price: Number(article.price)
+          }))
+        };
+      });
 
       res.json({ success: true, data: formattedContainers });
     } catch (error) {

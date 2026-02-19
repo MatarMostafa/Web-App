@@ -19,6 +19,7 @@ interface ReportQuantitiesDialogProps {
   isOpen: boolean;
   onClose: () => void;
   orderId: string;
+  containerId?: string | null;
   onSubmit: (data: { reportedCartonQuantity: number; reportedArticleQuantity: number; notes?: string }) => void;
 }
 
@@ -26,22 +27,23 @@ export const ReportQuantitiesDialog: React.FC<ReportQuantitiesDialogProps> = ({
   isOpen,
   onClose,
   orderId,
+  containerId,
   onSubmit,
 }) => {
   const { t } = useTranslation();
-  const [containers, setContainers] = useState<Container[]>([]);
+  const [container, setContainer] = useState<Container | null>(null);
   const [reportedCartonQuantity, setReportedCartonQuantity] = useState<number>(0);
   const [reportedArticleQuantity, setReportedArticleQuantity] = useState<number>(0);
   const [notes, setNotes] = useState<string>("");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (isOpen) {
-      fetchContainers();
+    if (isOpen && containerId) {
+      fetchContainer();
     }
-  }, [isOpen, orderId]);
+  }, [isOpen, orderId, containerId]);
 
-  const fetchContainers = async () => {
+  const fetchContainer = async () => {
     setLoading(true);
     try {
       const { getSession } = await import("next-auth/react");
@@ -60,16 +62,16 @@ export const ReportQuantitiesDialog: React.FC<ReportQuantitiesDialogProps> = ({
       if (response.ok) {
         const data = await response.json();
         if (data.success) {
-          setContainers(data.data);
-          // Set initial values to expected quantities
-          const totalCartons = data.data.reduce((sum: number, c: Container) => sum + c.cartonQuantity, 0);
-          const totalArticles = data.data.reduce((sum: number, c: Container) => sum + c.articleQuantity, 0);
-          setReportedCartonQuantity(totalCartons);
-          setReportedArticleQuantity(totalArticles);
+          const foundContainer = data.data.find((c: Container) => c.id === containerId);
+          if (foundContainer) {
+            setContainer(foundContainer);
+            setReportedCartonQuantity(foundContainer.cartonQuantity);
+            setReportedArticleQuantity(foundContainer.articleQuantity);
+          }
         }
       }
     } catch (error) {
-      console.error("Failed to fetch containers:", error);
+      console.error("Failed to fetch container:", error);
     } finally {
       setLoading(false);
     }
@@ -81,11 +83,9 @@ export const ReportQuantitiesDialog: React.FC<ReportQuantitiesDialogProps> = ({
       reportedArticleQuantity,
       notes: notes.trim() || undefined,
     });
+    setNotes("");
     onClose();
   };
-
-  const expectedCartons = containers.reduce((sum, c) => sum + c.cartonQuantity, 0);
-  const expectedArticles = containers.reduce((sum, c) => sum + c.articleQuantity, 0);
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -96,19 +96,19 @@ export const ReportQuantitiesDialog: React.FC<ReportQuantitiesDialogProps> = ({
         
         <div className="space-y-4">
           {loading ? (
-            <div className="text-center py-4">Loading containers...</div>
-          ) : (
+            <div className="text-center py-4">Loading container...</div>
+          ) : container ? (
             <>
               <div className="bg-muted/50 p-3 rounded-lg">
-                <h4 className="font-medium mb-2">Expected Quantities</h4>
+                <h4 className="font-medium mb-2">Container: {container.serialNumber}</h4>
                 <div className="text-sm space-y-1">
                   <div className="flex justify-between">
-                    <span>Cartons:</span>
-                    <span>{expectedCartons}</span>
+                    <span>Expected Cartons:</span>
+                    <span>{container.cartonQuantity}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span>Articles:</span>
-                    <span>{expectedArticles}</span>
+                    <span>Expected Articles:</span>
+                    <span>{container.articleQuantity}</span>
                   </div>
                 </div>
               </div>
@@ -153,10 +153,12 @@ export const ReportQuantitiesDialog: React.FC<ReportQuantitiesDialogProps> = ({
                   Cancel
                 </Button>
                 <Button onClick={handleSubmit}>
-                  Submit Review Request
+                  Submit Report
                 </Button>
               </div>
             </>
+          ) : (
+            <div className="text-center py-4 text-muted-foreground">No container selected</div>
           )}
         </div>
       </DialogContent>

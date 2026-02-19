@@ -99,10 +99,12 @@ export const EmployeeOrderDetailPage: React.FC<
   const [orderWithTemplate, setOrderWithTemplate] = useState<any>(null);
   const [showContainerDialog, setShowContainerDialog] = useState(false);
   const [showReportDialog, setShowReportDialog] = useState(false);
+  const [containers, setContainers] = useState<any[]>([]);
+  const [selectedContainerId, setSelectedContainerId] = useState<string | null>(null);
 
   const { employeeAssignments, fetchEmployeeAssignments } =
     useEmployeeOrderStore();
-  const { updateOrderStatus } = useOrderStore();
+  const { updateOrderStatus, getOrderContainers } = useOrderStore();
 
   useEffect(() => {
     import("next-auth/react")
@@ -129,6 +131,17 @@ export const EmployeeOrderDetailPage: React.FC<
       setLoading(false);
     }
   }, [employeeAssignments, orderId]);
+
+  useEffect(() => {
+    if (order?.id) {
+      getOrderContainers(order.id).then(containerData => {
+        setContainers(containerData);
+      }).catch(error => {
+        console.error('Failed to load containers:', error);
+        setContainers([]);
+      });
+    }
+  }, [order?.id, getOrderContainers]);
 
   const fetchOrderWithTemplateData = async (orderId: string) => {
     try {
@@ -198,10 +211,8 @@ export const EmployeeOrderDetailPage: React.FC<
   };
 
   const handleActionClick = (actionKey: string) => {
-    console.log('Action clicked:', actionKey); // Debug log
     switch (actionKey) {
       case "start":
-        console.log('Setting showContainerDialog to true'); // Debug log
         setShowContainerDialog(true);
         break;
       case "pause":
@@ -211,8 +222,31 @@ export const EmployeeOrderDetailPage: React.FC<
         );
         break;
       case "review":
-        setShowReportDialog(true);
+        handleRequestReview();
         break;
+    }
+  };
+
+  const handleRequestReview = async () => {
+    const allCompleted = containers.every(c => c.isCompleted);
+    
+    if (!allCompleted) {
+      toast.error("Please complete all containers before requesting review");
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      await handleStatusChange(
+        OrderStatus.IN_REVIEW,
+        "All containers completed. Requesting review."
+      );
+      toast.success("Review request sent successfully");
+    } catch (error) {
+      console.error("Failed to request review:", error);
+      toast.error("Failed to request review");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -228,9 +262,13 @@ export const EmployeeOrderDetailPage: React.FC<
         return;
       }
 
-      // Update container employee records with reported quantities
+      if (!selectedContainerId) {
+        toast.error("No container selected");
+        return;
+      }
+
       await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/orders/${orderId}/report-quantities`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/containers/${selectedContainerId}/report-quantities`,
         {
           method: "POST",
           headers: {
@@ -246,19 +284,80 @@ export const EmployeeOrderDetailPage: React.FC<
         }
       );
 
-      // Create note with reported quantities
-      const noteContent = `Work completed. Reported quantities: ${data.reportedCartonQuantity} cartons, ${data.reportedArticleQuantity} articles.${data.notes ? ` Notes: ${data.notes}` : ''}`;
+      const container = containers.find(c => c.id === selectedContainerId);
+      const noteContent = `Work completed on container ${container?.serialNumber}. Reported: ${data.reportedCartonQuantity} cartons, ${data.reportedArticleQuantity} articles.${data.notes ? ` Notes: ${data.notes}` : ''}`;
       
-      await handleStatusChange(
-        OrderStatus.IN_REVIEW,
-        noteContent
-      );
+      await orderNotesApi.createOrderNote(orderId, {
+        content: noteContent,
+        category: "GENERAL_UPDATE",
+        isInternal: false,
+      });
+
+      const updatedContainers = await getOrderContainers(orderId);
+      setContainers(updatedContainers);
+      
+      setRefreshActivities((prev) => prev + 1);
+      toast.success("Container work reported successfully");
+      setShowReportDialog(false);
+      setSelectedContainerId(null);
     } catch (error) {
       console.error("Failed to submit report:", error);
       toast.error("Failed to submit work report");
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handleStartContainer = async (containerId: string) => {
+    if (!order) return;
+    
+    setIsSubmitting(true);
+    try {
+      const { getSession } = await import("next-auth/react");
+      const session = await getSession();
+      const assignment = employeeAssignments.find((a) => a.order.id === orderId);
+      
+      if (!assignment) {
+        toast.error("Employee assignment not found");
+        return;
+      }
+
+      await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/containers/${containerId}/employees`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${session?.accessToken}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            employeeId: assignment.employeeId,
+          }),
+        }
+      );
+
+      const updatedContainers = await getOrderContainers(orderId);
+      setContainers(updatedContainers);
+      
+      if (order.status === OrderStatus.ACTIVE) {
+        await handleStatusChange(
+          OrderStatus.IN_PROGRESS,
+          t("employee.orderDetail.workStartedNote")
+        );
+      }
+      
+      toast.success("Started work on container");
+    } catch (error) {
+      console.error("Failed to start container:", error);
+      toast.error("Failed to start container");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleReportContainer = (containerId: string) => {
+    setSelectedContainerId(containerId);
+    setShowReportDialog(true);
   };
 
   const handleContainerSelected = async (containerId: string) => {
@@ -354,6 +453,7 @@ export const EmployeeOrderDetailPage: React.FC<
   }
 
   const availableActions = getAvailableActions(order.status, t);
+  const allContainersCompleted = containers.length > 0 && containers.every(c => c.isCompleted);
 
   return (
     <div className="p-6 space-y-6">
@@ -481,71 +581,249 @@ export const EmployeeOrderDetailPage: React.FC<
         </CardContent>
       </Card>
 
-      {/* Activities */}
-      {(order as any)?.customerActivities?.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle>{t("employee.orderDetail.activitiesPricing")}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {(order as any).customerActivities.map(
-                (customerActivity: any, index: number) => (
-                  <div
-                    key={index}
-                    className="flex items-center justify-between p-3 bg-muted rounded-lg"
-                  >
+      <div className={`grid grid-cols-1 gap-6 ${order.descriptionData?.descriptionData ? 'lg:grid-cols-2' : ''}`}>
+        {/* Template Description Card */}
+        {order.descriptionData?.descriptionData && (
+          <Card>
+            <CardHeader>
+              <CardTitle>{t("order.description")}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {Object.entries(order.descriptionData.descriptionData).map(
+                  ([key, value]) => (
+                    <div
+                      key={key}
+                      className="flex justify-between gap-4 bg-muted rounded-md p-3 text-sm"
+                    >
+                      <span className="font-medium">{key}</span>
+                      <span className="text-muted-foreground">{String(value)}</span>
+                    </div>
+                  )
+                )}
+              </div>
+              <p className="text-xs text-muted-foreground mt-3">
+                ℹ️ {t("order.templateBasedDescription")}
+              </p>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Containers Pricing */}
+        {containers && containers.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle>{t("order.containersPricing")}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {containers.map((container: any, index: number) => (
+                  <div key={container.id} className="border rounded-lg p-4 space-y-3">
+                    <div className="flex justify-between items-center">
+                      <h4 className="font-medium">
+                        {t("order.container")} {index + 1} - {container.serialNumber}
+                      </h4>
+                      <div className="flex gap-2">
+                        {!container.isStarted && (
+                          <Button size="sm" onClick={() => handleStartContainer(container.id)} disabled={isSubmitting}>
+                            Start
+                          </Button>
+                        )}
+                        {container.isStarted && !container.isCompleted && (
+                          <Button size="sm" variant="outline" onClick={() => handleReportContainer(container.id)} disabled={isSubmitting}>
+                            Report
+                          </Button>
+                        )}
+                        {container.isCompleted && (
+                          <Badge variant="outline" className="bg-green-50 text-green-700">Completed</Badge>
+                        )}
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="bg-muted/50 p-3 rounded">
+                        <div className="flex justify-between items-center">
+                          <div>
+                            <p className="text-sm font-medium">{t("order.cartonQuantity")}</p>
+                            <p className="text-lg font-semibold">{container.cartonQuantity}</p>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-sm text-muted-foreground">Total Price</p>
+                            <p className="text-sm font-semibold text-green-600">
+                              Total: €{Number(container.cartonPrice).toFixed(2)}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              (Based on activities & quantity)
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="bg-muted/50 p-3 rounded">
+                        <div className="flex justify-between items-center">
+                          <div>
+                            <p className="text-sm font-medium">{t("order.articleQuantity")}</p>
+                            <p className="text-lg font-semibold">{container.articleQuantity}</p>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-sm text-muted-foreground">Unit Price</p>
+                            <p className="font-medium">€{Number(container.articlePrice).toFixed(2)}</p>
+                            <p className="text-sm font-semibold text-green-600">
+                              Total: €{(container.articleQuantity * Number(container.articlePrice)).toFixed(2)}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {container.basePrice !== 0 && (
+                        <div className="bg-muted/50 p-3 rounded col-span-1 md:col-span-2">
+                          <div className="flex justify-between items-center">
+                            <div>
+                              <p className="text-sm font-medium">{t("order.activityBasePrice")}</p>
+                              <p className="text-lg font-semibold">€{Number(container.basePrice).toFixed(2)}</p>
+                            </div>
+                            <div className="text-right">
+                              <p className="text-sm text-muted-foreground">{t("order.total")}</p>
+                              <p className="text-sm font-semibold text-green-600">
+                                €{Number(container.basePrice).toFixed(2)}
+                              </p>
+                              <p className="text-xs text-muted-foreground">
+                                ({t("admin.orders.form.fromActivityBasePrice")})
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                    
+                    {container.articles && container.articles.length > 0 && (
+                      <div>
+                        <p className="text-sm font-medium text-muted-foreground mb-2">{t("order.articles")}:</p>
+                        <div className="space-y-1">
+                          {container.articles.map((article: any, articleIndex: number) => (
+                            <div key={articleIndex} className="flex justify-between items-center text-sm bg-muted/30 px-2 py-1 rounded">
+                              <span>{article.articleName}</span>
+                              <div className="flex gap-4">
+                                <span className="text-muted-foreground">Qty: {article.quantity}</span>
+                                <span className="font-medium">€{Number(article.price).toFixed(2)}</span>
+                                <span className="font-semibold text-green-600">
+                                  €{(article.quantity * Number(article.price)).toFixed(2)}
+                                </span>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    
+                    <div className="border-t pt-3">
+                      <div className="flex justify-between items-center font-semibold">
+                        <span>{t("order.containerTotal")}:</span>
+                        <span className="text-green-600">
+                          €{(
+                            Number(container.cartonPrice) +
+                            Number(container.basePrice || 0) +
+                            (container.articleQuantity * Number(container.articlePrice)) +
+                            (container.articles?.reduce((sum: number, article: any) => 
+                              sum + (article.quantity * Number(article.price)), 0) || 0)
+                          ).toFixed(2)}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Activities - Fallback if no containers */}
+        {(!containers || containers.length === 0) && (order as any)?.customerActivities && (order as any).customerActivities.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle>{t("order.activitiesPricing")}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {(order as any).customerActivities.map((customerActivity: any, index: number) => (
+                  <div key={index} className="flex items-center justify-between p-3 bg-muted rounded-lg">
                     <div>
                       <p className="font-medium">
-                        {customerActivity.name ||
-                          t("employee.orderDetail.unknownActivity")}
+                        {customerActivity.name || t("order.unknownActivity")}
                       </p>
                       <p className="text-sm text-muted-foreground">
-                        {t("employee.orderDetail.quantity")}:{" "}
-                        {customerActivity.quantity || 1}
+                        {t("order.quantity")}: {customerActivity.quantity || 1}
                       </p>
                     </div>
                     <div className="text-right">
                       {customerActivity.unitPrice && (
                         <>
-                          <p className="font-medium">
-                            €{Number(customerActivity.unitPrice).toFixed(2)}
+                          <p className="font-medium text-lg">€{Number(customerActivity.unitPrice).toFixed(2)}</p>
+                          <p className="text-xs text-muted-foreground">
+                            Unit Price
                           </p>
                           {customerActivity.lineTotal && (
-                            <p className="text-sm text-muted-foreground">
-                              {t("employee.orderDetail.total")}: €
-                              {Number(customerActivity.lineTotal).toFixed(2)}
+                            <p className="text-sm font-semibold text-green-600 mt-1">
+                              {t("order.total")}: €{Number(customerActivity.lineTotal).toFixed(2)}
                             </p>
                           )}
                         </>
                       )}
                     </div>
                   </div>
-                )
-              )}
-              {(order as any).customerActivities.some(
-                (ca: any) => ca.lineTotal
-              ) && (
-                <div className="border-t pt-3 mt-3">
-                  <div className="flex justify-between items-center font-semibold">
-                    <span>{t("employee.orderDetail.totalOrderValue")}:</span>
-                    <span>
-                      €
-                      {(order as any).customerActivities
-                        .reduce(
-                          (sum: number, ca: any) =>
-                            sum + (Number(ca.lineTotal) || 0),
-                          0
-                        )
-                        .toFixed(2)}
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Grand Total */}
+        {containers?.length > 0 && (
+          <Card>
+            <CardContent className="p-6">
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <span className="text-lg font-medium">{t("order.containersTotal")}:</span>
+                  <span className="text-xl font-semibold text-blue-600">
+                    €{containers.reduce((sum: number, container: any) => 
+                      sum + 
+                      Number(container.cartonPrice) +
+                      Number(container.basePrice || 0) +
+                      (container.articleQuantity * Number(container.articlePrice)) +
+                      (container.articles?.reduce((articleSum: number, article: any) => 
+                        articleSum + (article.quantity * Number(article.price)), 0) || 0)
+                    , 0).toFixed(2)}
+                  </span>
+                </div>
+                
+                <div className="border-t pt-4">
+                  <div className="flex justify-between items-center p-4 bg-green-50 rounded-lg border border-green-200">
+                    <span className="text-2xl font-bold text-green-800">{t("order.grandTotal")}:</span>
+                    <span className="text-3xl font-bold text-green-600">
+                      €{containers.reduce((sum: number, container: any) => 
+                        sum + 
+                        Number(container.cartonPrice) +
+                        Number(container.basePrice || 0) +
+                        (container.articleQuantity * Number(container.articlePrice)) +
+                        (container.articles?.reduce((articleSum: number, article: any) => 
+                          articleSum + (article.quantity * Number(article.price)), 0) || 0)
+                      , 0).toFixed(2)}
                     </span>
                   </div>
                 </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-      )}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+        
+        {(!containers || containers.length === 0) && (!(order as any)?.customerActivities || (order as any).customerActivities.length === 0) && (
+          <Card>
+            <CardContent className="p-6 text-center text-muted-foreground">
+              {t("order.noPricingInformation")}
+            </CardContent>
+          </Card>
+        )}
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left Column - Timeline & Activities */}
@@ -603,12 +881,17 @@ export const EmployeeOrderDetailPage: React.FC<
                       key={action.key}
                       variant={action.variant}
                       onClick={() => handleActionClick(action.key)}
-                      disabled={isSubmitting}
+                      disabled={isSubmitting || (action.key === 'review' && !allContainersCompleted)}
                       className="w-full"
                     >
                       {action.label}
                     </Button>
                   ))}
+                  {!allContainersCompleted && availableActions.some(a => a.key === 'review') && (
+                    <p className="text-xs text-muted-foreground text-center mt-1">
+                      Complete all containers to request review
+                    </p>
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -648,8 +931,12 @@ export const EmployeeOrderDetailPage: React.FC<
       
       <ReportQuantitiesDialog
         isOpen={showReportDialog}
-        onClose={() => setShowReportDialog(false)}
+        onClose={() => {
+          setShowReportDialog(false);
+          setSelectedContainerId(null);
+        }}
         orderId={orderId}
+        containerId={selectedContainerId}
         onSubmit={handleReportSubmit}
       />
     </div>
