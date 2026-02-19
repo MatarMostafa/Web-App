@@ -5,6 +5,7 @@ import { Activity, MessageSquare, RefreshCw, UserPlus, Calendar, Package } from 
 import { OrderActivity, orderActivitiesApi } from "@/lib/orderActivitiesApi";
 import { format } from "date-fns";
 import { useTranslation } from "@/hooks/useTranslation";
+import { useOrderStore } from "@/store/orderStore";
 
 interface OrderActivitiesProps {
   orderId: string;
@@ -48,22 +49,28 @@ export const OrderActivities: React.FC<OrderActivitiesProps> = ({ orderId }) => 
   const { t } = useTranslation();
   const [activities, setActivities] = useState<OrderActivity[]>([]);
   const [loading, setLoading] = useState(true);
-  console.log("order id = ", orderId)
+  const [containers, setContainers] = useState<any[]>([]);
+  const { getOrderContainers } = useOrderStore();
+  
   useEffect(() => {
-    const fetchActivities = async () => {
+    const fetchData = async () => {
       setLoading(true);
       try {
-        const data = await orderActivitiesApi.getOrderActivities(orderId);
-        setActivities(data);
+        const [activitiesData, containersData] = await Promise.all([
+          orderActivitiesApi.getOrderActivities(orderId),
+          getOrderContainers(orderId)
+        ]);
+        setActivities(activitiesData);
+        setContainers(containersData);
       } catch (error) {
-        console.error("Failed to fetch activities:", error);
+        console.error("Failed to fetch data:", error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchActivities();
-  }, [orderId]);
+    fetchData();
+  }, [orderId, getOrderContainers]);
 
   if (loading) {
     return (
@@ -159,14 +166,52 @@ export const OrderActivities: React.FC<OrderActivitiesProps> = ({ orderId }) => 
                   )}
                   {activity.type === 'ACTIVITY_ASSIGNED' && activity.metadata && (
                     <div className="mt-2 p-2 bg-muted rounded text-sm space-y-1">
-                      {activity.metadata.activityCode && (
-                        <div className="text-xs text-muted-foreground">Code: {activity.metadata.activityCode}</div>
-                      )}
-                      <div className="flex justify-between items-center">
-                        <span>{t("employee.orderDetail.quantity")}: {activity.metadata.quantity}</span>
-                      </div>
-                      {activity.metadata.unitPrice && (
-                        <div className="font-medium">{t("employee.orderDetail.total")}: €{Number(activity.metadata.unitPrice).toFixed(2)}</div>
+                      {containers && containers.length > 0 ? (
+                        <div className="space-y-2">
+                          <div className="text-xs font-medium text-muted-foreground">Container Information:</div>
+                          {containers.map((container: any, idx: number) => (
+                            <div key={container.id} className="bg-background p-2 rounded space-y-1">
+                              <div className="font-medium text-xs">{container.serialNumber}</div>
+                              <div className="grid grid-cols-2 gap-2 text-xs">
+                                <div>
+                                  <span className="text-muted-foreground">Cartons:</span> {container.cartonQuantity}
+                                </div>
+                                <div>
+                                  <span className="text-muted-foreground">Articles:</span> {container.articleQuantity}
+                                </div>
+                              </div>
+                              <div className="font-medium text-green-600">
+                                Total: €{(
+                                  Number(container.cartonPrice) +
+                                  (container.articleQuantity * Number(container.articlePrice)) +
+                                  (container.articles?.reduce((sum: number, article: any) => 
+                                    sum + (article.quantity * Number(article.price)), 0) || 0)
+                                ).toFixed(2)}
+                              </div>
+                            </div>
+                          ))}
+                          <div className="border-t pt-2 font-semibold text-green-600">
+                            Grand Total: €{containers.reduce((sum: number, container: any) => 
+                              sum + 
+                              Number(container.cartonPrice) +
+                              (container.articleQuantity * Number(container.articlePrice)) +
+                              (container.articles?.reduce((articleSum: number, article: any) => 
+                                articleSum + (article.quantity * Number(article.price)), 0) || 0)
+                            , 0).toFixed(2)}
+                          </div>
+                        </div>
+                      ) : (
+                        <>
+                          {activity.metadata.activityCode && (
+                            <div className="text-xs text-muted-foreground">Code: {activity.metadata.activityCode}</div>
+                          )}
+                          <div className="flex justify-between items-center">
+                            <span>{t("employee.orderDetail.quantity")}: {activity.metadata.quantity}</span>
+                          </div>
+                          {activity.metadata.unitPrice && (
+                            <div className="font-medium">{t("employee.orderDetail.total")}: €{Number(activity.metadata.unitPrice).toFixed(2)}</div>
+                          )}
+                        </>
                       )}
                     </div>
                   )}

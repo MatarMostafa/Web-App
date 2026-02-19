@@ -14,8 +14,11 @@ import { OrderTimeline } from "./OrderTimeline";
 import { OrderActions } from "./OrderActions";
 import { OrderAssignments } from "./OrderAssignments";
 import { OrderDetailSkeleton } from "./OrderDetailSkeleton";
+import { OrderActivities } from "./OrderActivities";
 import { useTranslation } from "@/hooks/useTranslation";
 import { format } from "date-fns";
+import { orderNotesApi } from "@/lib/orderNotesApi";
+import toast from "react-hot-toast";
 
 interface OrderDetailPageProps {
   orderId: string;
@@ -57,8 +60,10 @@ export const OrderDetailPage: React.FC<OrderDetailPageProps> = ({
   const [assignedStaffCount, setAssignedStaffCount] = useState<number>(0);
   const [dataFetched, setDataFetched] = useState(false);
   const [containers, setContainers] = useState<any[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [refreshActivities, setRefreshActivities] = useState(0);
 
-  const { orders, fetchOrders, getOrderEmployeeNames, getOrderContainers } = useOrderStore();
+  const { orders, fetchOrders, getOrderEmployeeNames, getOrderContainers, updateOrderStatus } = useOrderStore();
   const { employeeAssignments, fetchEmployeeAssignments } = useEmployeeOrderStore();
 
   useEffect(() => {
@@ -126,6 +131,39 @@ export const OrderDetailPage: React.FC<OrderDetailPageProps> = ({
   const handleBack = () => {
     const basePath = userRole === "ADMIN" ? "/dashboard-admin" : "/dashboard-employee";
     router.push(`${basePath}/orders`);
+  };
+
+  const handleStatusChange = async (newStatus: OrderStatus, note: string) => {
+    setIsSubmitting(true);
+    try {
+      await orderNotesApi.createOrderNote(orderId, {
+        content: note,
+        triggersStatus: newStatus,
+        category: "GENERAL_UPDATE",
+        isInternal: false,
+      });
+
+      updateOrderStatus(orderId, newStatus);
+      setRefreshActivities((prev) => prev + 1);
+      
+      // Refresh order data
+      await fetchOrders();
+      
+      toast.success(`Order status updated to ${newStatus}`);
+    } catch (error) {
+      console.error("Failed to update status:", error);
+      toast.error("Failed to update order status");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleApproveOrder = () => {
+    handleStatusChange(OrderStatus.COMPLETED, "Order approved and marked as completed.");
+  };
+
+  const handleRequestRevision = () => {
+    handleStatusChange(OrderStatus.IN_PROGRESS, "Revision requested. Please review and resubmit.");
   };
 
   if (loading) {
@@ -495,13 +533,39 @@ export const OrderDetailPage: React.FC<OrderDetailPageProps> = ({
 
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left Column - Timeline */}
+        {/* Left Column - Timeline & Activities */}
         <div className="lg:col-span-2 space-y-6">
           <OrderTimeline orderId={orderId} order={order} userRole={userRole} />
+          <OrderActivities orderId={orderId} key={refreshActivities} />
         </div>
 
-        {/* Right Column - Assignments */}
-        <div>
+        {/* Right Column - Assignments & Review Actions */}
+        <div className="space-y-6">
+          {userRole === "ADMIN" && order.status === OrderStatus.IN_REVIEW && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Review Actions</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <Button 
+                  onClick={handleApproveOrder} 
+                  disabled={isSubmitting}
+                  className="w-full"
+                >
+                  Approve & Complete
+                </Button>
+                <Button 
+                  onClick={handleRequestRevision} 
+                  disabled={isSubmitting}
+                  variant="outline"
+                  className="w-full"
+                >
+                  Request Revision
+                </Button>
+              </CardContent>
+            </Card>
+          )}
+          
           <OrderAssignments 
             orderId={orderId} 
             order={order} 

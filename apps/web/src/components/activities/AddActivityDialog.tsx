@@ -65,6 +65,10 @@ export const AddActivityDialog = ({ open, onOpenChange, customerId, onSubmit }: 
         toast.error(t('activities.validation.minMaxQuantity'));
         return;
       }
+      if (range.maxQuantity > 2147483647) {
+        toast.error('Maximum quantity cannot exceed 2,147,483,647');
+        return;
+      }
       if (range.price < 0) {
         toast.error(t('activities.validation.pricePositive'));
         return;
@@ -188,6 +192,7 @@ export const AddActivityDialog = ({ open, onOpenChange, customerId, onSubmit }: 
                   <Input
                     type="number"
                     min="1"
+                    max="2147483647"
                     value={range.maxQuantity}
                     onChange={(e) => updatePriceRange(index, 'maxQuantity', Number(e.target.value))}
                     required

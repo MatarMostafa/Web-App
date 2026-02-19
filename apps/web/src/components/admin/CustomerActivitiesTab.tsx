@@ -70,29 +70,17 @@ export const CustomerActivitiesTab = ({ customerId }: CustomerActivitiesTabProps
     priceRanges: Array<{ minQuantity: number; maxQuantity: number; price: number; validFrom: string }>;
   }): Promise<void> => {
     try {
-      // Create activity
-      const activity = await apiClient.post<Activity>('/api/pricing/activities', {
+      // Create activity with price ranges in a single request (backend handles transaction)
+      await apiClient.post<Activity>('/api/pricing/activities', {
         name: data.name,
         type: data.type,
         code: data.code || undefined,
         unit: data.unit,
         basePrice: data.basePrice,
         articleBasePrice: data.articleBasePrice,
-        customerId
+        customerId,
+        priceRanges: data.priceRanges
       });
-
-      // Create customer prices
-      await Promise.all(
-        data.priceRanges.map(range =>
-          apiClient.post(`/api/pricing/customers/${customerId}/prices`, {
-            activityId: activity.id,
-            minQuantity: range.minQuantity,
-            maxQuantity: range.maxQuantity,
-            price: range.price,
-            effectiveFrom: new Date(range.validFrom).toISOString()
-          })
-        )
-      );
 
       toast.success(t('activities.messages.createSuccess'));
       setAddDialogOpen(false);
@@ -100,7 +88,7 @@ export const CustomerActivitiesTab = ({ customerId }: CustomerActivitiesTabProps
     } catch (error: any) {
       const errorMessage = error.response?.data?.error || error.message || t('activities.messages.createError');
       toast.error(errorMessage);
-      throw error; // Re-throw to prevent form reset on error
+      throw error;
     }
   };
 
@@ -115,37 +103,17 @@ export const CustomerActivitiesTab = ({ customerId }: CustomerActivitiesTabProps
   }) => {
     if (!editingActivity) return;
     try {
-      // Update activity
+      // Update activity with price ranges in a single request (backend handles transaction)
       await apiClient.put(`/api/pricing/activities/${editingActivity.id}`, {
         name: data.name,
         type: data.type,
         code: data.code,
         unit: data.unit,
         basePrice: data.basePrice,
-        articleBasePrice: data.articleBasePrice
+        articleBasePrice: data.articleBasePrice,
+        customerId,
+        priceRanges: data.priceRanges
       });
-
-      // Delete existing customer prices
-      if (editingActivity.prices) {
-        await Promise.all(
-          editingActivity.prices.map(price =>
-            apiClient.delete(`/api/pricing/customers/${customerId}/prices/${price.id}`)
-          )
-        );
-      }
-
-      // Create new customer prices
-      await Promise.all(
-        data.priceRanges.map(range =>
-          apiClient.post(`/api/pricing/customers/${customerId}/prices`, {
-            activityId: editingActivity.id,
-            minQuantity: range.minQuantity,
-            maxQuantity: range.maxQuantity,
-            price: range.price,
-            effectiveFrom: new Date(range.validFrom).toISOString()
-          })
-        )
-      );
 
       toast.success(t('activities.messages.updateSuccess'));
       setEditDialogOpen(false);

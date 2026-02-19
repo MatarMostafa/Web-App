@@ -214,7 +214,7 @@ router.delete(
 router.post(
   "/:containerId/employees",
   authMiddleware,
-  roleMiddleware(["ADMIN", "TEAM_LEADER"]),
+  roleMiddleware(["ADMIN", "TEAM_LEADER", "EMPLOYEE"]),
   validateRequest(assignEmployeeSchema),
   async (req: Request, res: Response) => {
     try {
@@ -245,6 +245,42 @@ router.post(
       res.status(400).json({
         success: false,
         message: "Failed to assign employee",
+        error: String(error)
+      });
+    }
+  }
+);
+
+// Report quantities for container
+router.post(
+  "/:containerId/report-quantities",
+  authMiddleware,
+  roleMiddleware(["EMPLOYEE"]),
+  async (req: Request, res: Response) => {
+    try {
+      const { containerId } = req.params;
+      const { employeeId, reportedCartonQuantity, reportedArticleQuantity, notes } = req.body;
+
+      await prisma.containerEmployee.updateMany({
+        where: {
+          containerId,
+          employeeId
+        },
+        data: {
+          reportedCartonQuantity,
+          reportedArticleQuantity,
+          notes,
+          isCompleted: true,
+          completedAt: new Date()
+        }
+      });
+
+      res.json({ success: true, message: "Quantities reported successfully" });
+    } catch (error) {
+      console.error("Report quantities error:", error);
+      res.status(500).json({
+        success: false,
+        message: "Failed to report quantities",
         error: String(error)
       });
     }
