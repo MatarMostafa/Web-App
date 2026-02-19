@@ -10,7 +10,6 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { ActivityType } from '@/types/order';
 import { Plus, Trash2 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
-import { toast } from 'react-hot-toast';
 
 interface Activity {
   id: string;
@@ -197,8 +196,6 @@ export const EditActivityDialog = ({ open, onOpenChange, activity, customerId, o
               min="0"
               value={formData.articleBasePrice || ''}
               onChange={(e) => setFormData({ ...formData, articleBasePrice: e.target.value ? parseFloat(e.target.value) : 0 })}
-              value={formData.articleBasePrice || ''}
-              onChange={(e) => setFormData({ ...formData, articleBasePrice: e.target.value ? parseFloat(e.target.value) : 0 })}
               placeholder={t("activities.form.articleBasePricePlaceholder")}
             />
             <p className="text-xs text-muted-foreground mt-1">
@@ -221,11 +218,10 @@ export const EditActivityDialog = ({ open, onOpenChange, activity, customerId, o
                   <Input
                     type="number"
                     min="1"
-                    min="1"
                     value={range.minQuantity}
                     onChange={(e) => updatePriceRange(index, 'minQuantity', Number(e.target.value))}
                     required
-                    required
+                    
                   />
                 </div>
                 <div>
@@ -237,7 +233,6 @@ export const EditActivityDialog = ({ open, onOpenChange, activity, customerId, o
                     value={range.maxQuantity}
                     onChange={(e) => updatePriceRange(index, 'maxQuantity', Number(e.target.value))}
                     required
-                    required
                   />
                 </div>
                 <div>
@@ -246,10 +241,8 @@ export const EditActivityDialog = ({ open, onOpenChange, activity, customerId, o
                     type="number"
                     step="0.01"
                     min="0"
-                    min="0"
                     value={range.price}
                     onChange={(e) => updatePriceRange(index, 'price', Number(e.target.value))}
-                    required
                     required
                   />
                 </div>
@@ -259,8 +252,6 @@ export const EditActivityDialog = ({ open, onOpenChange, activity, customerId, o
                     type="date"
                     value={range.validFrom}
                     onChange={(e) => updatePriceRange(index, 'validFrom', e.target.value)}
-                    required
-                    required
                   />
                 </div>
                 <Button
