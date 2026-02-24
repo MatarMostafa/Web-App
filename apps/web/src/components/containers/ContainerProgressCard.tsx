@@ -31,7 +31,6 @@ interface ContainerAssignment {
       id: string;
       articleName: string;
       quantity: number;
-      price: number;
     }>;
   };
 }

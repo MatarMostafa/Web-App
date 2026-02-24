@@ -31,8 +31,14 @@ class ApiClient {
       let errorMessage = `HTTP error! status: ${response.status}`;
       try {
         const errorData = await response.json();
-        // Extract the specific error message from the API response
-        if (errorData.message) {
+        // Handle Zod validation errors
+        if (errorData.issues && Array.isArray(errorData.issues)) {
+          const validationErrors = errorData.issues.map((issue: any) => {
+            const field = issue.path?.join('.') || 'field';
+            return `${field}: ${issue.message}`;
+          }).join(', ');
+          errorMessage = `Validation failed: ${validationErrors}`;
+        } else if (errorData.message) {
           errorMessage = errorData.message;
         } else if (errorData.error) {
           errorMessage = errorData.error;

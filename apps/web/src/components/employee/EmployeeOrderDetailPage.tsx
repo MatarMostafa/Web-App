@@ -609,11 +609,11 @@ export const EmployeeOrderDetailPage: React.FC<
           </Card>
         )}
 
-        {/* Containers Pricing */}
+        {/* Containers */}
         {containers && containers.length > 0 && (
           <Card>
             <CardHeader>
-              <CardTitle>{t("order.containersPricing")}</CardTitle>
+              <CardTitle>Containers</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
@@ -642,58 +642,14 @@ export const EmployeeOrderDetailPage: React.FC<
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="bg-muted/50 p-3 rounded">
-                        <div className="flex justify-between items-center">
-                          <div>
-                            <p className="text-sm font-medium">{t("order.cartonQuantity")}</p>
-                            <p className="text-lg font-semibold">{container.cartonQuantity}</p>
-                          </div>
-                          <div className="text-right">
-                            <p className="text-sm text-muted-foreground">Total Price</p>
-                            <p className="text-sm font-semibold text-green-600">
-                              Total: €{Number(container.cartonPrice).toFixed(2)}
-                            </p>
-                            <p className="text-xs text-muted-foreground">
-                              (Based on activities & quantity)
-                            </p>
-                          </div>
-                        </div>
+                        <p className="text-sm font-medium">{t("order.cartonQuantity")}</p>
+                        <p className="text-lg font-semibold">{container.cartonQuantity}</p>
                       </div>
                       
                       <div className="bg-muted/50 p-3 rounded">
-                        <div className="flex justify-between items-center">
-                          <div>
-                            <p className="text-sm font-medium">{t("order.articleQuantity")}</p>
-                            <p className="text-lg font-semibold">{container.articleQuantity}</p>
-                          </div>
-                          <div className="text-right">
-                            <p className="text-sm text-muted-foreground">Unit Price</p>
-                            <p className="font-medium">€{Number(container.articlePrice).toFixed(2)}</p>
-                            <p className="text-sm font-semibold text-green-600">
-                              Total: €{(container.articleQuantity * Number(container.articlePrice)).toFixed(2)}
-                            </p>
-                          </div>
-                        </div>
+                        <p className="text-sm font-medium">{t("order.articleQuantity")}</p>
+                        <p className="text-lg font-semibold">{container.articleQuantity}</p>
                       </div>
-
-                      {container.basePrice !== 0 && (
-                        <div className="bg-muted/50 p-3 rounded col-span-1 md:col-span-2">
-                          <div className="flex justify-between items-center">
-                            <div>
-                              <p className="text-sm font-medium">{t("order.activityBasePrice")}</p>
-                              <p className="text-lg font-semibold">€{Number(container.basePrice).toFixed(2)}</p>
-                            </div>
-                            <div className="text-right">
-                              <p className="text-sm text-muted-foreground">{t("order.total")}</p>
-                              <p className="text-sm font-semibold text-green-600">
-                                €{Number(container.basePrice).toFixed(2)}
-                              </p>
-                              <p className="text-xs text-muted-foreground">
-                                ({t("admin.orders.form.fromActivityBasePrice")})
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      )}
                     </div>
                     
                     {container.articles && container.articles.length > 0 && (
@@ -703,33 +659,12 @@ export const EmployeeOrderDetailPage: React.FC<
                           {container.articles.map((article: any, articleIndex: number) => (
                             <div key={articleIndex} className="flex justify-between items-center text-sm bg-muted/30 px-2 py-1 rounded">
                               <span>{article.articleName}</span>
-                              <div className="flex gap-4">
-                                <span className="text-muted-foreground">Qty: {article.quantity}</span>
-                                <span className="font-medium">€{Number(article.price).toFixed(2)}</span>
-                                <span className="font-semibold text-green-600">
-                                  €{(article.quantity * Number(article.price)).toFixed(2)}
-                                </span>
-                              </div>
+                              <span className="text-muted-foreground">Qty: {article.quantity}</span>
                             </div>
                           ))}
                         </div>
                       </div>
                     )}
-                    
-                    <div className="border-t pt-3">
-                      <div className="flex justify-between items-center font-semibold">
-                        <span>{t("order.containerTotal")}:</span>
-                        <span className="text-green-600">
-                          €{(
-                            Number(container.cartonPrice) +
-                            Number(container.basePrice || 0) +
-                            (container.articleQuantity * Number(container.articlePrice)) +
-                            (container.articles?.reduce((sum: number, article: any) => 
-                              sum + (article.quantity * Number(article.price)), 0) || 0)
-                          ).toFixed(2)}
-                        </span>
-                      </div>
-                    </div>
                   </div>
                 ))}
               </div>
@@ -737,92 +672,9 @@ export const EmployeeOrderDetailPage: React.FC<
           </Card>
         )}
 
-        {/* Activities - Fallback if no containers */}
-        {(!containers || containers.length === 0) && (order as any)?.customerActivities && (order as any).customerActivities.length > 0 && (
-          <Card>
-            <CardHeader>
-              <CardTitle>{t("order.activitiesPricing")}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {(order as any).customerActivities.map((customerActivity: any, index: number) => (
-                  <div key={index} className="flex items-center justify-between p-3 bg-muted rounded-lg">
-                    <div>
-                      <p className="font-medium">
-                        {customerActivity.name || t("order.unknownActivity")}
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        {t("order.quantity")}: {customerActivity.quantity || 1}
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      {customerActivity.unitPrice && (
-                        <>
-                          <p className="font-medium text-lg">€{Number(customerActivity.unitPrice).toFixed(2)}</p>
-                          <p className="text-xs text-muted-foreground">
-                            Unit Price
-                          </p>
-                          {customerActivity.lineTotal && (
-                            <p className="text-sm font-semibold text-green-600 mt-1">
-                              {t("order.total")}: €{Number(customerActivity.lineTotal).toFixed(2)}
-                            </p>
-                          )}
-                        </>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        )}
 
-        {/* Grand Total */}
-        {containers?.length > 0 && (
-          <Card>
-            <CardContent className="p-6">
-              <div className="space-y-4">
-                <div className="flex justify-between items-center">
-                  <span className="text-lg font-medium">{t("order.containersTotal")}:</span>
-                  <span className="text-xl font-semibold text-blue-600">
-                    €{containers.reduce((sum: number, container: any) => 
-                      sum + 
-                      Number(container.cartonPrice) +
-                      Number(container.basePrice || 0) +
-                      (container.articleQuantity * Number(container.articlePrice)) +
-                      (container.articles?.reduce((articleSum: number, article: any) => 
-                        articleSum + (article.quantity * Number(article.price)), 0) || 0)
-                    , 0).toFixed(2)}
-                  </span>
-                </div>
-                
-                <div className="border-t pt-4">
-                  <div className="flex justify-between items-center p-4 bg-green-50 rounded-lg border border-green-200">
-                    <span className="text-2xl font-bold text-green-800">{t("order.grandTotal")}:</span>
-                    <span className="text-3xl font-bold text-green-600">
-                      €{containers.reduce((sum: number, container: any) => 
-                        sum + 
-                        Number(container.cartonPrice) +
-                        Number(container.basePrice || 0) +
-                        (container.articleQuantity * Number(container.articlePrice)) +
-                        (container.articles?.reduce((articleSum: number, article: any) => 
-                          articleSum + (article.quantity * Number(article.price)), 0) || 0)
-                      , 0).toFixed(2)}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-        
-        {(!containers || containers.length === 0) && (!(order as any)?.customerActivities || (order as any).customerActivities.length === 0) && (
-          <Card>
-            <CardContent className="p-6 text-center text-muted-foreground">
-              {t("order.noPricingInformation")}
-            </CardContent>
-          </Card>
-        )}
+
+
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
