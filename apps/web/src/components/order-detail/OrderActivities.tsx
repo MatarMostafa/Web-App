@@ -6,6 +6,7 @@ import { OrderActivity, orderActivitiesApi } from "@/lib/orderActivitiesApi";
 import { format } from "date-fns";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useOrderStore } from "@/store/orderStore";
+import { useSession } from "next-auth/react";
 
 interface OrderActivitiesProps {
   orderId: string;
@@ -47,10 +48,12 @@ const getActivityColor = (type: OrderActivity['type']) => {
 
 export const OrderActivities: React.FC<OrderActivitiesProps> = ({ orderId }) => {
   const { t } = useTranslation();
+  const { data: session } = useSession();
   const [activities, setActivities] = useState<OrderActivity[]>([]);
   const [loading, setLoading] = useState(true);
   const [containers, setContainers] = useState<any[]>([]);
   const { getOrderContainers } = useOrderStore();
+  const isEmployee = session?.user?.role === "EMPLOYEE";
   
   useEffect(() => {
     const fetchData = async () => {
@@ -180,25 +183,10 @@ export const OrderActivities: React.FC<OrderActivitiesProps> = ({ orderId }) => 
                                   <span className="text-muted-foreground">Articles:</span> {container.articleQuantity}
                                 </div>
                               </div>
-                              <div className="font-medium text-green-600">
-                                Total: €{(
-                                  Number(container.cartonPrice) +
-                                  (container.articleQuantity * Number(container.articlePrice)) +
-                                  (container.articles?.reduce((sum: number, article: any) => 
-                                    sum + (article.quantity * Number(article.price)), 0) || 0)
-                                ).toFixed(2)}
-                              </div>
+
                             </div>
                           ))}
-                          <div className="border-t pt-2 font-semibold text-green-600">
-                            Grand Total: €{containers.reduce((sum: number, container: any) => 
-                              sum + 
-                              Number(container.cartonPrice) +
-                              (container.articleQuantity * Number(container.articlePrice)) +
-                              (container.articles?.reduce((articleSum: number, article: any) => 
-                                articleSum + (article.quantity * Number(article.price)), 0) || 0)
-                            , 0).toFixed(2)}
-                          </div>
+
                         </div>
                       ) : (
                         <>
@@ -208,9 +196,7 @@ export const OrderActivities: React.FC<OrderActivitiesProps> = ({ orderId }) => 
                           <div className="flex justify-between items-center">
                             <span>{t("employee.orderDetail.quantity")}: {activity.metadata.quantity}</span>
                           </div>
-                          {activity.metadata.unitPrice && (
-                            <div className="font-medium">{t("employee.orderDetail.total")}: €{Number(activity.metadata.unitPrice).toFixed(2)}</div>
-                          )}
+
                         </>
                       )}
                     </div>

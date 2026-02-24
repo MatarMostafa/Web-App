@@ -81,12 +81,12 @@ export const createOrderSchema = z.object({
       serialNumber: z.string().min(1),
       cartonQuantity: z.number().int().positive(),
       articleQuantity: z.number().int().positive(),
-      cartonPrice: z.number().positive(),
-      articlePrice: z.number().positive(),
+      cartonPrice: z.number().min(0),
+      articlePrice: z.number().min(0),
       articles: z.array(z.object({
         articleName: z.string().min(1),
         quantity: z.number().int().positive(),
-        price: z.number().positive()
+        price: z.number().min(0)
       })).optional().default([])
     })).optional()
   })
