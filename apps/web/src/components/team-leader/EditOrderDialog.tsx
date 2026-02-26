@@ -241,19 +241,7 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
       setFormData(prev => ({ ...prev, assignedEmployeeIds: assignmentIds }));
       setSelectedActivities(selectedActivityIds);
 
-      // 3. Recalculate prices for loaded containers
-      const filteredActivities = activitiesData.filter((a: any) => selectedActivityIds.includes(a.id));
-      const calculatedArticlePrice = filteredActivities.reduce((total: number, a: any) => total + (Number(a.articleBasePrice) || 0), 0);
-      const calculatedBasePrice = filteredActivities.reduce((total: number, a: any) => total + (Number(a.basePrice) || 0), 0);
-
-      const enhancedContainers = loadedContainers.map((container: any) => ({
-        ...container,
-        articlePrice: calculatedArticlePrice,
-        basePrice: calculatedBasePrice,
-        cartonPrice: calculateCartonPriceForQuantities(container.cartonQuantity, selectedActivityIds, activitiesData)
-      }));
-
-      setContainers(enhancedContainers);
+      setContainers(loadedContainers);
     } catch (error) {
       console.error("Error loading order data:", error);
     } finally {
@@ -261,23 +249,6 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
     }
   };
 
-  const calculateCartonPriceForQuantities = (cartonQuantity: number, activityIds: string[], loadedActivities: any[]) => {
-    return activityIds.reduce((total, activityId) => {
-      const activity = loadedActivities.find(a => a.id === activityId);
-      if (!activity) return total;
-
-      if (activity.customerPrices && activity.customerPrices.length > 0) {
-        const applicablePrice = activity.customerPrices.find((p: any) =>
-          cartonQuantity >= p.minQuantity && cartonQuantity <= p.maxQuantity
-        );
-        if (applicablePrice) {
-          return total + Number(applicablePrice.price);
-        }
-      }
-
-      return total + (Number(activity.unitPrice) || 0);
-    }, 0);
-  };
 
   // Sync startTime and endTime only when scheduledDate or pickers change
   useEffect(() => {
@@ -411,63 +382,9 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
   };
 
   const handleActivityToggle = (activityId: string, checked: boolean) => {
-    setSelectedActivities(prev => {
-      const nextActivities = checked
-        ? [...prev, activityId]
-        : prev.filter(id => id !== activityId);
-      
-      // Update all prices for all containers when activities change
-      setTimeout(() => {
-        setContainers(currentContainers => {
-          const updatedActivities = activities.filter(a => nextActivities.includes(a.id));
-          const newArticlePrice = updatedActivities.reduce((total, a) => total + (Number(a.articleBasePrice) || 0), 0);
-          const newBasePrice = updatedActivities.reduce((total, a) => total + (Number(a.basePrice) || 0), 0);
-
-          return currentContainers.map(container => ({
-            ...container,
-            cartonPrice: calculateCartonPriceForQuantity(container.cartonQuantity, nextActivities),
-            articlePrice: newArticlePrice,
-            basePrice: newBasePrice
-          }));
-        });
-      }, 0);
-      
-      return nextActivities;
-    });
-  };
-
-  const calculateCartonPriceForQuantity = (cartonQuantity: number, activityIds: string[] = selectedActivities) => {
-    return activityIds.reduce((total, activityId) => {
-      const activity = activities.find(a => a.id === activityId);
-      if (!activity) return total;
-
-      if (activity.customerPrices && activity.customerPrices.length > 0) {
-        const applicablePrice = activity.customerPrices.find((p: any) =>
-          cartonQuantity >= p.minQuantity && cartonQuantity <= p.maxQuantity
-        );
-        if (applicablePrice) {
-          return total + Number(applicablePrice.price);
-        }
-      }
-
-      return total + (Number(activity.unitPrice) || 0);
-    }, 0);
-  };
-
-  const getCartonPriceTotal = () => {
-    return containers.reduce((sum, c) => sum + (c.cartonPrice || 0), 0);
-  };
-
-  const getBasePriceTotal = () => {
-    return containers.reduce((sum, c) => sum + (c.basePrice || 0), 0);
-  };
-
-  const getArticlePriceTotal = () => {
-    return containers.reduce((sum, c) => sum + (c.articleQuantity * (c.articlePrice || 0)), 0);
-  };
-
-  const getTotalPrice = () => {
-    return getCartonPriceTotal() + getBasePriceTotal() + getArticlePriceTotal();
+    setSelectedActivities(prev =>
+      checked ? [...prev, activityId] : prev.filter(id => id !== activityId)
+    );
   };
 
   if (!ready) return null;
@@ -517,52 +434,22 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
         </div>
         <div className="max-h-60 overflow-y-auto border rounded-md p-3 space-y-3">
           {activities.map((activity) => (
-            <div key={activity.id} className="border rounded-lg p-3 space-y-2">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id={`activity-${activity.id}`}
-                    checked={selectedActivities.includes(activity.id)}
-                    onCheckedChange={(checked) => handleActivityToggle(activity.id, checked as boolean)}
-                  />
-                  <div>
-                    <Label htmlFor={`activity-${activity.id}`} className="text-sm font-medium">
-                      {activity.name}
-                    </Label>
-                    <p className="text-xs text-muted-foreground">
-                      {t("admin.orders.form.activityType")}: {activity.type?.replace('_', ' ')} | {t("admin.orders.form.activityUnit")}: {activity.unit}
-                    </p>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <div className="text-sm font-medium">
-                    {t("admin.orders.form.articleBasePrice")}: €{Number(activity.articleBasePrice || 0).toFixed(2)}
-                  </div>
-                  {Number(activity.basePrice || 0) !== 0 && (
-                    <div className="text-sm font-medium">
-                      {t("admin.orders.form.basePrice")}: €{Number(activity.basePrice || 0).toFixed(2)}
-                    </div>
-                  )}
-                </div>
-              </div>
-              {activity.customerPrices && activity.customerPrices.length > 0 ? (
-                <div className="ml-6">
-                  <p className="text-xs font-medium text-muted-foreground mb-1">{t("admin.orders.form.priceRanges")}:</p>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 text-xs">
-                    {activity.customerPrices.map((price: any, idx: number) => (
-                      <div key={idx} className="bg-muted/50 px-2 py-1 rounded">
-                        {price.minQuantity}-{price.maxQuantity}: €{Number(price.price).toFixed(2)}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ) : (
-                <div className="ml-6">
+            <div key={activity.id} className="border rounded-lg p-3">
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id={`activity-${activity.id}`}
+                  checked={selectedActivities.includes(activity.id)}
+                  onCheckedChange={(checked) => handleActivityToggle(activity.id, checked as boolean)}
+                />
+                <div>
+                  <Label htmlFor={`activity-${activity.id}`} className="text-sm font-medium">
+                    {activity.name}
+                  </Label>
                   <p className="text-xs text-muted-foreground">
-                    {t("admin.orders.form.basePrice")}: €{Number(activity.unitPrice || 0).toFixed(2)}
+                    {t("admin.orders.form.activityType")}: {activity.type?.replace('_', ' ')} | {t("admin.orders.form.activityUnit")}: {activity.unit}
                   </p>
                 </div>
-              )}
+              </div>
             </div>
           ))}
           {activities.length === 0 && (
@@ -575,17 +462,12 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
 
   const renderStep3 = () => {
     const addContainer = () => {
-      const updatedActivities = activities.filter(a => selectedActivities.includes(a.id));
-      const newArticlePrice = updatedActivities.reduce((total, a) => total + (Number(a.articleBasePrice) || 0), 0);
-      const newBasePrice = updatedActivities.reduce((total, a) => total + (Number(a.basePrice) || 0), 0);
-
       const newContainer: Container = {
         serialNumber: `CONT-${Date.now()}`,
         cartonQuantity: 1,
         articleQuantity: 1,
-        cartonPrice: calculateCartonPriceForQuantity(1),
-        articlePrice: newArticlePrice,
-        basePrice: newBasePrice
+        cartonPrice: 0,
+        articlePrice: 0,
       };
       setContainers([...containers, newContainer]);
     };
@@ -593,12 +475,6 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
     const updateContainer = (index: number, field: keyof Container, value: any) => {
       const updated = [...containers];
       updated[index] = { ...updated[index], [field]: value };
-      
-      if (field === 'cartonQuantity') {
-        const cartonPrice = calculateCartonPriceForQuantity(value);
-        updated[index].cartonPrice = cartonPrice;
-      }
-      
       setContainers(updated);
     };
 
@@ -661,17 +537,6 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
                     />
                   </div>
                   <div>
-                    <Label>{t("admin.orders.form.cartonPrice")} (€)</Label>
-                    <Input
-                      type="number"
-                      step="0.01"
-                      min="0"
-                      value={container.cartonPrice}
-                      readOnly
-                      className="bg-gray-50"
-                    />
-                  </div>
-                  <div>
                     <Label>{t("admin.orders.form.articleQuantity")}</Label>
                     <Input
                       type="number"
@@ -680,34 +545,6 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
                       onChange={(e) => updateContainer(containerIndex, 'articleQuantity', parseInt(e.target.value) || 1)}
                     />
                   </div>
-                  {container.basePrice !== undefined && container.basePrice > 0 && (
-                    <div>
-                      <Label>{t("admin.orders.form.basePrice")} (€)</Label>
-                      <Input
-                        type="number"
-                        step="0.01"
-                        min="0"
-                        value={container.basePrice}
-                        readOnly
-                        className="bg-gray-50"
-                      />
-                    </div>
-                  )}
-                  <div>
-                    <Label>{t("admin.orders.form.articlePrice")} (€)</Label>
-                    <Input
-                      type="number"
-                      step="0.01"
-                      min="0"
-                      value={container.articlePrice}
-                      readOnly
-                      className="bg-gray-50"
-                    />
-                  </div>
-                </div>
-
-                <div className="bg-muted/50 p-3 rounded">
-                  <div className="text-sm font-medium">{t("admin.orders.form.containerTotal")}: €{(container.cartonPrice + (container.basePrice || 0) + (container.articleQuantity * container.articlePrice)).toFixed(2)}</div>
                 </div>
               </div>
             ))}
@@ -719,22 +556,16 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
             <h4 className="font-medium mb-2">{t("admin.orders.form.orderSummary")}</h4>
             <div className="space-y-1 text-sm">
               <div className="flex justify-between">
-                <span>{t("admin.orders.form.activitiesCartonPrice")}:</span>
-                <span>€{getCartonPriceTotal().toFixed(2)}</span>
+                <span>{t("admin.orders.form.totalContainers")}:</span>
+                <span>{containers.length}</span>
               </div>
-              {getBasePriceTotal() !== 0 && (
-                <div className="flex justify-between">
-                  <span>{t("admin.orders.form.basePrice")}:</span>
-                  <span>€{getBasePriceTotal().toFixed(2)}</span>
-                </div>
-              )}
               <div className="flex justify-between">
-                <span>{t("admin.orders.form.articlesTotalPrice")}:</span>
-                <span>€{getArticlePriceTotal().toFixed(2)}</span>
+                <span>{t("admin.orders.form.totalCartons")}:</span>
+                <span>{containers.reduce((sum, c) => sum + c.cartonQuantity, 0)}</span>
               </div>
-              <div className="border-t pt-1 mt-2 flex justify-between font-medium">
-                <span>{t("admin.orders.form.orderTotal")}:</span>
-                <span>€{getTotalPrice().toFixed(2)}</span>
+              <div className="flex justify-between">
+                <span>{t("admin.orders.form.totalArticles")}:</span>
+                <span>{containers.reduce((sum, c) => sum + c.articleQuantity, 0)}</span>
               </div>
             </div>
           </div>
@@ -868,12 +699,6 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
         />
       </div>
 
-      <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-        <div className="flex justify-between items-center">
-          <span className="text-lg font-semibold text-green-800">{t("admin.orders.form.orderTotal")}:</span>
-          <span className="text-2xl font-bold text-green-600">€{getTotalPrice().toFixed(2)}</span>
-        </div>
-      </div>
     </div>
   );
 

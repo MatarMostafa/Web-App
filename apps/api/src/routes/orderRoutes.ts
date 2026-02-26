@@ -503,21 +503,34 @@ router.get(
         currentEmployeeId = employee?.id;
       }
 
+      const userRole = (req as any).user?.role;
+      const isTeamLeader = userRole === 'TEAM_LEADER';
+
       const formattedContainers = containers.map(container => {
-        const employeeAssignment = currentEmployeeId 
+        const employeeAssignment = currentEmployeeId
           ? container.employeeAssignments.find(a => a.employeeId === currentEmployeeId)
           : null;
 
-        return {
+        const base = {
           id: container.id,
           serialNumber: container.serialNumber,
           cartonQuantity: container.cartonQuantity,
           articleQuantity: container.articleQuantity,
+          isStarted: employeeAssignment ? true : false,
+          isCompleted: employeeAssignment?.isCompleted || false,
+          articles: container.articles.map(article => ({
+            articleName: article.articleName,
+            quantity: article.quantity,
+          }))
+        };
+
+        if (isTeamLeader) return base;
+
+        return {
+          ...base,
           cartonPrice: Number(container.cartonPrice),
           articlePrice: Number(container.articlePrice),
           basePrice: orderBasePrice,
-          isStarted: employeeAssignment ? true : false,
-          isCompleted: employeeAssignment?.isCompleted || false,
           articles: container.articles.map(article => ({
             articleName: article.articleName,
             quantity: article.quantity,
