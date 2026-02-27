@@ -1,4 +1,71 @@
 import { prisma } from "@repo/db";
+import { Decimal } from "decimal.js";
+
+interface ContainerInput {
+  serialNumber: string;
+  cartonQuantity: number;
+  articleQuantity: number;
+  cartonPrice?: number;
+  articlePrice?: number;
+  [key: string]: any;
+}
+
+interface ActivityInput {
+  activityId: string;
+  articleBasePrice?: number;
+  basePrice?: number;
+  [key: string]: any;
+}
+
+/**
+ * Calculates cartonPrice and articlePrice for each container using the same
+ * pricing logic as the admin dashboard — customer pricing tiers for carton price,
+ * and activity articleBasePrice for article price.
+ */
+export const calculateContainerPrices = async (
+  containers: ContainerInput[],
+  activities: ActivityInput[],
+  customerId: string,
+  scheduledDate: Date
+): Promise<ContainerInput[]> => {
+  if (!containers.length || !activities.length) {
+    return containers.map(c => ({ ...c, cartonPrice: 0, articlePrice: 0 }));
+  }
+
+  const activityIds = activities.map(a => a.activityId).filter(Boolean);
+
+  // Fetch all applicable pricing tiers for this customer and date
+  const pricingTiers = await prisma.customerPrice.findMany({
+    where: {
+      customerId,
+      customerActivityId: { in: activityIds },
+      isActive: true,
+      effectiveFrom: { lte: scheduledDate },
+      OR: [
+        { effectiveTo: null },
+        { effectiveTo: { gte: scheduledDate } },
+      ],
+    },
+  });
+
+  return containers.map(container => {
+    // cartonPrice: sum of the matching tier price for each activity
+    const cartonPrice = activities.reduce((total, activity) => {
+      const tiers = pricingTiers.filter(t => t.customerActivityId === activity.activityId);
+      const applicableTier = tiers.find(
+        t => container.cartonQuantity >= t.minQuantity && container.cartonQuantity <= t.maxQuantity
+      );
+      return total + (applicableTier ? new Decimal(applicableTier.price.toString()).toNumber() : 0);
+    }, 0);
+
+    // articlePrice: sum of articleBasePrice from all selected activities (sent from frontend)
+    const articlePrice = activities.reduce((total, activity) => {
+      return total + (Number(activity.articleBasePrice) || 0);
+    }, 0);
+
+    return { ...container, cartonPrice, articlePrice };
+  });
+};
 
 export const getTeamLeaderDashboard = async (employeeId: string) => {
   // Get the single team led by this employee
