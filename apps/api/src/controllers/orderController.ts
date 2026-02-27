@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { AuthRequest } from "../middleware/authMiddleware";
 import * as orderService from "../services/orderService";
 
 // -------------------- Orders --------------------
@@ -190,6 +191,11 @@ export const getOrderAssignments = async (req: Request, res: Response) => {
   const orderAssignments = await orderService.getOrderAssignmentsService(
     req.params.orderId
   );
+  const isTeamLeader = (req as AuthRequest).user?.role === 'TEAM_LEADER';
+  if (isTeamLeader) {
+    const stripped = orderAssignments.map(({ hourlyRate, ...rest }: any) => rest);
+    return res.json(stripped);
+  }
   res.json(orderAssignments);
 };
 
@@ -227,6 +233,11 @@ export const getOrderQualifications = async (req: Request, res: Response) => {
   const qualifications = await orderService.getOrderQualificationsService(
     req.params.orderId
   );
+  const isTeamLeader = (req as AuthRequest).user?.role === 'TEAM_LEADER';
+  if (isTeamLeader) {
+    const stripped = qualifications.map(({ unitPrice, lineTotal, ...rest }: any) => rest);
+    return res.json(stripped);
+  }
   res.json(qualifications);
 };
 

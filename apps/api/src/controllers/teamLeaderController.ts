@@ -49,7 +49,16 @@ export const createOrder = async (req: Request, res: Response) => {
 
     // Team leaders can create orders but without pricing fields
     const { hourlyRate, totalCost, profit, totalPrice, ...orderData } = req.body;
-    
+
+    // Strip price fields from containers - prices are managed by admin only
+    if (Array.isArray(orderData.containers)) {
+      orderData.containers = orderData.containers.map(({ cartonPrice, articlePrice, basePrice, ...rest }: any) => ({
+        ...rest,
+        cartonPrice: 0,
+        articlePrice: 0,
+      }));
+    }
+
     // Pass the employee ID as createdBy to properly track who created the order
     const order = await orderService.createOrderService(orderData, employee.id);
     res.status(201).json(order);
@@ -108,7 +117,16 @@ export const updateOrder = async (req: Request, res: Response) => {
 
     // Remove pricing fields from update data
     const { hourlyRate, totalCost, profit, totalPrice, ...updateData } = req.body;
-    
+
+    // Strip price fields from containers - prices are managed by admin only
+    if (Array.isArray(updateData.containers)) {
+      updateData.containers = updateData.containers.map(({ cartonPrice, articlePrice, basePrice, ...rest }: any) => ({
+        ...rest,
+        cartonPrice: 0,
+        articlePrice: 0,
+      }));
+    }
+
     const updatedOrder = await orderService.updateOrderService(id, updateData, employee.id);
     res.json(updatedOrder);
   } catch (error) {
