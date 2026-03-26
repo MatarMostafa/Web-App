@@ -9,6 +9,13 @@ export enum OrderStatus {
   EXPIRED = "EXPIRED"
 }
 
+export enum AssignmentStatus {
+  ASSIGNED = "ASSIGNED",
+  ACTIVE = "ACTIVE",
+  COMPLETED = "COMPLETED",
+  CANCELLED = "CANCELLED"
+}
+
 export enum ActivityType {
   CONTAINER_UNLOADING = 'CONTAINER_UNLOADING',
   CONTAINER_LOADING = 'CONTAINER_LOADING',
@@ -58,6 +65,16 @@ export interface Order {
   customerId: string;
   createdAt: string;
   updatedAt: string;
+  employeeAssignments?: Array<{
+    id: string;
+    employeeId: string;
+    status: AssignmentStatus;
+    employee: {
+      firstName: string;
+      lastName: string;
+      employeeCode: string;
+    };
+  }>;
   createdBy?: string;
   updatedBy?: string;
   customer?: {

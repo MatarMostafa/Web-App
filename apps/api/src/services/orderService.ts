@@ -749,6 +749,76 @@ const updateOrderStatusBasedOnAssignments = async (orderId: string) => {
   }
 };
 
+/**
+ * Batch start work for several employees on an order.
+ * Strictly updates existing 'ASSIGNED' assignments to 'ACTIVE'.
+ */
+export const batchStartWork = async (
+  orderId: string,
+  employeeIds: string[],
+  startedById: string
+) => {
+  // 1. Update matching assignments
+  const result = await prisma.assignment.updateMany({
+    where: {
+      orderId,
+      employeeId: { in: employeeIds },
+      status: 'ASSIGNED',
+    },
+    data: {
+      status: 'ACTIVE',
+      startDate: new Date(),
+      startedById,
+    },
+  });
+
+  // 2. Sync order status (e.g. move to IN_PROGRESS)
+  await updateOrderStatusBasedOnAssignments(orderId);
+
+  return result;
+};
+
+/**
+ * Stop work for an individual employee.
+ * Calculates actualHours and sets status to 'COMPLETED'.
+ */
+export const stopWork = async (orderId: string, employeeId: string) => {
+  // 1. Find the active assignment
+  const assignment = await prisma.assignment.findFirst({
+    where: {
+      orderId,
+      employeeId,
+      status: 'ACTIVE',
+    },
+  });
+
+  if (!assignment) {
+    throw new Error("Kein aktiver Arbeitseinsatz für diesen Mitarbeiter gefunden");
+  }
+
+  const endDate = new Date();
+  const startDate = assignment.startDate || assignment.assignedDate;
+  
+  // 2. Calculate actual hours (end - start)
+  const diffMs = endDate.getTime() - startDate.getTime();
+  const actualHours = new Decimal(diffMs).dividedBy(1000 * 60 * 60).toDecimalPlaces(2);
+
+  // 3. Update assignment
+  const updatedAssignment = await prisma.assignment.update({
+    where: { id: assignment.id },
+    data: {
+      status: 'COMPLETED',
+      endDate,
+      actualHours,
+    },
+  });
+
+  // 4. Sync order status
+  await updateOrderStatusBasedOnAssignments(orderId);
+
+  return updatedAssignment;
+};
+
 // Intelligent auto-assignment with qualification matching and performance scoring
 export const autoAssignEmployeesService = async (
   orderId: string,

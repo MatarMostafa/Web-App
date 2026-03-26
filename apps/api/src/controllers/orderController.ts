@@ -341,3 +341,55 @@ export const getOrderActivities = async (req: Request, res: Response) => {
     });
   }
 };
+
+/**
+ * Controller to batch start work for multiple employees on an order.
+ */
+export const batchStartWork = async (req: Request, res: Response) => {
+  try {
+    const { orderId } = req.params;
+    const { employeeIds } = req.body;
+    const startedById = (req as any).user?.id;
+
+    if (!employeeIds || !Array.isArray(employeeIds)) {
+      return res.status(400).json({ success: false, message: "Mitarbeiter-IDs sind erforderlich" });
+    }
+
+    const result = await orderService.batchStartWork(orderId, employeeIds, startedById);
+    res.json({ 
+      success: true, 
+      data: result, 
+      message: `${result.count} Mitarbeiter erfolgreich gestartet` 
+    });
+  } catch (error) {
+    console.error("Batch start work error:", error);
+    res.status(400).json({ 
+      success: false,
+      message: "Fehler beim Starten der Arbeit", 
+      error: error instanceof Error ? error.message : String(error)
+    });
+  }
+};
+
+/**
+ * Controller to stop work for an individual employee on an order.
+ */
+export const stopWork = async (req: Request, res: Response) => {
+  try {
+    const { orderId, employeeId } = req.params;
+
+    const assignment = await orderService.stopWork(orderId, employeeId);
+    res.json({ 
+      success: true, 
+      data: assignment, 
+      message: "Arbeit erfolgreich beendet" 
+    });
+  } catch (error) {
+    console.error("Stop work error:", error);
+    res.status(400).json({ 
+      success: false,
+      message: "Fehler beim Beenden der Arbeit", 
+      error: error instanceof Error ? error.message : String(error)
+    });
+  }
+};

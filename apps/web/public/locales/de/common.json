@@ -331,6 +331,11 @@
     "templateBasedDescription": "Diese Beschreibung basiert auf einer Vorlage und kann nicht bearbeitet werden.",
     "priority": "Priorität",
     "start": "Start",
+    "startWork": "Arbeit beginnen",
+    "stopWork": "Arbeit beenden",
+    "workingNow": "Einsatz läuft",
+    "awaitingStart": "Wartet auf Beginn",
+    "selectTeammates": "Teammitglieder für den Start auswählen",
     "activityBasePrice": "Aktivitäts-Basispreis"
   },
   "customer": {

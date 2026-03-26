@@ -57,6 +57,8 @@ import {
   updateOrderRating,
   deleteOrderRating,
   getOrderActivities,
+  batchStartWork,
+  stopWork,
 } from "../controllers/orderController";
 import {
   getOrderNotes,
@@ -604,7 +606,6 @@ router.get(
         start: new Date(startDate as string),
         end: new Date(endDate as string)
       } : undefined;
-
       const analytics = await OrderAnalyticsService.getStartMethodAnalytics(dateRange);
       res.json({ success: true, data: analytics });
     } catch (error) {
@@ -616,6 +617,23 @@ router.get(
       });
     }
   }
+);
+
+/**
+ * @section Work Session Management (Milestone 1)
+ */
+router.post(
+  "/:orderId/start-work",
+  authMiddleware,
+  roleMiddleware(["ADMIN", "TEAM_LEADER", "EMPLOYEE"]),
+  batchStartWork
+);
+
+router.post(
+  "/:orderId/stop-work/:employeeId",
+  authMiddleware,
+  roleMiddleware(["ADMIN", "TEAM_LEADER", "EMPLOYEE"]),
+  stopWork
 );
 
 router.get(

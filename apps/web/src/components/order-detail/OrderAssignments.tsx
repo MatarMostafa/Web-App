@@ -13,16 +13,25 @@ import {
   Calendar,
   UserPlus,
   UserMinus,
-  Clock
+  Clock,
+  Play,
+  Square,
+  CheckCircle2
 } from "lucide-react";
 import { apiClient } from "@/lib/api-client";
 import toast from "react-hot-toast";
 import { AssignEmployeeModal } from "./AssignEmployeeModal";
+import { TeamStartModal } from "../modals/TeamStartModal";
+import { useOrderStore } from "@/store/orderStore";
+import { AssignmentStatus } from "@/types/order";
 
 interface Assignment {
   id: string;
   employeeId: string;
   assignedDate: string;
+  startDate?: string;
+  endDate?: string;
+  status: AssignmentStatus;
   employee: {
     id: string;
     firstName: string;
@@ -48,6 +57,138 @@ interface OrderAssignmentsProps {
   onAssignmentCountChange?: (count: number) => void;
 }
 
+const AssignmentRow: React.FC<{
+  assignment: Assignment;
+  userRole: string;
+  t: any;
+  actionLoading: boolean;
+  storeLoading: boolean;
+  handleIndividualStart: (id: string) => void;
+  handleStopWork: (id: string) => void;
+  handleRemoveAssignment: (id: string) => void;
+  getStatusBadge: (status: AssignmentStatus) => React.ReactNode;
+  getInitials: (f?: string, l?: string, u?: string) => string;
+}> = ({
+  assignment,
+  userRole,
+  t,
+  actionLoading,
+  storeLoading,
+  handleIndividualStart,
+  handleStopWork,
+  handleRemoveAssignment,
+  getStatusBadge,
+  getInitials,
+}) => (
+  <div className="flex items-start justify-between gap-3 p-3 border rounded-lg hover:bg-accent/5 transition-colors">
+    <div className="flex items-start gap-3 flex-1 min-w-0">
+      <Avatar className="w-10 h-10 border">
+        <AvatarFallback className="bg-muted text-xs">
+          {getInitials(assignment.employee.firstName, assignment.employee.lastName, assignment.employee.user?.email?.split('@')[0])}
+        </AvatarFallback>
+      </Avatar>
+      
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2 mb-1">
+          <h4 className="font-medium text-sm truncate">
+            {assignment.employee.firstName || assignment.employee.lastName ? 
+              `${assignment.employee.firstName || ''} ${assignment.employee.lastName || ''}`.trim() : 
+              assignment.employee.user?.email?.split('@')[0] || 'No Name'
+            }
+          </h4>
+          {userRole === "ADMIN" && (
+            <Badge variant="outline" className="text-[10px] h-4">
+              {assignment.employee.employeeCode}
+            </Badge>
+          )}
+        </div>
+        
+        <div className="space-y-1 text-[11px] text-muted-foreground">
+          {userRole === "ADMIN" && assignment.employee.position && (
+            <p className="truncate">{assignment.employee.position.title}</p>
+          )}
+          
+          <div className="flex items-center gap-3">
+            {userRole === "ADMIN" && assignment.employee.user?.email && (
+              <div className="flex items-center gap-1 truncate">
+                <Mail className="h-3 w-3 shrink-0" />
+                <span className="truncate">{assignment.employee.user.email}</span>
+              </div>
+            )}
+            
+            {userRole === "ADMIN" && assignment.employee.phoneNumber && (
+              <div className="flex items-center gap-1 truncate">
+                <Phone className="h-3 w-3 shrink-0" />
+                <span className="truncate">{assignment.employee.phoneNumber}</span>
+              </div>
+            )}
+          </div>
+          
+          <div className="flex items-center gap-1">
+            <Calendar className="h-3 w-3 shrink-0" />
+            <span>
+              {t("order.assigned")} {new Date(assignment.assignedDate).toLocaleDateString()}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div className="flex flex-col items-end gap-2 shrink-0">
+      <div className="flex items-center gap-1">
+        {getStatusBadge(assignment.status)}
+      </div>
+      
+      <div className="flex justify-end gap-1">
+        {userRole === "ADMIN" && assignment.status === AssignmentStatus.ASSIGNED && (
+          <Button 
+            size="icon" 
+            variant="ghost" 
+            className="h-8 w-8 text-primary hover:text-primary hover:bg-primary/10"
+            onClick={() => handleIndividualStart(assignment.employeeId)}
+            disabled={actionLoading || storeLoading}
+            title={t("order.startWork")}
+          >
+            <Play className="h-4 w-4" />
+          </Button>
+        )}
+        
+        {userRole === "ADMIN" && assignment.status === AssignmentStatus.ACTIVE && (
+          <Button 
+            size="icon" 
+            variant="ghost" 
+            className="h-8 w-8 text-destructive hover:text-destructive hover:bg-red-50"
+            onClick={() => handleStopWork(assignment.employeeId)}
+            disabled={actionLoading || storeLoading}
+            title={t("order.stopWork")}
+          >
+            <Square className="h-4 w-4" />
+          </Button>
+        )}
+
+        {userRole === "ADMIN" && assignment.status === AssignmentStatus.COMPLETED && (
+          <div className="h-8 w-8 flex items-center justify-center text-emerald-600">
+            <CheckCircle2 className="h-5 w-5" />
+          </div>
+        )}
+
+        {userRole === "ADMIN" && assignment.status === AssignmentStatus.ASSIGNED && (
+          <Button 
+            size="icon" 
+            variant="ghost" 
+            className="h-8 w-8 text-destructive hover:text-destructive hover:bg-red-50"
+            onClick={() => handleRemoveAssignment(assignment.id)}
+            disabled={actionLoading}
+            title={t("common.remove")}
+          >
+            <UserMinus className="h-4 w-4" />
+          </Button>
+        )}
+      </div>
+    </div>
+  </div>
+);
+
 export const OrderAssignments: React.FC<OrderAssignmentsProps> = ({
   orderId,
   order,
@@ -59,52 +200,61 @@ export const OrderAssignments: React.FC<OrderAssignmentsProps> = ({
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
   const [showAssignModal, setShowAssignModal] = useState(false);
+  const [showTeamStartModal, setShowTeamStartModal] = useState(false);
+  const { startWork, stopWork, loading: storeLoading } = useOrderStore();
+
+  const loadAssignments = async () => {
+    setLoading(true);
+    try {
+      const response = await apiClient.get<any>(`/api/orders/${orderId}/assignments`);
+      const assignmentData = response?.data || (Array.isArray(response) ? response : []);
+      setAssignments(assignmentData);
+      onAssignmentCountChange?.(assignmentData.length);
+    } catch (error) {
+      console.error("Failed to load assignments:", error);
+      setAssignments([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const loadAssignments = async () => {
-      setLoading(true);
-      try {
-        const response = await apiClient.get<any>(`/api/orders/${orderId}/assignments`);
-        if (response && typeof response === 'object' && 'success' in response && response.success) {
-          const assignmentData = response.data || [];
-          setAssignments(assignmentData);
-          onAssignmentCountChange?.(assignmentData.length);
-        } else if (Array.isArray(response)) {
-          // Handle case where response is directly an array
-          setAssignments(response);
-          onAssignmentCountChange?.(response.length);
-        } else {
-          setAssignments([]);
-          onAssignmentCountChange?.(0);
-        }
-      } catch (error) {
-        console.error("Failed to load assignments:", error);
-        setAssignments([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     loadAssignments();
   }, [orderId]);
 
   const handleRemoveAssignment = async (assignmentId: string) => {
     setActionLoading(true);
     try {
-      const response = await apiClient.delete<any>(`/api/orders/assignments/${assignmentId}`);
-      if (response && typeof response === 'object' && 'success' in response && response.success) {
-        // Reload assignments
-        const updatedResponse = await apiClient.get<any>(`/api/orders/${orderId}/assignments`);
-        if (updatedResponse && typeof updatedResponse === 'object' && 'success' in updatedResponse && updatedResponse.success) {
-          const assignmentData = updatedResponse.data || [];
-          setAssignments(assignmentData);
-          onAssignmentCountChange?.(assignmentData.length);
-        }
-        toast.success(t('messages.success'));
-      }
+      await apiClient.delete(`/api/orders/assignments/${assignmentId}`);
+      toast.success(t('messages.success'));
+      await loadAssignments();
     } catch (error) {
       console.error("Failed to remove assignment:", error);
       toast.error(t('messages.error'));
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleStopWork = async (employeeId: string) => {
+    setActionLoading(true);
+    try {
+      await stopWork(orderId, employeeId);
+      await loadAssignments();
+    } catch (error) {
+      console.error("Failed to stop work:", error);
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleIndividualStart = async (employeeId: string) => {
+    setActionLoading(true);
+    try {
+      await startWork(orderId, [employeeId]);
+      await loadAssignments();
+    } catch (error) {
+      console.error("Failed to start work:", error);
     } finally {
       setActionLoading(false);
     }
@@ -114,20 +264,26 @@ export const OrderAssignments: React.FC<OrderAssignmentsProps> = ({
     setShowAssignModal(true);
   };
 
+  const handleTeamStart = () => {
+    setShowTeamStartModal(true);
+  };
+
   const handleAssignmentComplete = async () => {
-    // Reload assignments after successful assignment
-    try {
-      const response = await apiClient.get<any>(`/api/orders/${orderId}/assignments`);
-      if (response && typeof response === 'object' && 'success' in response && response.success) {
-        const assignmentData = response.data || [];
-        setAssignments(assignmentData);
-        onAssignmentCountChange?.(assignmentData.length);
-      } else if (Array.isArray(response)) {
-        setAssignments(response);
-        onAssignmentCountChange?.(response.length);
-      }
-    } catch (error) {
-      console.error("Failed to reload assignments:", error);
+    await loadAssignments();
+  };
+
+  const getStatusBadge = (status: AssignmentStatus) => {
+    switch (status) {
+      case AssignmentStatus.ASSIGNED:
+        return <Badge variant="secondary">{t("order.assigned")}</Badge>;
+      case AssignmentStatus.ACTIVE:
+        return <Badge className="bg-green-100 text-green-800 hover:bg-green-100">{t("order.workingNow")}</Badge>;
+      case AssignmentStatus.COMPLETED:
+        return <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100">{t("order.completed")}</Badge>;
+      case AssignmentStatus.CANCELLED:
+        return <Badge variant="destructive">{t("order.cancelled")}</Badge>;
+      default:
+        return null;
     }
   };
 
@@ -177,17 +333,31 @@ export const OrderAssignments: React.FC<OrderAssignmentsProps> = ({
                `${assignments.length} ${t("order.peopleAssigned")}`}
             </p>
           </div>
-          {userRole === "ADMIN" && (
-            <Button 
-              size="sm" 
-              variant="outline"
-              onClick={handleAssignStaff}
-              disabled={actionLoading}
-            >
-              <UserPlus className="h-4 w-4 mr-2" />
-              {t("common.assign")}
-            </Button>
-          )}
+          <div className="flex items-center gap-2">
+            {userRole === "ADMIN" && assignments.some(a => a.status === AssignmentStatus.ASSIGNED) && (
+              <Button 
+                size="sm" 
+                variant="default"
+                onClick={handleTeamStart}
+                disabled={actionLoading || storeLoading}
+                className="bg-primary hover:bg-primary/90"
+              >
+                <Play className="h-4 w-4 mr-2" />
+                {t("order.startWork")}
+              </Button>
+            )}
+            {userRole === "ADMIN" && (
+              <Button 
+                size="sm" 
+                variant="outline"
+                onClick={handleAssignStaff}
+                disabled={actionLoading}
+              >
+                <UserPlus className="h-4 w-4 mr-2" />
+                {t("common.assign")}
+              </Button>
+            )}
+          </div>
         </div>
       </CardHeader>
       <CardContent>
@@ -209,75 +379,93 @@ export const OrderAssignments: React.FC<OrderAssignmentsProps> = ({
             )}
           </div>
         ) : (
-          <div className="space-y-4">
-            {assignments.map((assignment) => (
-              <div key={assignment.id} className="flex items-start gap-3 p-3 border rounded-lg">
-                <Avatar className="w-10 h-10">
-                  <AvatarFallback>
-                    {getInitials(assignment.employee.firstName, assignment.employee.lastName, assignment.employee.user?.email?.split('@')[0])}
-                  </AvatarFallback>
-                </Avatar>
-                
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
-                    <h4 className="font-medium text-sm">
-                      {assignment.employee.firstName || assignment.employee.lastName ? 
-                        `${assignment.employee.firstName || ''} ${assignment.employee.lastName || ''}`.trim() : 
-                        assignment.employee.user?.email?.split('@')[0] || 'No Name'
-                      }
-                    </h4>
-                    {userRole === "ADMIN" && (
-                      <Badge variant="outline" className="text-xs">
-                        {assignment.employee.employeeCode}
-                      </Badge>
-                    )}
-                  </div>
-                  
-                  <div className="space-y-1 text-xs text-muted-foreground">
-                    {userRole === "ADMIN" && assignment.employee.position && (
-                      <p>{assignment.employee.position.title}</p>
-                    )}
-                    
-                    {userRole === "ADMIN" && assignment.employee.department && (
-                      <p>{assignment.employee.department.name}</p>
-                    )}
-                    
-                    {userRole === "ADMIN" && assignment.employee.user?.email && (
-                      <div className="flex items-center gap-1">
-                        <Mail className="h-3 w-3" />
-                        <span>{assignment.employee.user.email}</span>
-                      </div>
-                    )}
-                    
-                    {userRole === "ADMIN" && assignment.employee.phoneNumber && (
-                      <div className="flex items-center gap-1">
-                        <Phone className="h-3 w-3" />
-                        <span>{assignment.employee.phoneNumber}</span>
-                      </div>
-                    )}
-                    
-                    <div className="flex items-center gap-1">
-                      <Calendar className="h-3 w-3" />
-                      <span>
-                        {t("order.assigned")} {new Date(assignment.assignedDate).toLocaleDateString()}
-                      </span>
-                    </div>
-                  </div>
+          <div className="space-y-6">
+            {/* Working Now Section */}
+            {assignments.filter(a => a.status === AssignmentStatus.ACTIVE).length > 0 && (
+              <div className="space-y-3">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-green-600 flex items-center gap-2">
+                  <Play className="h-3 w-3 fill-current" />
+                  {t("order.workingNow")}
+                </h4>
+                <div className="space-y-2">
+                  {assignments
+                    .filter(a => a.status === AssignmentStatus.ACTIVE)
+                    .map((assignment) => (
+                      <AssignmentRow 
+                        key={assignment.id} 
+                        assignment={assignment} 
+                        userRole={userRole}
+                        t={t}
+                        actionLoading={actionLoading}
+                        storeLoading={storeLoading}
+                        handleIndividualStart={handleIndividualStart}
+                        handleStopWork={handleStopWork}
+                        handleRemoveAssignment={handleRemoveAssignment}
+                        getStatusBadge={getStatusBadge}
+                        getInitials={getInitials}
+                      />
+                    ))}
                 </div>
-                
-                {userRole === "ADMIN" && (
-                  <Button 
-                    size="sm" 
-                    variant="ghost" 
-                    className="text-destructive hover:text-destructive"
-                    onClick={() => handleRemoveAssignment(assignment.id)}
-                    disabled={actionLoading}
-                  >
-                    <UserMinus className="h-4 w-4" />
-                  </Button>
-                )}
               </div>
-            ))}
+            )}
+
+            {/* Awaiting Start Section */}
+            {assignments.filter(a => a.status === AssignmentStatus.ASSIGNED).length > 0 && (
+              <div className="space-y-3">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+                  <Clock className="h-3 w-3" />
+                  {t("order.awaitingStart")}
+                </h4>
+                <div className="space-y-2">
+                  {assignments
+                    .filter(a => a.status === AssignmentStatus.ASSIGNED)
+                    .map((assignment) => (
+                      <AssignmentRow 
+                        key={assignment.id} 
+                        assignment={assignment} 
+                        userRole={userRole}
+                        t={t}
+                        actionLoading={actionLoading}
+                        storeLoading={storeLoading}
+                        handleIndividualStart={handleIndividualStart}
+                        handleStopWork={handleStopWork}
+                        handleRemoveAssignment={handleRemoveAssignment}
+                        getStatusBadge={getStatusBadge}
+                        getInitials={getInitials}
+                      />
+                    ))}
+                </div>
+              </div>
+            )}
+
+            {/* Completed Section */}
+            {assignments.filter(a => a.status === AssignmentStatus.COMPLETED).length > 0 && (
+              <div className="space-y-3">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-blue-600 flex items-center gap-2">
+                  <CheckCircle2 className="h-3 w-3" />
+                  {t("order.completed")}
+                </h4>
+                <div className="space-y-2">
+                  {assignments
+                    .filter(a => a.status === AssignmentStatus.COMPLETED)
+                    .map((assignment) => (
+                      <AssignmentRow 
+                        key={assignment.id} 
+                        assignment={assignment} 
+                        userRole={userRole}
+                        t={t}
+                        actionLoading={actionLoading}
+                        storeLoading={storeLoading}
+                        handleIndividualStart={handleIndividualStart}
+                        handleStopWork={handleStopWork}
+                        handleRemoveAssignment={handleRemoveAssignment}
+                        getStatusBadge={getStatusBadge}
+                        getInitials={getInitials}
+                      />
+                    ))}
+                </div>
+              </div>
+            )}
           </div>
         )}
       </CardContent>
@@ -289,6 +477,16 @@ export const OrderAssignments: React.FC<OrderAssignmentsProps> = ({
         currentAssignments={assignments.map(a => a.employeeId)}
         onAssignmentComplete={handleAssignmentComplete}
         maxEmployees={undefined}
+      />
+
+      <TeamStartModal
+        isOpen={showTeamStartModal}
+        onClose={() => {
+          setShowTeamStartModal(false);
+          loadAssignments();
+        }}
+        orderId={orderId}
+        assignments={assignments}
       />
     </Card>
   );

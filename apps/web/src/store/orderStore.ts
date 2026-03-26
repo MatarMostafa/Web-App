@@ -22,6 +22,8 @@ interface OrderState {
   updateOrder: (id: string, data: UpdateOrderData) => Promise<void>;
   updateOrderStatus: (id: string, status: string) => void;
   deleteOrder: (id: string) => Promise<void>;
+  startWork: (orderId: string, employeeIds: string[]) => Promise<void>;
+  stopWork: (orderId: string, employeeId: string) => Promise<void>;
   clearError: () => void;
 }
 
@@ -185,6 +187,36 @@ export const useOrderStore = create<OrderState>((set, get) => ({
     } catch (error) {
       set({ error: error instanceof Error ? error.message : "Failed to delete order", loading: false });
       throw error;
+    }
+  },
+
+  startWork: async (orderId: string, employeeIds: string[]) => {
+    set({ loading: true });
+    try {
+      await apiClient.post(`/api/orders/${orderId}/start-work`, { employeeIds });
+      toast.success("Arbeit erfolgreich gestartet");
+      // Refresh order to get updated statuses
+      await get().fetchOrder(orderId);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Fehler beim Starten der Arbeit";
+      toast.error(errorMessage);
+    } finally {
+      set({ loading: false });
+    }
+  },
+
+  stopWork: async (orderId: string, employeeId: string) => {
+    set({ loading: true });
+    try {
+      await apiClient.post(`/api/orders/${orderId}/stop-work/${employeeId}`);
+      toast.success("Arbeit erfolgreich beendet");
+      // Refresh order to get updated statuses
+      await get().fetchOrder(orderId);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Fehler beim Beenden der Arbeit";
+      toast.error(errorMessage);
+    } finally {
+      set({ loading: false });
     }
   },
 

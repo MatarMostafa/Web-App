@@ -330,6 +330,11 @@
     "templateBasedDescription": "This description is template-based and cannot be edited.",
     "priority": "Priority",
     "start": "Start",
+    "startWork": "Start Work",
+    "stopWork": "Stop Work",
+    "workingNow": "Working Now",
+    "awaitingStart": "Awaiting Start",
+    "selectTeammates": "Select teammates to start work",
     "activityBasePrice": "Activity Base Price"
   },
   "customer": {
