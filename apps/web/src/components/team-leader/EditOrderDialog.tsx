@@ -95,6 +95,7 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
   const [selectedActivities, setSelectedActivities] = useState<string[]>([]);
   const [templateData, setTemplateData] = useState<Record<string, string> | null>(null);
   const [containers, setContainers] = useState<Container[]>([]);
+  const [currentEmployeeId, setCurrentEmployeeId] = useState<string | null>(null);
 
   const [formData, setFormData] = useState<UpdateOrderData>({
     description: "",
@@ -151,9 +152,24 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
       
       fetchCustomers();
       fetchEmployees();
+      fetchCurrentEmployee();
       loadOrderData();
     }
   }, [order, open]);
+
+  const fetchCurrentEmployee = async () => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/employees/me`, {
+        headers: { Authorization: `Bearer ${session?.accessToken}` },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setCurrentEmployeeId(data.id);
+      }
+    } catch (error) {
+      console.error("Error fetching current employee profile:", error);
+    }
+  };
 
   const fetchCustomers = async () => {
     try {
@@ -671,19 +687,21 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
           {t("admin.orders.form.employeesSelected", { selected: (formData.assignedEmployeeIds || []).length })}
         </div>
         <div className="max-h-40 overflow-y-auto border rounded-md p-3 space-y-2">
-          {employees.map((employee) => (
-            <div key={employee.id} className="flex items-center space-x-2">
-              <Checkbox
-                id={`employee-${employee.id}`}
-                checked={(formData.assignedEmployeeIds || []).includes(employee.id)}
-                onCheckedChange={(checked) => handleEmployeeToggle(employee.id, checked as boolean)}
-              />
-              <Label htmlFor={`employee-${employee.id}`} className="text-sm">
-                {employee.firstName} {employee.lastName} ({employee.employeeCode})
-              </Label>
-            </div>
-          ))}
-          {employees.length === 0 && (
+          {employees
+            .filter((employee) => employee.id !== currentEmployeeId)
+            .map((employee) => (
+              <div key={employee.id} className="flex items-center space-x-2">
+                <Checkbox
+                  id={`employee-${employee.id}`}
+                  checked={(formData.assignedEmployeeIds || []).includes(employee.id)}
+                  onCheckedChange={(checked) => handleEmployeeToggle(employee.id, checked as boolean)}
+                />
+                <Label htmlFor={`employee-${employee.id}`} className="text-sm">
+                  {employee.firstName} {employee.lastName} ({employee.employeeCode})
+                </Label>
+              </div>
+            ))}
+          {employees.filter((e) => e.id !== currentEmployeeId).length === 0 && (
             <p className="text-sm text-gray-500">{t("teamLeader.orders.noTeamMembersAvailable")}</p>
           )}
         </div>

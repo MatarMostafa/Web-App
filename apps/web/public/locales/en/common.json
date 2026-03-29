@@ -104,7 +104,8 @@
     "assigning": "Assigning...",
     "assignEmployees": "Assign Employees",
     "employeesSelected": "employees selected",
-    "employeeSelected": "employee selected"
+    "employeeSelected": "employee selected",
+    "members": "members"
   },
   "auth": {
     "signIn": "Sign In",
@@ -291,9 +292,14 @@
     "estimatedHours": "Estimated Hours",
     "actualHours": "Actual Hours",
     "pending": "Pending",
+    "draft": "Draft",
+    "open": "Open",
+    "active": "Active",
     "inProgress": "In Progress",
+    "inReview": "In Review",
     "completed": "Completed",
     "cancelled": "Cancelled",
+    "expired": "Expired",
     "assigned": "Assigned",
     "unassigned": "Unassigned",
     "description": "Order Description",
@@ -335,7 +341,8 @@
     "workingNow": "Working Now",
     "awaitingStart": "Awaiting Start",
     "selectTeammates": "Select teammates to start work",
-    "activityBasePrice": "Activity Base Price"
+    "activityBasePrice": "Activity Base Price",
+    "teamStart": "Team Start"
   },
   "customer": {
     "customer": "Customer",
@@ -709,6 +716,7 @@
         "open": "OPEN",
         "active": "ACTIVE",
         "inProgress": "IN PROGRESS",
+        "inReview": "IN REVIEW",
         "completed": "COMPLETED",
         "cancelled": "CANCELLED",
         "expired": "EXPIRED"
@@ -750,6 +758,13 @@
         "createError": "Failed to create order",
         "updateError": "Failed to update order",
         "deleteError": "Failed to delete order",
+        "assignTeam": "Assign Team",
+        "selectTeam": "Select Team",
+        "noTeam": "No Team",
+        "teamAssigned": "Team assigned",
+        "teamMembersAssigned": "Members of team {{name}} have been added to the assignment list",
+        "teamMembers": "Team Members",
+        "otherEmployees": "Other Employees",
         "stepTitles": {
           "step1": "Step 1: Select Customer",
           "step2": "Step 2: Select Activities",

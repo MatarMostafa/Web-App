@@ -46,7 +46,11 @@ export const getAllOrdersService = async () => {
       customer: true,
       customerActivities: true,
       orderAssignments: true,
-      employeeAssignments: true,
+      employeeAssignments: {
+        include: {
+          employee: true
+        }
+      },
       ratings: true,
       descriptionData: true
     },
@@ -63,7 +67,11 @@ export const getOrderByIdService = async (id: string) => {
       customer: true,
       customerActivities: true,
       orderAssignments: true,
-      employeeAssignments: true,
+      employeeAssignments: {
+        include: {
+          employee: true
+        }
+      },
       ratings: true,
       descriptionData: true,
     },
@@ -80,8 +88,8 @@ export const getOrderByIdService = async (id: string) => {
   return order;
 };
 
-export const createOrderService = async (data: OrderCreateInput & { assignedEmployeeIds?: string[]; activities?: Array<{ activityId: string; quantity?: number; basePrice?: number; articleBasePrice?: number }>; customerId: string; templateData?: Record<string, string> | null; createdBySubAccountId?: string; cartonQuantity?: number; articleQuantity?: number; containers?: Array<{ serialNumber: string; cartonQuantity: number; articleQuantity: number; cartonPrice: number; articlePrice: number }>; totalPrice?: number }, createdBy?: string) => {
-  let { assignedEmployeeIds, activities, customerId, templateData, createdBySubAccountId, cartonQuantity, articleQuantity, containers, totalPrice, ...orderData } = data;
+export const createOrderService = async (data: OrderCreateInput & { assignedEmployeeIds?: string[]; activities?: Array<{ activityId: string; quantity?: number; basePrice?: number; articleBasePrice?: number }>; customerId: string; templateData?: Record<string, string> | null; createdBySubAccountId?: string; cartonQuantity?: number; articleQuantity?: number; containers?: Array<{ serialNumber: string; cartonQuantity: number; articleQuantity: number; cartonPrice: number; articlePrice: number }>; totalPrice?: number; teamId?: string }, createdBy?: string) => {
+  let { assignedEmployeeIds, activities, customerId, templateData, createdBySubAccountId, cartonQuantity, articleQuantity, containers, totalPrice, teamId, ...orderData } = data;
 
   console.log('Creating order with data:', { containers: containers?.length || 0, containerData: containers }); // Debug log
 
@@ -142,6 +150,11 @@ export const createOrderService = async (data: OrderCreateInput & { assignedEmpl
         cartonQuantity,
         articleQuantity,
         createdBy,
+        ...(teamId && {
+          team: {
+            connect: { id: teamId }
+          }
+        }),
         customer: {
           connect: { id: customerId }
         },
@@ -324,10 +337,10 @@ export const createOrderService = async (data: OrderCreateInput & { assignedEmpl
 
 export const updateOrderService = async (
   id: string,
-  data: OrderUpdateInput & { assignedEmployeeIds?: string[]; activities?: Array<{ activityId: string; quantity?: number; basePrice?: number; articleBasePrice?: number }>; templateData?: Record<string, string> | null; cartonQuantity?: number; articleQuantity?: number; containers?: Array<{ serialNumber: string; cartonQuantity: number; articleQuantity: number; cartonPrice: number; articlePrice: number }>; totalPrice?: number },
+  data: OrderUpdateInput & { assignedEmployeeIds?: string[]; activities?: Array<{ activityId: string; quantity?: number; basePrice?: number; articleBasePrice?: number }>; templateData?: Record<string, string> | null; cartonQuantity?: number; articleQuantity?: number; containers?: Array<{ serialNumber: string; cartonQuantity: number; articleQuantity: number; cartonPrice: number; articlePrice: number }>; totalPrice?: number; teamId?: string },
   updatedBy?: string
 ) => {
-  let { assignedEmployeeIds, activities, templateData, cartonQuantity, articleQuantity, containers, totalPrice, ...orderData } = data;
+  let { assignedEmployeeIds, activities, templateData, cartonQuantity, articleQuantity, containers, totalPrice, teamId, ...orderData } = data;
 
   // Clean empty strings to undefined for optional DateTime fields
   if (orderData.startTime === '') orderData.startTime = undefined;
@@ -353,7 +366,10 @@ export const updateOrderService = async (
           usesTemplate: templateData !== null && Object.keys(templateData || {}).length > 0
         }),
         ...(cartonQuantity !== undefined && { cartonQuantity }),
-        ...(articleQuantity !== undefined && { articleQuantity })
+        ...(articleQuantity !== undefined && { articleQuantity }),
+        ...(teamId !== undefined && {
+          team: teamId ? { connect: { id: teamId } } : { disconnect: true }
+        })
       },
     });
 
@@ -581,7 +597,11 @@ export const getOrderSummaryService = async (id: string) => {
   const order = await prisma.order.findUnique({
     where: { id },
     include: {
-      employeeAssignments: true,
+      employeeAssignments: {
+        include: {
+          employee: true
+        }
+      },
       ratings: true,
     },
   });

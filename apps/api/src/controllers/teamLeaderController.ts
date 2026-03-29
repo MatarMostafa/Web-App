@@ -155,10 +155,13 @@ export const getTeamMembers = async (req: Request, res: Response) => {
 
     const employee = await teamService.getEmployeeByUserId(authReq.user.id);
     if (!employee) {
+      console.log(`TeamLeader: No employee found for user ${authReq.user.id}`);
       return res.status(404).json({ message: "Employee not found" });
     }
 
+    console.log(`TeamLeader: Fetching members for leader ${employee.id} (${employee.firstName} ${employee.lastName})`);
     const teamMembers = await teamLeaderService.getTeamMembersByLeader(employee.id);
+    console.log(`TeamLeader: Found ${teamMembers.length} members`);
     res.json(teamMembers);
   } catch (error) {
     console.error("Error fetching team members:", error);

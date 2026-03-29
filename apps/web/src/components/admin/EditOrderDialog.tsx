@@ -20,6 +20,7 @@ import {
 import { useOrderStore } from "@/store/orderStore";
 import { useEmployeeStore } from "@/store/employeeStore";
 import { useCustomerStore } from "@/store/customerStore";
+import { useTeamStore } from "@/store/teamStore";
 import { Order, UpdateOrderData, OrderStatus } from "@/types/order";
 import toast from "react-hot-toast";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -61,6 +62,7 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
   const { updateOrder, getOrderAssignments, getOrderContainers } = useOrderStore();
   const { employees, fetchEmployees } = useEmployeeStore();
   const { customers, fetchCustomers } = useCustomerStore();
+  const { teams, fetchTeams } = useTeamStore();
 
   const [loading, setLoading] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
@@ -110,6 +112,7 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
         specialInstructions: order.specialInstructions || "",
         status: order.status,
         customerId: order.customerId,
+        teamId: order.teamId,
       });
 
       setStartTimeOnly(startTime);
@@ -124,6 +127,7 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
 
       fetchEmployees();
       fetchCustomers();
+      fetchTeams();
       loadOrderData();
     }
   }, [order, open]);
@@ -329,6 +333,36 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
 
   const handleInputChange = (field: keyof UpdateOrderData, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleTeamChange = (teamId: string) => {
+    if (teamId === "none") {
+      handleInputChange("teamId", null);
+      return;
+    }
+    
+    const selectedTeam = teams.find(t => t.id === teamId);
+    if (selectedTeam) {
+      handleInputChange("teamId", teamId);
+      
+      // Auto-select all team members (EXCEPT THE LEADER)
+      const memberIds = (selectedTeam.members || [])
+        .filter(m => m.isActive && m.employeeId !== selectedTeam.teamLeaderId)
+        .map(m => m.employeeId);
+        
+      if (memberIds.length === 0) {
+        toast.error(t("admin.teams.messages.noActiveMembers"));
+        return;
+      }
+
+      setAssignedEmployeeIds(prev => {
+        // Add new team members while preserving existing assignments
+        const newIds = Array.from(new Set([...prev, ...memberIds]));
+        return newIds;
+      });
+      
+      toast.success(t("admin.orders.form.teamMembersAssigned", { name: selectedTeam.name }));
+    }
   };
 
   const handleEmployeeToggle = (employeeId: string, checked: boolean) => {
@@ -842,27 +876,91 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
       </div>
 
       <div>
-        <Label>Assign Employees ({assignedEmployeeIds.length} selected)</Label>
-        <div className="max-h-40 overflow-y-auto border rounded-md p-3 space-y-2">
-          {employees.map((employee) => (
-            <div key={employee.id} className="flex items-center space-x-2">
-              <Checkbox
-                id={`employee-${employee.id}`}
-                checked={assignedEmployeeIds.includes(employee.id)}
-                onCheckedChange={(checked) =>
-                  handleEmployeeToggle(employee.id, checked as boolean)
-                }
-              />
-              <Label
-                htmlFor={`employee-${employee.id}`}
-                className="text-sm"
-              >
-                {employee.firstName} {employee.lastName} ({employee.employeeCode})
-              </Label>
+        <Label>{t("admin.orders.form.assignTeam")}</Label>
+        <Select
+          value={formData.teamId || "none"}
+          onValueChange={handleTeamChange}
+        >
+          <SelectTrigger className="mb-4">
+            <SelectValue placeholder={t("admin.orders.form.selectTeam")} />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="none">{t("admin.orders.form.noTeam")}</SelectItem>
+            {teams.map((team) => (
+              <SelectItem key={team.id} value={team.id}>
+                {team.name} ({team.members?.length || 0} {t("common.members")})
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        <Label>{t("admin.orders.form.assignEmployees")} ({assignedEmployeeIds.length} {t("common.selected")})</Label>
+        <div className="border rounded-md p-3 space-y-4 max-h-[400px] overflow-y-auto">
+          {/* Team Members Section (if a team is selected) */}
+          {formData.teamId && formData.teamId !== "none" && (
+            <div className="space-y-2">
+              <h4 className="text-xs font-semibold uppercase tracking-wider text-primary/70">
+                {t("admin.orders.form.teamMembers")}
+              </h4>
+              <div className="pl-1 space-y-2 max-h-32 overflow-y-auto custom-scrollbar pr-1">
+                {employees
+                  .filter(e => {
+                    const selectedTeam = teams.find(t => t.id === formData.teamId);
+                    return selectedTeam?.members?.some(m => m.employeeId === e.id && m.isActive);
+                  })
+                  .map((employee) => (
+                    <div key={`team-member-${employee.id}`} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={`team-member-${employee.id}`}
+                        checked={assignedEmployeeIds.includes(employee.id)}
+                        onCheckedChange={(checked) => handleEmployeeToggle(employee.id, checked as boolean)}
+                      />
+                      <Label htmlFor={`team-member-${employee.id}`} className="text-sm font-medium">
+                        {employee.firstName} {employee.lastName} ({employee.employeeCode})
+                        {teams.find(t => t.id === formData.teamId)?.teamLeaderId === employee.id && (
+                          <span className="ml-2 text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded italic">
+                            Leader
+                          </span>
+                        )}
+                      </Label>
+                    </div>
+                  ))}
+              </div>
+              <div className="h-px bg-border my-4" />
             </div>
-          ))}
+          )}
+
+          {/* Other Employees Section */}
+          <div className="space-y-2">
+            <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground/70">
+              {formData.teamId && formData.teamId !== "none" 
+                ? t("admin.orders.form.otherEmployees") 
+                : t("common.all")}
+            </h4>
+            <div className="pl-1 space-y-2">
+              {employees
+                .filter(e => {
+                  if (!formData.teamId || formData.teamId === "none") return true;
+                  const selectedTeam = teams.find(t => t.id === formData.teamId);
+                  return !selectedTeam?.members?.some(m => m.employeeId === e.id && m.isActive);
+                })
+                .map((employee) => (
+                  <div key={`other-${employee.id}`} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={`other-${employee.id}`}
+                      checked={assignedEmployeeIds.includes(employee.id)}
+                      onCheckedChange={(checked) => handleEmployeeToggle(employee.id, checked as boolean)}
+                    />
+                    <Label htmlFor={`other-${employee.id}`} className="text-sm">
+                      {employee.firstName} {employee.lastName} ({employee.employeeCode})
+                    </Label>
+                  </div>
+                ))}
+            </div>
+          </div>
+
           {employees.length === 0 && (
-            <p className="text-sm text-gray-500">No employees available</p>
+            <p className="text-sm text-gray-500">{t("admin.orders.form.noEmployeesAvailable")}</p>
           )}
         </div>
       </div>

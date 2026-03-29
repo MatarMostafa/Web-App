@@ -59,6 +59,7 @@ export interface Order {
   priority: number;
   specialInstructions?: string;
   status: OrderStatus;
+  teamId?: string | null;
   usesTemplate?: boolean;
   cartonQuantity?: number;
   articleQuantity?: number;
@@ -97,6 +98,7 @@ export interface CreateOrderData {
   status?: OrderStatus;
   customerId: string;
   assignedEmployeeIds?: string[];
+  teamId?: string;
   activities?: Array<{
     activityId: string;
     quantity: number;
@@ -126,6 +128,7 @@ export interface UpdateOrderData {
   status?: OrderStatus;
   customerId?: string;
   assignedEmployeeIds?: string[];
+  teamId?: string | null;
   activities?: Array<{
     activityId: string;
     quantity: number;

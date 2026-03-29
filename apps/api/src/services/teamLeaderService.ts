@@ -194,7 +194,6 @@ export const getTeamMembersByLeader = async (employeeId: string) => {
     where: {
       team: { teamLeaderId: employeeId },
       isActive: true,
-      employeeId: { not: employeeId } // Explicitly exclude the team leader
     },
     select: {
       employee: {
@@ -207,8 +206,24 @@ export const getTeamMembersByLeader = async (employeeId: string) => {
       }
     }
   });
+
+  // Also include the leader themselves
+  const leader = await prisma.employee.findUnique({
+    where: { id: employeeId },
+    select: {
+      id: true,
+      firstName: true,
+      lastName: true,
+      employeeCode: true,
+    }
+  });
   
-  return teamMembers.map(member => member.employee);
+  const results = teamMembers.map(member => member.employee);
+  if (leader && !results.some(r => r.id === leader.id)) {
+    results.unshift(leader);
+  }
+  
+  return results;
 };
 
 export const getTeamLeaderOrders = async (employeeId: string, filters?: any) => {

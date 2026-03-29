@@ -2,8 +2,15 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Calendar, MapPin, User, Users, Clock, AlertCircle } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { ArrowLeft, Calendar, MapPin, User, Users, Clock, AlertCircle, Play } from "lucide-react";
+import { 
+  Button, 
+  Select, 
+  SelectContent, 
+  SelectItem, 
+  SelectTrigger, 
+  SelectValue 
+} from "@/components/ui";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LoadingSpinnerWithText } from "@/components/ui";
@@ -18,6 +25,8 @@ import { OrderActivities } from "./OrderActivities";
 import { useTranslation } from "@/hooks/useTranslation";
 import { format } from "date-fns";
 import { orderNotesApi } from "@/lib/orderNotesApi";
+import { useTeamStore } from "@/store/teamStore";
+import { TeamStartModal } from "@/components/modals/TeamStartModal";
 import toast from "react-hot-toast";
 
 interface OrderDetailPageProps {
@@ -62,13 +71,16 @@ export const OrderDetailPage: React.FC<OrderDetailPageProps> = ({
   const [containers, setContainers] = useState<any[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [refreshActivities, setRefreshActivities] = useState(0);
+  const [isTeamStartModalOpen, setIsTeamStartModalOpen] = useState(false);
 
-  const { orders, fetchOrders, getOrderEmployeeNames, getOrderContainers, updateOrderStatus } = useOrderStore();
+  const { orders, fetchOrders, getOrderEmployeeNames, getOrderContainers, updateOrderStatus, updateOrderTeam } = useOrderStore();
   const { employeeAssignments, fetchEmployeeAssignments } = useEmployeeOrderStore();
+  const { teams, fetchTeams } = useTeamStore();
 
   useEffect(() => {
     if (userRole === "ADMIN") {
       fetchOrders();
+      fetchTeams();
     } else {
       // For employees, get their assignments
       import("next-auth/react").then(m => m.getSession()).then(session => {
@@ -212,16 +224,58 @@ export const OrderDetailPage: React.FC<OrderDetailPageProps> = ({
                 </p>
               )}
             </div>
-            <Badge className={`${getStatusColor(order.status)} text-sm w-fit`}>
-              {order.status === "IN_PROGRESS"
-                ? "In Progress"
-                : order.status === "IN_REVIEW"
-                  ? "In Review"
-                  : order.status.replace("_", " ")}
-            </Badge>
+            <div className="flex flex-col sm:items-end gap-2">
+              <Badge className={`${getStatusColor(order.status)} text-sm w-fit`}>
+                {t(`admin.orders.status.${order.status === 'IN_PROGRESS' ? 'inProgress' : order.status === 'IN_REVIEW' ? 'inReview' : order.status.toLowerCase()}`)}
+              </Badge>
+
+              {userRole === "ADMIN" && (
+                <div className="flex items-center gap-2 mt-1">
+                  <Badge variant="outline" className="text-[10px] h-5 px-1 font-normal opacity-70">
+                    {order.teamId ? (teams.find(t => t.id === order.teamId)?.name || t('admin.orders.form.teamAssigned')) : t('admin.orders.form.noTeam')}
+                  </Badge>
+                  <Select
+                    value={order.teamId || "none"}
+                    onValueChange={async (value) => {
+                      const tid = value === "none" ? null : value;
+                      try {
+                        await updateOrderTeam(order.id, tid);
+                        setOrder(prev => prev ? { ...prev, teamId: tid } : null);
+                      } catch (err) {
+                        console.error("Failed to update team:", err);
+                      }
+                    }}
+                  >
+                    <SelectTrigger className="h-7 text-[11px] w-[120px] bg-muted/30">
+                      <SelectValue placeholder="Change Team" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">No Team</SelectItem>
+                      {teams.map((team) => (
+                        <SelectItem key={team.id} value={team.id}>
+                          {team.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+            </div>
           </div>
         </CardHeader>
         <CardContent>
+          {userRole === "ADMIN" && order.teamId && (order.status === OrderStatus.OPEN || order.status === OrderStatus.ACTIVE) && (
+            <div className="mb-4 pb-4 border-b flex justify-end">
+              <Button 
+                onClick={() => setIsTeamStartModalOpen(true)}
+                className="bg-primary hover:bg-primary/90 text-white shadow-md transition-all hover:scale-105"
+                size="sm"
+              >
+                <Play className="h-4 w-4 mr-2" />
+                {t("order.teamStart")}
+              </Button>
+            </div>
+          )}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3">
             <div className="flex items-center gap-2">
               <Calendar className="h-4 w-4 text-muted-foreground" />
@@ -574,6 +628,15 @@ export const OrderDetailPage: React.FC<OrderDetailPageProps> = ({
           />
         </div>
       </div>
+      
+      {userRole === "ADMIN" && order && (
+        <TeamStartModal
+          isOpen={isTeamStartModalOpen}
+          onClose={() => setIsTeamStartModalOpen(false)}
+          orderId={orderId}
+          assignments={order.employeeAssignments || []}
+        />
+      )}
     </div>
   );
 };

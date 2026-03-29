@@ -35,9 +35,9 @@ export const TeamStartModal: React.FC<TeamStartModalProps> = ({
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedEmployees, setSelectedEmployees] = useState<string[]>([]);
 
-  // Filter only those who are ASSIGNED but not yet ACTIVE/COMPLETED
+  // Filter those who are ASSIGNED or already ACTIVE
   const startableAssignments = assignments.filter(
-    (a) => a.status === AssignmentStatus.ASSIGNED
+    (a) => a.status === AssignmentStatus.ASSIGNED || a.status === AssignmentStatus.ACTIVE
   );
 
   const filteredAssignments = startableAssignments.filter((a) => {

@@ -105,7 +105,8 @@
     "assigning": "Wird zugewiesen...",
     "assignEmployees": "Mitarbeiter zuweisen",
     "employeesSelected": "Mitarbeiter ausgewählt",
-    "employeeSelected": "Mitarbeiter ausgewählt"
+    "employeeSelected": "Mitarbeiter ausgewählt",
+    "members": "Mitglieder"
   },
   "auth": {
     "signIn": "Anmelden",
@@ -292,9 +293,14 @@
     "estimatedHours": "Geschätzte Stunden",
     "actualHours": "Tatsächliche Stunden",
     "pending": "Ausstehend",
+    "draft": "Entwurf",
+    "open": "Offen",
+    "active": "Aktiv",
     "inProgress": "In Bearbeitung",
+    "inReview": "In Prüfung",
     "completed": "Abgeschlossen",
     "cancelled": "Storniert",
+    "expired": "Abgelaufen",
     "assigned": "Zugewiesen",
     "unassigned": "Nicht zugewiesen",
     "description": "Auftragsbeschreibung",
@@ -336,7 +342,8 @@
     "workingNow": "Einsatz läuft",
     "awaitingStart": "Wartet auf Beginn",
     "selectTeammates": "Teammitglieder für den Start auswählen",
-    "activityBasePrice": "Aktivitäts-Basispreis"
+    "activityBasePrice": "Aktivitäts-Basispreis",
+    "teamStart": "Team Starten"
   },
   "customer": {
     "customer": "Kunde",
@@ -711,6 +718,7 @@
         "open": "OFFEN",
         "active": "AKTIV",
         "inProgress": "IN BEARBEITUNG",
+        "inReview": "IN PRÜFUNG",
         "completed": "ABGESCHLOSSEN",
         "cancelled": "STORNIERT",
         "expired": "ABGELAUFEN"
@@ -752,6 +760,13 @@
         "createError": "Fehler beim Erstellen des Auftrags",
         "updateError": "Fehler beim Aktualisieren des Auftrags",
         "deleteError": "Fehler beim Löschen des Auftrags",
+        "assignTeam": "Team zuweisen",
+        "selectTeam": "Team auswählen",
+        "noTeam": "Kein Team",
+        "teamAssigned": "Team zugewiesen",
+        "teamMembersAssigned": "Mitglieder des Teams {{name}} wurden zur Zuweisungsliste hinzugefügt",
+        "teamMembers": "Teammitglieder",
+        "otherEmployees": "Andere Mitarbeiter",
         "stepTitles": {
           "step1": "Schritt 1: Kunde auswählen",
           "step2": "Schritt 2: Aktivitäten auswählen",
@@ -907,7 +922,7 @@
         "employeeWillFill": "Mitarbeiter füllt dieses Feld aus",
         "customDescriptionPlaceholder": "Benutzerdefinierte Beschreibung eingeben",
         "loading": "Vorlage wird geladen...",
-        "readOnlyWarning":"Diese Beschreibung basiert auf einer Vorlage und kann nicht bearbeitet werden."
+        "readOnlyWarning": "Diese Beschreibung basiert auf einer Vorlage und kann nicht bearbeitet werden."
       }
     },
     "customers": {
@@ -1552,7 +1567,6 @@
         "emailPlaceholder": "E-Mail-Adresse eingeben (optional)",
         "usernameRequired": "Benutzername ist erforderlich",
         "passwordRequired": "Passwort ist erforderlich",
-
         "activeAccount": "Aktives Konto",
         "activeAccountDesc": "Dieses Unterkonto aktivieren oder deaktivieren",
         "cancel": "Abbrechen",
@@ -1578,7 +1592,7 @@
       "orderInformation": "Auftragsinformationen",
       "scheduledDate": "Geplantes Datum",
       "location": "Standort",
-      "company":"Firma",
+      "company": "Firma",
       "created": "Erstellt",
       "statusInformation": "Statusinformationen",
       "lastUpdated": "Zuletzt aktualisiert",
