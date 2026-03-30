@@ -340,9 +340,14 @@
     "stopWork": "Stop Work",
     "workingNow": "Working Now",
     "awaitingStart": "Awaiting Start",
-    "selectTeammates": "Select teammates to start work",
     "activityBasePrice": "Activity Base Price",
-    "teamStart": "Team Start"
+    "teamStart": "Team Start",
+    "pause": "Pause",
+    "resume": "Resume",
+    "complete": "Complete",
+    "workPaused": "Work Paused",
+    "workResumed": "Work Resumed",
+    "workCompleted": "Work Completed"
   },
   "customer": {
     "customer": "Customer",
@@ -716,6 +721,7 @@
         "open": "OPEN",
         "active": "ACTIVE",
         "inProgress": "IN PROGRESS",
+        "paused": "PAUSED",
         "inReview": "IN REVIEW",
         "completed": "COMPLETED",
         "cancelled": "CANCELLED",
@@ -1779,7 +1785,13 @@
       "statuschange": "status change",
       "noteadded": "note added",
       "assignmentchanged": "assignment changed",
-      "activityassigned": "activity assigned"
+      "activityassigned": "activity assigned",
+      "assignedTeam": "Assigned Team",
+      "noTeammates": "No other teammates assigned",
+      "you": "You",
+      "startedBy": "Started by",
+      "startForTeammate": "Start work for teammate",
+      "unknownEmployee": "Unknown Employee"
     },
     "dashboard": {
       "title": "My Dashboard",
@@ -1838,6 +1850,7 @@
         "assigned": "Assigned",
         "active": "Active",
         "inprogress": "In Progress",
+        "paused": "Paused",
         "pending": "Pending",
         "completed": "Completed"
       },

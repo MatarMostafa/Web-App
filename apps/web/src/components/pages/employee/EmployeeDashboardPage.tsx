@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -21,6 +22,7 @@ import { format, isToday, isTomorrow, parseISO } from "date-fns";
 import { useTranslation } from "@/hooks/useTranslation";
 
 const EmployeeDashboardPage = () => {
+  const router = useRouter();
   const { t, ready } = useTranslation();
   const [mounted, setMounted] = useState(false);
   const {
@@ -73,8 +75,8 @@ const EmployeeDashboardPage = () => {
         return "bg-green-100 text-green-800";
       case "in_progress":
         return "bg-blue-100 text-blue-800";
-      case "pending":
-        return "bg-yellow-100 text-yellow-800";
+      case "paused":
+        return "bg-orange-100 text-orange-800";
       case "assigned":
         return "bg-purple-100 text-purple-800";
       default:
@@ -257,7 +259,7 @@ const EmployeeDashboardPage = () => {
                 <div className="text-sm text-muted-foreground">{t("employee.dashboard.leaveStats.approved")}</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-yellow-600">{leaveStats.pendingDays}</div>
+                <div className="text-2xl font-bold text-orange-600">{leaveStats.pendingDays}</div>
                 <div className="text-sm text-muted-foreground">{t("employee.dashboard.leaveStats.pending")}</div>
               </div>
               <div className="text-center">
@@ -288,13 +290,18 @@ const EmployeeDashboardPage = () => {
               {currentWeekOrders.map((order, index) => (
                 <div
                   key={`current-${order.id}-${index}`}
-                  className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
+                  className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer"
+                  onClick={(e) => {
+                    // Prevent navigation if clicking buttons
+                    if ((e.target as HTMLElement).closest('button')) return;
+                    router.push(`/dashboard-employee/orders/${order.id}`);
+                  }}
                 >
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
                       <div className="font-medium">{order.title}</div>
-                      <Badge className={getStatusColor(order.status)}>
-                        {t(`employee.dashboard.status.${order.status.toLowerCase().replace('_', '')}`) || order.status.replace('_', ' ')}
+                      <Badge className={getStatusColor(order.assignment?.status || order.status)}>
+                        {t(`employee.dashboard.status.${(order.assignment?.status || order.status).toLowerCase().replace('_', '')}`) || (order.assignment?.status || order.status).replace('_', ' ')}
                       </Badge>
                       <Badge className={getPriorityColor(order.priority)}>
                         {t("employee.dashboard.currentWeekOrders.priority")} {order.priority}
@@ -320,9 +327,9 @@ const EmployeeDashboardPage = () => {
                     )}
                   </div>
                   <div className="flex gap-2">
-                    {order.status !== 'COMPLETED' && (
+                    {(order.assignment?.status || order.status) !== 'COMPLETED' && (
                       <>
-                        {order.status === 'ASSIGNED' && (
+                        {(order.assignment?.status || order.status) === 'ASSIGNED' && (
                           <Button
                             size="sm"
                             onClick={() => handleStatusUpdate(order.id, 'IN_PROGRESS')}
@@ -332,27 +339,27 @@ const EmployeeDashboardPage = () => {
                             {t("employee.dashboard.actions.start")}
                           </Button>
                         )}
-                        {order.status === 'IN_PROGRESS' && (
+                        {(order.assignment?.status || order.status) === 'IN_PROGRESS' && (
                           <>
                             <Button
                               size="sm"
                               variant="outline"
-                              onClick={() => handleStatusUpdate(order.id, 'PENDING')}
+                              onClick={() => handleStatusUpdate(order.id, 'PAUSED')}
                             >
                               <PauseCircle className="h-4 w-4 mr-1" />
                               {t("employee.dashboard.actions.pause")}
                             </Button>
                             <Button
                               size="sm"
-                              onClick={() => handleStatusUpdate(order.id, 'COMPLETED')}
+                              onClick={() => handleStatusUpdate(order.id, 'IN_REVIEW')}
                               className="bg-green-600 hover:bg-green-700"
                             >
                               <CheckCircle className="h-4 w-4 mr-1" />
-                              {t("employee.dashboard.actions.complete")}
+                              {t("employee.orderDetail.requestReview")}
                             </Button>
                           </>
                         )}
-                        {order.status === 'PENDING' && (
+                        {(order.assignment?.status || order.status) === 'PAUSED' && (
                           <Button
                             size="sm"
                             onClick={() => handleStatusUpdate(order.id, 'IN_PROGRESS')}
@@ -393,13 +400,14 @@ const EmployeeDashboardPage = () => {
               {archivedOrders.slice(0, 10).map((order, index) => (
                 <div
                   key={`archived-${order.id}-${index}`}
-                  className="flex items-center justify-between p-3 border rounded-lg bg-muted/30"
+                  className="flex items-center justify-between p-3 border rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors cursor-pointer"
+                  onClick={() => router.push(`/dashboard-employee/orders/${order.id}`)}
                 >
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-1">
                       <div className="font-medium text-sm">{order.title}</div>
-                      <Badge className={getStatusColor(order.status)} variant="outline">
-                        {order.status.replace('_', ' ')}
+                      <Badge className={getStatusColor(order.assignment?.status || order.status)} variant="outline">
+                        {(order.assignment?.status || order.status).replace('_', ' ')}
                       </Badge>
                       <Badge className={getPriorityColor(order.priority)} variant="outline">
                         P{order.priority}

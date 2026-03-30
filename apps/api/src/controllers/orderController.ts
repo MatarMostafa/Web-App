@@ -377,8 +377,9 @@ export const batchStartWork = async (req: Request, res: Response) => {
 export const stopWork = async (req: Request, res: Response) => {
   try {
     const { orderId, employeeId } = req.params;
+    const stoppedById = (req as any).user?.id;
 
-    const assignment = await orderService.stopWork(orderId, employeeId);
+    const assignment = await orderService.stopWork(orderId, employeeId, stoppedById);
     res.json({ 
       success: true, 
       data: assignment, 
@@ -389,6 +390,30 @@ export const stopWork = async (req: Request, res: Response) => {
     res.status(400).json({ 
       success: false,
       message: "Fehler beim Beenden der Arbeit", 
+      error: error instanceof Error ? error.message : String(error)
+    });
+  }
+};
+
+/**
+ * Controller to pause work for an individual employee on an order.
+ */
+export const pauseWork = async (req: Request, res: Response) => {
+  try {
+    const { orderId, employeeId } = req.params;
+    const pausedById = (req as any).user?.id;
+
+    const assignment = await orderService.pauseWork(orderId, employeeId, pausedById);
+    res.json({ 
+      success: true, 
+      data: assignment, 
+      message: "Arbeit erfolgreich pausiert" 
+    });
+  } catch (error) {
+    console.error("Pause work error:", error);
+    res.status(400).json({ 
+      success: false,
+      message: "Fehler beim Pausieren der Arbeit", 
       error: error instanceof Error ? error.message : String(error)
     });
   }

@@ -629,6 +629,7 @@ export const OrderDetailPage: React.FC<OrderDetailPageProps> = ({
             order={order} 
             userRole={userRole} 
             onAssignmentCountChange={setAssignedStaffCount}
+            onRefresh={fetchOrders}
           />
         </div>
       </div>
@@ -636,7 +637,10 @@ export const OrderDetailPage: React.FC<OrderDetailPageProps> = ({
       {userRole === "ADMIN" && order && (
         <TeamStartModal
           isOpen={isTeamStartModalOpen}
-          onClose={() => setIsTeamStartModalOpen(false)}
+          onClose={() => {
+            setIsTeamStartModalOpen(false);
+            fetchOrders();
+          }}
           orderId={orderId}
           assignments={order.employeeAssignments || []}
         />

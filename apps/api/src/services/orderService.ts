@@ -778,12 +778,12 @@ export const batchStartWork = async (
   employeeIds: string[],
   startedById: string
 ) => {
-  // 1. Update matching assignments
+  // 1. Update matching assignments (both ASSIGNED and PAUSED)
   const result = await prisma.assignment.updateMany({
     where: {
       orderId,
       employeeId: { in: employeeIds },
-      status: 'ASSIGNED',
+      status: { in: ['ASSIGNED', 'PAUSED'] },
     },
     data: {
       status: 'ACTIVE',
@@ -799,11 +799,14 @@ export const batchStartWork = async (
 };
 
 /**
- * Stop work for an individual employee.
- * Calculates actualHours and sets status to 'COMPLETED'.
+ * Pause work for an individual employee.
+ * Calculates current session hours and adds to cumulative actualHours.
  */
-export const stopWork = async (orderId: string, employeeId: string) => {
-  // 1. Find the active assignment
+export const pauseWork = async (
+  orderId: string, 
+  employeeId: string, 
+  pausedById: string
+) => {
   const assignment = await prisma.assignment.findFirst({
     where: {
       orderId,
@@ -816,24 +819,68 @@ export const stopWork = async (orderId: string, employeeId: string) => {
     throw new Error("Kein aktiver Arbeitseinsatz für diesen Mitarbeiter gefunden");
   }
 
-  const endDate = new Date();
+  const now = new Date();
   const startDate = assignment.startDate || assignment.assignedDate;
   
-  // 2. Calculate actual hours (end - start)
-  const diffMs = endDate.getTime() - startDate.getTime();
-  const actualHours = new Decimal(diffMs).dividedBy(1000 * 60 * 60).toDecimalPlaces(2);
+  // Calculate current session hours
+  const diffMs = now.getTime() - startDate.getTime();
+  const sessionHours = new Decimal(diffMs).dividedBy(1000 * 60 * 60);
+  const totalHours = (assignment.actualHours || new Decimal(0)).plus(sessionHours).toDecimalPlaces(2);
 
-  // 3. Update assignment
+  const updatedAssignment = await prisma.assignment.update({
+    where: { id: assignment.id },
+    data: {
+      status: 'PAUSED',
+      actualHours: totalHours,
+      pausedById,
+    },
+  });
+
+  await updateOrderStatusBasedOnAssignments(orderId);
+  return updatedAssignment;
+};
+
+export const stopWork = async (
+  orderId: string, 
+  employeeId: string, 
+  stoppedById: string
+) => {
+  // 1. Find the assignment (either ACTIVE or PAUSED)
+  const assignment = await prisma.assignment.findFirst({
+    where: {
+      orderId,
+      employeeId,
+      status: { in: ['ACTIVE', 'PAUSED'] },
+    },
+  });
+
+  if (!assignment) {
+    throw new Error("Kein laufender oder pausierter Arbeitseinsatz für diesen Mitarbeiter gefunden");
+  }
+
+  let finalHours = assignment.actualHours || new Decimal(0);
+  const now = new Date();
+
+  // If currently active, add the final session hours
+  if (assignment.status === 'ACTIVE') {
+    const startDate = assignment.startDate || assignment.assignedDate;
+    const diffMs = now.getTime() - startDate.getTime();
+    const sessionHours = new Decimal(diffMs).dividedBy(1000 * 60 * 60);
+    finalHours = finalHours.plus(sessionHours);
+  }
+
+  // 2. Update assignment to COMPLETED
   const updatedAssignment = await prisma.assignment.update({
     where: { id: assignment.id },
     data: {
       status: 'COMPLETED',
-      endDate,
-      actualHours,
+      endDate: now,
+      actualHours: finalHours.toDecimalPlaces(2),
+      stoppedById,
     },
   });
 
-  // 4. Sync order status
+  // 3. Sync order status
   await updateOrderStatusBasedOnAssignments(orderId);
 
   return updatedAssignment;

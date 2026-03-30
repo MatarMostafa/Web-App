@@ -7,6 +7,7 @@ interface Assignment {
   employeeId: string;
   orderId: string;
   assignedDate: string;
+  status: string;
   order: {
     id: string;
     orderNumber: string;

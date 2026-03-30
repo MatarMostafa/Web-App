@@ -14,11 +14,16 @@ interface EmployeeOrder {
   actualHours?: number;
   assignment?: {
     id: string;
+    employeeId: string;
     assignedDate: string;
     startDate?: string;
     endDate?: string;
     status: string;
     notes?: string;
+    startedBy?: {
+      firstName: string;
+      lastName: string;
+    } | null;
   };
 }
 
@@ -111,15 +116,32 @@ export const useEmployeeDashboardStore = create<EmployeeDashboardState>((set, ge
   },
 
   updateOrderStatus: async (orderId: string, status: string) => {
+    const { currentWeekOrders, fetchCurrentWeekOrders, fetchDashboardStats } = get();
+    const order = currentWeekOrders.find(o => o.id === orderId);
+    
     try {
-      await apiClient.put(`/api/employee/orders/${orderId}/status`, { status });
-      toast.success("Order status updated successfully");
+      if (status === 'IN_PROGRESS' && order?.assignment?.employeeId) {
+        // Individual start work for yourself
+        await apiClient.post(`/api/orders/${orderId}/start-work`, { 
+          employeeIds: [order.assignment.employeeId] 
+        });
+      } else if (status === 'PAUSED' && order?.assignment?.id) {
+        // Individual pause work
+        await apiClient.post(`/api/orders/${orderId}/pause-work/${order.assignment.employeeId}`, {});
+      } else {
+        // Fallback or other statuses (like COMPLETED)
+        await apiClient.put(`/api/employee/orders/${orderId}/status`, { status });
+      }
+
+      toast.success("Status updated successfully");
       
-      // Refresh current week orders
-      const { fetchCurrentWeekOrders } = get();
-      await fetchCurrentWeekOrders();
+      // Refresh data
+      await Promise.all([
+        fetchCurrentWeekOrders(),
+        fetchDashboardStats()
+      ]);
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Failed to update order status";
+      const errorMessage = error instanceof Error ? error.message : "Failed to update status";
       toast.error(errorMessage);
       throw error;
     }

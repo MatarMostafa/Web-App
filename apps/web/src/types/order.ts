@@ -3,6 +3,7 @@ export enum OrderStatus {
   OPEN = "OPEN",
   ACTIVE = "ACTIVE",
   IN_PROGRESS = "IN_PROGRESS",
+  PAUSED = "PAUSED",
   IN_REVIEW = "IN_REVIEW",
   COMPLETED = "COMPLETED",
   CANCELLED = "CANCELLED",
@@ -12,6 +13,7 @@ export enum OrderStatus {
 export enum AssignmentStatus {
   ASSIGNED = "ASSIGNED",
   ACTIVE = "ACTIVE",
+  PAUSED = "PAUSED",
   COMPLETED = "COMPLETED",
   CANCELLED = "CANCELLED"
 }

@@ -59,6 +59,7 @@ import {
   getOrderActivities,
   batchStartWork,
   stopWork,
+  pauseWork,
 } from "../controllers/orderController";
 import {
   getOrderNotes,
@@ -634,6 +635,13 @@ router.post(
   authMiddleware,
   roleMiddleware(["ADMIN", "TEAM_LEADER", "EMPLOYEE"]),
   stopWork
+);
+
+router.post(
+  "/:orderId/pause-work/:employeeId",
+  authMiddleware,
+  roleMiddleware(["ADMIN", "TEAM_LEADER", "EMPLOYEE"]),
+  pauseWork
 );
 
 router.get(

@@ -15,8 +15,10 @@ import {
   UserMinus,
   Clock,
   Play,
+  Pause,
   Square,
-  CheckCircle2
+  CheckCircle2,
+  RotateCcw
 } from "lucide-react";
 import { apiClient } from "@/lib/api-client";
 import toast from "react-hot-toast";
@@ -53,8 +55,9 @@ interface Assignment {
 interface OrderAssignmentsProps {
   orderId: string;
   order: any;
-  userRole: "ADMIN" | "EMPLOYEE";
+  userRole: "ADMIN" | "EMPLOYEE" | "TEAM_LEADER";
   onAssignmentCountChange?: (count: number) => void;
+  onRefresh?: () => void;
 }
 
 const AssignmentRow: React.FC<{
@@ -64,6 +67,7 @@ const AssignmentRow: React.FC<{
   actionLoading: boolean;
   storeLoading: boolean;
   handleIndividualStart: (id: string) => void;
+  handlePauseWork: (id: string) => void;
   handleStopWork: (id: string) => void;
   handleRemoveAssignment: (id: string) => void;
   getStatusBadge: (status: AssignmentStatus) => React.ReactNode;
@@ -75,6 +79,7 @@ const AssignmentRow: React.FC<{
   actionLoading,
   storeLoading,
   handleIndividualStart,
+  handlePauseWork,
   handleStopWork,
   handleRemoveAssignment,
   getStatusBadge,
@@ -140,7 +145,7 @@ const AssignmentRow: React.FC<{
       </div>
       
       <div className="flex justify-end gap-1">
-        {userRole === "ADMIN" && assignment.status === AssignmentStatus.ASSIGNED && (
+        {(userRole === "ADMIN" || userRole === "TEAM_LEADER") && assignment.status === AssignmentStatus.ASSIGNED && (
           <Button 
             size="icon" 
             variant="ghost" 
@@ -153,26 +158,52 @@ const AssignmentRow: React.FC<{
           </Button>
         )}
         
-        {userRole === "ADMIN" && assignment.status === AssignmentStatus.ACTIVE && (
+        {(userRole === "ADMIN" || userRole === "TEAM_LEADER") && assignment.status === AssignmentStatus.ACTIVE && (
           <Button 
             size="icon" 
             variant="ghost" 
-            className="h-8 w-8 text-destructive hover:text-destructive hover:bg-red-50"
+            className="h-8 w-8 text-orange-500 hover:text-orange-600 hover:bg-orange-50"
+            onClick={() => handlePauseWork(assignment.employeeId)}
+            disabled={actionLoading || storeLoading}
+            title={t("order.pause")}
+          >
+            <Pause className="h-4 w-4" />
+          </Button>
+        )}
+        
+        {(userRole === "ADMIN" || userRole === "TEAM_LEADER") && (assignment.status === AssignmentStatus.ACTIVE || assignment.status === 'PAUSED') && (
+          <Button 
+            size="icon" 
+            variant="ghost" 
+            className="h-8 w-8 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50"
             onClick={() => handleStopWork(assignment.employeeId)}
             disabled={actionLoading || storeLoading}
-            title={t("order.stopWork")}
+            title={t("order.complete")}
           >
-            <Square className="h-4 w-4" />
+            <CheckCircle2 className="h-4 w-4" />
           </Button>
         )}
 
-        {userRole === "ADMIN" && assignment.status === AssignmentStatus.COMPLETED && (
+        {(userRole === "ADMIN" || userRole === "TEAM_LEADER") && assignment.status === 'PAUSED' && (
+          <Button 
+            size="icon" 
+            variant="ghost" 
+            className="h-8 w-8 text-primary hover:text-primary hover:bg-primary/10"
+            onClick={() => handleIndividualStart(assignment.employeeId)}
+            disabled={actionLoading || storeLoading}
+            title={t("order.resume")}
+          >
+            <Play className="h-4 w-4" />
+          </Button>
+        )}
+
+        {assignment.status === AssignmentStatus.COMPLETED && (
           <div className="h-8 w-8 flex items-center justify-center text-emerald-600">
             <CheckCircle2 className="h-5 w-5" />
           </div>
         )}
 
-        {userRole === "ADMIN" && assignment.status === AssignmentStatus.ASSIGNED && (
+        {(userRole === "ADMIN" || userRole === "TEAM_LEADER") && assignment.status === AssignmentStatus.ASSIGNED && (
           <Button 
             size="icon" 
             variant="ghost" 
@@ -194,6 +225,7 @@ export const OrderAssignments: React.FC<OrderAssignmentsProps> = ({
   order,
   userRole,
   onAssignmentCountChange,
+  onRefresh,
 }) => {
   const { t } = useTranslation();
   const [assignments, setAssignments] = useState<Assignment[]>([]);
@@ -220,7 +252,7 @@ export const OrderAssignments: React.FC<OrderAssignmentsProps> = ({
 
   useEffect(() => {
     loadAssignments();
-  }, [orderId]);
+  }, [orderId, order]);
 
   const handleRemoveAssignment = async (assignmentId: string) => {
     setActionLoading(true);
@@ -228,6 +260,7 @@ export const OrderAssignments: React.FC<OrderAssignmentsProps> = ({
       await apiClient.delete(`/api/orders/assignments/${assignmentId}`);
       toast.success(t('messages.success'));
       await loadAssignments();
+      onRefresh?.();
     } catch (error) {
       console.error("Failed to remove assignment:", error);
       toast.error(t('messages.error'));
@@ -240,9 +273,26 @@ export const OrderAssignments: React.FC<OrderAssignmentsProps> = ({
     setActionLoading(true);
     try {
       await stopWork(orderId, employeeId);
+      toast.success(t('order.workCompleted'));
       await loadAssignments();
+      onRefresh?.();
     } catch (error) {
       console.error("Failed to stop work:", error);
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handlePauseWork = async (employeeId: string) => {
+    setActionLoading(true);
+    try {
+      await apiClient.post(`/api/orders/${orderId}/pause-work/${employeeId}`, {});
+      toast.success(t('order.workPaused'));
+      await loadAssignments();
+      onRefresh?.();
+    } catch (error) {
+      console.error("Failed to pause work:", error);
+      toast.error(t('messages.error'));
     } finally {
       setActionLoading(false);
     }
@@ -253,6 +303,7 @@ export const OrderAssignments: React.FC<OrderAssignmentsProps> = ({
     try {
       await startWork(orderId, [employeeId]);
       await loadAssignments();
+      onRefresh?.();
     } catch (error) {
       console.error("Failed to start work:", error);
     } finally {
@@ -278,6 +329,8 @@ export const OrderAssignments: React.FC<OrderAssignmentsProps> = ({
         return <Badge variant="secondary">{t("order.assigned")}</Badge>;
       case AssignmentStatus.ACTIVE:
         return <Badge className="bg-green-100 text-green-800 hover:bg-green-100">{t("order.workingNow")}</Badge>;
+      case 'PAUSED':
+        return <Badge className="bg-orange-100 text-orange-800 hover:bg-orange-100">{t("order.pause")}</Badge>;
       case AssignmentStatus.COMPLETED:
         return <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100">{t("order.completed")}</Badge>;
       case AssignmentStatus.CANCELLED:
@@ -381,7 +434,7 @@ export const OrderAssignments: React.FC<OrderAssignmentsProps> = ({
         ) : (
           <div className="space-y-6">
             {/* Working Now Section */}
-            {assignments.filter(a => a.status === AssignmentStatus.ACTIVE).length > 0 && (
+            {assignments.filter(a => a.status === AssignmentStatus.ACTIVE || a.status === AssignmentStatus.PAUSED).length > 0 && (
               <div className="space-y-3">
                 <h4 className="text-xs font-bold uppercase tracking-wider text-green-600 flex items-center gap-2">
                   <Play className="h-3 w-3 fill-current" />
@@ -389,7 +442,7 @@ export const OrderAssignments: React.FC<OrderAssignmentsProps> = ({
                 </h4>
                 <div className="space-y-2">
                   {assignments
-                    .filter(a => a.status === AssignmentStatus.ACTIVE)
+                    .filter(a => a.status === AssignmentStatus.ACTIVE || a.status === AssignmentStatus.PAUSED)
                     .map((assignment) => (
                       <AssignmentRow 
                         key={assignment.id} 
@@ -399,6 +452,7 @@ export const OrderAssignments: React.FC<OrderAssignmentsProps> = ({
                         actionLoading={actionLoading}
                         storeLoading={storeLoading}
                         handleIndividualStart={handleIndividualStart}
+                        handlePauseWork={handlePauseWork}
                         handleStopWork={handleStopWork}
                         handleRemoveAssignment={handleRemoveAssignment}
                         getStatusBadge={getStatusBadge}
@@ -428,6 +482,7 @@ export const OrderAssignments: React.FC<OrderAssignmentsProps> = ({
                         actionLoading={actionLoading}
                         storeLoading={storeLoading}
                         handleIndividualStart={handleIndividualStart}
+                        handlePauseWork={handlePauseWork}
                         handleStopWork={handleStopWork}
                         handleRemoveAssignment={handleRemoveAssignment}
                         getStatusBadge={getStatusBadge}
@@ -457,6 +512,7 @@ export const OrderAssignments: React.FC<OrderAssignmentsProps> = ({
                         actionLoading={actionLoading}
                         storeLoading={storeLoading}
                         handleIndividualStart={handleIndividualStart}
+                        handlePauseWork={handlePauseWork}
                         handleStopWork={handleStopWork}
                         handleRemoveAssignment={handleRemoveAssignment}
                         getStatusBadge={getStatusBadge}

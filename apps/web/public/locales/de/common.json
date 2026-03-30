@@ -343,7 +343,13 @@
     "awaitingStart": "Wartet auf Beginn",
     "selectTeammates": "Teammitglieder für den Start auswählen",
     "activityBasePrice": "Aktivitäts-Basispreis",
-    "teamStart": "Team Starten"
+    "teamStart": "Team Starten",
+    "pause": "Pause",
+    "resume": "Fortsetzen",
+    "complete": "Abschließen",
+    "workPaused": "Arbeit pausiert",
+    "workResumed": "Arbeit fortgesetzt",
+    "workCompleted": "Arbeit abgeschlossen"
   },
   "customer": {
     "customer": "Kunde",
@@ -718,6 +724,7 @@
         "open": "OFFEN",
         "active": "AKTIV",
         "inProgress": "IN BEARBEITUNG",
+        "paused": "PAUSIERT",
         "inReview": "IN PRÜFUNG",
         "completed": "ABGESCHLOSSEN",
         "cancelled": "STORNIERT",
@@ -1772,7 +1779,13 @@
       "statusChange": "Statusänderung",
       "noteAdded": "Notiz hinzugefügt",
       "assignmentChanged": "Zuweisung geändert",
-      "activityAssigned": "Aktivität zugewiesen"
+      "activityAssigned": "Aktivität zugewiesen",
+      "assignedTeam": "Zugewiesenes Team",
+      "noTeammates": "Keine anderen Teammitglieder zugewiesen",
+      "you": "Sie",
+      "startedBy": "Gestartet von",
+      "startForTeammate": "Arbeit für Kollegen starten",
+      "unknownEmployee": "Unbekannter Mitarbeiter"
     },
     "dashboard": {
       "title": "Mein Dashboard",
@@ -1796,6 +1809,48 @@
         "averagePerOrder": "Durchschnitt pro Auftrag",
         "upcomingDeadlines": "Anstehende Fristen",
         "dueInNext7Days": "Fällig in den nächsten 7 Tagen"
+      },
+      "leaveStats": {
+        "title": "Urlaubsstatistiken",
+        "totalDays": "Gesamttage",
+        "approved": "Genehmigt",
+        "pending": "Ausstehend",
+        "rejected": "Abgelehnt"
+      },
+      "currentWeekOrders": {
+        "title": "Aufträge dieser Woche",
+        "loadingOrders": "Aufträge werden geladen...",
+        "noOrders": "Keine Aufträge für diese Woche zugewiesen",
+        "newOrdersMonday": "Neue Aufträge erscheinen hier am Montag",
+        "orderNumber": "Auftrags-Nr. ",
+        "scheduled": "Geplant",
+        "estimated": "Geschätzt",
+        "actual": "Tatsächlich",
+        "priority": "Priorität"
+      },
+      "archivedOrders": {
+        "title": "Archivierte Aufträge",
+        "completed": "Abgeschlossen",
+        "noArchivedOrders": "Noch keine archivierten Aufträge",
+        "showingCount": "Zeige {{showing}} von {{total}} archivierten Aufträgen"
+      },
+      "actions": {
+        "start": "Beginnen",
+        "pause": "Pausieren",
+        "complete": "Abschließen",
+        "resume": "Fortsetzen"
+      },
+      "status": {
+        "assigned": "Zugewiesen",
+        "active": "Aktiv",
+        "inprogress": "In Bearbeitung",
+        "paused": "Pausiert",
+        "pending": "Ausstehend",
+        "completed": "Abgeschlossen"
+      },
+      "dateLabels": {
+        "today": "Heute",
+        "tomorrow": "Morgen"
       }
     },
     "oldDashboard": {

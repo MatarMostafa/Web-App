@@ -10,12 +10,13 @@ import {
   AlertCircle,
   MessageSquare,
   User,
+  Play,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
-import { Order, OrderStatus } from "@/types/order";
+import { Order, OrderStatus, AssignmentStatus } from "@/types/order";
 import { useEmployeeOrderStore } from "@/store/employee/employeeOrderStore";
 import { OrderTimeline } from "../order-detail/OrderTimeline";
 import { OrderDetailSkeleton } from "../order-detail/OrderDetailSkeleton";
@@ -46,6 +47,8 @@ const getStatusColor = (status: OrderStatus) => {
       return "bg-yellow-100 text-yellow-800";
     case OrderStatus.IN_REVIEW:
       return "bg-orange-100 text-orange-800";
+    case OrderStatus.PAUSED:
+      return "bg-orange-100 text-orange-800";
     case OrderStatus.COMPLETED:
       return "bg-emerald-100 text-emerald-800";
     case OrderStatus.CANCELLED:
@@ -57,29 +60,43 @@ const getStatusColor = (status: OrderStatus) => {
   }
 };
 
-const getAvailableActions = (status: OrderStatus, t: any) => {
+const getAvailableActions = (assignmentStatus: AssignmentStatus | undefined, orderStatus: OrderStatus, t: any) => {
   const actions = [];
 
-  switch (status) {
-    case OrderStatus.ACTIVE:
-      actions.push({
-        key: "start",
-        label: t("employee.orderDetail.startWork"),
-        variant: "default" as const,
-      });
-      break;
-    case OrderStatus.IN_PROGRESS:
-      actions.push({
-        key: "review",
-        label: t("employee.orderDetail.requestReview"),
-        variant: "default" as const,
-      });
-      actions.push({
-        key: "pause",
-        label: t("employee.orderDetail.pauseWork"),
-        variant: "outline" as const,
-      });
-      break;
+  // 1. Logic for Starting Work (Collective/Individual hybrid)
+  // If the assignment is still just ASSIGNED, show "Start Work"
+  // even if the overall order is already ACTIVE or IN_PROGRESS.
+  if (assignmentStatus === AssignmentStatus.ASSIGNED) {
+    actions.push({
+      key: "start",
+      label: t("employee.orderDetail.startWork"),
+      variant: "default" as const,
+    });
+  }
+
+  // 2. Logic for Review (Group-based)
+  // If the order is IN_PROGRESS, allow requesting review
+  if (orderStatus === OrderStatus.IN_PROGRESS) {
+    actions.push({
+      key: "review",
+      label: t("employee.orderDetail.requestReview"),
+      variant: "default" as const,
+    });
+  }
+
+  // 3. Logic for Pause/Resume (Individual-based)
+  if (assignmentStatus === AssignmentStatus.ACTIVE) {
+    actions.push({
+      key: "pause",
+      label: t("order.pause"),
+      variant: "outline" as const,
+    });
+  } else if (assignmentStatus === AssignmentStatus.PAUSED) {
+    actions.push({
+      key: "resume",
+      label: t("order.resume"),
+      variant: "default" as const,
+    });
   }
 
   return actions;
@@ -216,14 +233,124 @@ export const EmployeeOrderDetailPage: React.FC<
         setShowContainerDialog(true);
         break;
       case "pause":
-        handleStatusChange(
-          OrderStatus.ACTIVE,
-          t("employee.orderDetail.workPausedNote")
-        );
+        handlePauseWork();
+        break;
+      case "resume":
+        handleResumeWork();
         break;
       case "review":
         handleRequestReview();
         break;
+    }
+  };
+
+  const handlePauseWork = async () => {
+    setIsSubmitting(true);
+    try {
+      const { getSession } = await import("next-auth/react");
+      const session = await getSession();
+      
+      const assignment = employeeAssignments.find(a => a.order.id === orderId);
+      if (!assignment) throw new Error("Assignment not found");
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/orders/${orderId}/pause-work/${assignment.employeeId}`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${session?.accessToken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.ok) {
+        toast.success(t("order.workPaused"));
+        // Force refresh
+        window.location.reload();
+      } else {
+        throw new Error("Failed to pause work");
+      }
+    } catch (error) {
+      console.error("Pause work error:", error);
+      toast.error(t("employee.orderDetail.failedToUpdateStatus"));
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleResumeWork = async () => {
+    setIsSubmitting(true);
+    try {
+      const { getSession } = await import("next-auth/react");
+      const session = await getSession();
+      
+      const assignment = employeeAssignments.find(a => a.order.id === orderId);
+      if (!assignment) throw new Error("Assignment not found");
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/orders/${orderId}/start-work`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${session?.accessToken}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            employeeIds: [assignment.employeeId],
+            startedById: session?.user?.id
+          }),
+        }
+      );
+
+      if (response.ok) {
+        toast.success(t("order.workResumed"));
+        // Force refresh
+        window.location.reload();
+      } else {
+        throw new Error("Failed to resume work");
+      }
+    } catch (error) {
+      console.error("Resume work error:", error);
+      toast.error(t("employee.orderDetail.failedToUpdateStatus"));
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleStartTeammateWork = async (employeeId: string) => {
+    setIsSubmitting(true);
+    try {
+      const { getSession } = await import("next-auth/react");
+      const session = await getSession();
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/orders/${orderId}/start-work`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${session?.accessToken}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            employeeIds: [employeeId],
+            startedById: session?.user?.id
+          }),
+        }
+      );
+
+      if (response.ok) {
+        toast.success(t("employee.orderDetail.workStartedNote"));
+        // Force refresh to show new status
+        window.location.reload();
+      } else {
+        throw new Error("Failed to start teammate's work");
+      }
+    } catch (error) {
+      console.error("Start teammate work error:", error);
+      toast.error(t("employee.orderDetail.failedToUpdateStatus"));
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -452,7 +579,8 @@ export const EmployeeOrderDetailPage: React.FC<
     );
   }
 
-  const availableActions = getAvailableActions(order.status, t);
+  const currentAssignment = employeeAssignments.find(a => a.order.id === orderId);
+  const availableActions = getAvailableActions(currentAssignment?.status as AssignmentStatus, order.status, t);
   const allContainersCompleted = containers.length > 0 && containers.every(c => c.isCompleted);
 
   return (
@@ -566,6 +694,58 @@ export const EmployeeOrderDetailPage: React.FC<
                 </div>
               </div>
             )}
+          </div>
+
+          {/* Assigned Team Section */}
+          <div className="mt-6 pt-6 border-t border-border">
+            <h4 className="text-sm font-medium mb-3 flex items-center gap-2">
+              <User className="h-4 w-4 text-muted-foreground" />
+              {t("employee.orderDetail.assignedTeam")}
+            </h4>
+            <div className="flex flex-wrap gap-2">
+              {orderWithTemplate?.employeeAssignments && orderWithTemplate.employeeAssignments.length > 0 ? (
+                orderWithTemplate.employeeAssignments.map((assignment: any) => (
+                  <div key={assignment.id} className="flex flex-col gap-1">
+                    <Badge 
+                      variant="secondary" 
+                      className="flex items-center gap-2 py-1.5 px-3"
+                    >
+                      <span className="font-medium">
+                        {(assignment.employee?.firstName || assignment.employee?.firstName === '') ? `${assignment.employee.firstName} ${assignment.employee.lastName}` : t("employee.orderDetail.unknownEmployee")}
+                        {assignment.employeeId === currentAssignment?.employeeId && ` (${t("employee.orderDetail.you")})`}
+                      </span>
+                      <span className={`w-2 h-2 rounded-full ${
+                        assignment.status === AssignmentStatus.ACTIVE ? 'bg-green-500' :
+                        assignment.status === AssignmentStatus.PAUSED ? 'bg-orange-500' :
+                        'bg-gray-300'
+                      }`} title={assignment.status} />
+                      
+                      {assignment.employeeId !== currentAssignment?.employeeId && assignment.status !== AssignmentStatus.ACTIVE && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-5 w-5 ml-1 hover:bg-green-100 hover:text-green-700"
+                          onClick={() => handleStartTeammateWork(assignment.employeeId)}
+                          disabled={isSubmitting}
+                          title={t("employee.orderDetail.startForTeammate")}
+                        >
+                          <Play className="h-3 w-3 fill-current" />
+                        </Button>
+                      )}
+                    </Badge>
+                    {assignment.status === AssignmentStatus.ACTIVE && assignment.startedBy && (
+                      <span className="text-[10px] text-muted-foreground ml-1">
+                        {t("employee.orderDetail.startedBy")} {assignment.startedBy.firstName} {assignment.startedBy.lastName}
+                      </span>
+                    )}
+                  </div>
+                ))
+              ) : (
+                <p className="text-sm text-muted-foreground">
+                  {t("employee.orderDetail.noTeammates")}
+                </p>
+              )}
+            </div>
           </div>
 
           {order.specialInstructions && (

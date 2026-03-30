@@ -13,6 +13,7 @@ import { TeamLeaderOrderNotesDialog } from "@/components/team-leader/OrderNotesD
 import { TeamStartModal } from "@/components/modals/TeamStartModal";
 import { AssignmentStatus } from "@/types/order";
 import { apiClient } from "@/lib/api-client";
+import { OrderAssignments } from "@/components/order-detail/OrderAssignments";
 
 interface Order {
   id: string;
@@ -341,40 +342,14 @@ const TeamLeaderOrderDetail = ({ params }: { params: Promise<{ id: string }> }) 
       </div>
 
       {/* Assigned Employees */}
-      {order.employeeAssignments.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle>{t('teamLeader.orders.assignedEmployees')}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {order.employeeAssignments.map((assignment, index) => (
-                <div key={index} className="flex items-center gap-3 p-3 border rounded-lg">
-                  <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
-                    <span className="text-sm font-medium">
-                      {assignment.employee.firstName?.[0] || assignment.employee.employeeCode[0]}
-                    </span>
-                  </div>
-                  <div>
-                    <div className="font-medium text-sm flex items-center gap-2">
-                      {assignment.employee.firstName && assignment.employee.lastName
-                        ? `${assignment.employee.firstName} ${assignment.employee.lastName}`
-                        : assignment.employee.employeeCode}
-                      <Badge variant="secondary" className="text-[10px] h-4">
-                        {assignment.status === "ACTIVE" ? t("order.workingNow") : 
-                         assignment.status === "ASSIGNED" ? t("order.assigned") : 
-                         assignment.status}
-                      </Badge>
-                    </div>
-                    <p className="text-xs text-muted-foreground">
-                      {assignment.employee.employeeCode}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+      {/* Assigned Staff Section */}
+      {order && (
+        <OrderAssignments 
+          orderId={order.id} 
+          order={order} 
+          userRole="TEAM_LEADER" 
+          onRefresh={handleOrderRefresh}
+        />
       )}
       
       {/* Order Communication Button */}

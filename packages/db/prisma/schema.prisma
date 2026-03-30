@@ -37,6 +37,7 @@ enum OrderStatus {
   OPEN
   ACTIVE
   IN_PROGRESS
+  PAUSED
   IN_REVIEW
   COMPLETED
   CANCELLED
@@ -61,6 +62,7 @@ enum SettingsChangeType {
 enum AssignmentStatus {
   ASSIGNED
   ACTIVE
+  PAUSED
   COMPLETED
   CANCELLED
   OVERDUE
@@ -161,6 +163,8 @@ model User {
   orderNotes              OrderNote[]
   settingsChangeRequests  SettingsChangeRequest[]
   startedAssignments      Assignment[]            @relation("AssignmentStartedBy")
+  pausedAssignments       Assignment[]            @relation("AssignmentPausedBy")
+  stoppedAssignments      Assignment[]            @relation("AssignmentStoppedBy")
 
   @@map("users")
 }
@@ -598,6 +602,12 @@ model Assignment {
 
   startedBy   User?   @relation("AssignmentStartedBy", fields: [startedById], references: [id], onDelete: SetNull)
   startedById String?
+
+  pausedBy    User?   @relation("AssignmentPausedBy", fields: [pausedById], references: [id], onDelete: SetNull)
+  pausedById  String?
+
+  stoppedBy   User?   @relation("AssignmentStoppedBy", fields: [stoppedById], references: [id], onDelete: SetNull)
+  stoppedById String?
 
   @@map("assignments")
 }
