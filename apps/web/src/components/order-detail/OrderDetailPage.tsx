@@ -264,15 +264,19 @@ export const OrderDetailPage: React.FC<OrderDetailPageProps> = ({
           </div>
         </CardHeader>
         <CardContent>
-          {userRole === "ADMIN" && order.teamId && (order.status === OrderStatus.OPEN || order.status === OrderStatus.ACTIVE) && (
+          {userRole === "ADMIN" && 
+           (order.status === OrderStatus.OPEN || 
+            order.status === OrderStatus.ACTIVE || 
+            order.status === OrderStatus.IN_PROGRESS) && 
+           order.employeeAssignments?.some(a => a.status === 'ASSIGNED') && (
             <div className="mb-4 pb-4 border-b flex justify-end">
               <Button 
                 onClick={() => setIsTeamStartModalOpen(true)}
-                className="bg-primary hover:bg-primary/90 text-white shadow-md transition-all hover:scale-105"
+                className="bg-primary hover:bg-primary/90 text-white shadow-md transition-all hover:scale-105 font-medium"
                 size="sm"
               >
                 <Play className="h-4 w-4 mr-2" />
-                {t("order.teamStart")}
+                {order.teamId ? t("order.teamStart") : t("order.startWork")}
               </Button>
             </div>
           )}
