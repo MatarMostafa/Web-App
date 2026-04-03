@@ -104,7 +104,8 @@
     "assigning": "Assigning...",
     "assignEmployees": "Assign Employees",
     "employeesSelected": "employees selected",
-    "employeeSelected": "employee selected"
+    "employeeSelected": "employee selected",
+    "members": "members"
   },
   "auth": {
     "signIn": "Sign In",
@@ -291,9 +292,14 @@
     "estimatedHours": "Estimated Hours",
     "actualHours": "Actual Hours",
     "pending": "Pending",
+    "draft": "Draft",
+    "open": "Open",
+    "active": "Active",
     "inProgress": "In Progress",
+    "inReview": "In Review",
     "completed": "Completed",
     "cancelled": "Cancelled",
+    "expired": "Expired",
     "assigned": "Assigned",
     "unassigned": "Unassigned",
     "description": "Order Description",
@@ -330,7 +336,18 @@
     "templateBasedDescription": "This description is template-based and cannot be edited.",
     "priority": "Priority",
     "start": "Start",
-    "activityBasePrice": "Activity Base Price"
+    "startWork": "Start Work",
+    "stopWork": "Stop Work",
+    "workingNow": "Working Now",
+    "awaitingStart": "Awaiting Start",
+    "activityBasePrice": "Activity Base Price",
+    "teamStart": "Team Start",
+    "pause": "Pause",
+    "resume": "Resume",
+    "complete": "Complete",
+    "workPaused": "Work Paused",
+    "workResumed": "Work Resumed",
+    "workCompleted": "Work Completed"
   },
   "customer": {
     "customer": "Customer",
@@ -704,6 +721,8 @@
         "open": "OPEN",
         "active": "ACTIVE",
         "inProgress": "IN PROGRESS",
+        "paused": "PAUSED",
+        "inReview": "IN REVIEW",
         "completed": "COMPLETED",
         "cancelled": "CANCELLED",
         "expired": "EXPIRED"
@@ -745,6 +764,13 @@
         "createError": "Failed to create order",
         "updateError": "Failed to update order",
         "deleteError": "Failed to delete order",
+        "assignTeam": "Assign Team",
+        "selectTeam": "Select Team",
+        "noTeam": "No Team",
+        "teamAssigned": "Team assigned",
+        "teamMembersAssigned": "Members of team {{name}} have been added to the assignment list",
+        "teamMembers": "Team Members",
+        "otherEmployees": "Other Employees",
         "stepTitles": {
           "step1": "Step 1: Select Customer",
           "step2": "Step 2: Select Activities",
@@ -1759,7 +1785,13 @@
       "statuschange": "status change",
       "noteadded": "note added",
       "assignmentchanged": "assignment changed",
-      "activityassigned": "activity assigned"
+      "activityassigned": "activity assigned",
+      "assignedTeam": "Assigned Team",
+      "noTeammates": "No other teammates assigned",
+      "you": "You",
+      "startedBy": "Started by",
+      "startForTeammate": "Start work for teammate",
+      "unknownEmployee": "Unknown Employee"
     },
     "dashboard": {
       "title": "My Dashboard",
@@ -1818,6 +1850,7 @@
         "assigned": "Assigned",
         "active": "Active",
         "inprogress": "In Progress",
+        "paused": "Paused",
         "pending": "Pending",
         "completed": "Completed"
       },

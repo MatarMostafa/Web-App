@@ -159,7 +159,18 @@ export const getOrderWithTemplateData = async (orderId: string) => {
           descriptionTemplate: true
         }
       },
-      descriptionData: true
+      descriptionData: true,
+      employeeAssignments: {
+        include: {
+          employee: {
+            select: {
+              firstName: true,
+              lastName: true,
+              employeeCode: true
+            }
+          }
+        }
+      }
     }
   });
 };

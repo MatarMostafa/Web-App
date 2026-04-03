@@ -3,10 +3,19 @@ export enum OrderStatus {
   OPEN = "OPEN",
   ACTIVE = "ACTIVE",
   IN_PROGRESS = "IN_PROGRESS",
+  PAUSED = "PAUSED",
   IN_REVIEW = "IN_REVIEW",
   COMPLETED = "COMPLETED",
   CANCELLED = "CANCELLED",
   EXPIRED = "EXPIRED"
+}
+
+export enum AssignmentStatus {
+  ASSIGNED = "ASSIGNED",
+  ACTIVE = "ACTIVE",
+  PAUSED = "PAUSED",
+  COMPLETED = "COMPLETED",
+  CANCELLED = "CANCELLED"
 }
 
 export enum ActivityType {
@@ -52,12 +61,23 @@ export interface Order {
   priority: number;
   specialInstructions?: string;
   status: OrderStatus;
+  teamId?: string | null;
   usesTemplate?: boolean;
   cartonQuantity?: number;
   articleQuantity?: number;
   customerId: string;
   createdAt: string;
   updatedAt: string;
+  employeeAssignments?: Array<{
+    id: string;
+    employeeId: string;
+    status: AssignmentStatus;
+    employee: {
+      firstName: string;
+      lastName: string;
+      employeeCode: string;
+    };
+  }>;
   createdBy?: string;
   updatedBy?: string;
   customer?: {
@@ -80,6 +100,7 @@ export interface CreateOrderData {
   status?: OrderStatus;
   customerId: string;
   assignedEmployeeIds?: string[];
+  teamId?: string;
   activities?: Array<{
     activityId: string;
     quantity: number;
@@ -109,6 +130,7 @@ export interface UpdateOrderData {
   status?: OrderStatus;
   customerId?: string;
   assignedEmployeeIds?: string[];
+  teamId?: string | null;
   activities?: Array<{
     activityId: string;
     quantity: number;

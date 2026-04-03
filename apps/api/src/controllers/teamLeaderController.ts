@@ -47,16 +47,18 @@ export const createOrder = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "Employee not found" });
     }
 
-    // Team leaders can create orders but without pricing fields
+    // Team leaders can create orders but without pricing fields from the client
     const { hourlyRate, totalCost, profit, totalPrice, ...orderData } = req.body;
 
-    // Strip price fields from containers - prices are managed by admin only
-    if (Array.isArray(orderData.containers)) {
-      orderData.containers = orderData.containers.map(({ cartonPrice, articlePrice, basePrice, ...rest }: any) => ({
-        ...rest,
-        cartonPrice: 0,
-        articlePrice: 0,
-      }));
+    // Calculate container prices server-side using customer pricing tiers
+    if (Array.isArray(orderData.containers) && orderData.containers.length > 0) {
+      const scheduledDate = orderData.scheduledDate ? new Date(orderData.scheduledDate) : new Date();
+      orderData.containers = await teamLeaderService.calculateContainerPrices(
+        orderData.containers,
+        orderData.activities || [],
+        orderData.customerId,
+        scheduledDate
+      );
     }
 
     // Pass the employee ID as createdBy to properly track who created the order
@@ -115,16 +117,22 @@ export const updateOrder = async (req: Request, res: Response) => {
       }
     }
 
-    // Remove pricing fields from update data
+    // Remove pricing fields from update data (client must not override prices)
     const { hourlyRate, totalCost, profit, totalPrice, ...updateData } = req.body;
 
-    // Strip price fields from containers - prices are managed by admin only
-    if (Array.isArray(updateData.containers)) {
-      updateData.containers = updateData.containers.map(({ cartonPrice, articlePrice, basePrice, ...rest }: any) => ({
-        ...rest,
-        cartonPrice: 0,
-        articlePrice: 0,
-      }));
+    // Calculate container prices server-side using customer pricing tiers
+    if (Array.isArray(updateData.containers) && updateData.containers.length > 0) {
+      // Fetch order's customerId and scheduledDate to use for pricing lookup
+      const scheduledDate = updateData.scheduledDate
+        ? new Date(updateData.scheduledDate)
+        : new Date(order.scheduledDate);
+      const customerId = order.customerId;
+      updateData.containers = await teamLeaderService.calculateContainerPrices(
+        updateData.containers,
+        updateData.activities || [],
+        customerId,
+        scheduledDate
+      );
     }
 
     const updatedOrder = await orderService.updateOrderService(id, updateData, employee.id);
@@ -147,10 +155,13 @@ export const getTeamMembers = async (req: Request, res: Response) => {
 
     const employee = await teamService.getEmployeeByUserId(authReq.user.id);
     if (!employee) {
+      console.log(`TeamLeader: No employee found for user ${authReq.user.id}`);
       return res.status(404).json({ message: "Employee not found" });
     }
 
+    console.log(`TeamLeader: Fetching members for leader ${employee.id} (${employee.firstName} ${employee.lastName})`);
     const teamMembers = await teamLeaderService.getTeamMembersByLeader(employee.id);
+    console.log(`TeamLeader: Found ${teamMembers.length} members`);
     res.json(teamMembers);
   } catch (error) {
     console.error("Error fetching team members:", error);

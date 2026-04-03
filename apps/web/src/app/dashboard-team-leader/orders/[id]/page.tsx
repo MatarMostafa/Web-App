@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Calendar, MapPin, Users, Clock, AlertCircle, MessageSquare } from "lucide-react";
+import { ArrowLeft, Calendar, MapPin, Users, Clock, AlertCircle, MessageSquare, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,6 +10,10 @@ import { useSession } from "next-auth/react";
 import { format } from "date-fns";
 import { useTranslation } from "@/hooks/useTranslation";
 import { TeamLeaderOrderNotesDialog } from "@/components/team-leader/OrderNotesDialog";
+import { TeamStartModal } from "@/components/modals/TeamStartModal";
+import { AssignmentStatus } from "@/types/order";
+import { apiClient } from "@/lib/api-client";
+import { OrderAssignments } from "@/components/order-detail/OrderAssignments";
 
 interface Order {
   id: string;
@@ -32,7 +36,11 @@ interface Order {
     name: string;
   };
   employeeAssignments: Array<{
+    id: string;
+    employeeId: string;
+    status: string;
     employee: {
+      id: string;
       firstName?: string;
       lastName?: string;
       employeeCode: string;
@@ -62,6 +70,8 @@ const TeamLeaderOrderDetail = ({ params }: { params: Promise<{ id: string }> }) 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [notesDialogOpen, setNotesDialogOpen] = useState(false);
+  const [isTeamStartModalOpen, setIsTeamStartModalOpen] = useState(false);
+  const [teamMemberIds, setTeamMemberIds] = useState<Set<string>>(new Set());
   const { id } = React.use(params);
 
   useEffect(() => {
@@ -92,12 +102,52 @@ const TeamLeaderOrderDetail = ({ params }: { params: Promise<{ id: string }> }) 
       }
     };
 
+    const fetchTeamMembers = async () => {
+      try {
+        const response = await apiClient.get<any>("/api/team-leader/employees");
+        const members = Array.isArray(response) ? response : (response?.data || []);
+        setTeamMemberIds(new Set(members.map((m: any) => m.id)));
+      } catch (error) {
+        console.error("Error fetching team members:", error);
+      }
+    };
+    
     if (session?.accessToken) {
       fetchOrder();
+      fetchTeamMembers();
     }
   }, [id, session, t]);
 
+  const handleOrderRefresh = async () => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/team-leader/orders`, {
+        headers: {
+          Authorization: `Bearer ${session?.accessToken}`,
+        },
+      });
+      
+      if (response.ok) {
+        const orders = await response.json();
+        const foundOrder = orders.find((o: Order) => o.id === id);
+        if (foundOrder) {
+          setOrder(foundOrder);
+        }
+      }
+    } catch (error) {
+      console.error("Error refreshing order:", error);
+    }
+  };
 
+  const myTeamAssignments = React.useMemo(() => {
+    return order?.employeeAssignments.filter(a => 
+      teamMemberIds.has(a.employee.id)
+    ) || [];
+  }, [order, teamMemberIds]);
+
+  const showTeamStart = 
+    order?.status?.toUpperCase() !== "COMPLETED" && 
+    order?.status?.toUpperCase() !== "CANCELLED" && 
+    myTeamAssignments.some(a => a.status === AssignmentStatus.ASSIGNED);
 
   const handleBack = () => {
     router.push("/dashboard-team-leader/orders");
@@ -153,9 +203,20 @@ const TeamLeaderOrderDetail = ({ params }: { params: Promise<{ id: string }> }) 
                 </p>
               )}
             </div>
-            <Badge className={`${getStatusColor(order.status)} text-sm w-fit`}>
-              {order.status.replace('_', ' ')}
-            </Badge>
+            <div className="flex items-center gap-2">
+              {showTeamStart && (
+                <Button 
+                  onClick={() => setIsTeamStartModalOpen(true)}
+                  className="bg-primary hover:bg-primary/90"
+                >
+                  <Play className="h-4 w-4 mr-2" />
+                  {t("order.teamStart")}
+                </Button>
+              )}
+              <Badge className={`${getStatusColor(order.status)} text-sm w-fit`}>
+                {t(`order.${order.status.toLowerCase().replace(/_([a-z])/g, (g) => g[1].toUpperCase())}`)}
+              </Badge>
+            </div>
           </div>
         </CardHeader>
         <CardContent>
@@ -281,35 +342,14 @@ const TeamLeaderOrderDetail = ({ params }: { params: Promise<{ id: string }> }) 
       </div>
 
       {/* Assigned Employees */}
-      {order.employeeAssignments.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle>{t('teamLeader.orders.assignedEmployees')}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {order.employeeAssignments.map((assignment, index) => (
-                <div key={index} className="flex items-center gap-3 p-3 border rounded-lg">
-                  <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
-                    <span className="text-sm font-medium">
-                      {assignment.employee.firstName?.[0] || assignment.employee.employeeCode[0]}
-                    </span>
-                  </div>
-                  <div>
-                    <p className="font-medium text-sm">
-                      {assignment.employee.firstName && assignment.employee.lastName
-                        ? `${assignment.employee.firstName} ${assignment.employee.lastName}`
-                        : assignment.employee.employeeCode}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {assignment.employee.employeeCode}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+      {/* Assigned Staff Section */}
+      {order && (
+        <OrderAssignments 
+          orderId={order.id} 
+          order={order} 
+          userRole="TEAM_LEADER" 
+          onRefresh={handleOrderRefresh}
+        />
       )}
       
       {/* Order Communication Button */}
@@ -351,6 +391,18 @@ const TeamLeaderOrderDetail = ({ params }: { params: Promise<{ id: string }> }) 
           onStatusChange={(orderId, newStatus) => {
             setOrder(prev => prev ? { ...prev, status: newStatus } : null);
           }}
+        />
+      )}
+
+      {order && (
+        <TeamStartModal
+          isOpen={isTeamStartModalOpen}
+          onClose={() => {
+            setIsTeamStartModalOpen(false);
+            handleOrderRefresh();
+          }}
+          orderId={order.id}
+          assignments={myTeamAssignments}
         />
       )}
     </div>

@@ -21,7 +21,10 @@ interface OrderState {
   createOrder: (data: CreateOrderData) => Promise<Order>;
   updateOrder: (id: string, data: UpdateOrderData) => Promise<void>;
   updateOrderStatus: (id: string, status: string) => void;
+  updateOrderTeam: (id: string, teamId: string | null) => Promise<void>;
   deleteOrder: (id: string) => Promise<void>;
+  startWork: (orderId: string, employeeIds: string[]) => Promise<void>;
+  stopWork: (orderId: string, employeeId: string) => Promise<void>;
   clearError: () => void;
 }
 
@@ -172,6 +175,29 @@ export const useOrderStore = create<OrderState>((set, get) => ({
         : state.currentOrder
     }));
   },
+  
+  updateOrderTeam: async (id: string, teamId: string | null) => {
+    set({ loading: true, error: null });
+    try {
+      await apiClient.put(`/api/orders/${id}`, { teamId });
+      
+      // Update local state
+      set(state => ({
+        orders: state.orders.map(order => 
+          order.id === id ? { ...order, teamId } : order
+        ),
+        currentOrder: state.currentOrder?.id === id 
+          ? { ...state.currentOrder, teamId }
+          : state.currentOrder,
+        loading: false
+      }));
+      toast.success(teamId ? "Team assigned successfully" : "Team removed successfully");
+    } catch (error) {
+      set({ error: error instanceof Error ? error.message : "Failed to update team", loading: false });
+      toast.error("Failed to update team");
+      throw error;
+    }
+  },
 
   deleteOrder: async (id: string) => {
     set({ loading: true, error: null });
@@ -185,6 +211,36 @@ export const useOrderStore = create<OrderState>((set, get) => ({
     } catch (error) {
       set({ error: error instanceof Error ? error.message : "Failed to delete order", loading: false });
       throw error;
+    }
+  },
+
+  startWork: async (orderId: string, employeeIds: string[]) => {
+    set({ loading: true });
+    try {
+      await apiClient.post(`/api/orders/${orderId}/start-work`, { employeeIds });
+      toast.success("Arbeit erfolgreich gestartet");
+      // Refresh order to get updated statuses
+      await get().fetchOrder(orderId);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Fehler beim Starten der Arbeit";
+      toast.error(errorMessage);
+    } finally {
+      set({ loading: false });
+    }
+  },
+
+  stopWork: async (orderId: string, employeeId: string) => {
+    set({ loading: true });
+    try {
+      await apiClient.post(`/api/orders/${orderId}/stop-work/${employeeId}`, {});
+      toast.success("Arbeit erfolgreich beendet");
+      // Refresh order to get updated statuses
+      await get().fetchOrder(orderId);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Fehler beim Beenden der Arbeit";
+      toast.error(errorMessage);
+    } finally {
+      set({ loading: false });
     }
   },
 

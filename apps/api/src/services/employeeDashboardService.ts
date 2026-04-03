@@ -40,6 +40,16 @@ export const getCurrentWeekOrders = async (userId: string) => {
             }
           }
         },
+        startedBy: {
+          select: {
+            employee: {
+              select: {
+                firstName: true,
+                lastName: true
+              }
+            }
+          }
+        }
       },
     });
 
@@ -58,6 +68,11 @@ export const getCurrentWeekOrders = async (userId: string) => {
       } : undefined,
       assignment: {
         id: assignment.id,
+        startedBy: (assignment as any).startedBy?.employee ? { 
+          firstName: (assignment as any).startedBy.employee.firstName, 
+          lastName: (assignment as any).startedBy.employee.lastName 
+        } : null,
+        employeeId: assignment.employeeId,
         assignedDate: assignment.assignedDate.toISOString(),
         startDate: assignment.startDate?.toISOString(),
         endDate: assignment.endDate?.toISOString(),
@@ -93,6 +108,16 @@ export const getArchivedOrders = async (userId: string) => {
             }
           }
         },
+        startedBy: {
+          select: {
+            employee: {
+              select: {
+                firstName: true,
+                lastName: true
+              }
+            }
+          }
+        }
       },
       take: 50,
     });
@@ -112,6 +137,11 @@ export const getArchivedOrders = async (userId: string) => {
       } : undefined,
       assignment: {
         id: assignment.id,
+        startedBy: (assignment as any).startedBy?.employee ? { 
+          firstName: (assignment as any).startedBy.employee.firstName, 
+          lastName: (assignment as any).startedBy.employee.lastName 
+        } : null,
+        employeeId: assignment.employeeId,
         assignedDate: assignment.assignedDate.toISOString(),
         startDate: assignment.startDate?.toISOString(),
         endDate: assignment.endDate?.toISOString(),
@@ -251,10 +281,16 @@ export const updateOrderStatus = async (userId: string, orderId: string, status:
       throw new Error("Auftrag nicht gefunden oder Ihnen nicht zugewiesen");
     }
 
+    // Normalize status: Map "PENDING" to "PAUSED" to avoid Prisma validation errors
+    let normalizedStatus = status;
+    if (status.toUpperCase() === "PENDING") {
+      normalizedStatus = "PAUSED";
+    }
+
     // Update the order status
     const updatedOrder = await prisma.order.update({
       where: { id: orderId },
-      data: { status: status as any },
+      data: { status: normalizedStatus as any },
     });
 
     const employeeAssignment = await prisma.assignment.findFirst({
