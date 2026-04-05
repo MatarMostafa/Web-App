@@ -206,6 +206,8 @@ export const EmployeeOrderDetailPage: React.FC<
         if (assignment.order.id === orderId) {
           return {
             ...assignment,
+            status: newStatus === OrderStatus.IN_PROGRESS ? AssignmentStatus.ACTIVE : 
+                    newStatus === OrderStatus.PAUSED ? AssignmentStatus.PAUSED : assignment.status,
             order: { ...assignment.order, status: newStatus },
           };
         }

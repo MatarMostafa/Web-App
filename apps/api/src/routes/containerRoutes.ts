@@ -221,25 +221,50 @@ router.post(
       const { containerId } = req.params;
       const { employeeId, role } = req.body;
 
-      const assignment = await prisma.containerEmployee.create({
-        data: {
-          containerId,
-          employeeId,
-          role
-        },
-        include: {
-          employee: {
-            select: {
-              id: true,
-              firstName: true,
-              lastName: true,
-              employeeCode: true
+      const result = await prisma.$transaction(async (tx) => {
+        // 1. Create the container employee record
+        const assignment = await tx.containerEmployee.create({
+          data: {
+            containerId,
+            employeeId,
+            role
+          },
+          include: {
+            container: {
+              select: { orderId: true }
+            },
+            employee: {
+              select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+                employeeCode: true
+              }
             }
           }
-        }
+        });
+
+        const orderId = assignment.container.orderId;
+
+        // 2. Update the employee's assignment for this order to ACTIVE
+        // This ensures the "Pause" button appears and status is synced
+        await tx.assignment.updateMany({
+          where: {
+            orderId,
+            employeeId,
+            status: { in: ['ASSIGNED', 'PAUSED'] }
+          },
+          data: {
+            status: 'ACTIVE',
+            startDate: new Date(),
+            startedById: (req as any).user?.id
+          }
+        });
+
+        return assignment;
       });
 
-      res.json({ success: true, data: assignment });
+      res.json({ success: true, data: result });
     } catch (error) {
       console.error("Assign employee error:", error);
       res.status(400).json({

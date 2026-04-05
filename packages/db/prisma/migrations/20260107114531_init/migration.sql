@@ -1,5 +1,3 @@
-$ "D:\full stack\Web-App\node_modules\.bin\prisma" migrate diff --from-empty --to-schema-datamodel prisma/schema.prisma --script
-For more information, see: https://pris.ly/prisma-config
 -- CreateSchema
 CREATE SCHEMA IF NOT EXISTS "public";
 -- CreateEnum
