@@ -17,6 +17,7 @@ import {
   notifyCustomerOrderCreated
 } from "./notificationHelpers";
 import { getPriceForCustomer } from "./priceService";
+import { computeBilling, computeOrderHourlyBilling } from "./billingService";
 import { Decimal } from "decimal.js";
 import * as templateService from "./templateService";
 
@@ -836,6 +837,19 @@ export const pauseWork = async (
     },
   });
 
+  // Aggregate all assignment hours and update orders.actualHours
+  const allAssignments = await prisma.assignment.findMany({
+    where: { orderId },
+    select: { actualHours: true },
+  });
+  const totalOrderHours = allAssignments.reduce((sum, a) => {
+    return sum.plus(a.actualHours ? new Decimal(a.actualHours.toString()) : new Decimal(0));
+  }, new Decimal(0));
+  await prisma.order.update({
+    where: { id: orderId },
+    data: { actualHours: totalOrderHours.toDecimalPlaces(2) },
+  });
+
   await updateOrderStatusBasedOnAssignments(orderId);
   return updatedAssignment;
 };
@@ -878,9 +892,43 @@ export const stopWork = async (
       actualHours: finalHours.toDecimalPlaces(2),
       stoppedById,
     },
+    include: { order: { select: { customerId: true } } }
   });
 
-  // 3. Sync order status
+  // Trigger billing computation for HOURLY method (non-blocking)
+  const customerId = (updatedAssignment as any).order?.customerId;
+  if (customerId) {
+    computeBilling({
+      customerId,
+      orderId,
+      customerActivityId: assignment.customerActivityId ?? undefined,
+      assignmentId: assignment.id
+    }).catch((err) => {
+      console.error('[billing] stopWork billing trigger failed:', err);
+    });
+  }
+
+  // 3. Aggregate all assignment hours and update orders.actualHours
+  const allAssignments = await prisma.assignment.findMany({
+    where: { orderId },
+    select: { actualHours: true },
+  });
+  const totalOrderHours = allAssignments.reduce((sum, a) => {
+    return sum.plus(a.actualHours ? new Decimal(a.actualHours.toString()) : new Decimal(0));
+  }, new Decimal(0));
+  await prisma.order.update({
+    where: { id: orderId },
+    data: { actualHours: totalOrderHours.toDecimalPlaces(2) },
+  });
+
+  // 4. Trigger HOURLY billing now that orders.actualHours is up-to-date (non-blocking)
+  if (customerId) {
+    computeOrderHourlyBilling(orderId, customerId).catch((err) => {
+      console.error('[billing] stopWork HOURLY billing trigger failed:', err);
+    });
+  }
+
+  // 5. Sync order status
   await updateOrderStatusBasedOnAssignments(orderId);
 
   return updatedAssignment;

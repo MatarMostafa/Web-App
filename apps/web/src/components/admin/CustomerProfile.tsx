@@ -7,6 +7,7 @@ import { Customer } from "@/types/customer";
 import AdminCustomerSubAccountsTab from "@/components/admin/AdminCustomerSubAccountsTab";
 import CustomerTemplateTab from "@/components/admin/CustomerTemplateTab";
 import CustomerActivitiesTab from "@/components/admin/CustomerActivitiesTab";
+import CustomerPricingRulesTab from "@/components/admin/CustomerPricingRulesTab";
 import { useTranslation } from '@/hooks/useTranslation';
 
 interface CustomerProfileProps {
@@ -31,10 +32,11 @@ const CustomerProfile: React.FC<CustomerProfileProps> = ({
   return (
     <div className="space-y-6">
       <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-        <TabsList className="flex flex-col sm:grid sm:grid-cols-5 w-full h-auto p-1 bg-muted/50">
+        <TabsList className="flex flex-col sm:grid sm:grid-cols-6 w-full h-auto p-1 bg-muted/50">
           <TabsTrigger value="overview" className="w-full justify-start sm:justify-center py-2 px-4">{t('admin.customerDetails.tabs.overview')}</TabsTrigger>
           <TabsTrigger value="orders" className="w-full justify-start sm:justify-center py-2 px-4">{t('admin.customerDetails.tabs.orders')}</TabsTrigger>
           <TabsTrigger value="activities" className="w-full justify-start sm:justify-center py-2 px-4">{t('activities.title')}</TabsTrigger>
+          <TabsTrigger value="pricing-rules" className="w-full justify-start sm:justify-center py-2 px-4">Pricing Rules</TabsTrigger>
           <TabsTrigger value="subaccounts" className="w-full justify-start sm:justify-center py-2 px-4">{t('admin.customerDetails.tabs.subAccounts')}</TabsTrigger>
           <TabsTrigger value="template" className="w-full justify-start sm:justify-center py-2 px-4">{t('admin.customerDetails.template.title')}</TabsTrigger>
         </TabsList>
@@ -104,6 +106,10 @@ const CustomerProfile: React.FC<CustomerProfileProps> = ({
 
         <TabsContent value="activities" className="space-y-6">
           <CustomerActivitiesTab customerId={customer.id} />
+        </TabsContent>
+
+        <TabsContent value="pricing-rules" className="space-y-6">
+          <CustomerPricingRulesTab customerId={customer.id} />
         </TabsContent>
 
         <TabsContent value="subaccounts" className="space-y-6">

@@ -127,10 +127,10 @@ export default function ConfirmEmail() {
                   </p>
                 </div>
                 <Link
-                  href="/signup"
+                  href="/login"
                   className="block w-full text-center bg-primary text-pforeground py-2 px-4 rounded-lg hover:bg-primary/90 transition-colors"
                 >
-                  {t("auth.backToSignUp")}
+                  {t("auth.backToLogin")}
                 </Link>
               </div>
             )}

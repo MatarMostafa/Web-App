@@ -24,6 +24,7 @@ import customerPricingRoutes from "./customerPricingRoutes";
 import templateRoutes from "./templateRoutes";
 import containerRoutes from "./containerRoutes";
 import containerEmployeeRoutes from "./containerEmployeeRoutes";
+import billingRoutes from "./billingRoutes";
 
 const router = express.Router();
 
@@ -90,5 +91,8 @@ router.use("/containers", containerRoutes);
 
 // Container Employee routes
 router.use("/api", containerEmployeeRoutes);
+
+// Billing and pricing rules routes
+router.use("/billing", billingRoutes);
 
 export default router;

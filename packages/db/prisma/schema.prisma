@@ -113,6 +113,13 @@ enum ActivityType {
   OTHER
 }
 
+enum PricingMethod {
+  HOURLY     // Assignment.actualHours × hourlyRate
+  PER_CARTON // ContainerEmployee.reportedCartonQuantity × cartonRate
+  PER_PIECE  // ContainerEmployee.reportedArticleQuantity × articleRate
+  QUANTITY   // Existing tiered CustomerPrice behaviour (default)
+}
+
 enum WorkScheduleType {
   FULL_TIME
   PART_TIME
@@ -342,6 +349,8 @@ model Customer {
   customerPrices      CustomerPrice[]
   customerActivities  CustomerActivity[]
   descriptionTemplate CustomerDescriptionTemplate?
+  pricingRules        CustomerPricingRule[]
+  billingLineItems    BillingLineItem[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -421,6 +430,7 @@ model Order {
   notes                 OrderNote[]
   customerActivities    CustomerActivity[]
   descriptionData       OrderDescriptionData?
+  billingLineItems      BillingLineItem[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -533,6 +543,7 @@ model CustomerActivity {
   prices         CustomerPrice[]
   qualifications OrderQualification[]
   assignments    Assignment[]
+  pricingRules   CustomerPricingRule[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -608,6 +619,8 @@ model Assignment {
 
   stoppedBy   User?   @relation("AssignmentStoppedBy", fields: [stoppedById], references: [id], onDelete: SetNull)
   stoppedById String?
+
+  billingLineItem BillingLineItem?
 
   @@map("assignments")
 }
@@ -1057,6 +1070,64 @@ model ContainerEmployee {
   completedAt             DateTime?
   notes                   String?
 
+  billingLineItem BillingLineItem?
+
   @@unique([containerId, employeeId])
   @@map("container_employees")
+}
+
+// ===============================
+// PRICING RULES & BILLING
+// ===============================
+
+model CustomerPricingRule {
+  id                 String  @id @default(cuid())
+  customerId         String
+  customerActivityId String? // null = customer-level default for all activities
+
+  method     PricingMethod @default(QUANTITY)
+  hourlyRate Decimal?      @db.Decimal(10, 2) // used when method = HOURLY
+  cartonRate Decimal?      @db.Decimal(10, 2) // used when method = PER_CARTON
+  articleRate Decimal?     @db.Decimal(10, 2) // used when method = PER_PIECE
+
+  isActive      Boolean   @default(true)
+  effectiveFrom DateTime
+  effectiveTo   DateTime?
+  createdBy     String?
+
+  customer         Customer          @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  customerActivity CustomerActivity? @relation(fields: [customerActivityId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([customerId, customerActivityId, effectiveFrom])
+  @@index([customerId])
+  @@index([customerActivityId])
+  @@map("customer_pricing_rules")
+}
+
+model BillingLineItem {
+  id                  String  @id @default(cuid())
+  customerId          String
+  orderId             String
+  assignmentId        String? @unique // set for HOURLY method
+  containerEmployeeId String? @unique // set for PER_CARTON / PER_PIECE method
+
+  method    PricingMethod
+  quantity  Decimal       @db.Decimal(10, 4)
+  rate      Decimal       @db.Decimal(10, 2)
+  lineTotal Decimal       @db.Decimal(12, 2)
+  currency  String        @default("EUR")
+
+  computedAt DateTime @default(now())
+
+  customer          Customer           @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  order             Order              @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  assignment        Assignment?        @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  containerEmployee ContainerEmployee? @relation(fields: [containerEmployeeId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+  @@index([customerId])
+  @@map("billing_line_items")
 }

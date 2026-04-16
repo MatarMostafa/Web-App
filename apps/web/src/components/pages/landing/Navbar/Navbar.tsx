@@ -35,7 +35,6 @@ const callsToAction: NavigationItem[] = [
     icon: <LogIn className="w-4 h-4" />,
     isButton: false,
   },
-  { name: "Get Started", href: "/signup", isButton: true },
 ];
 
 
@@ -160,14 +159,6 @@ const Navbar = () => {
                     <LogIn className="w-4 h-4" />
                     {t('navigation.login')}
                   </Link>
-                  <Button
-                    onClick={() => {
-                      router.push("/signup");
-                    }}
-                    className="bg-secondary hover:text-[#d4f3ff]"
-                  >
-                    {t('navigation.getStarted')}
-                  </Button>
                 </>
               )}
             </div>
@@ -249,15 +240,6 @@ const Navbar = () => {
                   >
                     <LogIn className="w-4 h-4" />
                     {t('navigation.login')}
-                  </Button>
-                  <Button
-                    className="w-full bg-secondary hover:text-[#d4f3ff]"
-                    onClick={() => {
-                      setIsOpen(false);
-                      router.push("/signup");
-                    }}
-                  >
-                    {t('navigation.getStarted')}
                   </Button>
                 </>
               )}
