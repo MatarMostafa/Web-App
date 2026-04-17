@@ -28,6 +28,64 @@ export enum ActivityType {
   OTHER = 'OTHER'
 }
 
+export enum PricingMethod {
+  HOURLY = 'HOURLY',
+  PER_CARTON = 'PER_CARTON',
+  PER_PIECE = 'PER_PIECE',
+  QUANTITY = 'QUANTITY'
+}
+
+export interface CustomerPricingRule {
+  id: string;
+  customerId: string;
+  customerActivityId?: string | null;
+  method: PricingMethod;
+  hourlyRate?: number | null;
+  cartonRate?: number | null;
+  articleRate?: number | null;
+  isActive: boolean;
+  effectiveFrom: string;
+  effectiveTo?: string | null;
+  createdBy?: string | null;
+  customerActivity?: { id: string; name: string; type: string } | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface BillingLineItem {
+  id: string;
+  customerId: string;
+  orderId: string;
+  assignmentId?: string | null;
+  containerEmployeeId?: string | null;
+  method: PricingMethod;
+  quantity: number;
+  rate: number;
+  lineTotal: number;
+  currency: string;
+  computedAt: string;
+  assignment?: {
+    id: string;
+    employeeId: string;
+    employee?: { firstName?: string | null; lastName?: string | null };
+  } | null;
+  containerEmployee?: {
+    id: string;
+    employeeId: string;
+    containerId: string;
+  } | null;
+}
+
+export interface OrderBillingSummary {
+  orderId: string;
+  actualHours: number | null;
+  hourlyRate: number | null;
+  lineItems: BillingLineItem[];
+  totalByMethod: Record<PricingMethod, number>;
+  grandTotal: number;
+  currency: string;
+}
+
 export interface DescriptionData {
   [key: string]: string;
 }

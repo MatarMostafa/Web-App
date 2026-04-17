@@ -4,6 +4,7 @@ import { roleMiddleware } from "../middleware/roleMiddleware";
 import { validateRequest } from "../middleware/validateRequest";
 import { z } from "zod";
 import { prisma } from "@repo/db";
+import { computeBilling } from "../services/billingService";
 
 const router = express.Router();
 
@@ -298,6 +299,20 @@ router.post(
           isCompleted: true,
           completedAt: new Date()
         }
+      });
+
+      // Trigger billing computation (non-blocking — never fails the response)
+      prisma.containerEmployee.findFirst({
+        where: { containerId, employeeId },
+        include: { container: { select: { orderId: true, order: { select: { customerId: true } } } } }
+      }).then((ce) => {
+        if (!ce) return;
+        const orderId = (ce as any).container?.orderId;
+        const customerId = (ce as any).container?.order?.customerId;
+        if (!orderId || !customerId) return;
+        return computeBilling({ customerId, orderId, containerEmployeeId: ce.id });
+      }).catch((err) => {
+        console.error('[billing] report-quantities billing trigger failed:', err);
       });
 
       res.json({ success: true, message: "Quantities reported successfully" });

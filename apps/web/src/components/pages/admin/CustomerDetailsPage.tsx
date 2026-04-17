@@ -15,7 +15,12 @@ const CustomerDetailsPage = () => {
   const id = params?.id as string;
   const initialTab = searchParams?.get('tab') || 'overview';
   const [activeTab, setActiveTab] = useState(initialTab);
+  const [mounted, setMounted] = useState(false);
   const { currentCustomer, loading, fetchCustomerById } = useCustomerStore();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (id) {
@@ -23,7 +28,7 @@ const CustomerDetailsPage = () => {
     }
   }, [id, fetchCustomerById]);
 
-  if (!ready || loading) {
+  if (!mounted || !ready || loading) {
     return (
       <div className="w-full h-full min-h-[calc(100vh-130px)] flex items-center justify-center">
         <LoadingSpinnerWithText text={ready ? t('admin.customerDetails.loading') : 'Loading...'} />

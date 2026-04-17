@@ -88,6 +88,56 @@ export async function getPriceForCustomer(
   };
 }
 
+/**
+ * Returns the active CustomerPricingRule for the given customer/activity/date.
+ * Returns null if none found (caller falls back to QUANTITY logic).
+ */
+export async function getActivePricingRule(
+  customerId: string,
+  customerActivityId?: string,
+  date: Date = new Date()
+) {
+  if (customerActivityId) {
+    const activityRule = await prisma.customerPricingRule.findFirst({
+      where: {
+        customerId,
+        customerActivityId,
+        isActive: true,
+        effectiveFrom: { lte: date },
+        OR: [{ effectiveTo: null }, { effectiveTo: { gte: date } }]
+      },
+      include: { customerActivity: true },
+      orderBy: { effectiveFrom: 'desc' }
+    });
+    if (activityRule) return activityRule;
+  }
+
+  const defaultRule = await prisma.customerPricingRule.findFirst({
+    where: {
+      customerId,
+      customerActivityId: null,
+      isActive: true,
+      effectiveFrom: { lte: date },
+      OR: [{ effectiveTo: null }, { effectiveTo: { gte: date } }]
+    },
+    include: { customerActivity: true },
+    orderBy: { effectiveFrom: 'desc' }
+  });
+
+  return defaultRule ?? null;
+}
+
+/**
+ * Returns all CustomerPricingRules for a customer (for admin listing).
+ */
+export async function getCustomerPricingRules(customerId: string) {
+  return prisma.customerPricingRule.findMany({
+    where: { customerId },
+    include: { customerActivity: { select: { id: true, name: true, type: true } } },
+    orderBy: [{ customerActivityId: 'asc' }, { effectiveFrom: 'desc' }]
+  });
+}
+
 export async function validatePriceTierOverlap(
   customerId: string,
   customerActivityId: string,

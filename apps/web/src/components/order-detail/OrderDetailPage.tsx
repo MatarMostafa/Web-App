@@ -22,6 +22,7 @@ import { OrderActions } from "./OrderActions";
 import { OrderAssignments } from "./OrderAssignments";
 import { OrderDetailSkeleton } from "./OrderDetailSkeleton";
 import { OrderActivities } from "./OrderActivities";
+import { OrderBillingPanel } from "./OrderBillingPanel";
 import { useTranslation } from "@/hooks/useTranslation";
 import { format } from "date-fns";
 import { orderNotesApi } from "@/lib/orderNotesApi";
@@ -624,13 +625,17 @@ export const OrderDetailPage: React.FC<OrderDetailPageProps> = ({
             </Card>
           )}
           
-          <OrderAssignments 
-            orderId={orderId} 
-            order={order} 
-            userRole={userRole} 
+          <OrderAssignments
+            orderId={orderId}
+            order={order}
+            userRole={userRole}
             onAssignmentCountChange={setAssignedStaffCount}
             onRefresh={fetchOrders}
           />
+
+          {userRole === "ADMIN" && order && (
+            <OrderBillingPanel orderId={orderId} isAdmin={true} />
+          )}
         </div>
       </div>
       
