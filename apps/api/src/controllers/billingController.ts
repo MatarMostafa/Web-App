@@ -11,7 +11,6 @@ import { getCustomerPricingRules } from '../services/priceService';
 
 /**
  * GET /billing/orders/:orderId/summary
- * Returns all BillingLineItems for an order with totals by method and grand total.
  */
 export const getOrderBillingSummary = async (req: Request, res: Response) => {
   try {
@@ -23,7 +22,6 @@ export const getOrderBillingSummary = async (req: Request, res: Response) => {
     });
     if (!order) return res.status(404).json({ error: 'Order not found' });
 
-    // Auto-compute and persist hourly billing whenever actualHours exists and a rule applies
     if (order.actualHours) {
       await computeOrderHourlyBilling(orderId, order.customerId).catch(() => {});
     }
@@ -47,6 +45,7 @@ export const getOrderBillingSummary = async (req: Request, res: Response) => {
       [PricingMethod.HOURLY]: 0,
       [PricingMethod.PER_CARTON]: 0,
       [PricingMethod.PER_PIECE]: 0,
+      [PricingMethod.PER_ARTICLE]: 0,
       [PricingMethod.QUANTITY]: 0
     };
 
@@ -60,7 +59,6 @@ export const getOrderBillingSummary = async (req: Request, res: Response) => {
       currency = item.currency;
     }
 
-    // Include order-level context for display
     const hourlyLineItem = lineItems.find(
       (i) => i.method === PricingMethod.HOURLY && !i.assignmentId && !i.containerEmployeeId
     );
@@ -81,8 +79,7 @@ export const getOrderBillingSummary = async (req: Request, res: Response) => {
 
 /**
  * POST /billing/orders/:orderId/compute
- * Recomputes billing for all completed assignments and container-employees on the order.
- * Idempotent — safe to call multiple times.
+ * Recomputes billing for all completed container-employees on the order.
  */
 export const computeOrderBilling = async (req: Request, res: Response) => {
   try {
@@ -98,7 +95,6 @@ export const computeOrderBilling = async (req: Request, res: Response) => {
 
     const results: { type: string; id: string; result: string }[] = [];
 
-    // HOURLY: computed at order level using order.actualHours × rule.hourlyRate
     try {
       const hourly = await computeOrderHourlyBilling(orderId, order.customerId);
       results.push({
@@ -106,13 +102,12 @@ export const computeOrderBilling = async (req: Request, res: Response) => {
         id: orderId,
         result: hourly
           ? `HOURLY: ${hourly.hours} hrs × €${hourly.rate} = €${hourly.lineTotal}`
-          : 'skipped (no HOURLY rule or no actualHours on order)'
+          : 'skipped (no active rule with hourlyRate or no actualHours on order)'
       });
     } catch (err: any) {
       results.push({ type: 'order', id: orderId, result: `error: ${err.message}` });
     }
 
-    // Compute billing for completed container-employees (PER_CARTON / PER_PIECE)
     const containers = await prisma.container.findMany({
       where: { orderId },
       include: { employeeAssignments: { where: { isCompleted: true } } }
@@ -121,7 +116,7 @@ export const computeOrderBilling = async (req: Request, res: Response) => {
     for (const container of containers) {
       for (const ce of container.employeeAssignments) {
         try {
-          const result = await computeBilling({
+          const computed = await computeBilling({
             customerId: order.customerId,
             orderId,
             containerEmployeeId: ce.id
@@ -129,7 +124,9 @@ export const computeOrderBilling = async (req: Request, res: Response) => {
           results.push({
             type: 'containerEmployee',
             id: ce.id,
-            result: result ? `${result.method}: ${result.lineTotal} ${result.currency}` : 'skipped (no applicable rule)'
+            result: computed
+              ? computed.map((r) => `${r.method}: €${r.lineTotal}`).join(', ')
+              : 'skipped (no applicable rule)'
           });
         } catch (err: any) {
           results.push({ type: 'containerEmployee', id: ce.id, result: `error: ${err.message}` });
@@ -147,9 +144,6 @@ export const computeOrderBilling = async (req: Request, res: Response) => {
 // Customer Pricing Rules
 // ==============================
 
-/**
- * GET /billing/customers/:customerId/rules
- */
 export const listCustomerPricingRules = async (req: Request, res: Response) => {
   try {
     const { customerId } = req.params;
@@ -162,39 +156,29 @@ export const listCustomerPricingRules = async (req: Request, res: Response) => {
 
 /**
  * POST /billing/customers/:customerId/rules
+ * At least one rate (hourlyRate, cartonRate, pieceRate, articleRate) must be provided.
+ * All rates are independent — any combination can be set on the same rule.
  */
 export const createCustomerPricingRule = async (req: Request, res: Response) => {
   try {
     const { customerId } = req.params;
-    const { customerActivityId, method, hourlyRate, cartonRate, articleRate, effectiveFrom, effectiveTo } = req.body;
+    const { customerActivityId, hourlyRate, cartonRate, pieceRate, articleRate, effectiveFrom, effectiveTo } = req.body;
 
-    if (!method || !effectiveFrom) {
-      return res.status(400).json({ error: 'method and effectiveFrom are required' });
-    }
-
-    const validMethods = Object.values(PricingMethod);
-    if (!validMethods.includes(method)) {
-      return res.status(400).json({ error: `method must be one of: ${validMethods.join(', ')}` });
+    if (!effectiveFrom) {
+      return res.status(400).json({ error: 'effectiveFrom is required' });
     }
 
-    // Validate that the required rate is provided for the chosen method
-    if (method === PricingMethod.HOURLY && !hourlyRate) {
-      return res.status(400).json({ error: 'hourlyRate is required for HOURLY method' });
-    }
-    if (method === PricingMethod.PER_CARTON && !cartonRate) {
-      return res.status(400).json({ error: 'cartonRate is required for PER_CARTON method' });
-    }
-    if (method === PricingMethod.PER_PIECE && !articleRate) {
-      return res.status(400).json({ error: 'articleRate is required for PER_PIECE method' });
+    if (!hourlyRate && !cartonRate && !pieceRate && !articleRate) {
+      return res.status(400).json({
+        error: 'At least one rate must be provided: hourlyRate, cartonRate, pieceRate, or articleRate'
+      });
     }
 
-    // Verify customer exists
     const customer = await prisma.customer.findUnique({ where: { id: customerId } });
     if (!customer) {
       return res.status(404).json({ error: 'Customer not found' });
     }
 
-    // Verify activity exists if provided
     if (customerActivityId) {
       const activity = await prisma.customerActivity.findFirst({
         where: { id: customerActivityId, customerId, orderId: null }
@@ -208,9 +192,9 @@ export const createCustomerPricingRule = async (req: Request, res: Response) => 
       data: {
         customerId,
         customerActivityId: customerActivityId ?? null,
-        method,
         hourlyRate: hourlyRate ? new Decimal(hourlyRate) : null,
         cartonRate: cartonRate ? new Decimal(cartonRate) : null,
+        pieceRate: pieceRate ? new Decimal(pieceRate) : null,
         articleRate: articleRate ? new Decimal(articleRate) : null,
         effectiveFrom: new Date(effectiveFrom),
         effectiveTo: effectiveTo ? new Date(effectiveTo) : null,
@@ -234,7 +218,7 @@ export const createCustomerPricingRule = async (req: Request, res: Response) => 
 export const updateCustomerPricingRule = async (req: Request, res: Response) => {
   try {
     const { customerId, ruleId } = req.params;
-    const { hourlyRate, cartonRate, articleRate, effectiveTo, isActive } = req.body;
+    const { hourlyRate, cartonRate, pieceRate, articleRate, effectiveTo, isActive } = req.body;
 
     const existing = await prisma.customerPricingRule.findFirst({
       where: { id: ruleId, customerId }
@@ -248,6 +232,7 @@ export const updateCustomerPricingRule = async (req: Request, res: Response) => 
       data: {
         hourlyRate: hourlyRate !== undefined ? new Decimal(hourlyRate) : undefined,
         cartonRate: cartonRate !== undefined ? new Decimal(cartonRate) : undefined,
+        pieceRate: pieceRate !== undefined ? new Decimal(pieceRate) : undefined,
         articleRate: articleRate !== undefined ? new Decimal(articleRate) : undefined,
         effectiveTo: effectiveTo !== undefined ? (effectiveTo ? new Date(effectiveTo) : null) : undefined,
         isActive: isActive !== undefined ? isActive : undefined

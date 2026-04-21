@@ -8,19 +8,16 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Calendar, MapPin, Clock, Package, Box } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
-import { apiClient } from "@/lib/api-client";
 
 interface Container {
   id: string;
   serialNumber: string;
   cartonQuantity: number;
   articleQuantity: number;
-  cartonPrice: number;
-  articlePrice: number;
+  pieceQuantity: number;
   articles: Array<{
     articleName: string;
     quantity: number;
-    price: number;
   }>;
 }
 
@@ -47,12 +44,9 @@ export default function CustomerOrderDetailPage() {
           console.log('Setting containers:', orderData.containers); // Debug log
           const formattedContainers = orderData.containers.map((container: any) => ({
             ...container,
-            cartonPrice: container.cartonPrice || 0,
-            articlePrice: container.articlePrice || 0,
             articles: container.articles?.map((article: any) => ({
               articleName: article.articleName,
               quantity: article.quantity,
-              price: article.price || 0
             })) || []
           }));
           setContainers(formattedContainers);
@@ -258,7 +252,7 @@ export default function CustomerOrderDetailPage() {
                       </div>
                     </div>
                     
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                       <div className="bg-muted/50 p-3 rounded">
                         <div className="text-xs sm:text-sm font-medium text-muted-foreground mb-1">
                           {t('customerPortal.orderDetail.cartonQuantity')}
@@ -267,15 +261,26 @@ export default function CustomerOrderDetailPage() {
                           {container.cartonQuantity}
                         </div>
                       </div>
-                      
+
                       <div className="bg-muted/50 p-3 rounded">
                         <div className="text-xs sm:text-sm font-medium text-muted-foreground mb-1">
                           {t('customerPortal.orderDetail.articleQuantity')}
                         </div>
                         <div className="text-lg sm:text-xl font-semibold">
-                          {container.articleQuantity}
+                          {container.articleQuantity ?? 0}
                         </div>
                       </div>
+
+                      {container.pieceQuantity > 0 && (
+                        <div className="bg-muted/50 p-3 rounded">
+                          <div className="text-xs sm:text-sm font-medium text-muted-foreground mb-1">
+                            {t('customerPortal.orderDetail.pieceQuantity')}
+                          </div>
+                          <div className="text-lg sm:text-xl font-semibold">
+                            {container.pieceQuantity}
+                          </div>
+                        </div>
+                      )}
                     </div>
                     
                     {container.articles && container.articles.length > 0 && (
@@ -300,15 +305,21 @@ export default function CustomerOrderDetailPage() {
                 
                 <div className="bg-muted/50 p-4 rounded-lg">
                   <h4 className="font-medium mb-2 text-sm sm:text-base">{t('common.total')}</h4>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
                     <div className="flex justify-between">
                       <span>{t('customerPortal.orderDetail.cartonQuantity')}:</span>
                       <span className="font-medium">{containers.reduce((sum, c) => sum + c.cartonQuantity, 0)}</span>
                     </div>
                     <div className="flex justify-between">
                       <span>{t('customerPortal.orderDetail.articleQuantity')}:</span>
-                      <span className="font-medium">{containers.reduce((sum, c) => sum + c.articleQuantity, 0)}</span>
+                      <span className="font-medium">{containers.reduce((sum, c) => sum + (c.articleQuantity ?? 0), 0)}</span>
                     </div>
+                    {containers.some(c => c.pieceQuantity > 0) && (
+                      <div className="flex justify-between">
+                        <span>{t('customerPortal.orderDetail.pieceQuantity')}:</span>
+                        <span className="font-medium">{containers.reduce((sum, c) => sum + c.pieceQuantity, 0)}</span>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

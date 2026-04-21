@@ -4,9 +4,9 @@ import { Decimal } from "decimal.js";
 interface ContainerInput {
   serialNumber: string;
   cartonQuantity: number;
-  articleQuantity: number;
+  pieceQuantity: number;
   cartonPrice?: number;
-  articlePrice?: number;
+  piecePrice?: number;
   [key: string]: any;
 }
 
@@ -18,7 +18,7 @@ interface ActivityInput {
 }
 
 /**
- * Calculates cartonPrice and articlePrice for each container using the same
+ * Calculates cartonPrice and piecePrice for each container using the same
  * pricing logic as the admin dashboard — customer pricing tiers for carton price,
  * and activity articleBasePrice for article price.
  */
@@ -29,7 +29,7 @@ export const calculateContainerPrices = async (
   scheduledDate: Date
 ): Promise<ContainerInput[]> => {
   if (!containers.length || !activities.length) {
-    return containers.map(c => ({ ...c, cartonPrice: 0, articlePrice: 0 }));
+    return containers.map(c => ({ ...c, cartonPrice: 0, piecePrice: 0 }));
   }
 
   const activityIds = activities.map(a => a.activityId).filter(Boolean);
@@ -58,12 +58,12 @@ export const calculateContainerPrices = async (
       return total + (applicableTier ? new Decimal(applicableTier.price.toString()).toNumber() : 0);
     }, 0);
 
-    // articlePrice: sum of articleBasePrice from all selected activities (sent from frontend)
-    const articlePrice = activities.reduce((total, activity) => {
+    // piecePrice: sum of articleBasePrice from all selected activities (sent from frontend)
+    const piecePrice = activities.reduce((total, activity) => {
       return total + (Number(activity.articleBasePrice) || 0);
     }, 0);
 
-    return { ...container, cartonPrice, articlePrice };
+    return { ...container, cartonPrice, piecePrice };
   });
 };
 

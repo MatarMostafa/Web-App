@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ContainerProgressCard } from '@/components/containers/ContainerProgressCard';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Package, Clock, CheckCircle } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
@@ -11,6 +11,7 @@ interface ContainerAssignment {
   id: string;
   reportedCartonQuantity: number;
   reportedArticleQuantity: number;
+  reportedPieceQuantity: number;
   isCompleted: boolean;
   completedAt: string | null;
   notes: string | null;
@@ -19,6 +20,7 @@ interface ContainerAssignment {
     serialNumber: string;
     cartonQuantity: number;
     articleQuantity: number;
+    pieceQuantity: number;
     order: {
       id: string;
       orderNumber: string;
@@ -77,7 +79,6 @@ export const EmployeeContainersPage: React.FC = () => {
   const totalCartons = assignments.reduce((sum, a) => sum + a.container.cartonQuantity, 0);
   const reportedCartons = assignments.reduce((sum, a) => sum + a.reportedCartonQuantity, 0);
   const totalArticles = assignments.reduce((sum, a) => sum + a.container.articleQuantity, 0);
-  const reportedArticles = assignments.reduce((sum, a) => sum + a.reportedArticleQuantity, 0);
 
   if (loading) {
     return (

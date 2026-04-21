@@ -23,9 +23,9 @@ interface Container {
   id?: string;
   serialNumber: string;
   cartonQuantity: number;
-  articleQuantity: number;
+  pieceQuantity: number;
   cartonPrice: number;
-  articlePrice: number;
+  piecePrice: number;
   basePrice: number;
 }
 
@@ -246,7 +246,7 @@ const CreateOrderDialog: React.FC<CreateOrderDialogProps> = ({
         }),
         containers,
         cartonQuantity: containers.reduce((sum, c) => sum + c.cartonQuantity, 0),
-        articleQuantity: containers.reduce((sum, c) => sum + c.articleQuantity, 0),
+        pieceQuantity: containers.reduce((sum, c) => sum + c.pieceQuantity, 0),
         templateData: templateData
       };
 
@@ -299,7 +299,7 @@ const CreateOrderDialog: React.FC<CreateOrderDialogProps> = ({
         setContainers(currentContainers => 
           currentContainers.map(container => {
             const cartonPrice = calculateCartonPriceForQuantity(container.cartonQuantity, newActivities);
-            const articlePrice = newActivities.reduce((total, activityId) => {
+            const piecePrice = newActivities.reduce((total, activityId) => {
               const activity = activities.find(a => a.id === activityId);
               return total + (Number(activity?.articleBasePrice) || 0);
             }, 0);
@@ -311,7 +311,7 @@ const CreateOrderDialog: React.FC<CreateOrderDialogProps> = ({
             return {
               ...container,
               cartonPrice,
-              articlePrice,
+              piecePrice,
               basePrice
             };
           })
@@ -411,9 +411,9 @@ const CreateOrderDialog: React.FC<CreateOrderDialogProps> = ({
       const newContainer: Container = {
         serialNumber: `CONT-${Date.now()}`,
         cartonQuantity: 1,
-        articleQuantity: 1,
+        pieceQuantity: 1,
         cartonPrice: calculateCartonPriceForQuantity(1),
-        articlePrice: defaultArticlePrice,
+        piecePrice: defaultArticlePrice,
         basePrice: defaultBasePrice
       };
       setContainers([...containers, newContainer]);
@@ -440,7 +440,7 @@ const CreateOrderDialog: React.FC<CreateOrderDialogProps> = ({
         return total + (Number(activity?.basePrice) || 0);
       }, 0);
 
-      updated[index].articlePrice = calculatedArticlePrice;
+      updated[index].piecePrice = calculatedArticlePrice;
       updated[index].basePrice = calculatedBasePrice;
       
       setContainers(updated);
@@ -505,19 +505,19 @@ const CreateOrderDialog: React.FC<CreateOrderDialogProps> = ({
                     />
                   </div>
                   <div>
-                    <Label>{t("admin.orders.form.articleQuantity")}</Label>
+                    <Label>{t("admin.orders.form.pieceQuantity")}</Label>
                     <Input
                       type="number"
                       min="1"
-                      value={container.articleQuantity}
-                      onChange={(e) => updateContainer(containerIndex, 'articleQuantity', parseInt(e.target.value) || 1)}
+                      value={container.pieceQuantity}
+                      onChange={(e) => updateContainer(containerIndex, 'pieceQuantity', parseInt(e.target.value) || 1)}
                     />
                   </div>
                 </div>
 
                 <div className="bg-muted/50 p-3 rounded">
                   <div className="text-sm font-medium">
-                    {t("customerPortal.createOrder.containerSummary")}: {container.cartonQuantity} {t("customerPortal.createOrder.cartons")}, {container.articleQuantity} {t("customerPortal.createOrder.articles")}
+                    {t("customerPortal.createOrder.containerSummary")}: {container.cartonQuantity} {t("customerPortal.createOrder.cartons")}, {container.pieceQuantity} {t("customerPortal.createOrder.articles")}
                   </div>
                 </div>
               </div>
@@ -539,7 +539,7 @@ const CreateOrderDialog: React.FC<CreateOrderDialogProps> = ({
               </div>
               <div className="flex justify-between">
                 <span>{t("admin.orders.form.totalArticles")}:</span>
-                <span>{containers.reduce((sum, c) => sum + c.articleQuantity, 0)}</span>
+                <span>{containers.reduce((sum, c) => sum + c.pieceQuantity, 0)}</span>
               </div>
             </div>
           </div>

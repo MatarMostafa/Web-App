@@ -82,15 +82,15 @@ export const getOrderByIdService = async (id: string) => {
     console.log('Order fetched with quantities:', {
       id: order.id,
       cartonQuantity: order.cartonQuantity,
-      articleQuantity: order.articleQuantity
+      pieceQuantity: order.pieceQuantity
     });
   }
 
   return order;
 };
 
-export const createOrderService = async (data: OrderCreateInput & { assignedEmployeeIds?: string[]; activities?: Array<{ activityId: string; quantity?: number; basePrice?: number; articleBasePrice?: number }>; customerId: string; templateData?: Record<string, string> | null; createdBySubAccountId?: string; cartonQuantity?: number; articleQuantity?: number; containers?: Array<{ serialNumber: string; cartonQuantity: number; articleQuantity: number; cartonPrice: number; articlePrice: number }>; totalPrice?: number; teamId?: string }, createdBy?: string) => {
-  let { assignedEmployeeIds, activities, customerId, templateData, createdBySubAccountId, cartonQuantity, articleQuantity, containers, totalPrice, teamId, ...orderData } = data;
+export const createOrderService = async (data: OrderCreateInput & { assignedEmployeeIds?: string[]; activities?: Array<{ activityId: string; quantity?: number; basePrice?: number; articleBasePrice?: number }>; customerId: string; templateData?: Record<string, string> | null; createdBySubAccountId?: string; cartonQuantity?: number; articleQuantity?: number; pieceQuantity?: number; containers?: Array<{ serialNumber: string; cartonQuantity: number; articleQuantity?: number; pieceQuantity: number; cartonPrice: number; piecePrice: number }>; totalPrice?: number; teamId?: string }, createdBy?: string) => {
+  let { assignedEmployeeIds, activities, customerId, templateData, createdBySubAccountId, cartonQuantity, articleQuantity: _orderArticleQuantity, pieceQuantity, containers, totalPrice, teamId, ...orderData } = data;
 
   console.log('Creating order with data:', { containers: containers?.length || 0, containerData: containers }); // Debug log
 
@@ -149,7 +149,7 @@ export const createOrderService = async (data: OrderCreateInput & { assignedEmpl
         requiredEmployees: assignedEmployeeIds?.length || orderData.requiredEmployees || 1,
         usesTemplate: templateData !== null ? true : false,
         cartonQuantity,
-        articleQuantity,
+        pieceQuantity,
         createdBy,
         ...(teamId && {
           team: {
@@ -255,9 +255,10 @@ export const createOrderService = async (data: OrderCreateInput & { assignedEmpl
             serialNumber: containerData.serialNumber,
             orderId: newOrder.id,
             cartonQuantity: containerData.cartonQuantity,
-            articleQuantity: containerData.articleQuantity,
+            articleQuantity: containerData.articleQuantity ?? 0,
+            pieceQuantity: containerData.pieceQuantity ?? 0,
             cartonPrice: new Decimal(containerData.cartonPrice),
-            articlePrice: new Decimal(containerData.articlePrice)
+            piecePrice: new Decimal(containerData.piecePrice)
           }
         });
         console.log(`Created container ${container.id} for order ${newOrder.id}`);
@@ -338,10 +339,10 @@ export const createOrderService = async (data: OrderCreateInput & { assignedEmpl
 
 export const updateOrderService = async (
   id: string,
-  data: OrderUpdateInput & { assignedEmployeeIds?: string[]; activities?: Array<{ activityId: string; quantity?: number; basePrice?: number; articleBasePrice?: number }>; templateData?: Record<string, string> | null; cartonQuantity?: number; articleQuantity?: number; containers?: Array<{ serialNumber: string; cartonQuantity: number; articleQuantity: number; cartonPrice: number; articlePrice: number }>; totalPrice?: number; teamId?: string },
+  data: OrderUpdateInput & { assignedEmployeeIds?: string[]; activities?: Array<{ activityId: string; quantity?: number; basePrice?: number; articleBasePrice?: number }>; templateData?: Record<string, string> | null; cartonQuantity?: number; articleQuantity?: number; pieceQuantity?: number; containers?: Array<{ serialNumber: string; cartonQuantity: number; articleQuantity?: number; pieceQuantity: number; cartonPrice: number; piecePrice: number }>; totalPrice?: number; teamId?: string },
   updatedBy?: string
 ) => {
-  let { assignedEmployeeIds, activities, templateData, cartonQuantity, articleQuantity, containers, totalPrice, teamId, ...orderData } = data;
+  let { assignedEmployeeIds, activities, templateData, cartonQuantity, articleQuantity, pieceQuantity, containers, totalPrice, teamId, ...orderData } = data;
 
   // Clean empty strings to undefined for optional DateTime fields
   if (orderData.startTime === '') orderData.startTime = undefined;
@@ -367,7 +368,7 @@ export const updateOrderService = async (
           usesTemplate: templateData !== null && Object.keys(templateData || {}).length > 0
         }),
         ...(cartonQuantity !== undefined && { cartonQuantity }),
-        ...(articleQuantity !== undefined && { articleQuantity }),
+        ...(pieceQuantity !== undefined && { pieceQuantity }),
         ...(teamId !== undefined && {
           team: teamId ? { connect: { id: teamId } } : { disconnect: true }
         })
@@ -485,9 +486,10 @@ export const updateOrderService = async (
               serialNumber: containerData.serialNumber,
               orderId: id,
               cartonQuantity: containerData.cartonQuantity,
-              articleQuantity: containerData.articleQuantity,
+              articleQuantity: containerData.articleQuantity ?? 0,
+              pieceQuantity: containerData.pieceQuantity ?? 0,
               cartonPrice: new Decimal(containerData.cartonPrice),
-              articlePrice: new Decimal(containerData.articlePrice)
+              piecePrice: new Decimal(containerData.piecePrice)
             }
           });
         }

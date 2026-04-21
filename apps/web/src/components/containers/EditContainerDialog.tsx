@@ -15,8 +15,9 @@ interface Container {
   serialNumber: string;
   cartonQuantity: number;
   articleQuantity: number;
+  pieceQuantity: number;
   cartonPrice: number;
-  articlePrice: number;
+  piecePrice: number;
 }
 
 interface EditContainerDialogProps {
@@ -34,8 +35,9 @@ export const EditContainerDialog: React.FC<EditContainerDialogProps> = ({
     serialNumber: container.serialNumber,
     cartonQuantity: container.cartonQuantity,
     articleQuantity: container.articleQuantity,
+    pieceQuantity: container.pieceQuantity,
     cartonPrice: container.cartonPrice,
-    articlePrice: container.articlePrice
+    piecePrice: container.piecePrice
   });
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
@@ -50,7 +52,7 @@ export const EditContainerDialog: React.FC<EditContainerDialogProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.serialNumber || formData.cartonQuantity <= 0 || formData.articleQuantity <= 0) {
+    if (!formData.serialNumber || formData.cartonQuantity <= 0) {
       toast({
         title: 'Error',
         description: 'Please fill all required fields with valid values',
@@ -95,7 +97,7 @@ export const EditContainerDialog: React.FC<EditContainerDialogProps> = ({
 
   const calculateTotal = () => {
     const containerTotal = formData.cartonQuantity * formData.cartonPrice;
-    const articleTotal = formData.articleQuantity * formData.articlePrice;
+    const articleTotal = formData.pieceQuantity * formData.piecePrice;
     return containerTotal + articleTotal;
   };
 
@@ -147,26 +149,38 @@ export const EditContainerDialog: React.FC<EditContainerDialogProps> = ({
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="articleQuantity">Article Quantity *</Label>
+              <Label htmlFor="articleQuantity">Article Quantity</Label>
               <Input
                 id="articleQuantity"
                 type="number"
-                min="1"
+                min="0"
                 value={formData.articleQuantity}
                 onChange={(e) => handleInputChange('articleQuantity', parseInt(e.target.value) || 0)}
-                required
               />
             </div>
 
             <div>
-              <Label htmlFor="articlePrice">Article Price (€) *</Label>
+              <Label htmlFor="pieceQuantity">Piece Quantity</Label>
               <Input
-                id="articlePrice"
+                id="pieceQuantity"
+                type="number"
+                min="0"
+                value={formData.pieceQuantity}
+                onChange={(e) => handleInputChange('pieceQuantity', parseInt(e.target.value) || 0)}
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="piecePrice">Article Price (€) *</Label>
+              <Input
+                id="piecePrice"
                 type="number"
                 step="0.01"
                 min="0"
-                value={formData.articlePrice}
-                onChange={(e) => handleInputChange('articlePrice', parseFloat(e.target.value) || 0)}
+                value={formData.piecePrice}
+                onChange={(e) => handleInputChange('piecePrice', parseFloat(e.target.value) || 0)}
                 required
               />
             </div>

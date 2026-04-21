@@ -9,13 +9,14 @@ const router = Router();
 router.put('/container-employee/:id/progress', authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
-    const { reportedCartonQuantity, reportedArticleQuantity, notes } = req.body;
+    const { reportedCartonQuantity, reportedArticleQuantity, reportedPieceQuantity, notes } = req.body;
 
     const containerEmployee = await prisma.containerEmployee.update({
       where: { id },
       data: {
         reportedCartonQuantity: reportedCartonQuantity || 0,
         reportedArticleQuantity: reportedArticleQuantity || 0,
+        reportedPieceQuantity: reportedPieceQuantity || 0,
         notes
       },
       include: {

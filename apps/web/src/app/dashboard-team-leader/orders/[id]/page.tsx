@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Calendar, MapPin, Users, Clock, AlertCircle, MessageSquare, Play } from "lucide-react";
+import { ArrowLeft, Calendar, MapPin, Users, Clock, AlertCircle, MessageSquare, Play, Box } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -48,6 +48,19 @@ interface Order {
   }>;
 }
 
+interface Container {
+  id: string;
+  serialNumber: string;
+  cartonQuantity: number;
+  articleQuantity: number;
+  pieceQuantity: number;
+  articles: Array<{
+    id: string;
+    articleName: string;
+    quantity: number;
+  }>;
+}
+
 const getStatusColor = (status: string) => {
   switch (status.toLowerCase()) {
     case 'completed':
@@ -72,6 +85,7 @@ const TeamLeaderOrderDetail = ({ params }: { params: Promise<{ id: string }> }) 
   const [notesDialogOpen, setNotesDialogOpen] = useState(false);
   const [isTeamStartModalOpen, setIsTeamStartModalOpen] = useState(false);
   const [teamMemberIds, setTeamMemberIds] = useState<Set<string>>(new Set());
+  const [containers, setContainers] = useState<Container[]>([]);
   const { id } = React.use(params);
 
   useEffect(() => {
@@ -111,10 +125,25 @@ const TeamLeaderOrderDetail = ({ params }: { params: Promise<{ id: string }> }) 
         console.error("Error fetching team members:", error);
       }
     };
-    
+
+    const fetchContainers = async () => {
+      try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/containers/order/${id}`, {
+          headers: { Authorization: `Bearer ${session?.accessToken}` },
+        });
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success) setContainers(data.data);
+        }
+      } catch (error) {
+        console.error("Error fetching containers:", error);
+      }
+    };
+
     if (session?.accessToken) {
       fetchOrder();
       fetchTeamMembers();
+      fetchContainers();
     }
   }, [id, session, t]);
 
@@ -340,6 +369,72 @@ const TeamLeaderOrderDetail = ({ params }: { params: Promise<{ id: string }> }) 
           )
         )}
       </div>
+
+      {/* Containers */}
+      {containers.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Box className="h-5 w-5" />
+              {t('teamLeader.orders.containers')}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {containers.map((container, index) => (
+                <div key={container.id} className="border rounded-lg p-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-medium">
+                      {t('teamLeader.orders.container')} {index + 1} — {container.serialNumber}
+                    </h4>
+                  </div>
+
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                    <div className="bg-muted/50 p-3 rounded">
+                      <p className="text-xs text-muted-foreground">{t('order.cartonQuantity')}</p>
+                      <p className="text-lg font-semibold">{container.cartonQuantity}</p>
+                    </div>
+                    <div className="bg-muted/50 p-3 rounded">
+                      <p className="text-xs text-muted-foreground">{t('order.articleQuantity')}</p>
+                      <p className="text-lg font-semibold">{container.articleQuantity ?? 0}</p>
+                    </div>
+                    {container.pieceQuantity > 0 && (
+                      <div className="bg-muted/50 p-3 rounded">
+                        <p className="text-xs text-muted-foreground">{t('order.pieceQuantity')}</p>
+                        <p className="text-lg font-semibold">{container.pieceQuantity}</p>
+                      </div>
+                    )}
+                  </div>
+
+                  {container.articles.length > 0 && (
+                    <div>
+                      <p className="text-sm font-medium text-muted-foreground mb-2">{t('order.articles')}:</p>
+                      <div className="space-y-1">
+                        {container.articles.map((article) => (
+                          <div key={article.id} className="flex justify-between text-sm bg-muted/30 px-2 py-1 rounded">
+                            <span>{article.articleName}</span>
+                            <span className="text-muted-foreground">×{article.quantity}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+
+              <div className="bg-muted/50 p-3 rounded-lg text-sm">
+                <div className="flex gap-6">
+                  <span>{t('order.cartonQuantity')}: <strong>{containers.reduce((s, c) => s + c.cartonQuantity, 0)}</strong></span>
+                  <span>{t('order.articleQuantity')}: <strong>{containers.reduce((s, c) => s + (c.articleQuantity ?? 0), 0)}</strong></span>
+                  {containers.some(c => c.pieceQuantity > 0) && (
+                    <span>{t('order.pieceQuantity')}: <strong>{containers.reduce((s, c) => s + c.pieceQuantity, 0)}</strong></span>
+                  )}
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Assigned Employees */}
       {/* Assigned Staff Section */}

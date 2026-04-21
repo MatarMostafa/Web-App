@@ -116,7 +116,8 @@ enum ActivityType {
 enum PricingMethod {
   HOURLY     // Assignment.actualHours × hourlyRate
   PER_CARTON // ContainerEmployee.reportedCartonQuantity × cartonRate
-  PER_PIECE  // ContainerEmployee.reportedArticleQuantity × articleRate
+  PER_PIECE  // ContainerEmployee.reportedPieceQuantity × pieceRate
+  PER_ARTICLE // ContainerEmployee container's ContainerArticle count × articleRate
   QUANTITY   // Existing tiered CustomerPrice behaviour (default)
 }
 
@@ -412,8 +413,8 @@ model Order {
   usesTemplate Boolean @default(false)
 
   // New quantity fields
-  cartonQuantity  Int?
-  articleQuantity Int?
+  cartonQuantity Int?
+  pieceQuantity  Int?
 
   containers            Container[]
   customer              Customer              @relation(fields: [customerId], references: [id], onDelete: Cascade)
@@ -620,7 +621,7 @@ model Assignment {
   stoppedBy   User?   @relation("AssignmentStoppedBy", fields: [stoppedById], references: [id], onDelete: SetNull)
   stoppedById String?
 
-  billingLineItem BillingLineItem?
+  billingLineItems BillingLineItem[]
 
   @@map("assignments")
 }
@@ -1023,9 +1024,10 @@ model Container {
   orderId String
 
   cartonQuantity  Int
-  articleQuantity Int
+  articleQuantity Int     @default(0)
+  pieceQuantity   Int
   cartonPrice     Decimal @db.Decimal(10, 2)
-  articlePrice    Decimal @db.Decimal(10, 2)
+  piecePrice      Decimal @db.Decimal(10, 2)
 
   articles            ContainerArticle[]
   employeeAssignments ContainerEmployee[]
@@ -1064,13 +1066,14 @@ model ContainerEmployee {
   role       String?
 
   // Employee reporting fields
-  reportedCartonQuantity  Int?      @default(0)
-  reportedArticleQuantity Int?      @default(0)
+  reportedCartonQuantity  Int? @default(0)
+  reportedArticleQuantity Int? @default(0)
+  reportedPieceQuantity   Int? @default(0)
   isCompleted             Boolean   @default(false)
   completedAt             DateTime?
   notes                   String?
 
-  billingLineItem BillingLineItem?
+  billingLineItems BillingLineItem[]
 
   @@unique([containerId, employeeId])
   @@map("container_employees")
@@ -1085,10 +1088,11 @@ model CustomerPricingRule {
   customerId         String
   customerActivityId String? // null = customer-level default for all activities
 
-  method     PricingMethod @default(QUANTITY)
-  hourlyRate Decimal?      @db.Decimal(10, 2) // used when method = HOURLY
-  cartonRate Decimal?      @db.Decimal(10, 2) // used when method = PER_CARTON
-  articleRate Decimal?     @db.Decimal(10, 2) // used when method = PER_PIECE
+  // Each rate is independent — set any combination; omit to disable that method
+  hourlyRate  Decimal? @db.Decimal(10, 2) // non-null → HOURLY billing active
+  cartonRate  Decimal? @db.Decimal(10, 2) // non-null → PER_CARTON billing active
+  pieceRate   Decimal? @db.Decimal(10, 2) // non-null → PER_PIECE billing active
+  articleRate Decimal? @db.Decimal(10, 2) // non-null → PER_ARTICLE billing active
 
   isActive      Boolean   @default(true)
   effectiveFrom DateTime
@@ -1111,8 +1115,8 @@ model BillingLineItem {
   id                  String  @id @default(cuid())
   customerId          String
   orderId             String
-  assignmentId        String? @unique // set for HOURLY method
-  containerEmployeeId String? @unique // set for PER_CARTON / PER_PIECE method
+  assignmentId        String? // set for HOURLY method
+  containerEmployeeId String? // set for PER_CARTON / PER_PIECE / PER_ARTICLE method
 
   method    PricingMethod
   quantity  Decimal       @db.Decimal(10, 4)
@@ -1127,6 +1131,8 @@ model BillingLineItem {
   assignment        Assignment?        @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
   containerEmployee ContainerEmployee? @relation(fields: [containerEmployeeId], references: [id], onDelete: Cascade)
 
+  @@unique([assignmentId, method])
+  @@unique([containerEmployeeId, method])
   @@index([orderId])
   @@index([customerId])
   @@map("billing_line_items")

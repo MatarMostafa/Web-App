@@ -31,8 +31,9 @@ interface Container {
   serialNumber: string;
   cartonQuantity: number;
   articleQuantity: number;
+  pieceQuantity: number;
   cartonPrice: number;
-  articlePrice: number;
+  piecePrice: number;
   basePrice?: number;
 }
 
@@ -55,7 +56,7 @@ interface Order {
   status: string;
   customerId: string;
   cartonQuantity?: number;
-  articleQuantity?: number;
+  pieceQuantity?: number;
   employeeAssignments?: Array<{
     employeeId?: string;
     employee: {
@@ -331,6 +332,7 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
         containers,
         cartonQuantity: containers.reduce((sum, c) => sum + c.cartonQuantity, 0),
         articleQuantity: containers.reduce((sum, c) => sum + c.articleQuantity, 0),
+        pieceQuantity: containers.reduce((sum, c) => sum + c.pieceQuantity, 0),
         templateData: templateData
       };
 
@@ -481,9 +483,10 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
       const newContainer: Container = {
         serialNumber: `CONT-${Date.now()}`,
         cartonQuantity: 1,
-        articleQuantity: 1,
+        articleQuantity: 0,
+        pieceQuantity: 0,
         cartonPrice: 0,
-        articlePrice: 0,
+        piecePrice: 0,
       };
       setContainers([...containers, newContainer]);
     };
@@ -556,9 +559,18 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
                     <Label>{t("admin.orders.form.articleQuantity")}</Label>
                     <Input
                       type="number"
-                      min="1"
+                      min="0"
                       value={container.articleQuantity}
-                      onChange={(e) => updateContainer(containerIndex, 'articleQuantity', parseInt(e.target.value) || 1)}
+                      onChange={(e) => updateContainer(containerIndex, 'articleQuantity', parseInt(e.target.value) || 0)}
+                    />
+                  </div>
+                  <div>
+                    <Label>{t("admin.orders.form.pieceQuantity")}</Label>
+                    <Input
+                      type="number"
+                      min="0"
+                      value={container.pieceQuantity}
+                      onChange={(e) => updateContainer(containerIndex, 'pieceQuantity', parseInt(e.target.value) || 0)}
                     />
                   </div>
                 </div>

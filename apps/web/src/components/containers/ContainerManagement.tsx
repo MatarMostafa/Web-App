@@ -13,8 +13,9 @@ interface Container {
   serialNumber: string;
   cartonQuantity: number;
   articleQuantity: number;
+  pieceQuantity: number;
   cartonPrice: number;
-  articlePrice: number;
+  piecePrice: number;
   articles: Array<{
     id: string;
     articleName: string;
@@ -107,8 +108,8 @@ export const ContainerManagement: React.FC<ContainerManagementProps> = ({
 
   const calculateContainerTotal = (container: Container) => {
     const containerPrice = container.cartonQuantity * container.cartonPrice;
-    const articlePrice = container.articleQuantity * container.articlePrice;
-    return containerPrice + articlePrice;
+    const piecePrice = container.pieceQuantity * container.piecePrice;
+    return containerPrice + piecePrice;
   };
 
   const calculateOrderTotal = () => {
@@ -149,7 +150,7 @@ export const ContainerManagement: React.FC<ContainerManagementProps> = ({
                     </CardTitle>
                     <div className="flex gap-4 mt-2 text-sm text-gray-600">
                       <span>{container.cartonQuantity} cartons</span>
-                      <span>{container.articleQuantity} articles</span>
+                      <span>{container.pieceQuantity} articles</span>
                       <span className="font-semibold">
                         Total: €{calculateContainerTotal(container).toFixed(2)}
                       </span>
@@ -193,7 +194,7 @@ export const ContainerManagement: React.FC<ContainerManagementProps> = ({
                       </div>
                       <div className="flex justify-between">
                         <span>Article Price:</span>
-                        <span>€{container.articlePrice.toFixed(2)} × {container.articleQuantity}</span>
+                        <span>€{container.piecePrice.toFixed(2)} × {container.pieceQuantity}</span>
                       </div>
                     </div>
                   </div>
