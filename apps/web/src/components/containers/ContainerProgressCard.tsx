@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { CheckCircle, Package, Clock, User } from 'lucide-react';
+import { CheckCircle, Package, Clock } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import { useTranslation } from '@/hooks/useTranslation';
 
@@ -13,6 +13,7 @@ interface ContainerAssignment {
   id: string;
   reportedCartonQuantity: number;
   reportedArticleQuantity: number;
+  reportedPieceQuantity: number;
   isCompleted: boolean;
   completedAt: string | null;
   notes: string | null;
@@ -21,6 +22,7 @@ interface ContainerAssignment {
     serialNumber: string;
     cartonQuantity: number;
     articleQuantity: number;
+    pieceQuantity: number;
     order: {
       id: string;
       orderNumber: string;
@@ -49,6 +51,7 @@ export const ContainerProgressCard: React.FC<ContainerProgressCardProps> = ({
   const [loading, setLoading] = useState(false);
   const [reportedCartons, setReportedCartons] = useState(assignment.reportedCartonQuantity || 0);
   const [reportedArticles, setReportedArticles] = useState(assignment.reportedArticleQuantity || 0);
+  const [reportedPieces, setReportedPieces] = useState(assignment.reportedPieceQuantity || 0);
   const [notes, setNotes] = useState(assignment.notes || '');
 
   const handleProgressUpdate = async () => {
@@ -63,6 +66,7 @@ export const ContainerProgressCard: React.FC<ContainerProgressCardProps> = ({
         body: JSON.stringify({
           reportedCartonQuantity: reportedCartons,
           reportedArticleQuantity: reportedArticles,
+          reportedPieceQuantity: reportedPieces,
           notes
         })
       });
@@ -156,6 +160,12 @@ export const ContainerProgressCard: React.FC<ContainerProgressCardProps> = ({
               <span>{t('containers.totalArticles')}:</span>
               <span className="font-medium">{assignment.container.articleQuantity}</span>
             </div>
+            {assignment.container.pieceQuantity > 0 && (
+              <div className="flex justify-between text-sm">
+                <span>{t('containers.totalPieces')}:</span>
+                <span className="font-medium">{assignment.container.pieceQuantity}</span>
+              </div>
+            )}
           </div>
           <div className="space-y-2">
             <div className="flex justify-between text-sm">
@@ -166,6 +176,12 @@ export const ContainerProgressCard: React.FC<ContainerProgressCardProps> = ({
               <span>{t('containers.reportedArticles')}:</span>
               <span className="font-medium text-blue-600">{assignment.reportedArticleQuantity}</span>
             </div>
+            {assignment.container.pieceQuantity > 0 && (
+              <div className="flex justify-between text-sm">
+                <span>{t('containers.reportedPieces')}:</span>
+                <span className="font-medium text-blue-600">{assignment.reportedPieceQuantity}</span>
+              </div>
+            )}
           </div>
         </div>
 
@@ -189,11 +205,24 @@ export const ContainerProgressCard: React.FC<ContainerProgressCardProps> = ({
                   id="reportedArticles"
                   type="number"
                   min="0"
-                  max={assignment.container.articleQuantity}
+                  max={assignment.container.articleQuantity || undefined}
                   value={reportedArticles}
                   onChange={(e) => setReportedArticles(parseInt(e.target.value) || 0)}
                 />
               </div>
+              {assignment.container.pieceQuantity > 0 && (
+                <div className="col-span-2">
+                  <Label htmlFor="reportedPieces">{t('containers.reportPieces')}</Label>
+                  <Input
+                    id="reportedPieces"
+                    type="number"
+                    min="0"
+                    max={assignment.container.pieceQuantity}
+                    value={reportedPieces}
+                    onChange={(e) => setReportedPieces(parseInt(e.target.value) || 0)}
+                  />
+                </div>
+              )}
             </div>
             
             <div>

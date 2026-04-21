@@ -14,9 +14,10 @@ const createContainerSchema = z.object({
   body: z.object({
     serialNumber: z.string().min(1),
     cartonQuantity: z.number().int().positive(),
-    articleQuantity: z.number().int().positive(),
+    articleQuantity: z.number().int().min(0).default(0),
+    pieceQuantity: z.number().int().min(0).default(0),
     cartonPrice: z.number().positive(),
-    articlePrice: z.number().positive(),
+    piecePrice: z.number().positive(),
     articles: z.array(z.object({
       articleName: z.string().min(1),
       quantity: z.number().int().positive(),
@@ -31,9 +32,10 @@ const updateContainerSchema = z.object({
   body: z.object({
     serialNumber: z.string().min(1).optional(),
     cartonQuantity: z.number().int().positive().optional(),
-    articleQuantity: z.number().int().positive().optional(),
+    articleQuantity: z.number().int().min(0).optional(),
+    pieceQuantity: z.number().int().min(0).optional(),
     cartonPrice: z.number().positive().optional(),
-    articlePrice: z.number().positive().optional()
+    piecePrice: z.number().positive().optional()
   })
 });
 
@@ -95,16 +97,17 @@ router.post(
   async (req: Request, res: Response) => {
     try {
       const { orderId } = req.params;
-      const { serialNumber, cartonQuantity, articleQuantity, cartonPrice, articlePrice, articles, employeeIds } = req.body;
+      const { serialNumber, cartonQuantity, articleQuantity, pieceQuantity, cartonPrice, piecePrice, articles, employeeIds } = req.body;
 
       const container = await prisma.container.create({
         data: {
           serialNumber,
           orderId,
           cartonQuantity,
-          articleQuantity,
+          articleQuantity: articleQuantity ?? 0,
+          pieceQuantity: pieceQuantity ?? 0,
           cartonPrice,
-          articlePrice,
+          piecePrice,
           articles: articles ? {
             create: articles
           } : undefined,
@@ -285,7 +288,7 @@ router.post(
   async (req: Request, res: Response) => {
     try {
       const { containerId } = req.params;
-      const { employeeId, reportedCartonQuantity, reportedArticleQuantity, notes } = req.body;
+      const { employeeId, reportedCartonQuantity, reportedArticleQuantity, reportedPieceQuantity, notes } = req.body;
 
       await prisma.containerEmployee.updateMany({
         where: {
@@ -295,6 +298,7 @@ router.post(
         data: {
           reportedCartonQuantity,
           reportedArticleQuantity,
+          reportedPieceQuantity,
           notes,
           isCompleted: true,
           completedAt: new Date()

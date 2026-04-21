@@ -423,22 +423,39 @@ export const OrderDetailPage: React.FC<OrderDetailPageProps> = ({
                         </div>
                       </div>
                     </div>
-                    
+
                     <div className="bg-muted/50 p-3 rounded">
                       <div className="flex justify-between items-center">
                         <div>
                           <p className="text-sm font-medium">{t("order.articleQuantity")}</p>
-                          <p className="text-lg font-semibold">{container.articleQuantity}</p>
+                          <p className="text-lg font-semibold">{container.articleQuantity ?? 0}</p>
                         </div>
                         <div className="text-right">
-                          <p className="text-sm text-muted-foreground">Unit Price</p>
-                          <p className="font-medium">€{Number(container.articlePrice).toFixed(2)}</p>
+                          <p className="text-sm text-muted-foreground">Article Base Price</p>
+                          <p className="font-medium">€{Number(container.piecePrice).toFixed(2)}</p>
                           <p className="text-sm font-semibold text-green-600">
-                            Total: €{(container.articleQuantity * Number(container.articlePrice)).toFixed(2)}
+                            Total: €{((container.articleQuantity ?? 0) * Number(container.piecePrice)).toFixed(2)}
                           </p>
                         </div>
                       </div>
                     </div>
+
+                    {container.pieceQuantity > 0 && (
+                      <div className="bg-muted/50 p-3 rounded col-span-1 md:col-span-2">
+                        <div className="flex justify-between items-center">
+                          <div>
+                            <p className="text-sm font-medium">{t("order.pieceQuantity")}</p>
+                            <p className="text-lg font-semibold">{container.pieceQuantity}</p>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-sm text-muted-foreground">Piece Count</p>
+                            <p className="text-xs text-muted-foreground">
+                              (Used by per-piece pricing rules)
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
 
                     {container.basePrice !== 0 && (
                       <div className="bg-muted/50 p-3 rounded col-span-1 md:col-span-2">
@@ -488,8 +505,8 @@ export const OrderDetailPage: React.FC<OrderDetailPageProps> = ({
                         €{(
                           Number(container.cartonPrice) +
                           Number(container.basePrice || 0) +
-                          (container.articleQuantity * Number(container.articlePrice)) +
-                          (container.articles?.reduce((sum: number, article: any) => 
+                          ((container.articleQuantity ?? 0) * Number(container.piecePrice)) +
+                          (container.articles?.reduce((sum: number, article: any) =>
                             sum + (article.quantity * Number(article.price)), 0) || 0)
                         ).toFixed(2)}
                       </span>
@@ -554,7 +571,7 @@ export const OrderDetailPage: React.FC<OrderDetailPageProps> = ({
                     sum + 
                     Number(container.cartonPrice) +
                     Number(container.basePrice || 0) +
-                    (container.articleQuantity * Number(container.articlePrice)) +
+                    (container.pieceQuantity * Number(container.piecePrice)) +
                     (container.articles?.reduce((articleSum: number, article: any) => 
                       articleSum + (article.quantity * Number(article.price)), 0) || 0)
                   , 0).toFixed(2)}
@@ -569,7 +586,7 @@ export const OrderDetailPage: React.FC<OrderDetailPageProps> = ({
                       sum + 
                       Number(container.cartonPrice) +
                       Number(container.basePrice || 0) +
-                      (container.articleQuantity * Number(container.articlePrice)) +
+                      (container.pieceQuantity * Number(container.piecePrice)) +
                       (container.articles?.reduce((articleSum: number, article: any) => 
                         articleSum + (article.quantity * Number(article.price)), 0) || 0)
                     , 0).toFixed(2)}

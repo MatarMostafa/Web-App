@@ -75,15 +75,18 @@ export const createOrderSchema = z.object({
       activityId: z.string().cuid(),
       quantity: z.number().int().positive().optional().default(1)
     })).optional(),
-    cartonQuantity: z.number().int().positive().optional(),
-    articleQuantity: z.number().int().positive().optional(),
+    cartonQuantity: z.number().int().min(0).optional(),
+    articleQuantity: z.number().int().min(0).optional(),
+    pieceQuantity: z.number().int().min(0).optional(),
     templateData: z.record(z.string(), z.string()).nullable().optional(),
     containers: z.array(z.object({
       serialNumber: z.string().min(1),
-      cartonQuantity: z.number().int().positive(),
-      articleQuantity: z.number().int().positive(),
+      cartonQuantity: z.number().int().min(0),
+      articleQuantity: z.number().int().min(0).default(0),
+      pieceQuantity: z.number().int().min(0).default(0),
       cartonPrice: z.number().min(0),
-      articlePrice: z.number().min(0),
+      piecePrice: z.number().min(0),
+      basePrice: z.number().min(0).optional(),
       articles: z.array(z.object({
         articleName: z.string().min(1),
         quantity: z.number().int().positive(),
@@ -95,8 +98,9 @@ export const createOrderSchema = z.object({
 
 export const updateOrderSchema = z.object({
   body: createOrderSchema.shape.body.partial().extend({
-    cartonQuantity: z.number().int().positive().optional(),
-    articleQuantity: z.number().int().positive().optional(),
+    cartonQuantity: z.number().int().min(0).optional(),
+    articleQuantity: z.number().int().min(0).optional(),
+    pieceQuantity: z.number().int().min(0).optional(),
     templateData: z.record(z.string(), z.string()).nullable().optional()
   }),
   params: z.object({ id: z.string().cuid() })

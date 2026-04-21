@@ -19,6 +19,7 @@ const METHOD_LABELS: Record<PricingMethod, string> = {
   [PricingMethod.HOURLY]: 'Hourly',
   [PricingMethod.PER_CARTON]: 'Per Carton',
   [PricingMethod.PER_PIECE]: 'Per Piece',
+  [PricingMethod.PER_ARTICLE]: 'Per Article',
   [PricingMethod.QUANTITY]: 'Quantity-Based'
 };
 
@@ -26,6 +27,7 @@ const METHOD_BADGE_VARIANTS: Record<PricingMethod, 'default' | 'secondary' | 'ou
   [PricingMethod.HOURLY]: 'default',
   [PricingMethod.PER_CARTON]: 'secondary',
   [PricingMethod.PER_PIECE]: 'outline',
+  [PricingMethod.PER_ARTICLE]: 'outline',
   [PricingMethod.QUANTITY]: 'secondary'
 };
 

@@ -518,7 +518,8 @@ router.get(
           id: container.id,
           serialNumber: container.serialNumber,
           cartonQuantity: container.cartonQuantity,
-          articleQuantity: container.articleQuantity,
+          articleQuantity: (container as any).articleQuantity ?? 0,
+          pieceQuantity: container.pieceQuantity,
           isStarted: employeeAssignment ? true : false,
           isCompleted: employeeAssignment?.isCompleted || false,
           articles: container.articles.map(article => ({
@@ -532,7 +533,7 @@ router.get(
         return {
           ...base,
           cartonPrice: Number(container.cartonPrice),
-          articlePrice: Number(container.articlePrice),
+          piecePrice: Number(container.piecePrice),
           basePrice: orderBasePrice,
           articles: container.articles.map(article => ({
             articleName: article.articleName,
@@ -561,7 +562,7 @@ router.post(
   async (req: Request, res: Response) => {
     try {
       const { orderId } = req.params;
-      const { employeeId, reportedCartonQuantity, reportedArticleQuantity, notes } = req.body;
+      const { employeeId, reportedCartonQuantity, reportedArticleQuantity, reportedPieceQuantity, notes } = req.body;
 
       // Update container employee records
       await prisma.containerEmployee.updateMany({
@@ -574,6 +575,7 @@ router.post(
         data: {
           reportedCartonQuantity,
           reportedArticleQuantity,
+          reportedPieceQuantity,
           notes,
           isCompleted: true,
           completedAt: new Date()

@@ -32,6 +32,7 @@ export enum PricingMethod {
   HOURLY = 'HOURLY',
   PER_CARTON = 'PER_CARTON',
   PER_PIECE = 'PER_PIECE',
+  PER_ARTICLE = 'PER_ARTICLE',
   QUANTITY = 'QUANTITY'
 }
 
@@ -39,9 +40,9 @@ export interface CustomerPricingRule {
   id: string;
   customerId: string;
   customerActivityId?: string | null;
-  method: PricingMethod;
   hourlyRate?: number | null;
   cartonRate?: number | null;
+  pieceRate?: number | null;
   articleRate?: number | null;
   isActive: boolean;
   effectiveFrom: string;
@@ -123,6 +124,7 @@ export interface Order {
   usesTemplate?: boolean;
   cartonQuantity?: number;
   articleQuantity?: number;
+  pieceQuantity?: number;
   customerId: string;
   createdAt: string;
   updatedAt: string;
@@ -165,6 +167,7 @@ export interface CreateOrderData {
   }>;
   cartonQuantity?: number;
   articleQuantity?: number;
+  pieceQuantity?: number;
   templateData?: Record<string, string> | null;
   qualifications?: Array<{
     qualificationId: string;
@@ -195,5 +198,6 @@ export interface UpdateOrderData {
   }>;
   cartonQuantity?: number;
   articleQuantity?: number;
+  pieceQuantity?: number;
   templateData?: Record<string, string> | null;
 }

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Edit, Trash2, Settings2 } from 'lucide-react';
+import { Edit, Settings2, Power } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -13,7 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { toast } from 'react-hot-toast';
 import { apiClient } from '@/lib/api-client';
 import { useSession } from 'next-auth/react';
-import { CustomerPricingRule, PricingMethod } from '@/types/order';
+import { CustomerPricingRule } from '@/types/order';
 
 interface Activity {
   id: string;
@@ -25,25 +25,11 @@ interface CustomerPricingRulesTabProps {
   customerId: string;
 }
 
-const METHOD_LABELS: Record<PricingMethod, string> = {
-  [PricingMethod.HOURLY]: 'Hourly',
-  [PricingMethod.PER_CARTON]: 'Per Carton',
-  [PricingMethod.PER_PIECE]: 'Per Piece',
-  [PricingMethod.QUANTITY]: 'Quantity-Based'
-};
-
-const METHOD_BADGE_VARIANTS: Record<PricingMethod, 'default' | 'secondary' | 'outline' | 'destructive'> = {
-  [PricingMethod.HOURLY]: 'default',
-  [PricingMethod.PER_CARTON]: 'secondary',
-  [PricingMethod.PER_PIECE]: 'outline',
-  [PricingMethod.QUANTITY]: 'secondary'
-};
-
 interface RuleFormState {
-  customerActivityId: string; // '' = all activities (customer default)
-  method: PricingMethod;
+  customerActivityId: string;
   hourlyRate: string;
   cartonRate: string;
+  pieceRate: string;
   articleRate: string;
   effectiveFrom: string;
   effectiveTo: string;
@@ -51,13 +37,16 @@ interface RuleFormState {
 
 const emptyForm = (): RuleFormState => ({
   customerActivityId: '',
-  method: PricingMethod.QUANTITY,
   hourlyRate: '',
   cartonRate: '',
+  pieceRate: '',
   articleRate: '',
   effectiveFrom: new Date().toISOString().split('T')[0],
   effectiveTo: ''
 });
+
+const rateDisplay = (rate: number | null | undefined, unit: string) =>
+  rate != null ? `€${Number(rate).toFixed(2)}/${unit}` : null;
 
 export const CustomerPricingRulesTab = ({ customerId }: CustomerPricingRulesTabProps) => {
   const { data: session } = useSession();
@@ -105,9 +94,9 @@ export const CustomerPricingRulesTab = ({ customerId }: CustomerPricingRulesTabP
     setEditRule(rule);
     setForm({
       customerActivityId: rule.customerActivityId ?? '',
-      method: rule.method,
       hourlyRate: rule.hourlyRate != null ? String(rule.hourlyRate) : '',
       cartonRate: rule.cartonRate != null ? String(rule.cartonRate) : '',
+      pieceRate: rule.pieceRate != null ? String(rule.pieceRate) : '',
       articleRate: rule.articleRate != null ? String(rule.articleRate) : '',
       effectiveFrom: rule.effectiveFrom.split('T')[0],
       effectiveTo: rule.effectiveTo ? rule.effectiveTo.split('T')[0] : ''
@@ -123,23 +112,19 @@ export const CustomerPricingRulesTab = ({ customerId }: CustomerPricingRulesTabP
 
   const handleSubmit = async () => {
     try {
+      if (!form.hourlyRate && !form.cartonRate && !form.pieceRate && !form.articleRate) {
+        return toast.error('At least one rate must be provided');
+      }
+
       const payload: Record<string, any> = {
-        method: form.method,
         effectiveFrom: form.effectiveFrom,
         effectiveTo: form.effectiveTo || undefined,
-        customerActivityId: form.customerActivityId || undefined
+        customerActivityId: form.customerActivityId || undefined,
+        hourlyRate: form.hourlyRate ? parseFloat(form.hourlyRate) : undefined,
+        cartonRate: form.cartonRate ? parseFloat(form.cartonRate) : undefined,
+        pieceRate: form.pieceRate ? parseFloat(form.pieceRate) : undefined,
+        articleRate: form.articleRate ? parseFloat(form.articleRate) : undefined
       };
-
-      if (form.method === PricingMethod.HOURLY) {
-        if (!form.hourlyRate) return toast.error('Hourly rate is required');
-        payload.hourlyRate = parseFloat(form.hourlyRate);
-      } else if (form.method === PricingMethod.PER_CARTON) {
-        if (!form.cartonRate) return toast.error('Carton rate is required');
-        payload.cartonRate = parseFloat(form.cartonRate);
-      } else if (form.method === PricingMethod.PER_PIECE) {
-        if (!form.articleRate) return toast.error('Article/piece rate is required');
-        payload.articleRate = parseFloat(form.articleRate);
-      }
 
       if (editRule) {
         await apiClient.put(`/api/billing/customers/${customerId}/rules/${editRule.id}`, payload);
@@ -156,28 +141,40 @@ export const CustomerPricingRulesTab = ({ customerId }: CustomerPricingRulesTabP
     }
   };
 
-  const handleDelete = async (rule: CustomerPricingRule) => {
-    if (!confirm('Deactivate this pricing rule?')) return;
+  const handleToggleActive = async (rule: CustomerPricingRule) => {
+    const action = rule.isActive ? 'Deactivate' : 'Activate';
+    if (!confirm(`${action} this pricing rule?`)) return;
     try {
-      await apiClient.delete(`/api/billing/customers/${customerId}/rules/${rule.id}`);
-      toast.success('Pricing rule deactivated');
+      if (rule.isActive) {
+        await apiClient.delete(`/api/billing/customers/${customerId}/rules/${rule.id}`);
+        toast.success('Pricing rule deactivated');
+      } else {
+        await apiClient.put(`/api/billing/customers/${customerId}/rules/${rule.id}`, { isActive: true });
+        toast.success('Pricing rule activated');
+      }
       fetchRules();
     } catch (error: any) {
-      toast.error(error.message || 'Failed to deactivate rule');
+      toast.error(error.message || `Failed to ${action.toLowerCase()} rule`);
     }
   };
 
-  const getRateDisplay = (rule: CustomerPricingRule) => {
-    if (rule.method === PricingMethod.HOURLY && rule.hourlyRate != null) {
-      return `€${Number(rule.hourlyRate).toFixed(2)}/hr`;
-    }
-    if (rule.method === PricingMethod.PER_CARTON && rule.cartonRate != null) {
-      return `€${Number(rule.cartonRate).toFixed(2)}/carton`;
-    }
-    if (rule.method === PricingMethod.PER_PIECE && rule.articleRate != null) {
-      return `€${Number(rule.articleRate).toFixed(2)}/piece`;
-    }
-    return '— (uses price tiers)';
+  const getActiveRateSummary = (rule: CustomerPricingRule) => {
+    const parts: string[] = [];
+    if (rule.hourlyRate != null) parts.push(`€${Number(rule.hourlyRate).toFixed(2)}/hr`);
+    if (rule.cartonRate != null) parts.push(`€${Number(rule.cartonRate).toFixed(2)}/carton`);
+    if (rule.pieceRate != null) parts.push(`€${Number(rule.pieceRate).toFixed(2)}/piece`);
+    if (rule.articleRate != null) parts.push(`€${Number(rule.articleRate).toFixed(2)}/article`);
+    return parts.length > 0 ? parts.join(' + ') : '— (uses price tiers)';
+  };
+
+  const getActiveMethodBadges = (rule: CustomerPricingRule) => {
+    const methods: string[] = [];
+    if (rule.hourlyRate != null) methods.push('HOURLY');
+    if (rule.cartonRate != null) methods.push('PER_CARTON');
+    if (rule.pieceRate != null) methods.push('PER_PIECE');
+    if (rule.articleRate != null) methods.push('PER_ARTICLE');
+    if (methods.length === 0) methods.push('QUANTITY');
+    return methods;
   };
 
   return (
@@ -200,8 +197,8 @@ export const CustomerPricingRulesTab = ({ customerId }: CustomerPricingRulesTabP
               <TableHeader>
                 <TableRow>
                   <TableHead>Activity</TableHead>
-                  <TableHead>Method</TableHead>
-                  <TableHead>Rate</TableHead>
+                  <TableHead>Active Methods</TableHead>
+                  <TableHead>Rates</TableHead>
                   <TableHead className="hidden sm:table-cell">Effective From</TableHead>
                   <TableHead className="hidden sm:table-cell">Effective To</TableHead>
                   <TableHead className="hidden md:table-cell">Status</TableHead>
@@ -215,11 +212,13 @@ export const CustomerPricingRulesTab = ({ customerId }: CustomerPricingRulesTabP
                       {rule.customerActivity?.name ?? 'All Activities (Default)'}
                     </TableCell>
                     <TableCell>
-                      <Badge variant={METHOD_BADGE_VARIANTS[rule.method]}>
-                        {METHOD_LABELS[rule.method]}
-                      </Badge>
+                      <div className="flex flex-wrap gap-1">
+                        {getActiveMethodBadges(rule).map((m) => (
+                          <Badge key={m} variant="outline" className="text-xs">{m}</Badge>
+                        ))}
+                      </div>
                     </TableCell>
-                    <TableCell>{getRateDisplay(rule)}</TableCell>
+                    <TableCell className="text-sm">{getActiveRateSummary(rule)}</TableCell>
                     <TableCell className="hidden sm:table-cell">
                       {new Date(rule.effectiveFrom).toLocaleDateString()}
                     </TableCell>
@@ -236,8 +235,14 @@ export const CustomerPricingRulesTab = ({ customerId }: CustomerPricingRulesTabP
                         <Button variant="outline" size="sm" onClick={() => handleOpenEdit(rule)}>
                           <Edit className="w-4 h-4" />
                         </Button>
-                        <Button variant="outline" size="sm" onClick={() => handleDelete(rule)}>
-                          <Trash2 className="w-4 h-4" />
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleToggleActive(rule)}
+                          title={rule.isActive ? 'Deactivate' : 'Activate'}
+                          className={rule.isActive ? 'text-red-500 hover:text-red-600' : 'text-green-600 hover:text-green-700'}
+                        >
+                          <Power className="w-4 h-4" />
                         </Button>
                       </div>
                     </TableCell>
@@ -255,7 +260,6 @@ export const CustomerPricingRulesTab = ({ customerId }: CustomerPricingRulesTabP
         )}
       </CardContent>
 
-      {/* Add / Edit Dialog */}
       <Dialog open={addOpen} onOpenChange={(v) => { if (!v) handleClose(); }}>
         <DialogContent className="max-w-md">
           <DialogHeader>
@@ -263,7 +267,6 @@ export const CustomerPricingRulesTab = ({ customerId }: CustomerPricingRulesTabP
           </DialogHeader>
 
           <div className="space-y-4">
-            {/* Activity selector */}
             <div className="space-y-1">
               <Label>Activity</Label>
               <Select
@@ -283,72 +286,50 @@ export const CustomerPricingRulesTab = ({ customerId }: CustomerPricingRulesTabP
               </Select>
             </div>
 
-            {/* Method selector */}
-            <div className="space-y-1">
-              <Label>Pricing Method</Label>
-              <Select
-                value={form.method}
-                onValueChange={(v) => setForm((f) => ({ ...f, method: v as PricingMethod }))}
-                disabled={!!editRule}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {Object.values(PricingMethod).map((m) => (
-                    <SelectItem key={m} value={m}>{METHOD_LABELS[m]}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            <p className="text-sm text-muted-foreground">
+              Set any combination of rates — each active rate generates an independent billing line item.
+              Leave a rate blank to disable that pricing method.
+            </p>
 
-            {/* Conditional rate input */}
-            {form.method === PricingMethod.HOURLY && (
+            <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1">
                 <Label>Hourly Rate (€/hr)</Label>
                 <Input
-                  type="number"
-                  min="0"
-                  step="0.01"
+                  type="number" min="0" step="0.01"
                   value={form.hourlyRate}
                   onChange={(e) => setForm((f) => ({ ...f, hourlyRate: e.target.value }))}
-                  placeholder="0.00"
+                  placeholder="—"
                 />
               </div>
-            )}
-            {form.method === PricingMethod.PER_CARTON && (
               <div className="space-y-1">
                 <Label>Carton Rate (€/carton)</Label>
                 <Input
-                  type="number"
-                  min="0"
-                  step="0.01"
+                  type="number" min="0" step="0.01"
                   value={form.cartonRate}
                   onChange={(e) => setForm((f) => ({ ...f, cartonRate: e.target.value }))}
-                  placeholder="0.00"
+                  placeholder="—"
                 />
               </div>
-            )}
-            {form.method === PricingMethod.PER_PIECE && (
               <div className="space-y-1">
-                <Label>Article / Piece Rate (€/piece)</Label>
+                <Label>Piece Rate (€/piece)</Label>
                 <Input
-                  type="number"
-                  min="0"
-                  step="0.01"
+                  type="number" min="0" step="0.01"
+                  value={form.pieceRate}
+                  onChange={(e) => setForm((f) => ({ ...f, pieceRate: e.target.value }))}
+                  placeholder="—"
+                />
+              </div>
+              <div className="space-y-1">
+                <Label>Article Rate (€/article type)</Label>
+                <Input
+                  type="number" min="0" step="0.01"
                   value={form.articleRate}
                   onChange={(e) => setForm((f) => ({ ...f, articleRate: e.target.value }))}
-                  placeholder="0.00"
+                  placeholder="—"
                 />
               </div>
-            )}
-            {form.method === PricingMethod.QUANTITY && (
-              <p className="text-sm text-muted-foreground">
-                Quantity-based pricing uses the existing price tiers configured in the Pricing tab.
-              </p>
-            )}
+            </div>
 
-            {/* Date range */}
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1">
                 <Label>Effective From</Label>

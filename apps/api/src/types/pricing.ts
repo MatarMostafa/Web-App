@@ -81,6 +81,7 @@ export enum PricingMethod {
   HOURLY = 'HOURLY',
   PER_CARTON = 'PER_CARTON',
   PER_PIECE = 'PER_PIECE',
+  PER_ARTICLE = 'PER_ARTICLE',
   QUANTITY = 'QUANTITY'
 }
 
@@ -88,9 +89,9 @@ export interface CustomerPricingRuleDTO {
   id: string;
   customerId: string;
   customerActivityId?: string | null;
-  method: PricingMethod;
   hourlyRate?: number | null;
   cartonRate?: number | null;
+  pieceRate?: number | null;
   articleRate?: number | null;
   isActive: boolean;
   effectiveFrom: Date;
@@ -103,9 +104,9 @@ export interface CustomerPricingRuleDTO {
 
 export interface CreateCustomerPricingRuleInput {
   customerActivityId?: string;
-  method: PricingMethod;
   hourlyRate?: number;
   cartonRate?: number;
+  pieceRate?: number;
   articleRate?: number;
   effectiveFrom: string;
   effectiveTo?: string;
@@ -114,6 +115,7 @@ export interface CreateCustomerPricingRuleInput {
 export interface UpdateCustomerPricingRuleInput {
   hourlyRate?: number;
   cartonRate?: number;
+  pieceRate?: number;
   articleRate?: number;
   effectiveTo?: string;
   isActive?: boolean;

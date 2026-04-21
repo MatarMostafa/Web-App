@@ -217,7 +217,7 @@ export const getActivities = async (req: Request, res: Response) => {
 export const updateActivity = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const { name, type, code, description, unit, basePrice, articleBasePrice } = req.body;
+    const { name, type, code, description, unit, basePrice, articleBasePrice, customerId, priceRanges } = req.body;
 
     if (!name || !type) {
       return res.status(400).json({ error: 'name and type are required' });
@@ -235,34 +235,49 @@ export const updateActivity = async (req: Request, res: Response) => {
       unit
     };
 
-    // Update basePrice if provided, defaults to 0
     if (basePrice !== undefined && basePrice !== null) {
       if (basePrice < 0) {
         return res.status(400).json({ error: 'basePrice must be 0 or greater' });
       }
       updateData.basePrice = new Decimal(basePrice);
-    } else if (type !== ActivityType.CONTAINER_LOADING && type !== ActivityType.CONTAINER_UNLOADING) {
-      // Set basePrice to 0 for non-container activities
-      updateData.basePrice = new Decimal(0);
     } else {
-      // Default to 0 if not provided
       updateData.basePrice = new Decimal(0);
     }
 
-    // Update articleBasePrice if provided, defaults to 0
     if (articleBasePrice !== undefined && articleBasePrice !== null) {
       if (articleBasePrice < 0) {
         return res.status(400).json({ error: 'articleBasePrice must be 0 or greater' });
       }
       updateData.articleBasePrice = new Decimal(articleBasePrice);
     } else {
-      // Default to 0 if not provided
       updateData.articleBasePrice = new Decimal(0);
     }
 
-    const activity = await prisma.customerActivity.update({
-      where: { id },
-      data: updateData
+    const activity = await prisma.$transaction(async (tx) => {
+      const updated = await tx.customerActivity.update({
+        where: { id },
+        data: updateData
+      });
+
+      if (Array.isArray(priceRanges) && customerId) {
+        await tx.customerPrice.deleteMany({ where: { customerActivityId: id } });
+        if (priceRanges.length > 0) {
+          await tx.customerPrice.createMany({
+            data: priceRanges.map((r: any) => ({
+              customerId,
+              customerActivityId: id,
+              minQuantity: r.minQuantity,
+              maxQuantity: r.maxQuantity,
+              price: new Decimal(r.price),
+              effectiveFrom: new Date(r.validFrom),
+              isActive: true,
+              currency: 'EUR'
+            }))
+          });
+        }
+      }
+
+      return updated;
     });
 
     res.json(activity);

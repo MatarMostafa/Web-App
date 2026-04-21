@@ -23,9 +23,9 @@ interface Container {
   id?: string;
   serialNumber: string;
   cartonQuantity: number;
-  articleQuantity: number;
+  pieceQuantity: number;
   cartonPrice: number;
-  articlePrice: number;
+  piecePrice: number;
   basePrice: number;
 }
 
@@ -171,7 +171,7 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
             // Use activityIds from orderData
             const activityIds = orderData.activityIds || [];
             const cartonPrice = calculateCartonPriceForQuantity(c.cartonQuantity, activityIds, customerActivities);
-            const articlePrice = activityIds.reduce((total: number, activityId: string) => {
+            const piecePrice = activityIds.reduce((total: number, activityId: string) => {
               const activity = customerActivities.find(a => a.id === activityId);
               return total + (Number(activity?.articleBasePrice) || 0);
             }, 0);
@@ -184,9 +184,9 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
               id: c.id,
               serialNumber: c.serialNumber || "",
               cartonQuantity: c.cartonQuantity || 1,
-              articleQuantity: c.articleQuantity || 0,
+              pieceQuantity: c.pieceQuantity || 0,
               cartonPrice,
-              articlePrice,
+              piecePrice,
               basePrice
             };
           });
@@ -288,7 +288,7 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
         setContainers(currentContainers => 
           currentContainers.map(container => {
             const cartonPrice = calculateCartonPriceForQuantity(container.cartonQuantity, newActivities);
-            const articlePrice = newActivities.reduce((total, activityId) => {
+            const piecePrice = newActivities.reduce((total, activityId) => {
               const activity = activities.find(a => a.id === activityId);
               return total + (Number(activity?.articleBasePrice) || 0);
             }, 0);
@@ -300,7 +300,7 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
             return {
               ...container,
               cartonPrice,
-              articlePrice,
+              piecePrice,
               basePrice
             };
           })
@@ -354,12 +354,12 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
           id: c.id, // Include ID for updates
           serialNumber: c.serialNumber,
           cartonQuantity: c.cartonQuantity,
-          articleQuantity: c.articleQuantity,
+          pieceQuantity: c.pieceQuantity,
           cartonPrice: c.cartonPrice,
-          articlePrice: c.articlePrice
+          piecePrice: c.piecePrice
         })),
         cartonQuantity: containers.reduce((sum, c) => sum + c.cartonQuantity, 0),
-        articleQuantity: containers.reduce((sum, c) => sum + c.articleQuantity, 0),
+        pieceQuantity: containers.reduce((sum, c) => sum + c.pieceQuantity, 0),
         templateData: templateData
       };
 
@@ -464,9 +464,9 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
       const newContainer: Container = {
         serialNumber: `CONT-${Date.now()}`,
         cartonQuantity: 1,
-        articleQuantity: 1,
+        pieceQuantity: 1,
         cartonPrice: calculateCartonPriceForQuantity(1),
-        articlePrice: defaultArticlePrice,
+        piecePrice: defaultArticlePrice,
         basePrice: defaultBasePrice
       };
       setContainers([...containers, newContainer]);
@@ -489,7 +489,7 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
         return total + (Number(activity?.basePrice) || 0);
       }, 0);
 
-      updated[index].articlePrice = calculatedArticlePrice;
+      updated[index].piecePrice = calculatedArticlePrice;
       updated[index].basePrice = calculatedBasePrice;
       
       setContainers(updated);
@@ -553,19 +553,19 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
                     />
                   </div>
                   <div>
-                    <Label>{t("admin.orders.form.articleQuantity")}</Label>
+                    <Label>{t("admin.orders.form.pieceQuantity")}</Label>
                     <Input
                       type="number"
                       min="1"
-                      value={container.articleQuantity}
-                      onChange={(e) => updateContainer(containerIndex, 'articleQuantity', parseInt(e.target.value) || 1)}
+                      value={container.pieceQuantity}
+                      onChange={(e) => updateContainer(containerIndex, 'pieceQuantity', parseInt(e.target.value) || 1)}
                     />
                   </div>
                 </div>
 
                 <div className="bg-muted/50 p-3 rounded">
                   <div className="text-sm font-medium">
-                    {t("customerPortal.createOrder.containerSummary")}: {container.cartonQuantity} {t("customerPortal.createOrder.cartons")}, {container.articleQuantity} {t("customerPortal.createOrder.articles")}
+                    {t("customerPortal.createOrder.containerSummary")}: {container.cartonQuantity} {t("customerPortal.createOrder.cartons")}, {container.pieceQuantity} {t("customerPortal.createOrder.articles")}
                   </div>
                 </div>
               </div>
@@ -587,7 +587,7 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
               </div>
               <div className="flex justify-between">
                 <span>{t("admin.orders.form.totalArticles")}:</span>
-                <span>{containers.reduce((sum, c) => sum + c.articleQuantity, 0)}</span>
+                <span>{containers.reduce((sum, c) => sum + c.pieceQuantity, 0)}</span>
               </div>
             </div>
           </div>
