@@ -40,17 +40,9 @@ export interface CustomerPricingRule {
   id: string;
   customerId: string;
   customerActivityId?: string | null;
-  hourlyRate?: number | null;
-  cartonRate?: number | null;
-  pieceRate?: number | null;
-  articleRate?: number | null;
   isActive: boolean;
   effectiveFrom: string;
   effectiveTo?: string | null;
-  createdBy?: string | null;
-  customerActivity?: { id: string; name: string; type: string } | null;
-  createdAt: string;
-  updatedAt: string;
 }
 
 export interface BillingLineItem {

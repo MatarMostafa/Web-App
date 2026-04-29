@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui";
 import { Input } from "@/components/ui";
@@ -41,15 +41,6 @@ interface Container {
   piecePrice: number;
 }
 
-interface ActiveRule {
-  id: string;
-  customerActivityId: string | null;
-  hourlyRate: number | null;
-  cartonRate: number | null;
-  pieceRate: number | null;
-  articleRate: number | null;
-}
-
 interface AddOrderDialogProps {
   trigger: React.ReactNode;
 }
@@ -76,8 +67,6 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
   const [containers, setContainers] = useState<Container[]>([]);
   const [cartonQuantity, setCartonQuantity] = useState<number>(0);
   const [pieceQuantity, setArticleQuantity] = useState<number>(0);
-  const [activePricingRules, setActivePricingRules] = useState<ActiveRule[]>([]);
-
   const [formData, setFormData] = useState<CreateOrderData>({
     description: "",
     scheduledDate: "",
@@ -132,33 +121,6 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
     }
   };
 
-  const fetchPricingRules = async (customerId: string) => {
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/billing/customers/${customerId}/rules`,
-        { headers: { Authorization: `Bearer ${session?.accessToken}` } }
-      );
-      if (response.ok) {
-        const json = await response.json();
-        const rules: any[] = json.data || [];
-        setActivePricingRules(
-          rules
-            .filter((r: any) => r.isActive)
-            .map((r: any) => ({
-              id: r.id,
-              customerActivityId: r.customerActivityId ?? null,
-              hourlyRate: r.hourlyRate != null ? Number(r.hourlyRate) : null,
-              cartonRate: r.cartonRate != null ? Number(r.cartonRate) : null,
-              pieceRate: r.pieceRate != null ? Number(r.pieceRate) : null,
-              articleRate: r.articleRate != null ? Number(r.articleRate) : null,
-            }))
-        );
-      }
-    } catch {
-      setActivePricingRules([]);
-    }
-  };
-
   // Auto-fill location and fetch activities when customer is selected
   useEffect(() => {
     if (formData.customerId) {
@@ -175,7 +137,6 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
         setFormData((prev) => ({ ...prev, location: addressStr }));
       }
       fetchActivities();
-      fetchPricingRules(formData.customerId);
       setSelectedActivities([]);
     }
   }, [formData.customerId, customers]);
@@ -218,7 +179,6 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
     setContainers([]);
     setCartonQuantity(0);
     setArticleQuantity(0);
-    setActivePricingRules([]);
     setCurrentStep(1);
   };
 
@@ -413,45 +373,40 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
     });
   };
 
-  const getApplicableRules = () =>
-    activePricingRules.filter(r =>
-      r.customerActivityId === null || selectedActivities.includes(r.customerActivityId)
-    );
+  // Returns the selected pricing type for an activity, falling back to first available
+  const getSelectedPricingType = (activityId: string) =>
+    activityPricingSelections[activityId] ||
+    activities.find(a => a.id === activityId)?.pricingTypes?.[0] ||
+    null;
 
-  const hasPieceRate = () => getApplicableRules().some(r => r.pieceRate != null);
+  // Collect all selected pricing types across all selected activities
+  const getSelectedPricingTypes = () =>
+    selectedActivities.map(id => getSelectedPricingType(id)).filter(Boolean) as string[];
 
-  const containerRulesTotal = (container: Container & { basePrice?: number }) => {
-    return getApplicableRules().reduce((sum, r) =>
-      sum
-      + (r.cartonRate   != null ? container.cartonQuantity  * r.cartonRate   : 0)
-      + (r.pieceRate    != null ? container.pieceQuantity   * r.pieceRate    : 0)
-      + (r.articleRate  != null ? container.articleQuantity * r.articleRate  : 0)
-    , 0);
-  };
+  const isTypeSelected = (type: string) => getSelectedPricingTypes().includes(type);
+
+  const hasPieceRate = () => isTypeSelected('PER_PIECE');
 
   const getCartonPriceTotal = () =>
-    containers.reduce((sum, c) => sum + (c.cartonPrice || 0), 0);
+    isTypeSelected('PER_CARTON')
+      ? containers.reduce((sum, c) => sum + (c.cartonPrice || 0), 0)
+      : 0;
 
   const getBasePriceTotal = () =>
     containers.reduce((sum, c) => sum + ((c as any).basePrice || 0), 0);
 
   const getArticlePriceTotal = () =>
-    containers.reduce((sum, c) => sum + c.articleQuantity * (c.piecePrice || 0), 0);
+    isTypeSelected('PER_ARTICLE')
+      ? containers.reduce((sum, c) => sum + c.articleQuantity * (c.piecePrice || 0), 0)
+      : 0;
 
-  const getRulesPriceTotal = () => {
-    const rules = getApplicableRules();
-    return containers.reduce((sum, c) =>
-      sum + rules.reduce((rSum, r) =>
-        rSum
-        + (r.cartonRate  != null ? c.cartonQuantity  * r.cartonRate  : 0)
-        + (r.pieceRate   != null ? c.pieceQuantity   * r.pieceRate   : 0)
-        + (r.articleRate != null ? c.articleQuantity * r.articleRate : 0)
-      , 0)
-    , 0);
-  };
+  const getPiecePriceTotal = () =>
+    isTypeSelected('PER_PIECE')
+      ? containers.reduce((sum, c) => sum + c.pieceQuantity * (c.piecePrice || 0), 0)
+      : 0;
 
   const getTotalPrice = () =>
-    getCartonPriceTotal() + getBasePriceTotal() + getArticlePriceTotal() + getRulesPriceTotal();
+    getCartonPriceTotal() + getBasePriceTotal() + getArticlePriceTotal() + getPiecePriceTotal();
 
   const renderStep1 = () => (
     <div className="space-y-4">
@@ -594,20 +549,25 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
 
   const calculateCartonPriceForQuantity = (cartonQuantity: number, activityIds?: string[]) => {
     const ids = activityIds || selectedActivities;
+    // Only calculate carton price if PER_CARTON is selected for at least one activity
+    const hasPerCarton = ids.some(id => {
+      const sel = activityPricingSelections[id] || activities.find(a => a.id === id)?.pricingTypes?.[0];
+      return sel === 'PER_CARTON';
+    });
+    if (!hasPerCarton) return 0;
+
     return ids.reduce((total, activityId) => {
       const activity = activities.find(a => a.id === activityId);
       if (!activity) return total;
+      const sel = activityPricingSelections[activityId] || activity.pricingTypes?.[0];
+      if (sel !== 'PER_CARTON') return total;
 
-      // Find price based on carton quantity range
       if (activity.customerPrices && activity.customerPrices.length > 0) {
         const applicablePrice = activity.customerPrices.find((p: any) =>
           cartonQuantity >= p.minQuantity && cartonQuantity <= p.maxQuantity
         );
-        if (applicablePrice) {
-          return total + Number(applicablePrice.price);
-        }
+        if (applicablePrice) return total + Number(applicablePrice.price);
       }
-
       return total + (Number(activity.unitPrice) || 0);
     }, 0);
   };
@@ -771,36 +731,13 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
                   </div>
                 </div>
 
-                {getApplicableRules().filter(r => r.pieceRate != null).map(r => (
-                  <div key={r.id} className="bg-blue-50 border border-blue-200 rounded-lg p-3 flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-semibold text-blue-800">Per-Piece Pricing</span>
-                      <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded font-medium">
-                        €{r.pieceRate!.toFixed(2)}/piece
-                      </span>
-                    </div>
-                    <p className="text-sm font-semibold text-blue-700">
-                      {container.pieceQuantity} × €{r.pieceRate!.toFixed(2)} = €{(container.pieceQuantity * r.pieceRate!).toFixed(2)}
-                    </p>
-                  </div>
-                ))}
-                {getApplicableRules().some(r => r.hourlyRate != null) && (
-                  <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
-                    <span className="text-sm font-semibold text-amber-800">Hourly Pricing: </span>
-                    {getApplicableRules().filter(r => r.hourlyRate != null).map(r => (
-                      <span key={r.id} className="text-sm text-amber-700">€{r.hourlyRate!.toFixed(2)}/hr </span>
-                    ))}
-                    <span className="text-xs text-amber-600">(billed by actual hours)</span>
-                  </div>
-                )}
-
                 <div className="bg-muted/50 p-3 rounded space-y-1">
                   <div className="text-sm font-medium">
                     {t("admin.orders.form.containerTotal")}: €{(
-                      container.cartonPrice +
+                      (isTypeSelected('PER_CARTON') ? container.cartonPrice : 0) +
                       ((container as any).basePrice || 0) +
-                      container.articleQuantity * container.piecePrice +
-                      containerRulesTotal(container as any)
+                      (isTypeSelected('PER_ARTICLE') ? container.articleQuantity * container.piecePrice : 0) +
+                      (isTypeSelected('PER_PIECE') ? container.pieceQuantity * container.piecePrice : 0)
                     ).toFixed(2)}
                   </div>
                 </div>
@@ -1029,24 +966,34 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
             <span className="text-2xl font-bold text-green-600">€{getTotalPrice().toFixed(2)}</span>
           </div>
           <div className="mt-2 text-sm text-green-700">
-            <div className="flex justify-between">
-              <span>{t("admin.orders.form.activitiesCartonPrice")}:</span>
-              <span>€{getCartonPriceTotal().toFixed(2)}</span>
-            </div>
-            {getBasePriceTotal() !== 0 && (
+            {isTypeSelected('PER_CARTON') && getCartonPriceTotal() > 0 && (
+              <div className="flex justify-between">
+                <span>{t("admin.orders.form.activitiesCartonPrice")}:</span>
+                <span>€{getCartonPriceTotal().toFixed(2)}</span>
+              </div>
+            )}
+            {getBasePriceTotal() > 0 && (
               <div className="flex justify-between">
                 <span>{t("admin.orders.form.basePrice")}:</span>
                 <span>€{getBasePriceTotal().toFixed(2)}</span>
               </div>
             )}
-            <div className="flex justify-between">
-              <span>{t("admin.orders.form.articlesTotalPrice")}:</span>
-              <span>€{getArticlePriceTotal().toFixed(2)}</span>
-            </div>
-            {getRulesPriceTotal() > 0 && (
+            {isTypeSelected('PER_ARTICLE') && getArticlePriceTotal() > 0 && (
               <div className="flex justify-between">
-                <span>Pricing Rules:</span>
-                <span>€{getRulesPriceTotal().toFixed(2)}</span>
+                <span>{t("admin.orders.form.articlesTotalPrice")}:</span>
+                <span>€{getArticlePriceTotal().toFixed(2)}</span>
+              </div>
+            )}
+            {isTypeSelected('PER_PIECE') && getPiecePriceTotal() > 0 && (
+              <div className="flex justify-between">
+                <span>Per Piece Total:</span>
+                <span>€{getPiecePriceTotal().toFixed(2)}</span>
+              </div>
+            )}
+            {isTypeSelected('HOURLY') && (
+              <div className="flex justify-between">
+                <span>Hourly:</span>
+                <span>{t("admin.orders.form.hourlyBillingNote")}</span>
               </div>
             )}
           </div>
