@@ -98,7 +98,7 @@ export async function getActivePricingRule(
   date: Date = new Date()
 ) {
   if (customerActivityId) {
-    const activityRule = await prisma.customerPricingRule.findFirst({
+    const activityRule = await (prisma as any).customerPricingRule.findFirst({
       where: {
         customerId,
         customerActivityId,
@@ -112,7 +112,7 @@ export async function getActivePricingRule(
     if (activityRule) return activityRule;
   }
 
-  const defaultRule = await prisma.customerPricingRule.findFirst({
+  const defaultRule = await (prisma as any).customerPricingRule.findFirst({
     where: {
       customerId,
       customerActivityId: null,
@@ -131,7 +131,7 @@ export async function getActivePricingRule(
  * Returns all CustomerPricingRules for a customer (for admin listing).
  */
 export async function getCustomerPricingRules(customerId: string) {
-  return prisma.customerPricingRule.findMany({
+  return (prisma as any).customerPricingRule.findMany({
     where: { customerId },
     include: { customerActivity: { select: { id: true, name: true, type: true } } },
     orderBy: [{ customerActivityId: 'asc' }, { effectiveFrom: 'desc' }]

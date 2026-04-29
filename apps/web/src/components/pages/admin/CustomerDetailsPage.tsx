@@ -16,12 +16,7 @@ const CustomerDetailsPage = () => {
   const initialTab = searchParams?.get('tab') || 'overview';
   const [activeTab, setActiveTab] = useState(initialTab);
   const [mounted, setMounted] = useState(false);
-  const [mounted, setMounted] = useState(false);
   const { currentCustomer, loading, fetchCustomerById } = useCustomerStore();
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   useEffect(() => {
     setMounted(true);

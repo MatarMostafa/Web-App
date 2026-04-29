@@ -104,9 +104,9 @@ router.post(
           serialNumber,
           orderId,
           cartonQuantity,
-          pieceQuantity: articleQuantity,
+          pieceQuantity: articleQuantity ?? pieceQuantity,
           cartonPrice,
-          piecePrice: articlePrice,
+          piecePrice,
           articles: articles ? {
             create: articles
           } : undefined,

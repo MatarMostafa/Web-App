@@ -83,7 +83,6 @@ export const getOrderByIdService = async (id: string) => {
       id: order.id,
       cartonQuantity: order.cartonQuantity,
       pieceQuantity: order.pieceQuantity
-      pieceQuantity: order.pieceQuantity
     });
   }
 
@@ -150,7 +149,7 @@ export const createOrderService = async (data: OrderCreateInput & { assignedEmpl
         requiredEmployees: assignedEmployeeIds?.length || orderData.requiredEmployees || 1,
         usesTemplate: templateData !== null ? true : false,
         cartonQuantity,
-        pieceQuantity: articleQuantity,
+        pieceQuantity,
         createdBy,
         ...(teamId && {
           team: {
@@ -272,9 +271,9 @@ export const createOrderService = async (data: OrderCreateInput & { assignedEmpl
             serialNumber: containerData.serialNumber,
             orderId: newOrder.id,
             cartonQuantity: containerData.cartonQuantity,
-            pieceQuantity: containerData.articleQuantity,
+            pieceQuantity: containerData.pieceQuantity ?? containerData.articleQuantity ?? 0,
             cartonPrice: new Decimal(containerData.cartonPrice),
-            piecePrice: new Decimal(containerData.articlePrice)
+            piecePrice: new Decimal(containerData.piecePrice)
           }
         });
         console.log(`Created container ${container.id} for order ${newOrder.id}`);
@@ -515,9 +514,9 @@ export const updateOrderService = async (
               serialNumber: containerData.serialNumber,
               orderId: id,
               cartonQuantity: containerData.cartonQuantity,
-              pieceQuantity: containerData.articleQuantity,
+              pieceQuantity: containerData.pieceQuantity ?? containerData.articleQuantity ?? 0,
               cartonPrice: new Decimal(containerData.cartonPrice),
-              piecePrice: new Decimal(containerData.articlePrice)
+              piecePrice: new Decimal(containerData.piecePrice)
             }
           });
         }

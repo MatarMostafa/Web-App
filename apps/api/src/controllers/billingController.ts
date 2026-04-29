@@ -26,7 +26,7 @@ export const getOrderBillingSummary = async (req: Request, res: Response) => {
       await computeOrderHourlyBilling(orderId, order.customerId).catch(() => {});
     }
 
-    const lineItems = await prisma.billingLineItem.findMany({
+    const lineItems = await (prisma as any).billingLineItem.findMany({
       where: { orderId },
       include: {
         assignment: {
@@ -60,7 +60,7 @@ export const getOrderBillingSummary = async (req: Request, res: Response) => {
     }
 
     const hourlyLineItem = lineItems.find(
-      (i) => i.method === PricingMethod.HOURLY && !i.assignmentId && !i.containerEmployeeId
+      (i: any) => i.method === PricingMethod.HOURLY && !i.assignmentId && !i.containerEmployeeId
     );
 
     res.json({
@@ -188,7 +188,7 @@ export const createCustomerPricingRule = async (req: Request, res: Response) => 
       }
     }
 
-    const rule = await prisma.customerPricingRule.create({
+    const rule = await (prisma as any).customerPricingRule.create({
       data: {
         customerId,
         customerActivityId: customerActivityId ?? null,
@@ -220,14 +220,14 @@ export const updateCustomerPricingRule = async (req: Request, res: Response) => 
     const { customerId, ruleId } = req.params;
     const { hourlyRate, cartonRate, pieceRate, articleRate, effectiveTo, isActive } = req.body;
 
-    const existing = await prisma.customerPricingRule.findFirst({
+    const existing = await (prisma as any).customerPricingRule.findFirst({
       where: { id: ruleId, customerId }
     });
     if (!existing) {
       return res.status(404).json({ error: 'Pricing rule not found' });
     }
 
-    const updated = await prisma.customerPricingRule.update({
+    const updated = await (prisma as any).customerPricingRule.update({
       where: { id: ruleId },
       data: {
         hourlyRate: hourlyRate !== undefined ? new Decimal(hourlyRate) : undefined,
@@ -254,14 +254,14 @@ export const deleteCustomerPricingRule = async (req: Request, res: Response) => 
   try {
     const { customerId, ruleId } = req.params;
 
-    const existing = await prisma.customerPricingRule.findFirst({
+    const existing = await (prisma as any).customerPricingRule.findFirst({
       where: { id: ruleId, customerId }
     });
     if (!existing) {
       return res.status(404).json({ error: 'Pricing rule not found' });
     }
 
-    await prisma.customerPricingRule.update({
+    await (prisma as any).customerPricingRule.update({
       where: { id: ruleId },
       data: { isActive: false }
     });

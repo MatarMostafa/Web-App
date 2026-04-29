@@ -28,7 +28,7 @@ export async function resolveActivePricingRule(
   date: Date = new Date()
 ) {
   if (customerActivityId) {
-    const activityRule = await prisma.customerPricingRule.findFirst({
+    const activityRule = await (prisma as any).customerPricingRule.findFirst({
       where: {
         customerId,
         customerActivityId,
@@ -41,7 +41,7 @@ export async function resolveActivePricingRule(
     if (activityRule) return activityRule;
   }
 
-  const defaultRule = await prisma.customerPricingRule.findFirst({
+  const defaultRule = await (prisma as any).customerPricingRule.findFirst({
     where: {
       customerId,
       customerActivityId: null,
@@ -65,7 +65,7 @@ export async function computeOrderHourlyBilling(
   customerId: string,
   date: Date = new Date()
 ): Promise<{ lineTotal: Decimal; method: PricingMethod; currency: string; hours: Decimal; rate: Decimal } | null> {
-  const rule = await prisma.customerPricingRule.findFirst({
+  const rule = await (prisma as any).customerPricingRule.findFirst({
     where: {
       customerId,
       isActive: true,
@@ -91,12 +91,12 @@ export async function computeOrderHourlyBilling(
 
   const lineTotal = hours.mul(hourlyRate);
 
-  const existing = await prisma.billingLineItem.findFirst({
+  const existing = await (prisma as any).billingLineItem.findFirst({
     where: { orderId, method: 'HOURLY', assignmentId: null, containerEmployeeId: null }
   });
 
   if (existing) {
-    await prisma.billingLineItem.update({
+    await (prisma as any).billingLineItem.update({
       where: { id: existing.id },
       data: {
         quantity: hours.toDecimalPlaces(4),
@@ -106,7 +106,7 @@ export async function computeOrderHourlyBilling(
       }
     });
   } else {
-    await prisma.billingLineItem.create({
+    await (prisma as any).billingLineItem.create({
       data: {
         customerId,
         orderId,
@@ -202,12 +202,12 @@ async function upsertContainerEmployeeLineItem(
   rate: Decimal,
   lineTotal: Decimal
 ) {
-  const existing = await prisma.billingLineItem.findFirst({
+  const existing = await (prisma as any).billingLineItem.findFirst({
     where: { containerEmployeeId, method: method as any }
   });
 
   if (existing) {
-    await prisma.billingLineItem.update({
+    await (prisma as any).billingLineItem.update({
       where: { id: existing.id },
       data: {
         quantity: quantity.toDecimalPlaces(4),
@@ -217,7 +217,7 @@ async function upsertContainerEmployeeLineItem(
       }
     });
   } else {
-    await prisma.billingLineItem.create({
+    await (prisma as any).billingLineItem.create({
       data: {
         customerId,
         orderId,
