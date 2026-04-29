@@ -72,3 +72,83 @@ export interface PriceSnapshot {
   quantity: number;
   lineTotal: Decimal;
 }
+
+// ==============================
+// Pricing Method Types
+// ==============================
+
+export enum PricingMethod {
+  HOURLY = 'HOURLY',
+  PER_CARTON = 'PER_CARTON',
+  PER_PIECE = 'PER_PIECE',
+  PER_ARTICLE = 'PER_ARTICLE',
+  QUANTITY = 'QUANTITY'
+}
+
+export interface CustomerPricingRuleDTO {
+  id: string;
+  customerId: string;
+  customerActivityId?: string | null;
+  hourlyRate?: number | null;
+  cartonRate?: number | null;
+  pieceRate?: number | null;
+  articleRate?: number | null;
+  isActive: boolean;
+  effectiveFrom: Date;
+  effectiveTo?: Date | null;
+  createdBy?: string | null;
+  customerActivity?: { id: string; name: string; type: string } | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface CreateCustomerPricingRuleInput {
+  customerActivityId?: string;
+  hourlyRate?: number;
+  cartonRate?: number;
+  pieceRate?: number;
+  articleRate?: number;
+  effectiveFrom: string;
+  effectiveTo?: string;
+}
+
+export interface UpdateCustomerPricingRuleInput {
+  hourlyRate?: number;
+  cartonRate?: number;
+  pieceRate?: number;
+  articleRate?: number;
+  effectiveTo?: string;
+  isActive?: boolean;
+}
+
+export interface BillingLineItemDTO {
+  id: string;
+  customerId: string;
+  orderId: string;
+  assignmentId?: string | null;
+  containerEmployeeId?: string | null;
+  method: PricingMethod;
+  quantity: number;
+  rate: number;
+  lineTotal: number;
+  currency: string;
+  computedAt: Date;
+  assignment?: {
+    id: string;
+    employeeId: string;
+    employee?: { firstName?: string | null; lastName?: string | null };
+  } | null;
+  containerEmployee?: {
+    id: string;
+    employeeId: string;
+    containerId: string;
+  } | null;
+}
+
+export interface OrderBillingSummaryDTO {
+  orderId: string;
+  lineItems: BillingLineItemDTO[];
+  totalByMethod: Record<PricingMethod, number>;
+  grandTotal: number;
+  currency: string;
+}

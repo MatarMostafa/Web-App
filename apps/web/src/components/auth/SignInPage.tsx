@@ -180,15 +180,6 @@ export default function SignInPage() {
 
             {/* Sign Up Links */}
             <div className="text-center pt-4 border-t border-border/50 space-y-2">
-              <p className="text-sm text-mforeground">
-                Noch kein Konto?{" "}
-                <button
-                  onClick={() => router.push("/signup")}
-                  className="text-primary hover:underline font-medium"
-                >
-                  Registrieren
-                </button>
-              </p>
               {/* <p className="text-sm text-mforeground">
                 Sind Sie ein Kunde?{" "}
                 <button

@@ -85,7 +85,8 @@ const getAvailableActions = (assignmentStatus: AssignmentStatus | undefined, ord
   }
 
   // 3. Logic for Pause/Resume (Individual-based)
-  if (assignmentStatus === AssignmentStatus.ACTIVE) {
+  // Do not show pause when order is IN_REVIEW — work is already submitted
+  if (assignmentStatus === AssignmentStatus.ACTIVE && orderStatus !== OrderStatus.IN_REVIEW) {
     actions.push({
       key: "pause",
       label: t("order.pause"),
@@ -358,28 +359,61 @@ export const EmployeeOrderDetailPage: React.FC<
 
   const handleRequestReview = async () => {
     const allCompleted = containers.every(c => c.isCompleted);
-    
+
     if (!allCompleted) {
       toast.error("Please complete all containers before requesting review");
       return;
     }
 
+    const assignment = employeeAssignments.find(a => a.order.id === orderId);
+    if (!assignment) {
+      toast.error(t("employee.orderDetail.orderNotFoundDesc"));
+      return;
+    }
+
     setIsSubmitting(true);
     try {
+      const { getSession } = await import("next-auth/react");
+      const session = await getSession();
+
+      // Stop the employee's running clock before submitting for review so hours
+      // are recorded precisely at the moment of submission, not when the admin
+      // eventually closes the assignment.
+      if (
+        assignment.status === AssignmentStatus.ACTIVE ||
+        assignment.status === AssignmentStatus.PAUSED
+      ) {
+        const stopResp = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/orders/${orderId}/stop-work/${assignment.employeeId}`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${session?.accessToken}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        if (!stopResp.ok) {
+          const err = await stopResp.json().catch(() => ({}));
+          throw new Error(err?.message || "Failed to stop work timer");
+        }
+      }
+
       await handleStatusChange(
         OrderStatus.IN_REVIEW,
         "All containers completed. Requesting review."
       );
+
       toast.success("Review request sent successfully");
+      window.location.reload();
     } catch (error) {
       console.error("Failed to request review:", error);
       toast.error("Failed to request review");
-    } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleReportSubmit = async (data: { reportedCartonQuantity: number; reportedArticleQuantity: number; notes?: string }) => {
+  const handleReportSubmit = async (data: { reportedCartonQuantity: number; reportedArticleQuantity: number; reportedPieceQuantity: number; notes?: string }) => {
     setIsSubmitting(true);
     try {
       const { getSession } = await import("next-auth/react");
@@ -408,13 +442,14 @@ export const EmployeeOrderDetailPage: React.FC<
             employeeId: assignment.employeeId,
             reportedCartonQuantity: data.reportedCartonQuantity,
             reportedArticleQuantity: data.reportedArticleQuantity,
+            reportedPieceQuantity: data.reportedPieceQuantity,
             notes: data.notes,
           }),
         }
       );
 
       const container = containers.find(c => c.id === selectedContainerId);
-      const noteContent = `Work completed on container ${container?.serialNumber}. Reported: ${data.reportedCartonQuantity} cartons, ${data.reportedArticleQuantity} articles.${data.notes ? ` Notes: ${data.notes}` : ''}`;
+      const noteContent = `Work completed on container ${container?.serialNumber}. Reported: ${data.reportedCartonQuantity} cartons, ${data.reportedArticleQuantity} articles, ${data.reportedPieceQuantity} pieces.${data.notes ? ` Notes: ${data.notes}` : ''}`;
       
       await orderNotesApi.createOrderNote(orderId, {
         content: noteContent,
@@ -519,6 +554,10 @@ export const EmployeeOrderDetailPage: React.FC<
           }),
         }
       );
+
+      // Refresh containers so the UI switches Start → Report immediately
+      const updatedContainers = await getOrderContainers(orderId);
+      setContainers(updatedContainers);
 
       // Start work on the order
       await handleStatusChange(
@@ -822,16 +861,23 @@ export const EmployeeOrderDetailPage: React.FC<
                       </div>
                     </div>
                     
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div className="bg-muted/50 p-3 rounded">
                         <p className="text-sm font-medium">{t("order.cartonQuantity")}</p>
                         <p className="text-lg font-semibold">{container.cartonQuantity}</p>
                       </div>
-                      
+
                       <div className="bg-muted/50 p-3 rounded">
                         <p className="text-sm font-medium">{t("order.articleQuantity")}</p>
-                        <p className="text-lg font-semibold">{container.articleQuantity}</p>
+                        <p className="text-lg font-semibold">{container.articleQuantity ?? 0}</p>
                       </div>
+
+                      {container.pieceQuantity > 0 && (
+                        <div className="bg-muted/50 p-3 rounded">
+                          <p className="text-sm font-medium">{t("order.pieceQuantity")}</p>
+                          <p className="text-lg font-semibold">{container.pieceQuantity}</p>
+                        </div>
+                      )}
                     </div>
                     
                     {container.articles && container.articles.length > 0 && (

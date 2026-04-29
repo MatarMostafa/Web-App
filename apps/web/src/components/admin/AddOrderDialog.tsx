@@ -36,8 +36,18 @@ interface Container {
   serialNumber: string;
   cartonQuantity: number;
   articleQuantity: number;
+  pieceQuantity: number;
   cartonPrice: number;
-  articlePrice: number;
+  piecePrice: number;
+}
+
+interface ActiveRule {
+  id: string;
+  customerActivityId: string | null;
+  hourlyRate: number | null;
+  cartonRate: number | null;
+  pieceRate: number | null;
+  articleRate: number | null;
 }
 
 interface AddOrderDialogProps {
@@ -65,7 +75,8 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
   const [templateData, setTemplateData] = useState<Record<string, string> | null>(null);
   const [containers, setContainers] = useState<Container[]>([]);
   const [cartonQuantity, setCartonQuantity] = useState<number>(0);
-  const [articleQuantity, setArticleQuantity] = useState<number>(0);
+  const [pieceQuantity, setArticleQuantity] = useState<number>(0);
+  const [activePricingRules, setActivePricingRules] = useState<ActiveRule[]>([]);
 
   const [formData, setFormData] = useState<CreateOrderData>({
     description: "",
@@ -121,6 +132,33 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
     }
   };
 
+  const fetchPricingRules = async (customerId: string) => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/billing/customers/${customerId}/rules`,
+        { headers: { Authorization: `Bearer ${session?.accessToken}` } }
+      );
+      if (response.ok) {
+        const json = await response.json();
+        const rules: any[] = json.data || [];
+        setActivePricingRules(
+          rules
+            .filter((r: any) => r.isActive)
+            .map((r: any) => ({
+              id: r.id,
+              customerActivityId: r.customerActivityId ?? null,
+              hourlyRate: r.hourlyRate != null ? Number(r.hourlyRate) : null,
+              cartonRate: r.cartonRate != null ? Number(r.cartonRate) : null,
+              pieceRate: r.pieceRate != null ? Number(r.pieceRate) : null,
+              articleRate: r.articleRate != null ? Number(r.articleRate) : null,
+            }))
+        );
+      }
+    } catch {
+      setActivePricingRules([]);
+    }
+  };
+
   // Auto-fill location and fetch activities when customer is selected
   useEffect(() => {
     if (formData.customerId) {
@@ -137,6 +175,7 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
         setFormData((prev) => ({ ...prev, location: addressStr }));
       }
       fetchActivities();
+      fetchPricingRules(formData.customerId);
       setSelectedActivities([]);
     }
   }, [formData.customerId, customers]);
@@ -179,6 +218,7 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
     setContainers([]);
     setCartonQuantity(0);
     setArticleQuantity(0);
+    setActivePricingRules([]);
     setCurrentStep(1);
   };
 
@@ -238,6 +278,7 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
         containers,
         cartonQuantity: containers.reduce((sum, c) => sum + c.cartonQuantity, 0),
         articleQuantity: containers.reduce((sum, c) => sum + c.articleQuantity, 0),
+        pieceQuantity: containers.reduce((sum, c) => sum + c.pieceQuantity, 0),
         templateData: templateData
       };
 
@@ -362,7 +403,7 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
           return currentContainers.map(container => ({
             ...container,
             cartonPrice: calculateCartonPriceForQuantity(container.cartonQuantity, nextActivities),
-            articlePrice: newArticlePrice,
+            piecePrice: newArticlePrice,
             basePrice: newBasePrice
           }));
         });
@@ -372,21 +413,45 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
     });
   };
 
-  const getCartonPriceTotal = () => {
-    return containers.reduce((sum, c) => sum + (c.cartonPrice || 0), 0);
+  const getApplicableRules = () =>
+    activePricingRules.filter(r =>
+      r.customerActivityId === null || selectedActivities.includes(r.customerActivityId)
+    );
+
+  const hasPieceRate = () => getApplicableRules().some(r => r.pieceRate != null);
+
+  const containerRulesTotal = (container: Container & { basePrice?: number }) => {
+    return getApplicableRules().reduce((sum, r) =>
+      sum
+      + (r.cartonRate   != null ? container.cartonQuantity  * r.cartonRate   : 0)
+      + (r.pieceRate    != null ? container.pieceQuantity   * r.pieceRate    : 0)
+      + (r.articleRate  != null ? container.articleQuantity * r.articleRate  : 0)
+    , 0);
   };
 
-  const getBasePriceTotal = () => {
-    return containers.reduce((sum, c) => sum + ((c as any).basePrice || 0), 0);
+  const getCartonPriceTotal = () =>
+    containers.reduce((sum, c) => sum + (c.cartonPrice || 0), 0);
+
+  const getBasePriceTotal = () =>
+    containers.reduce((sum, c) => sum + ((c as any).basePrice || 0), 0);
+
+  const getArticlePriceTotal = () =>
+    containers.reduce((sum, c) => sum + c.articleQuantity * (c.piecePrice || 0), 0);
+
+  const getRulesPriceTotal = () => {
+    const rules = getApplicableRules();
+    return containers.reduce((sum, c) =>
+      sum + rules.reduce((rSum, r) =>
+        rSum
+        + (r.cartonRate  != null ? c.cartonQuantity  * r.cartonRate  : 0)
+        + (r.pieceRate   != null ? c.pieceQuantity   * r.pieceRate   : 0)
+        + (r.articleRate != null ? c.articleQuantity * r.articleRate : 0)
+      , 0)
+    , 0);
   };
 
-  const getArticlePriceTotal = () => {
-    return containers.reduce((sum, c) => sum + (c.articleQuantity * (c.articlePrice || 0)), 0);
-  };
-
-  const getTotalPrice = () => {
-    return getCartonPriceTotal() + getBasePriceTotal() + getArticlePriceTotal();
-  };
+  const getTotalPrice = () =>
+    getCartonPriceTotal() + getBasePriceTotal() + getArticlePriceTotal() + getRulesPriceTotal();
 
   const renderStep1 = () => (
     <div className="space-y-4">
@@ -563,9 +628,10 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
       const newContainer: Container & { basePrice?: number } = {
         serialNumber: `CONT-${Date.now()}`,
         cartonQuantity: 1,
-        articleQuantity: 1,
+        articleQuantity: 0,
+        pieceQuantity: 0,
         cartonPrice: calculateCartonPriceForQuantity(1),
-        articlePrice: defaultArticlePrice,
+        piecePrice: defaultArticlePrice,
         basePrice: defaultBasePrice
       };
       setContainers([...containers, newContainer] as any);
@@ -643,6 +709,15 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
                     />
                   </div>
                   <div>
+                    <Label>{t("admin.orders.form.articleQuantity")}</Label>
+                    <Input
+                      type="number"
+                      min="0"
+                      value={container.articleQuantity}
+                      onChange={(e) => updateContainer(containerIndex, 'articleQuantity', parseInt(e.target.value) || 0)}
+                    />
+                  </div>
+                  <div>
                     <Label>{t("admin.orders.form.cartonPrice")} (€) - {t("admin.orders.form.autoCalculated")}</Label>
                     <Input
                       type="number"
@@ -656,15 +731,17 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
                       {t("admin.orders.form.basedOnActivitiesQuantity")}
                     </p>
                   </div>
-                  <div>
-                    <Label>{t("admin.orders.form.articleQuantity")}</Label>
-                    <Input
-                      type="number"
-                      min="1"
-                      value={container.articleQuantity}
-                      onChange={(e) => updateContainer(containerIndex, 'articleQuantity', parseInt(e.target.value) || 1)}
-                    />
-                  </div>
+                  {hasPieceRate() && (
+                    <div>
+                      <Label>{t("admin.orders.form.pieceQuantity")}</Label>
+                      <Input
+                        type="number"
+                        min="0"
+                        value={container.pieceQuantity}
+                        onChange={(e) => updateContainer(containerIndex, 'pieceQuantity', parseInt(e.target.value) || 0)}
+                      />
+                    </div>
+                  )}
                   {containers[containerIndex] && (containers[containerIndex] as any).basePrice > 0 && (
                     <div>
                       <Label>{t("admin.orders.form.basePrice")} (€)</Label>
@@ -679,12 +756,12 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
                     </div>
                   )}
                   <div>
-                    <Label>{t("admin.orders.form.articlePrice")+" (€)"}</Label>
+                    <Label>{t("admin.orders.form.piecePrice")+" (€)"}</Label>
                     <Input
                       type="number"
                       step="0.01"
                       min="0"
-                      value={container.articlePrice}
+                      value={container.piecePrice}
                       readOnly
                       className="bg-gray-50"
                     />
@@ -694,8 +771,38 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
                   </div>
                 </div>
 
-                <div className="bg-muted/50 p-3 rounded">
-                  <div className="text-sm font-medium">{t("admin.orders.form.containerTotal")}: €{(container.cartonPrice + ((container as any).basePrice || 0) + (container.articleQuantity * container.articlePrice)).toFixed(2)}</div>
+                {getApplicableRules().filter(r => r.pieceRate != null).map(r => (
+                  <div key={r.id} className="bg-blue-50 border border-blue-200 rounded-lg p-3 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-semibold text-blue-800">Per-Piece Pricing</span>
+                      <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded font-medium">
+                        €{r.pieceRate!.toFixed(2)}/piece
+                      </span>
+                    </div>
+                    <p className="text-sm font-semibold text-blue-700">
+                      {container.pieceQuantity} × €{r.pieceRate!.toFixed(2)} = €{(container.pieceQuantity * r.pieceRate!).toFixed(2)}
+                    </p>
+                  </div>
+                ))}
+                {getApplicableRules().some(r => r.hourlyRate != null) && (
+                  <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
+                    <span className="text-sm font-semibold text-amber-800">Hourly Pricing: </span>
+                    {getApplicableRules().filter(r => r.hourlyRate != null).map(r => (
+                      <span key={r.id} className="text-sm text-amber-700">€{r.hourlyRate!.toFixed(2)}/hr </span>
+                    ))}
+                    <span className="text-xs text-amber-600">(billed by actual hours)</span>
+                  </div>
+                )}
+
+                <div className="bg-muted/50 p-3 rounded space-y-1">
+                  <div className="text-sm font-medium">
+                    {t("admin.orders.form.containerTotal")}: €{(
+                      container.cartonPrice +
+                      ((container as any).basePrice || 0) +
+                      container.articleQuantity * container.piecePrice +
+                      containerRulesTotal(container as any)
+                    ).toFixed(2)}
+                  </div>
                 </div>
               </div>
             ))}
@@ -720,7 +827,7 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
               </div>
               <div className="border-t pt-1 mt-2 flex justify-between font-medium">
                 <span>{t("admin.orders.form.containerTotal")}:</span>
-                <span>€{containers.reduce((sum, c) => sum + c.cartonPrice + ((c as any).basePrice || 0) + (c.articleQuantity * c.articlePrice), 0).toFixed(2)}</span>
+                <span>€{getTotalPrice().toFixed(2)}</span>
               </div>
             </div>
           </div>
@@ -936,6 +1043,12 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
               <span>{t("admin.orders.form.articlesTotalPrice")}:</span>
               <span>€{getArticlePriceTotal().toFixed(2)}</span>
             </div>
+            {getRulesPriceTotal() > 0 && (
+              <div className="flex justify-between">
+                <span>Pricing Rules:</span>
+                <span>€{getRulesPriceTotal().toFixed(2)}</span>
+              </div>
+            )}
           </div>
         </div>
       )}

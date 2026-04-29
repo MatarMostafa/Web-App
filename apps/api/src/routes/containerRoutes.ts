@@ -4,6 +4,7 @@ import { roleMiddleware } from "../middleware/roleMiddleware";
 import { validateRequest } from "../middleware/validateRequest";
 import { z } from "zod";
 import { prisma } from "@repo/db";
+import { computeBilling } from "../services/billingService";
 
 const router = express.Router();
 
@@ -13,9 +14,10 @@ const createContainerSchema = z.object({
   body: z.object({
     serialNumber: z.string().min(1),
     cartonQuantity: z.number().int().positive(),
-    articleQuantity: z.number().int().positive(),
+    articleQuantity: z.number().int().min(0).default(0),
+    pieceQuantity: z.number().int().min(0).default(0),
     cartonPrice: z.number().positive(),
-    articlePrice: z.number().positive(),
+    piecePrice: z.number().positive(),
     articles: z.array(z.object({
       articleName: z.string().min(1),
       quantity: z.number().int().positive(),
@@ -30,9 +32,10 @@ const updateContainerSchema = z.object({
   body: z.object({
     serialNumber: z.string().min(1).optional(),
     cartonQuantity: z.number().int().positive().optional(),
-    articleQuantity: z.number().int().positive().optional(),
+    articleQuantity: z.number().int().min(0).optional(),
+    pieceQuantity: z.number().int().min(0).optional(),
     cartonPrice: z.number().positive().optional(),
-    articlePrice: z.number().positive().optional()
+    piecePrice: z.number().positive().optional()
   })
 });
 
@@ -94,7 +97,7 @@ router.post(
   async (req: Request, res: Response) => {
     try {
       const { orderId } = req.params;
-      const { serialNumber, cartonQuantity, articleQuantity, cartonPrice, articlePrice, articles, employeeIds } = req.body;
+      const { serialNumber, cartonQuantity, articleQuantity, pieceQuantity, cartonPrice, piecePrice, articles, employeeIds } = req.body;
 
       const container = await prisma.container.create({
         data: {
@@ -284,7 +287,7 @@ router.post(
   async (req: Request, res: Response) => {
     try {
       const { containerId } = req.params;
-      const { employeeId, reportedCartonQuantity, reportedArticleQuantity, notes } = req.body;
+      const { employeeId, reportedCartonQuantity, reportedArticleQuantity, reportedPieceQuantity, notes } = req.body;
 
       await prisma.containerEmployee.updateMany({
         where: {
@@ -298,6 +301,20 @@ router.post(
           isCompleted: true,
           completedAt: new Date()
         }
+      });
+
+      // Trigger billing computation (non-blocking — never fails the response)
+      prisma.containerEmployee.findFirst({
+        where: { containerId, employeeId },
+        include: { container: { select: { orderId: true, order: { select: { customerId: true } } } } }
+      }).then((ce) => {
+        if (!ce) return;
+        const orderId = (ce as any).container?.orderId;
+        const customerId = (ce as any).container?.order?.customerId;
+        if (!orderId || !customerId) return;
+        return computeBilling({ customerId, orderId, containerEmployeeId: ce.id });
+      }).catch((err) => {
+        console.error('[billing] report-quantities billing trigger failed:', err);
       });
 
       res.json({ success: true, message: "Quantities reported successfully" });

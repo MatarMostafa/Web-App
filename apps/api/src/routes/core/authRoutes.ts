@@ -25,8 +25,9 @@ import {
 const router = express.Router();
 
 // Public routes with rate limiting and validation
-router.post("/register", registerValidation, register);
-router.post("/register-customer", registerValidation, registerCustomer);
+// Registration endpoints disabled
+// router.post("/register", registerValidation, register);
+// router.post("/register-customer", registerValidation, registerCustomer);
 router.post("/login", loginValidation, login);
 router.post("/refresh-token", refreshToken);
 

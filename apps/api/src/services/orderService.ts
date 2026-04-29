@@ -17,6 +17,7 @@ import {
   notifyCustomerOrderCreated
 } from "./notificationHelpers";
 import { getPriceForCustomer } from "./priceService";
+import { computeBilling, computeOrderHourlyBilling } from "./billingService";
 import { Decimal } from "decimal.js";
 import * as templateService from "./templateService";
 
@@ -82,14 +83,15 @@ export const getOrderByIdService = async (id: string) => {
       id: order.id,
       cartonQuantity: order.cartonQuantity,
       pieceQuantity: order.pieceQuantity
+      pieceQuantity: order.pieceQuantity
     });
   }
 
   return order;
 };
 
-export const createOrderService = async (data: OrderCreateInput & { assignedEmployeeIds?: string[]; activities?: Array<{ activityId: string; quantity?: number; basePrice?: number; articleBasePrice?: number }>; customerId: string; templateData?: Record<string, string> | null; createdBySubAccountId?: string; cartonQuantity?: number; articleQuantity?: number; containers?: Array<{ serialNumber: string; cartonQuantity: number; articleQuantity: number; cartonPrice: number; articlePrice: number }>; totalPrice?: number; teamId?: string }, createdBy?: string) => {
-  let { assignedEmployeeIds, activities, customerId, templateData, createdBySubAccountId, cartonQuantity, articleQuantity, containers, totalPrice, teamId, ...orderData } = data;
+export const createOrderService = async (data: OrderCreateInput & { assignedEmployeeIds?: string[]; activities?: Array<{ activityId: string; quantity?: number; basePrice?: number; articleBasePrice?: number }>; customerId: string; templateData?: Record<string, string> | null; createdBySubAccountId?: string; cartonQuantity?: number; articleQuantity?: number; pieceQuantity?: number; containers?: Array<{ serialNumber: string; cartonQuantity: number; articleQuantity?: number; pieceQuantity: number; cartonPrice: number; piecePrice: number }>; totalPrice?: number; teamId?: string }, createdBy?: string) => {
+  let { assignedEmployeeIds, activities, customerId, templateData, createdBySubAccountId, cartonQuantity, articleQuantity: _orderArticleQuantity, pieceQuantity, containers, totalPrice, teamId, ...orderData } = data;
 
   console.log('Creating order with data:', { containers: containers?.length || 0, containerData: containers }); // Debug log
 
@@ -353,10 +355,10 @@ export const createOrderService = async (data: OrderCreateInput & { assignedEmpl
 
 export const updateOrderService = async (
   id: string,
-  data: OrderUpdateInput & { assignedEmployeeIds?: string[]; activities?: Array<{ activityId: string; quantity?: number; basePrice?: number; articleBasePrice?: number }>; templateData?: Record<string, string> | null; cartonQuantity?: number; articleQuantity?: number; containers?: Array<{ serialNumber: string; cartonQuantity: number; articleQuantity: number; cartonPrice: number; articlePrice: number }>; totalPrice?: number; teamId?: string },
+  data: OrderUpdateInput & { assignedEmployeeIds?: string[]; activities?: Array<{ activityId: string; quantity?: number; basePrice?: number; articleBasePrice?: number }>; templateData?: Record<string, string> | null; cartonQuantity?: number; articleQuantity?: number; pieceQuantity?: number; containers?: Array<{ serialNumber: string; cartonQuantity: number; articleQuantity?: number; pieceQuantity: number; cartonPrice: number; piecePrice: number }>; totalPrice?: number; teamId?: string },
   updatedBy?: string
 ) => {
-  let { assignedEmployeeIds, activities, templateData, cartonQuantity, articleQuantity, containers, totalPrice, teamId, ...orderData } = data;
+  let { assignedEmployeeIds, activities, templateData, cartonQuantity, articleQuantity, pieceQuantity, containers, totalPrice, teamId, ...orderData } = data;
 
   // Clean empty strings to undefined for optional DateTime fields
   if (orderData.startTime === '') orderData.startTime = undefined;
@@ -907,6 +909,19 @@ export const pauseWork = async (
     },
   });
 
+  // Aggregate all assignment hours and update orders.actualHours
+  const allAssignments = await prisma.assignment.findMany({
+    where: { orderId },
+    select: { actualHours: true },
+  });
+  const totalOrderHours = allAssignments.reduce((sum, a) => {
+    return sum.plus(a.actualHours ? new Decimal(a.actualHours.toString()) : new Decimal(0));
+  }, new Decimal(0));
+  await prisma.order.update({
+    where: { id: orderId },
+    data: { actualHours: totalOrderHours.toDecimalPlaces(2) },
+  });
+
   await updateOrderStatusBasedOnAssignments(orderId);
   return updatedAssignment;
 };
@@ -949,9 +964,43 @@ export const stopWork = async (
       actualHours: finalHours.toDecimalPlaces(2),
       stoppedById,
     },
+    include: { order: { select: { customerId: true } } }
   });
 
-  // 3. Sync order status
+  // Trigger billing computation for HOURLY method (non-blocking)
+  const customerId = (updatedAssignment as any).order?.customerId;
+  if (customerId) {
+    computeBilling({
+      customerId,
+      orderId,
+      customerActivityId: assignment.customerActivityId ?? undefined,
+      assignmentId: assignment.id
+    }).catch((err) => {
+      console.error('[billing] stopWork billing trigger failed:', err);
+    });
+  }
+
+  // 3. Aggregate all assignment hours and update orders.actualHours
+  const allAssignments = await prisma.assignment.findMany({
+    where: { orderId },
+    select: { actualHours: true },
+  });
+  const totalOrderHours = allAssignments.reduce((sum, a) => {
+    return sum.plus(a.actualHours ? new Decimal(a.actualHours.toString()) : new Decimal(0));
+  }, new Decimal(0));
+  await prisma.order.update({
+    where: { id: orderId },
+    data: { actualHours: totalOrderHours.toDecimalPlaces(2) },
+  });
+
+  // 4. Trigger HOURLY billing now that orders.actualHours is up-to-date (non-blocking)
+  if (customerId) {
+    computeOrderHourlyBilling(orderId, customerId).catch((err) => {
+      console.error('[billing] stopWork HOURLY billing trigger failed:', err);
+    });
+  }
+
+  // 5. Sync order status
   await updateOrderStatusBasedOnAssignments(orderId);
 
   return updatedAssignment;

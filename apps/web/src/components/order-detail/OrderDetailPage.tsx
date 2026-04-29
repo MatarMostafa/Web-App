@@ -22,6 +22,7 @@ import { OrderActions } from "./OrderActions";
 import { OrderAssignments } from "./OrderAssignments";
 import { OrderDetailSkeleton } from "./OrderDetailSkeleton";
 import { OrderActivities } from "./OrderActivities";
+import { OrderBillingPanel } from "./OrderBillingPanel";
 import { useTranslation } from "@/hooks/useTranslation";
 import { format } from "date-fns";
 import { orderNotesApi } from "@/lib/orderNotesApi";
@@ -419,12 +420,12 @@ export const OrderDetailPage: React.FC<OrderDetailPageProps> = ({
                         </div>
                       </div>
                     </div>
-                    
+
                     <div className="bg-muted/50 p-3 rounded">
                       <div className="flex justify-between items-center">
                         <div>
                           <p className="text-sm font-medium">{t("order.articleQuantity")}</p>
-                          <p className="text-lg font-semibold">{container.articleQuantity}</p>
+                          <p className="text-lg font-semibold">{container.articleQuantity ?? 0}</p>
                         </div>
                         <div className="text-right">
                           <p className="text-sm text-muted-foreground">€{Number(container.articlePrice).toFixed(2)} × {container.articleQuantity}</p>
@@ -611,13 +612,17 @@ export const OrderDetailPage: React.FC<OrderDetailPageProps> = ({
             </Card>
           )}
           
-          <OrderAssignments 
-            orderId={orderId} 
-            order={order} 
-            userRole={userRole} 
+          <OrderAssignments
+            orderId={orderId}
+            order={order}
+            userRole={userRole}
             onAssignmentCountChange={setAssignedStaffCount}
             onRefresh={fetchOrders}
           />
+
+          {userRole === "ADMIN" && order && (
+            <OrderBillingPanel orderId={orderId} isAdmin={true} />
+          )}
         </div>
       </div>
       

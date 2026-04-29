@@ -32,8 +32,9 @@ interface Container {
   serialNumber: string;
   cartonQuantity: number;
   articleQuantity: number;
+  pieceQuantity: number;
   cartonPrice: number;
-  articlePrice: number;
+  piecePrice: number;
   basePrice?: number;
 }
 
@@ -257,6 +258,7 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({
         containers,
         cartonQuantity: containers.reduce((sum, c) => sum + c.cartonQuantity, 0),
         articleQuantity: containers.reduce((sum, c) => sum + c.articleQuantity, 0),
+        pieceQuantity: containers.reduce((sum, c) => sum + c.pieceQuantity, 0),
         templateData: templateData
       };
 
@@ -473,9 +475,10 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({
       const newContainer: Container = {
         serialNumber: `CONT-${Date.now()}`,
         cartonQuantity: 1,
-        articleQuantity: 1,
+        articleQuantity: 0,
+        pieceQuantity: 0,
         cartonPrice: 0,
-        articlePrice: 0,
+        piecePrice: 0,
       };
       setContainers([...containers, newContainer]);
     };
@@ -549,9 +552,19 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({
                     <Label>{t("admin.orders.form.articleQuantity")}</Label>
                     <Input
                       type="number"
-                      min="1"
+                      min="0"
                       value={container.articleQuantity}
-                      onChange={(e) => updateContainer(containerIndex, 'articleQuantity', parseInt(e.target.value) || 1)}
+                      onChange={(e) => updateContainer(containerIndex, 'articleQuantity', parseInt(e.target.value) || 0)}
+                      className="[&::-webkit-outer-spin-button]:opacity-0 hover:[&::-webkit-outer-spin-button]:opacity-100 focus:[&::-webkit-outer-spin-button]:opacity-100 [&::-webkit-inner-spin-button]:opacity-0 hover:[&::-webkit-inner-spin-button]:opacity-100 focus:[&::-webkit-inner-spin-button]:opacity-100"
+                    />
+                  </div>
+                  <div>
+                    <Label>{t("admin.orders.form.pieceQuantity")}</Label>
+                    <Input
+                      type="number"
+                      min="0"
+                      value={container.pieceQuantity}
+                      onChange={(e) => updateContainer(containerIndex, 'pieceQuantity', parseInt(e.target.value) || 0)}
                       className="[&::-webkit-outer-spin-button]:opacity-0 hover:[&::-webkit-outer-spin-button]:opacity-100 focus:[&::-webkit-outer-spin-button]:opacity-100 [&::-webkit-inner-spin-button]:opacity-0 hover:[&::-webkit-inner-spin-button]:opacity-100 focus:[&::-webkit-inner-spin-button]:opacity-100"
                     />
                   </div>

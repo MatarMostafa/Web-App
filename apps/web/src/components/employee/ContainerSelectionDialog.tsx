@@ -15,6 +15,7 @@ interface Container {
   serialNumber: string;
   cartonQuantity: number;
   articleQuantity: number;
+  pieceQuantity: number;
   employeeAssignments: Array<{
     employee: {
       firstName: string;
@@ -127,6 +128,9 @@ export const ContainerSelectionDialog: React.FC<ContainerSelectionDialogProps> =
                           <div className="flex items-center gap-4 text-sm text-muted-foreground">
                             <span>{t("employee.orderDetail.cartons")}: {container.cartonQuantity}</span>
                             <span>{t("employee.orderDetail.articles")}: {container.articleQuantity}</span>
+                            {container.pieceQuantity > 0 && (
+                              <span>{t("employee.orderDetail.pieces")}: {container.pieceQuantity}</span>
+                            )}
                           </div>
                         </div>
                       </div>

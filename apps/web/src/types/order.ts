@@ -28,6 +28,65 @@ export enum ActivityType {
   OTHER = 'OTHER'
 }
 
+export enum PricingMethod {
+  HOURLY = 'HOURLY',
+  PER_CARTON = 'PER_CARTON',
+  PER_PIECE = 'PER_PIECE',
+  PER_ARTICLE = 'PER_ARTICLE',
+  QUANTITY = 'QUANTITY'
+}
+
+export interface CustomerPricingRule {
+  id: string;
+  customerId: string;
+  customerActivityId?: string | null;
+  hourlyRate?: number | null;
+  cartonRate?: number | null;
+  pieceRate?: number | null;
+  articleRate?: number | null;
+  isActive: boolean;
+  effectiveFrom: string;
+  effectiveTo?: string | null;
+  createdBy?: string | null;
+  customerActivity?: { id: string; name: string; type: string } | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface BillingLineItem {
+  id: string;
+  customerId: string;
+  orderId: string;
+  assignmentId?: string | null;
+  containerEmployeeId?: string | null;
+  method: PricingMethod;
+  quantity: number;
+  rate: number;
+  lineTotal: number;
+  currency: string;
+  computedAt: string;
+  assignment?: {
+    id: string;
+    employeeId: string;
+    employee?: { firstName?: string | null; lastName?: string | null };
+  } | null;
+  containerEmployee?: {
+    id: string;
+    employeeId: string;
+    containerId: string;
+  } | null;
+}
+
+export interface OrderBillingSummary {
+  orderId: string;
+  actualHours: number | null;
+  hourlyRate: number | null;
+  lineItems: BillingLineItem[];
+  totalByMethod: Record<PricingMethod, number>;
+  grandTotal: number;
+  currency: string;
+}
+
 export interface DescriptionData {
   [key: string]: string;
 }
@@ -65,6 +124,7 @@ export interface Order {
   usesTemplate?: boolean;
   cartonQuantity?: number;
   articleQuantity?: number;
+  pieceQuantity?: number;
   customerId: string;
   createdAt: string;
   updatedAt: string;
@@ -107,6 +167,7 @@ export interface CreateOrderData {
   }>;
   cartonQuantity?: number;
   articleQuantity?: number;
+  pieceQuantity?: number;
   templateData?: Record<string, string> | null;
   qualifications?: Array<{
     qualificationId: string;
@@ -137,5 +198,6 @@ export interface UpdateOrderData {
   }>;
   cartonQuantity?: number;
   articleQuantity?: number;
+  pieceQuantity?: number;
   templateData?: Record<string, string> | null;
 }

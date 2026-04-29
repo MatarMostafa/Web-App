@@ -17,7 +17,7 @@ interface CustomerOrder {
     id: string;
     serialNumber: string;
     cartonQuantity: number;
-    articleQuantity: number;
+    pieceQuantity: number;
     articles: Array<{
       articleName: string;
       quantity: number;

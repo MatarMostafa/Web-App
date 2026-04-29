@@ -180,7 +180,7 @@ export const OrderActivities: React.FC<OrderActivitiesProps> = ({ orderId }) => 
                                   <span className="text-muted-foreground">Cartons:</span> {container.cartonQuantity}
                                 </div>
                                 <div>
-                                  <span className="text-muted-foreground">Articles:</span> {container.articleQuantity}
+                                  <span className="text-muted-foreground">Articles:</span> {container.pieceQuantity}
                                 </div>
                               </div>
 

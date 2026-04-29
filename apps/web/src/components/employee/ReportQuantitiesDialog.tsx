@@ -6,13 +6,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { useTranslation } from "@/hooks/useTranslation";
 
 interface Container {
   id: string;
   serialNumber: string;
   cartonQuantity: number;
   articleQuantity: number;
+  pieceQuantity: number;
 }
 
 interface ReportQuantitiesDialogProps {
@@ -20,7 +20,12 @@ interface ReportQuantitiesDialogProps {
   onClose: () => void;
   orderId: string;
   containerId?: string | null;
-  onSubmit: (data: { reportedCartonQuantity: number; reportedArticleQuantity: number; notes?: string }) => void;
+  onSubmit: (data: {
+    reportedCartonQuantity: number;
+    reportedArticleQuantity: number;
+    reportedPieceQuantity: number;
+    notes?: string;
+  }) => void;
 }
 
 export const ReportQuantitiesDialog: React.FC<ReportQuantitiesDialogProps> = ({
@@ -30,10 +35,10 @@ export const ReportQuantitiesDialog: React.FC<ReportQuantitiesDialogProps> = ({
   containerId,
   onSubmit,
 }) => {
-  const { t } = useTranslation();
   const [container, setContainer] = useState<Container | null>(null);
   const [reportedCartonQuantity, setReportedCartonQuantity] = useState<number>(0);
   const [reportedArticleQuantity, setReportedArticleQuantity] = useState<number>(0);
+  const [reportedPieceQuantity, setReportedPieceQuantity] = useState<number>(0);
   const [notes, setNotes] = useState<string>("");
   const [loading, setLoading] = useState(false);
 
@@ -67,6 +72,7 @@ export const ReportQuantitiesDialog: React.FC<ReportQuantitiesDialogProps> = ({
             setContainer(foundContainer);
             setReportedCartonQuantity(foundContainer.cartonQuantity);
             setReportedArticleQuantity(foundContainer.articleQuantity);
+            setReportedPieceQuantity(foundContainer.pieceQuantity);
           }
         }
       }
@@ -81,6 +87,7 @@ export const ReportQuantitiesDialog: React.FC<ReportQuantitiesDialogProps> = ({
     onSubmit({
       reportedCartonQuantity,
       reportedArticleQuantity,
+      reportedPieceQuantity,
       notes: notes.trim() || undefined,
     });
     setNotes("");
@@ -93,7 +100,7 @@ export const ReportQuantitiesDialog: React.FC<ReportQuantitiesDialogProps> = ({
         <DialogHeader>
           <DialogTitle>Report Work Completion</DialogTitle>
         </DialogHeader>
-        
+
         <div className="space-y-4">
           {loading ? (
             <div className="text-center py-4">Loading container...</div>
@@ -110,6 +117,12 @@ export const ReportQuantitiesDialog: React.FC<ReportQuantitiesDialogProps> = ({
                     <span>Expected Articles:</span>
                     <span>{container.articleQuantity}</span>
                   </div>
+                  {container.pieceQuantity > 0 && (
+                    <div className="flex justify-between">
+                      <span>Expected Pieces:</span>
+                      <span>{container.pieceQuantity}</span>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -135,6 +148,19 @@ export const ReportQuantitiesDialog: React.FC<ReportQuantitiesDialogProps> = ({
                     onChange={(e) => setReportedArticleQuantity(parseInt(e.target.value) || 0)}
                   />
                 </div>
+
+                {container.pieceQuantity > 0 && (
+                  <div>
+                    <Label htmlFor="reportedPieces">Reported Piece Quantity</Label>
+                    <Input
+                      id="reportedPieces"
+                      type="number"
+                      min="0"
+                      value={reportedPieceQuantity}
+                      onChange={(e) => setReportedPieceQuantity(parseInt(e.target.value) || 0)}
+                    />
+                  </div>
+                )}
 
                 <div>
                   <Label htmlFor="notes">Notes (Optional)</Label>

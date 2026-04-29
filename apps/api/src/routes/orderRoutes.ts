@@ -599,7 +599,7 @@ router.post(
   async (req: Request, res: Response) => {
     try {
       const { orderId } = req.params;
-      const { employeeId, reportedCartonQuantity, reportedArticleQuantity, notes } = req.body;
+      const { employeeId, reportedCartonQuantity, reportedArticleQuantity, reportedPieceQuantity, notes } = req.body;
 
       // Update container employee records
       await prisma.containerEmployee.updateMany({

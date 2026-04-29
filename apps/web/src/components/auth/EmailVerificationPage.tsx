@@ -161,11 +161,11 @@ export default function EmailVerificationPage() {
             {/* Back Link */}
             <div className="text-center pt-4 border-t border-border/50">
               <button
-                onClick={() => router.push("/signup")}
+                onClick={() => router.push("/login")}
                 className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
               >
                 <ArrowLeft className="h-4 w-4" />
-                {t("auth.backToSignUp")}
+                {t("auth.backToLogin")}
               </button>
             </div>
           </CardContent>
