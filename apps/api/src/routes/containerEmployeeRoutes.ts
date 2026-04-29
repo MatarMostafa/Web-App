@@ -15,8 +15,7 @@ router.put('/container-employee/:id/progress', authMiddleware, async (req, res) 
       where: { id },
       data: {
         reportedCartonQuantity: reportedCartonQuantity || 0,
-        reportedArticleQuantity: reportedArticleQuantity || 0,
-        reportedPieceQuantity: reportedPieceQuantity || 0,
+        reportedPieceQuantity: reportedArticleQuantity || 0,
         notes
       },
       include: {

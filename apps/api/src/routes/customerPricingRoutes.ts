@@ -67,7 +67,12 @@ router.get('/customers/me/activities', roleMiddleware(['CUSTOMER', 'CUSTOMER_SUB
         orderId: null,
         isActive: true
       },
-      // include: { activity: true } // Removed
+      include: {
+        prices: {
+          where: { isActive: true },
+          orderBy: { minQuantity: 'asc' }
+        }
+      },
       orderBy: { createdAt: 'desc' }
     });
 

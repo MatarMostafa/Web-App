@@ -135,7 +135,7 @@ export const getCustomerOrderByIdService = async (customerId: string, orderId: s
     id: container.id,
     serialNumber: container.serialNumber,
     cartonQuantity: container.cartonQuantity,
-    pieceQuantity: container.pieceQuantity,
+    articleQuantity: container.pieceQuantity,
     articles: container.articles.map(article => ({
       articleName: article.articleName,
       quantity: article.quantity

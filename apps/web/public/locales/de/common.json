@@ -350,7 +350,8 @@
     "complete": "Abschließen",
     "workPaused": "Arbeit pausiert",
     "workResumed": "Arbeit fortgesetzt",
-    "workCompleted": "Arbeit abgeschlossen"
+    "workCompleted": "Arbeit abgeschlossen",
+    "hourlyBilling": "Stundenabrechnung"
   },
   "customer": {
     "customer": "Kunde",
@@ -849,7 +850,9 @@
         "orderCreatedSuccess": "Auftrag erfolgreich erstellt",
         "selectAtLeastOneActivity": "Bitte wählen Sie mindestens eine Aktivität aus",
         "enterValidCartonQuantity": "Bitte geben Sie eine gültige Kartonmenge ein",
-        "employeesSelectedCount": "{{count}} Mitarbeiter ausgewählt"
+        "employeesSelectedCount": "{{count}} Mitarbeiter ausgewählt",
+        "selectPricingType": "Preistyp auswählen",
+        "hourlyBillingNote": "Abrechnung basierend auf tatsächlichen Arbeitsstunden"
       },
       "activities": {
         "containerUnloading": "Container entladen",
@@ -2032,6 +2035,12 @@
     "noActivities": "Keine Aktivitäten gefunden",
     "noActivitiesDesc": "Aktivitäten werden hier angezeigt, wenn verfügbar",
     "getStartedMessage": "Beginnen Sie, indem Sie Ihre erste Aktivität hinzufügen",
+    "pricingTypes": {
+      "HOURLY": "Stündlich",
+      "PER_PIECE": "Pro Stück",
+      "PER_CARTON": "Pro Karton",
+      "PER_ARTICLE": "Pro Artikel"
+    },
     "table": {
       "name": "Name",
       "code": "Code",
@@ -2061,6 +2070,14 @@
       "articleBasePrice": "Artikel-Basispreis (€)",
       "articleBasePricePlaceholder": "Basispreis für Artikel in dieser Aktivität",
       "articleBasePriceHelp": "Dieser Preis wird als Standard-Artikelpreis bei der Auftragserstellung verwendet",
+      "pricingTypes": "Preistypen",
+      "hourlyRate": "Stundensatz",
+      "hourlyRatePlaceholder": "z.B. 45,00",
+      "hourlyRateHelp": "Abrechnung: tatsächliche Stunden × Stundensatz",
+      "perPiecePrice": "Preis pro Stück",
+      "perPiecePricePlaceholder": "z.B. 0,50",
+      "perArticlePrice": "Preis pro Artikel",
+      "perArticlePricePlaceholder": "z.B. 0,25",
       "priceRanges": "Preisspannen",
       "addRange": "Bereich hinzufügen",
       "minQty": "Min. Menge",
@@ -2096,6 +2113,14 @@
       "noActivitiesDesc": "Aktivitäten werden hier angezeigt, wenn verfügbar",
       "noPricing": "Keine Preisgestaltung",
       "from": "ab"
+    },
+    "validation": {
+      "nameRequired": "Aktivitätsname ist erforderlich",
+      "unitRequired": "Einheit ist erforderlich",
+      "pricingTypeRequired": "Bitte wählen Sie mindestens einen Preistyp aus",
+      "quantityPositive": "Mengen müssen positiv sein",
+      "minMaxQuantity": "Mindestmenge kann nicht größer als Höchstmenge sein",
+      "pricePositive": "Preis muss 0 oder größer sein"
     }
   },
   "customerExport": {

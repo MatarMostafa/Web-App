@@ -37,7 +37,10 @@ export const getCustomerActivities = async (req: Request, res: Response) => {
         orderId: null
       },
       include: {
-        prices: true
+        prices: {
+          where: { isActive: true },
+          orderBy: { minQuantity: 'asc' }
+        }
       },
       orderBy: { createdAt: 'desc' }
     });
@@ -217,7 +220,7 @@ export const getActivities = async (req: Request, res: Response) => {
 export const updateActivity = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const { name, type, code, description, unit, basePrice, articleBasePrice, customerId, priceRanges } = req.body;
+    const { name, type, code, description, unit, basePrice, articleBasePrice, pricingTypes, hourlyRate, perPiecePrice, perArticlePrice, customerId, priceRanges } = req.body;
 
     if (!name || !type) {
       return res.status(400).json({ error: 'name and type are required' });
@@ -227,51 +230,38 @@ export const updateActivity = async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'Invalid activity type' });
     }
 
-    const updateData: any = {
-      name,
-      type,
-      code,
-      description,
-      unit
-    };
-
-    if (basePrice !== undefined && basePrice !== null) {
-      if (basePrice < 0) {
-        return res.status(400).json({ error: 'basePrice must be 0 or greater' });
-      }
-      updateData.basePrice = new Decimal(basePrice);
-    } else {
-      updateData.basePrice = new Decimal(0);
-    }
-
-    if (articleBasePrice !== undefined && articleBasePrice !== null) {
-      if (articleBasePrice < 0) {
-        return res.status(400).json({ error: 'articleBasePrice must be 0 or greater' });
-      }
-      updateData.articleBasePrice = new Decimal(articleBasePrice);
-    } else {
-      updateData.articleBasePrice = new Decimal(0);
-    }
-
     const activity = await prisma.$transaction(async (tx) => {
       const updated = await tx.customerActivity.update({
         where: { id },
-        data: updateData
+        data: {
+          name,
+          type,
+          code,
+          description,
+          unit,
+          basePrice: new Decimal(basePrice !== undefined && basePrice !== null ? basePrice : 0),
+          articleBasePrice: new Decimal(articleBasePrice !== undefined && articleBasePrice !== null ? articleBasePrice : 0),
+          pricingTypes: Array.isArray(pricingTypes) ? pricingTypes : [],
+          hourlyRate: new Decimal(hourlyRate !== undefined && hourlyRate !== null ? hourlyRate : 0),
+          perPiecePrice: new Decimal(perPiecePrice !== undefined && perPiecePrice !== null ? perPiecePrice : 0),
+          perArticlePrice: new Decimal(perArticlePrice !== undefined && perArticlePrice !== null ? perArticlePrice : 0),
+        }
       });
 
+      // Replace price ranges if provided
       if (Array.isArray(priceRanges) && customerId) {
-        await tx.customerPrice.deleteMany({ where: { customerActivityId: id } });
+        await tx.customerPrice.deleteMany({ where: { customerActivityId: id, customerId } });
         if (priceRanges.length > 0) {
           await tx.customerPrice.createMany({
-            data: priceRanges.map((r: any) => ({
+            data: priceRanges.map((range: any) => ({
               customerId,
               customerActivityId: id,
-              minQuantity: r.minQuantity,
-              maxQuantity: r.maxQuantity,
-              price: new Decimal(r.price),
-              effectiveFrom: new Date(r.validFrom),
-              isActive: true,
-              currency: 'EUR'
+              minQuantity: range.minQuantity,
+              maxQuantity: range.maxQuantity,
+              price: new Decimal(range.price),
+              currency: 'EUR',
+              effectiveFrom: new Date(range.validFrom),
+              isActive: true
             }))
           });
         }
@@ -304,7 +294,7 @@ export const deleteActivity = async (req: Request, res: Response) => {
 
 export const createActivity = async (req: Request, res: Response) => {
   try {
-    const { name, type, code, description, unit = 'hour', customerId, basePrice, articleBasePrice } = req.body;
+    const { name, type, code, description, unit = 'hour', customerId, basePrice, articleBasePrice, pricingTypes, hourlyRate, perPiecePrice, perArticlePrice, priceRanges } = req.body;
 
     // customerId is now required to create a definition
     if (!customerId) {
@@ -348,19 +338,47 @@ export const createActivity = async (req: Request, res: Response) => {
       return res.status(409).json({ error: `Activity with name '${name}' already exists for this customer` });
     }
 
-    const activity = await prisma.customerActivity.create({
-      data: {
-        customerId,
-        orderId: null, // Definition
-        name,
-        type,
-        code: code || null,
-        description: description || null,
-        unit,
-        basePrice: new Decimal(finalBasePrice),
-        articleBasePrice: new Decimal(finalArticleBasePrice),
-        isActive: true
+    const finalHourlyRate = (hourlyRate !== undefined && hourlyRate !== null) ? hourlyRate : 0;
+    const finalPerPiecePrice = (perPiecePrice !== undefined && perPiecePrice !== null) ? perPiecePrice : 0;
+    const finalPerArticlePrice = (perArticlePrice !== undefined && perArticlePrice !== null) ? perArticlePrice : 0;
+
+    const activity = await prisma.$transaction(async (tx) => {
+      const created = await tx.customerActivity.create({
+        data: {
+          customerId,
+          orderId: null,
+          name,
+          type,
+          code: code || null,
+          description: description || null,
+          unit,
+          basePrice: new Decimal(finalBasePrice),
+          articleBasePrice: new Decimal(finalArticleBasePrice),
+          pricingTypes: Array.isArray(pricingTypes) ? pricingTypes : [],
+          hourlyRate: new Decimal(finalHourlyRate),
+          perPiecePrice: new Decimal(finalPerPiecePrice),
+          perArticlePrice: new Decimal(finalPerArticlePrice),
+          isActive: true
+        }
+      });
+
+      // Create price ranges if provided (for PER_CARTON pricing)
+      if (Array.isArray(priceRanges) && priceRanges.length > 0) {
+        await tx.customerPrice.createMany({
+          data: priceRanges.map((range: any) => ({
+            customerId,
+            customerActivityId: created.id,
+            minQuantity: range.minQuantity,
+            maxQuantity: range.maxQuantity,
+            price: new Decimal(range.price),
+            currency: 'EUR',
+            effectiveFrom: new Date(range.validFrom),
+            isActive: true
+          }))
+        });
       }
+
+      return created;
     });
 
     res.status(201).json(activity);

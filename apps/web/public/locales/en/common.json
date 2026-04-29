@@ -348,7 +348,8 @@
     "complete": "Complete",
     "workPaused": "Work Paused",
     "workResumed": "Work Resumed",
-    "workCompleted": "Work Completed"
+    "workCompleted": "Work Completed",
+    "hourlyBilling": "Hourly Billing"
   },
   "customer": {
     "customer": "Customer",
@@ -846,7 +847,9 @@
         "orderCreatedSuccess": "Order created successfully",
         "selectAtLeastOneActivity": "Please select at least one activity",
         "enterValidCartonQuantity": "Please enter a valid carton quantity",
-        "employeesSelectedCount": "{{count}} employees selected"
+        "employeesSelectedCount": "{{count}} employees selected",
+        "selectPricingType": "Select Pricing Type",
+        "hourlyBillingNote": "Billed based on actual hours worked"
       },
       "activities": {
         "containerUnloading": "Container Unloading",
@@ -1936,6 +1939,12 @@
     "noActivities": "No activities found",
     "noActivitiesDesc": "Activities will appear here when available",
     "getStartedMessage": "Get started by adding your first activity",
+    "pricingTypes": {
+      "HOURLY": "Hourly",
+      "PER_PIECE": "Per Piece",
+      "PER_CARTON": "Per Carton",
+      "PER_ARTICLE": "Per Article"
+    },
     "table": {
       "name": "Name",
       "code": "Code",
@@ -1965,6 +1974,14 @@
       "articleBasePrice": "Article Base Price (€)",
       "articleBasePricePlaceholder": "Base price for articles in this activity",
       "articleBasePriceHelp": "This price will be used as the default article price when creating orders",
+      "pricingTypes": "Pricing Types",
+      "hourlyRate": "Hourly Rate",
+      "hourlyRatePlaceholder": "e.g. 45.00",
+      "hourlyRateHelp": "Billed as: actual hours × hourly rate",
+      "perPiecePrice": "Per Piece Price",
+      "perPiecePricePlaceholder": "e.g. 0.50",
+      "perArticlePrice": "Per Article Price",
+      "perArticlePricePlaceholder": "e.g. 0.25",
       "priceRanges": "Price Ranges",
       "addRange": "Add Range",
       "minQty": "Min Qty",
@@ -2004,6 +2021,7 @@
     "validation": {
       "nameRequired": "Activity name is required",
       "unitRequired": "Unit is required",
+      "pricingTypeRequired": "Please select at least one pricing type",
       "quantityPositive": "Quantities must be positive",
       "minMaxQuantity": "Minimum quantity cannot be greater than maximum quantity",
       "pricePositive": "Price must be 0 or greater"

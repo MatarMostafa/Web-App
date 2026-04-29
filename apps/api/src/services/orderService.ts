@@ -192,41 +192,57 @@ export const createOrderService = async (data: OrderCreateInput & { assignedEmpl
             continue;
           }
 
-          // Verify that the activity has pricing configured for this customer
-          const hasValidPricing = await tx.customerPrice.findFirst({
-            where: {
-              customerId: customerId!,
-              customerActivityId: activity.activityId, // Definition ID
-              isActive: true,
-              effectiveFrom: { lte: orderData.scheduledDate as Date },
-              OR: [
-                { effectiveTo: null },
-                { effectiveTo: { gte: orderData.scheduledDate as Date } }
-              ]
-            }
-          });
+          // Check if activity has direct rates (HOURLY/PER_PIECE) — no customer_prices record needed
+          const hasDirectRate = Number(definition.hourlyRate) > 0 || Number(definition.perPiecePrice) > 0 || Number(definition.perArticlePrice) > 0;
 
-          if (!hasValidPricing) {
-            console.warn(`Activity ${activity.activityId} has no valid pricing for customer ${customerId}, skipping`);
-            continue;
+          if (!hasDirectRate) {
+            // Fall back to customer_prices table check
+            const hasValidPricing = await tx.customerPrice.findFirst({
+              where: {
+                customerId: customerId!,
+                customerActivityId: activity.activityId,
+                isActive: true,
+                effectiveFrom: { lte: orderData.scheduledDate as Date },
+                OR: [
+                  { effectiveTo: null },
+                  { effectiveTo: { gte: orderData.scheduledDate as Date } }
+                ]
+              }
+            });
+
+            if (!hasValidPricing) {
+              console.warn(`Activity ${activity.activityId} has no valid pricing for customer ${customerId}, skipping`);
+              continue;
+            }
           }
 
-          const priceResult = await getPriceForCustomer(
-            customerId!,
-            activity.activityId,
-            activity.quantity ?? 1,
-            orderData.scheduledDate as Date
-          );
+          // For direct-rate activities, unitPrice is 0 at creation (billed later via actualHours)
+          let unitPrice = 0;
+          let lineTotal = 0;
+          if (!hasDirectRate) {
+            const priceResult = await getPriceForCustomer(
+              customerId!,
+              activity.activityId,
+              activity.quantity ?? 1,
+              orderData.scheduledDate as Date
+            );
+            unitPrice = priceResult.price.toNumber();
+            lineTotal = priceResult.price.toNumber();
+          }
 
           const customerActivity = await tx.customerActivity.create({
             data: {
               customerId: customerId!,
               orderId: newOrder.id,
               quantity: activity.quantity ?? 1,
-              unitPrice: priceResult.price.toNumber(),
-              lineTotal: priceResult.price.toNumber(),
+              unitPrice,
+              lineTotal,
               basePrice: activity.basePrice ? new Decimal(activity.basePrice) : new Decimal(0),
               articleBasePrice: activity.articleBasePrice ? new Decimal(activity.articleBasePrice) : new Decimal(0),
+              hourlyRate: definition.hourlyRate,
+              perPiecePrice: definition.perPiecePrice,
+              perArticlePrice: definition.perArticlePrice,
+              pricingTypes: definition.pricingTypes,
 
               // Copied fields
               name: definition.name,
@@ -255,8 +271,7 @@ export const createOrderService = async (data: OrderCreateInput & { assignedEmpl
             serialNumber: containerData.serialNumber,
             orderId: newOrder.id,
             cartonQuantity: containerData.cartonQuantity,
-            articleQuantity: containerData.articleQuantity ?? 0,
-            pieceQuantity: containerData.pieceQuantity ?? 0,
+            pieceQuantity: containerData.pieceQuantity ?? containerData.articleQuantity ?? 0,
             cartonPrice: new Decimal(containerData.cartonPrice),
             piecePrice: new Decimal(containerData.piecePrice)
           }
@@ -368,7 +383,7 @@ export const updateOrderService = async (
           usesTemplate: templateData !== null && Object.keys(templateData || {}).length > 0
         }),
         ...(cartonQuantity !== undefined && { cartonQuantity }),
-        ...(pieceQuantity !== undefined && { pieceQuantity }),
+        ...(articleQuantity !== undefined && { pieceQuantity: articleQuantity }),
         ...(teamId !== undefined && {
           team: teamId ? { connect: { id: teamId } } : { disconnect: true }
         })
@@ -417,41 +432,54 @@ export const updateOrderService = async (
               continue;
             }
 
-            // Verify that the activity has pricing configured for this customer
-            const hasValidPricing = await tx.customerPrice.findFirst({
-              where: {
-                customerId: updatedOrder.customerId,
-                customerActivityId: activity.activityId,
-                isActive: true,
-                effectiveFrom: { lte: updatedOrder.scheduledDate },
-                OR: [
-                  { effectiveTo: null },
-                  { effectiveTo: { gte: updatedOrder.scheduledDate } }
-                ]
-              }
-            });
+            const hasDirectRate = Number(definition.hourlyRate) > 0 || Number(definition.perPiecePrice) > 0 || Number(definition.perArticlePrice) > 0;
 
-            if (!hasValidPricing) {
-              console.warn(`Activity ${activity.activityId} has no valid pricing for customer ${updatedOrder.customerId}, skipping`);
-              continue;
+            if (!hasDirectRate) {
+              const hasValidPricing = await tx.customerPrice.findFirst({
+                where: {
+                  customerId: updatedOrder.customerId,
+                  customerActivityId: activity.activityId,
+                  isActive: true,
+                  effectiveFrom: { lte: updatedOrder.scheduledDate },
+                  OR: [
+                    { effectiveTo: null },
+                    { effectiveTo: { gte: updatedOrder.scheduledDate } }
+                  ]
+                }
+              });
+
+              if (!hasValidPricing) {
+                console.warn(`Activity ${activity.activityId} has no valid pricing for customer ${updatedOrder.customerId}, skipping`);
+                continue;
+              }
             }
 
-            const priceResult = await getPriceForCustomer(
-              updatedOrder.customerId,
-              activity.activityId,
-              activity.quantity ?? 1,
-              updatedOrder.scheduledDate
-            );
+            let unitPrice = 0;
+            let lineTotal = 0;
+            if (!hasDirectRate) {
+              const priceResult = await getPriceForCustomer(
+                updatedOrder.customerId,
+                activity.activityId,
+                activity.quantity ?? 1,
+                updatedOrder.scheduledDate
+              );
+              unitPrice = priceResult.price.toNumber();
+              lineTotal = priceResult.price.toNumber();
+            }
 
             await tx.customerActivity.create({
               data: {
                 customerId: updatedOrder.customerId,
                 orderId: id,
                 quantity: activity.quantity ?? 1,
-                unitPrice: priceResult.price.toNumber(),
-                lineTotal: priceResult.price.toNumber(),
+                unitPrice,
+                lineTotal,
                 basePrice: activity.basePrice ? new Decimal(activity.basePrice) : new Decimal(0),
                 articleBasePrice: activity.articleBasePrice ? new Decimal(activity.articleBasePrice) : new Decimal(0),
+                hourlyRate: definition.hourlyRate,
+                perPiecePrice: definition.perPiecePrice,
+                perArticlePrice: definition.perArticlePrice,
+                pricingTypes: definition.pricingTypes,
 
                 // Copied fields
                 name: definition.name,
@@ -486,8 +514,7 @@ export const updateOrderService = async (
               serialNumber: containerData.serialNumber,
               orderId: id,
               cartonQuantity: containerData.cartonQuantity,
-              articleQuantity: containerData.articleQuantity ?? 0,
-              pieceQuantity: containerData.pieceQuantity ?? 0,
+              pieceQuantity: containerData.pieceQuantity ?? containerData.articleQuantity ?? 0,
               cartonPrice: new Decimal(containerData.cartonPrice),
               piecePrice: new Decimal(containerData.piecePrice)
             }
@@ -571,6 +598,48 @@ export const updateOrderStatusService = async (
   status: OrderStatus,
   createdBy?: string
 ) => {
+  // When moving to IN_REVIEW or COMPLETED, finalize hours for all still-ACTIVE assignments
+  if (status === 'IN_REVIEW' || status === 'COMPLETED') {
+    const activeAssignments = await prisma.assignment.findMany({
+      where: { orderId: id, status: 'ACTIVE' },
+    });
+
+    const now = new Date();
+    await Promise.all(
+      activeAssignments.map((assignment) => {
+        const startDate = assignment.startDate || assignment.assignedDate;
+        const diffMs = now.getTime() - startDate.getTime();
+        const sessionHours = new Decimal(diffMs).dividedBy(1000 * 60 * 60);
+        const totalHours = (assignment.actualHours || new Decimal(0))
+          .plus(sessionHours)
+          .toDecimalPlaces(2);
+
+        return prisma.assignment.update({
+          where: { id: assignment.id },
+          data: {
+            actualHours: totalHours,
+            endDate: now,
+            status: status === 'COMPLETED' ? 'COMPLETED' : 'ACTIVE',
+          },
+        });
+      })
+    );
+
+    // Roll up total actual hours onto the order
+    const allAssignments = await prisma.assignment.findMany({
+      where: { orderId: id },
+      select: { actualHours: true },
+    });
+    const totalOrderHours = allAssignments.reduce(
+      (sum, a) => sum.plus(a.actualHours || new Decimal(0)),
+      new Decimal(0)
+    );
+    await prisma.order.update({
+      where: { id },
+      data: { actualHours: totalOrderHours.toDecimalPlaces(2) },
+    });
+  }
+
   const order = await prisma.order.update({
     where: { id },
     data: { status },

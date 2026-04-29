@@ -104,8 +104,7 @@ router.post(
           serialNumber,
           orderId,
           cartonQuantity,
-          articleQuantity: articleQuantity ?? 0,
-          pieceQuantity: pieceQuantity ?? 0,
+          pieceQuantity: articleQuantity ?? pieceQuantity,
           cartonPrice,
           piecePrice,
           articles: articles ? {
@@ -297,8 +296,7 @@ router.post(
         },
         data: {
           reportedCartonQuantity,
-          reportedArticleQuantity,
-          reportedPieceQuantity,
+          reportedPieceQuantity: reportedArticleQuantity,
           notes,
           isCompleted: true,
           completedAt: new Date()

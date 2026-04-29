@@ -28,18 +28,10 @@ const CustomerDetailsPage = () => {
     }
   }, [id, fetchCustomerById]);
 
-  if (!mounted) {
+  if (!mounted || !ready || loading) {
     return (
       <div className="w-full h-full min-h-[calc(100vh-130px)] flex items-center justify-center">
-        <LoadingSpinnerWithText text="Loading..." />
-      </div>
-    );
-  }
-
-  if (!ready || loading) {
-    return (
-      <div className="w-full h-full min-h-[calc(100vh-130px)] flex items-center justify-center">
-        <LoadingSpinnerWithText text={t('admin.customerDetails.loading')} />
+        <LoadingSpinnerWithText text={mounted && ready ? t('admin.customerDetails.loading') : 'Loading...'} />
       </div>
     );
   }

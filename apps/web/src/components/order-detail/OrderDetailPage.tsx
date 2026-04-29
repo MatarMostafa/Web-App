@@ -413,12 +413,9 @@ export const OrderDetailPage: React.FC<OrderDetailPageProps> = ({
                           <p className="text-lg font-semibold">{container.cartonQuantity}</p>
                         </div>
                         <div className="text-right">
-                          <p className="text-sm text-muted-foreground">Total Price</p>
+                          <p className="text-sm text-muted-foreground">€{Number(container.cartonPrice).toFixed(2)} × {container.cartonQuantity}</p>
                           <p className="text-sm font-semibold text-green-600">
-                            Total: €{Number(container.cartonPrice).toFixed(2)}
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            (Based on activities & quantity)
+                            Total: €{Number(container.cartonTotal).toFixed(2)}
                           </p>
                         </div>
                       </div>
@@ -431,46 +428,39 @@ export const OrderDetailPage: React.FC<OrderDetailPageProps> = ({
                           <p className="text-lg font-semibold">{container.articleQuantity ?? 0}</p>
                         </div>
                         <div className="text-right">
-                          <p className="text-sm text-muted-foreground">Article Base Price</p>
-                          <p className="font-medium">€{Number(container.piecePrice).toFixed(2)}</p>
+                          <p className="text-sm text-muted-foreground">€{Number(container.articlePrice).toFixed(2)} × {container.articleQuantity}</p>
                           <p className="text-sm font-semibold text-green-600">
-                            Total: €{((container.articleQuantity ?? 0) * Number(container.piecePrice)).toFixed(2)}
+                            Total: €{Number(container.articleTotal).toFixed(2)}
                           </p>
                         </div>
                       </div>
                     </div>
 
-                    {container.pieceQuantity > 0 && (
+                    {Number(container.hourlyTotal) > 0 && (
                       <div className="bg-muted/50 p-3 rounded col-span-1 md:col-span-2">
                         <div className="flex justify-between items-center">
                           <div>
-                            <p className="text-sm font-medium">{t("order.pieceQuantity")}</p>
-                            <p className="text-lg font-semibold">{container.pieceQuantity}</p>
+                            <p className="text-sm font-medium">{t("order.hourlyBilling")}</p>
+                            <p className="text-xs text-muted-foreground">{Number(container.totalActualHours).toFixed(2)}h × €{(Number(container.hourlyTotal) / (Number(container.totalActualHours) || 1)).toFixed(2)}/hr</p>
                           </div>
                           <div className="text-right">
-                            <p className="text-sm text-muted-foreground">Piece Count</p>
-                            <p className="text-xs text-muted-foreground">
-                              (Used by per-piece pricing rules)
+                            <p className="text-sm font-semibold text-green-600">
+                              €{Number(container.hourlyTotal).toFixed(2)}
                             </p>
                           </div>
                         </div>
                       </div>
                     )}
 
-                    {container.basePrice !== 0 && (
+                    {Number(container.basePrice) > 0 && (
                       <div className="bg-muted/50 p-3 rounded col-span-1 md:col-span-2">
                         <div className="flex justify-between items-center">
                           <div>
                             <p className="text-sm font-medium">{t("order.activityBasePrice")}</p>
-                            <p className="text-lg font-semibold">€{Number(container.basePrice).toFixed(2)}</p>
                           </div>
                           <div className="text-right">
-                            <p className="text-sm text-muted-foreground">{t("order.total")}</p>
                             <p className="text-sm font-semibold text-green-600">
                               €{Number(container.basePrice).toFixed(2)}
-                            </p>
-                            <p className="text-xs text-muted-foreground">
-                              ({t("admin.orders.form.fromActivityBasePrice")})
                             </p>
                           </div>
                         </div>
@@ -502,13 +492,7 @@ export const OrderDetailPage: React.FC<OrderDetailPageProps> = ({
                     <div className="flex justify-between items-center font-semibold">
                       <span>{t("order.containerTotal")}:</span>
                       <span className="text-green-600">
-                        €{(
-                          Number(container.cartonPrice) +
-                          Number(container.basePrice || 0) +
-                          ((container.articleQuantity ?? 0) * Number(container.piecePrice)) +
-                          (container.articles?.reduce((sum: number, article: any) =>
-                            sum + (article.quantity * Number(article.price)), 0) || 0)
-                        ).toFixed(2)}
+                        €{Number(container.containerTotal).toFixed(2)}
                       </span>
                     </div>
                   </div>
@@ -567,14 +551,7 @@ export const OrderDetailPage: React.FC<OrderDetailPageProps> = ({
               <div className="flex justify-between items-center">
                 <span className="text-lg font-medium">{t("order.containersTotal")}:</span>
                 <span className="text-xl font-semibold text-blue-600">
-                  €{containers.reduce((sum: number, container: any) => 
-                    sum + 
-                    Number(container.cartonPrice) +
-                    Number(container.basePrice || 0) +
-                    (container.pieceQuantity * Number(container.piecePrice)) +
-                    (container.articles?.reduce((articleSum: number, article: any) => 
-                      articleSum + (article.quantity * Number(article.price)), 0) || 0)
-                  , 0).toFixed(2)}
+                  €{containers.reduce((sum: number, c: any) => sum + Number(c.containerTotal || 0), 0).toFixed(2)}
                 </span>
               </div>
               
@@ -582,14 +559,7 @@ export const OrderDetailPage: React.FC<OrderDetailPageProps> = ({
                 <div className="flex justify-between items-center p-4 bg-green-50 rounded-lg border border-green-200">
                   <span className="text-2xl font-bold text-green-800">{t("order.grandTotal")}:</span>
                   <span className="text-3xl font-bold text-green-600">
-                    €{containers.reduce((sum: number, container: any) => 
-                      sum + 
-                      Number(container.cartonPrice) +
-                      Number(container.basePrice || 0) +
-                      (container.pieceQuantity * Number(container.piecePrice)) +
-                      (container.articles?.reduce((articleSum: number, article: any) => 
-                        articleSum + (article.quantity * Number(article.price)), 0) || 0)
-                    , 0).toFixed(2)}
+                    €{containers.reduce((sum: number, c: any) => sum + Number(c.containerTotal || 0), 0).toFixed(2)}
                   </span>
                 </div>
               </div>
