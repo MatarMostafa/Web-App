@@ -41,3 +41,4 @@ packages/db/src/generated/
 .vscode/settings.json
 .vscode
 schema_dump.sql
+PROGRESS.md
