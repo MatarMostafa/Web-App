@@ -1,5 +1,6 @@
 import { prisma } from "@repo/db";
 import { OrderStatus, NoteCategory } from "@repo/db/src/generated/prisma";
+import Decimal from "decimal.js";
 import { notifyOrderNoteAdded, notifyWorkStarted, notifyOrderReview, notifyOrderApproved, notifyOrderRejected, notifyOrderStatusChanged, notifyCustomerOrderStatusChanged, notifyCustomerOrderCompleted } from "./notificationHelpers";
 
 // Type definitions
@@ -112,17 +113,55 @@ export const createOrderNoteService = async (data: CreateOrderNoteInput) => {
     // Update order status if triggered
     if (triggersStatus) {
       const updateData: any = { status: triggersStatus };
-      
+
       // Record start time when work begins
       if (triggersStatus === 'IN_PROGRESS') {
         updateData.startTime = new Date();
       }
-      
+
+      // Finalize hours for all ACTIVE assignments when moving to IN_REVIEW or COMPLETED
+      if (triggersStatus === 'IN_REVIEW' || triggersStatus === 'COMPLETED') {
+        const now = new Date();
+        const activeAssignments = await tx.assignment.findMany({
+          where: { orderId, status: 'ACTIVE' },
+        });
+
+        for (const assignment of activeAssignments) {
+          const startDate = assignment.startDate || assignment.assignedDate;
+          const diffMs = now.getTime() - startDate.getTime();
+          const sessionHours = new Decimal(diffMs).dividedBy(1000 * 60 * 60);
+          const totalHours = (assignment.actualHours
+            ? new Decimal(assignment.actualHours.toString())
+            : new Decimal(0)
+          ).plus(sessionHours).toDecimalPlaces(2);
+
+          await tx.assignment.update({
+            where: { id: assignment.id },
+            data: {
+              actualHours: totalHours,
+              endDate: now,
+              ...(triggersStatus === 'COMPLETED' && { status: 'COMPLETED' }),
+            },
+          });
+        }
+
+        // Roll up total hours to the order
+        const allAssignments = await tx.assignment.findMany({
+          where: { orderId },
+          select: { actualHours: true },
+        });
+        const totalOrderHours = allAssignments.reduce(
+          (sum, a) => sum.plus(a.actualHours ? new Decimal(a.actualHours.toString()) : new Decimal(0)),
+          new Decimal(0)
+        );
+        updateData.actualHours = totalOrderHours.toDecimalPlaces(2);
+      }
+
       await tx.order.update({
         where: { id: orderId },
         data: updateData,
       });
-      
+
       // Create additional note for manual start tracking
       // Only for employee starting work for the first time (ACTIVE -> IN_PROGRESS)
       if (triggersStatus === 'IN_PROGRESS' && !isAdmin && order.status === 'ACTIVE') {
@@ -132,8 +171,8 @@ export const createOrderNoteService = async (data: CreateOrderNoteInput) => {
             authorId,
             content: `Work started manually by employee at ${new Date().toLocaleString()}`,
             category: 'GENERAL_UPDATE',
-            isInternal: true // Internal tracking note
-          }
+            isInternal: true,
+          },
         });
       }
     }

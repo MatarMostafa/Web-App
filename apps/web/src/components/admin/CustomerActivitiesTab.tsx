@@ -13,6 +13,8 @@ import { EditActivityDialog } from '@/components/activities/EditActivityDialog';
 import { useTranslation } from '@/hooks/useTranslation';
 import { ActivityType } from '@/types/order';
 
+import { type PricingType } from '@/components/activities/AddActivityDialog';
+
 interface Activity {
   id: string;
   name: string;
@@ -20,6 +22,10 @@ interface Activity {
   code?: string;
   unit: string;
   isActive: boolean;
+  pricingTypes?: PricingType[];
+  hourlyRate?: number;
+  perPiecePrice?: number;
+  perArticlePrice?: number;
   prices?: Array<{
     id: string;
     minQuantity: number;
@@ -67,10 +73,13 @@ export const CustomerActivitiesTab = ({ customerId }: CustomerActivitiesTabProps
     unit: string;
     basePrice: number;
     articleBasePrice: number;
+    pricingTypes: PricingType[];
+    hourlyRate: number;
+    perPiecePrice: number;
+    perArticlePrice: number;
     priceRanges: Array<{ minQuantity: number; maxQuantity: number; price: number; validFrom: string }>;
   }): Promise<void> => {
     try {
-      // Create activity with price ranges in a single request (backend handles transaction)
       await apiClient.post<Activity>('/api/pricing/activities', {
         name: data.name,
         type: data.type,
@@ -78,6 +87,10 @@ export const CustomerActivitiesTab = ({ customerId }: CustomerActivitiesTabProps
         unit: data.unit,
         basePrice: data.basePrice,
         articleBasePrice: data.articleBasePrice,
+        pricingTypes: data.pricingTypes,
+        hourlyRate: data.hourlyRate,
+        perPiecePrice: data.perPiecePrice,
+        perArticlePrice: data.perArticlePrice,
         customerId,
         priceRanges: data.priceRanges
       });
@@ -99,11 +112,14 @@ export const CustomerActivitiesTab = ({ customerId }: CustomerActivitiesTabProps
     unit: string;
     basePrice: number;
     articleBasePrice: number;
+    pricingTypes: PricingType[];
+    hourlyRate: number;
+    perPiecePrice: number;
+    perArticlePrice: number;
     priceRanges: Array<{ minQuantity: number; maxQuantity: number; price: number; validFrom: string }>;
   }) => {
     if (!editingActivity) return;
     try {
-      // Update activity with price ranges in a single request (backend handles transaction)
       await apiClient.put(`/api/pricing/activities/${editingActivity.id}`, {
         name: data.name,
         type: data.type,
@@ -111,6 +127,10 @@ export const CustomerActivitiesTab = ({ customerId }: CustomerActivitiesTabProps
         unit: data.unit,
         basePrice: data.basePrice,
         articleBasePrice: data.articleBasePrice,
+        pricingTypes: data.pricingTypes,
+        hourlyRate: data.hourlyRate,
+        perPiecePrice: data.perPiecePrice,
+        perArticlePrice: data.perArticlePrice,
         customerId,
         priceRanges: data.priceRanges
       });
@@ -176,6 +196,7 @@ export const CustomerActivitiesTab = ({ customerId }: CustomerActivitiesTabProps
                   <TableHead className="hidden sm:table-cell">{t('activities.table.type')}</TableHead>
                   <TableHead className="hidden lg:table-cell">{t('activities.table.code')}</TableHead>
                   <TableHead className="hidden sm:table-cell">{t('activities.table.unit')}</TableHead>
+                  <TableHead className="hidden md:table-cell">{t('activities.form.pricingTypes')}</TableHead>
                   <TableHead>{t('activities.form.priceRanges')}</TableHead>
                   <TableHead className="hidden md:table-cell">{t('activities.table.status')}</TableHead>
                   <TableHead className="text-right">{t('activities.table.actions')}</TableHead>
@@ -188,6 +209,11 @@ export const CustomerActivitiesTab = ({ customerId }: CustomerActivitiesTabProps
                     <TableCell className="hidden sm:table-cell">{t(`activities.types.${activity.type}`)}</TableCell>
                     <TableCell className="hidden lg:table-cell">{activity.code || '-'}</TableCell>
                     <TableCell className="hidden sm:table-cell">{activity.unit}</TableCell>
+                    <TableCell className="hidden md:table-cell">
+                      {activity.pricingTypes && activity.pricingTypes.length > 0
+                        ? activity.pricingTypes.map(pt => t(`activities.pricingTypes.${pt}`)).join(', ')
+                        : '-'}
+                    </TableCell>
                     <TableCell className="max-w-[120px] sm:max-w-xs truncate" title={formatPriceRanges(activity.prices)}>
                       {formatPriceRanges(activity.prices)}
                     </TableCell>

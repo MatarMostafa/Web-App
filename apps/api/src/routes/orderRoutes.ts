@@ -509,6 +509,34 @@ router.get(
       const userRole = (req as any).user?.role;
       const isTeamLeader = userRole === 'TEAM_LEADER';
 
+      // Fetch actual hours from assignments for hourly billing
+      const assignments = await prisma.assignment.findMany({
+        where: { orderId },
+        select: { actualHours: true }
+      });
+      const totalActualHours = assignments.reduce((sum, a) => sum + Number(a.actualHours || 0), 0);
+
+      // Compute hourly billing: use order-level activities if present, else fall back to customer definitions
+      let hourlyTotal = 0;
+      const orderActivities = order?.customerActivities || [];
+      if (orderActivities.length > 0) {
+        hourlyTotal = orderActivities
+          .filter(a => (a.pricingTypes as string[])?.includes('HOURLY') || Number(a.hourlyRate) > 0)
+          .reduce((sum, a) => sum + Number(a.hourlyRate) * totalActualHours, 0);
+      } else if (totalActualHours > 0 && order) {
+        // No order-level activities saved — look up definition-level rates for this customer
+        const definitions = await prisma.customerActivity.findMany({
+          where: { customerId: order.customerId, orderId: null, isActive: true },
+          select: { hourlyRate: true, pricingTypes: true }
+        });
+        hourlyTotal = definitions
+          .filter(d => (d.pricingTypes as string[])?.includes('HOURLY') || Number(d.hourlyRate) > 0)
+          .reduce((sum, d) => sum + Number(d.hourlyRate) * totalActualHours, 0);
+      }
+
+      const containerCount = containers.length || 1;
+      const hourlyPerContainer = hourlyTotal / containerCount;
+
       const formattedContainers = containers.map(container => {
         const employeeAssignment = currentEmployeeId
           ? container.employeeAssignments.find(a => a.employeeId === currentEmployeeId)
@@ -518,7 +546,7 @@ router.get(
           id: container.id,
           serialNumber: container.serialNumber,
           cartonQuantity: container.cartonQuantity,
-          articleQuantity: container.articleQuantity,
+          articleQuantity: container.pieceQuantity,
           isStarted: employeeAssignment ? true : false,
           isCompleted: employeeAssignment?.isCompleted || false,
           articles: container.articles.map(article => ({
@@ -529,11 +557,21 @@ router.get(
 
         if (isTeamLeader) return base;
 
+        const cartonPrice = Number(container.cartonPrice);
+        const piecePrice = Number(container.piecePrice);
+        const cartonTotal = container.cartonQuantity * cartonPrice;
+        const pieceTotal = (container.pieceQuantity ?? 0) * piecePrice;
+
         return {
           ...base,
-          cartonPrice: Number(container.cartonPrice),
-          articlePrice: Number(container.articlePrice),
+          cartonPrice,
+          cartonTotal,
+          articlePrice: piecePrice,
+          articleTotal: pieceTotal,
+          hourlyTotal: hourlyPerContainer,
+          totalActualHours,
           basePrice: orderBasePrice,
+          containerTotal: cartonTotal + pieceTotal + orderBasePrice + hourlyPerContainer,
           articles: container.articles.map(article => ({
             articleName: article.articleName,
             quantity: article.quantity,
@@ -573,7 +611,7 @@ router.post(
         },
         data: {
           reportedCartonQuantity,
-          reportedArticleQuantity,
+          reportedPieceQuantity: reportedArticleQuantity,
           notes,
           isCompleted: true,
           completedAt: new Date()

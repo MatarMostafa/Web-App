@@ -61,6 +61,7 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({
   const [employees, setEmployees] = useState<any[]>([]);
   const [activities, setActivities] = useState<any[]>([]);
   const [selectedActivities, setSelectedActivities] = useState<string[]>([]);
+  const [activityPricingSelections, setActivityPricingSelections] = useState<Record<string, string>>({});
   const [templateData, setTemplateData] = useState<Record<string, string> | null>(null);
   const [containers, setContainers] = useState<Container[]>([]);
 
@@ -195,6 +196,7 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({
     setStartTimeOnly("09:00");
     setEndTimeOnly("");
     setSelectedActivities([]);
+    setActivityPricingSelections({});
     setTemplateData(null);
     setContainers([]);
     setCurrentStep(1);
@@ -240,11 +242,16 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({
         ...formData,
         activities: selectedActivities.map(activityId => {
           const activity = activities.find(a => a.id === activityId);
+          const selectedPricingType = activityPricingSelections[activityId] || (activity?.pricingTypes?.[0] ?? null);
           return {
             activityId,
             quantity: containers.reduce((sum, c) => sum + c.cartonQuantity, 0),
             articleBasePrice: Number(activity?.articleBasePrice) || 0,
-            basePrice: Number(activity?.basePrice) || 0
+            basePrice: Number(activity?.basePrice) || 0,
+            selectedPricingType,
+            hourlyRate: Number(activity?.hourlyRate) || 0,
+            perPiecePrice: Number(activity?.perPiecePrice) || 0,
+            perArticlePrice: Number(activity?.perArticlePrice) || 0,
           };
         }),
         containers,
@@ -332,6 +339,24 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({
     setSelectedActivities(prev =>
       checked ? [...prev, activityId] : prev.filter(id => id !== activityId)
     );
+    if (checked) {
+      const activity = activities.find(a => a.id === activityId);
+      if (activity?.pricingTypes?.length > 0) {
+        setActivityPricingSelections(prev => ({ ...prev, [activityId]: activity.pricingTypes[0] }));
+      }
+    } else {
+      setActivityPricingSelections(prev => { const next = { ...prev }; delete next[activityId]; return next; });
+    }
+  };
+
+  const getPricingTypeLabel = (pt: string) => {
+    const labels: Record<string, string> = {
+      HOURLY: t('activities.pricingTypes.HOURLY'),
+      PER_PIECE: t('activities.pricingTypes.PER_PIECE'),
+      PER_CARTON: t('activities.pricingTypes.PER_CARTON'),
+      PER_ARTICLE: t('activities.pricingTypes.PER_ARTICLE'),
+    };
+    return labels[pt] || pt;
   };
 
   const renderStep1 = () => (
@@ -376,24 +401,63 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({
         <div className="text-sm text-muted-foreground mb-2">
           {t("admin.orders.form.activitiesSelected", { count: selectedActivities.length })}
         </div>
-        <div className="max-h-60 overflow-y-auto border rounded-md p-3 space-y-3">
+        <div className="max-h-72 overflow-y-auto border rounded-md p-3 space-y-3">
           {activities.map((activity) => (
-            <div key={activity.id} className="border rounded-lg p-3">
+            <div key={activity.id} className="border rounded-lg p-3 space-y-2">
               <div className="flex items-center space-x-2">
                 <Checkbox
                   id={`activity-${activity.id}`}
                   checked={selectedActivities.includes(activity.id)}
                   onCheckedChange={(checked) => handleActivityToggle(activity.id, checked as boolean)}
                 />
-                <div>
-                  <Label htmlFor={`activity-${activity.id}`} className="text-sm font-medium">
+                <div className="flex-1">
+                  <Label htmlFor={`activity-${activity.id}`} className="text-sm font-medium cursor-pointer">
                     {activity.name}
                   </Label>
                   <p className="text-xs text-muted-foreground">
-                    {t("admin.orders.form.activityType")}: {activity.type?.replace('_', ' ')} | {t("admin.orders.form.activityUnit")}: {activity.unit}
+                    {t("admin.orders.form.activityType")}: {activity.type?.replace(/_/g, ' ')} | {t("admin.orders.form.activityUnit")}: {activity.unit}
                   </p>
+                  {activity.pricingTypes && activity.pricingTypes.length > 0 && (
+                    <p className="text-xs text-muted-foreground">
+                      {t("activities.form.pricingTypes")}: {activity.pricingTypes.map((pt: string) => getPricingTypeLabel(pt)).join(', ')}
+                    </p>
+                  )}
                 </div>
               </div>
+              {selectedActivities.includes(activity.id) && activity.pricingTypes && activity.pricingTypes.length > 0 && (
+                <div className="ml-6">
+                  <Label className="text-xs">{t("admin.orders.form.selectPricingType")}</Label>
+                  <Select
+                    value={activityPricingSelections[activity.id] || activity.pricingTypes[0]}
+                    onValueChange={(val) => setActivityPricingSelections(prev => ({ ...prev, [activity.id]: val }))}
+                  >
+                    <SelectTrigger className="h-8 text-xs mt-1">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {activity.pricingTypes.map((pt: string) => (
+                        <SelectItem key={pt} value={pt} className="text-xs">
+                          {getPricingTypeLabel(pt)}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {(() => {
+                    const selectedPt = activityPricingSelections[activity.id] || activity.pricingTypes[0];
+                    if (selectedPt === 'HOURLY') return <p className="text-xs text-muted-foreground mt-1">{t("activities.form.hourlyRate")}: €{Number(activity.hourlyRate || 0).toFixed(2)}/h</p>;
+                    if (selectedPt === 'PER_PIECE') return <p className="text-xs text-muted-foreground mt-1">{t("activities.form.perPiecePrice")}: €{Number(activity.perPiecePrice || 0).toFixed(2)}</p>;
+                    if (selectedPt === 'PER_CARTON' && activity.customerPrices?.length > 0) return (
+                      <div className="mt-1 grid grid-cols-2 gap-1 text-xs">
+                        {activity.customerPrices.map((price: any, idx: number) => (
+                          <div key={idx} className="bg-muted/50 px-2 py-1 rounded">{price.minQuantity}-{price.maxQuantity}: €{Number(price.price).toFixed(2)}</div>
+                        ))}
+                      </div>
+                    );
+                    if (selectedPt === 'PER_ARTICLE') return <p className="text-xs text-muted-foreground mt-1">{t("activities.form.perArticlePrice")}: €{Number(activity.perArticlePrice || 0).toFixed(2)}</p>;
+                    return null;
+                  })()}
+                </div>
+              )}
             </div>
           ))}
           {activities.length === 0 && (

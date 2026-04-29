@@ -6,6 +6,13 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Dialog,
   DialogContent,
   DialogHeader,
@@ -66,6 +73,7 @@ const CreateOrderDialog: React.FC<CreateOrderDialogProps> = ({
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [activities, setActivities] = useState<CustomerActivity[]>([]);
   const [selectedActivities, setSelectedActivities] = useState<string[]>([]);
+  const [activityPricingSelections, setActivityPricingSelections] = useState<Record<string, string>>({});
   const [templateData, setTemplateData] = useState<Record<string, string> | null>(null);
   const [templateLines, setTemplateLines] = useState<string[]>([]);
   const [containers, setContainers] = useState<Container[]>([]);
@@ -185,6 +193,7 @@ const CreateOrderDialog: React.FC<CreateOrderDialogProps> = ({
     setStartTimeOnly("09:00");
     setEndTimeOnly("");
     setSelectedActivities([]);
+    setActivityPricingSelections({});
     setTemplateData(null);
     setContainers([]);
     setCurrentStep(1);
@@ -237,11 +246,13 @@ const CreateOrderDialog: React.FC<CreateOrderDialogProps> = ({
         customerId: formData.customerId,
         activities: selectedActivities.map(activityId => {
           const activity = activities.find(a => a.id === activityId);
+          const selectedPricingType = activityPricingSelections[activityId] || ((activity as any)?.pricingTypes?.[0] ?? null);
           return {
             activityId,
             quantity: containers.reduce((sum, c) => sum + c.cartonQuantity, 0),
             basePrice: Number(activity?.basePrice) || 0,
-            articleBasePrice: Number(activity?.articleBasePrice) || 0
+            articleBasePrice: Number(activity?.articleBasePrice) || 0,
+            selectedPricingType,
           };
         }),
         containers,
@@ -293,6 +304,15 @@ const CreateOrderDialog: React.FC<CreateOrderDialogProps> = ({
       const newActivities = checked
         ? [...prev, activityId]
         : prev.filter(id => id !== activityId);
+
+      if (checked) {
+        const activity = activities.find(a => a.id === activityId);
+        if ((activity as any)?.pricingTypes?.length > 0) {
+          setActivityPricingSelections(p => ({ ...p, [activityId]: (activity as any).pricingTypes[0] }));
+        }
+      } else {
+        setActivityPricingSelections(p => { const n = { ...p }; delete n[activityId]; return n; });
+      }
       
       // Update both carton and article prices for all containers when activities change
       setTimeout(() => {
@@ -348,6 +368,16 @@ const CreateOrderDialog: React.FC<CreateOrderDialogProps> = ({
     }));
   };
 
+  const getPricingTypeLabel = (pt: string) => {
+    const labels: Record<string, string> = {
+      HOURLY: t('activities.pricingTypes.HOURLY'),
+      PER_PIECE: t('activities.pricingTypes.PER_PIECE'),
+      PER_CARTON: t('activities.pricingTypes.PER_CARTON'),
+      PER_ARTICLE: t('activities.pricingTypes.PER_ARTICLE'),
+    };
+    return labels[pt] || pt;
+  };
+
   const renderStep1 = () => (
     <div className="space-y-4">
       <div className="text-center mb-6">
@@ -360,31 +390,51 @@ const CreateOrderDialog: React.FC<CreateOrderDialogProps> = ({
           {selectedActivities.length}{" "}
           {t("customerPortal.createOrder.activitiesSelected")}
         </div>
-        <div className="max-h-60 overflow-y-auto border rounded-md p-3 space-y-3">
+        <div className="max-h-72 overflow-y-auto border rounded-md p-3 space-y-3">
           {activities.map((activity) => (
             <div key={activity.id} className="border rounded-lg p-3 space-y-2">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id={`activity-${activity.id}`}
-                    checked={selectedActivities.includes(activity.id)}
-                    onCheckedChange={(checked) =>
-                      handleActivityToggle(activity.id, checked as boolean)
-                    }
-                  />
-                  <div>
-                    <Label
-                      htmlFor={`activity-${activity.id}`}
-                      className="text-sm font-medium"
-                    >
-                      {activity.name}
-                    </Label>
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id={`activity-${activity.id}`}
+                  checked={selectedActivities.includes(activity.id)}
+                  onCheckedChange={(checked) =>
+                    handleActivityToggle(activity.id, checked as boolean)
+                  }
+                />
+                <div className="flex-1">
+                  <Label htmlFor={`activity-${activity.id}`} className="text-sm font-medium cursor-pointer">
+                    {activity.name}
+                  </Label>
+                  <p className="text-xs text-muted-foreground">
+                    {t("admin.orders.form.activityType")}: {activity.type?.replace(/_/g, ' ')} | {t("admin.orders.form.activityUnit")}: {activity.unit}
+                  </p>
+                  {(activity as any).pricingTypes?.length > 0 && (
                     <p className="text-xs text-muted-foreground">
-                      {t("admin.orders.form.activityType")}: {activity.type?.replace('_', ' ')} | {t("admin.orders.form.activityUnit")}: {activity.unit}
+                      {t("activities.form.pricingTypes")}: {(activity as any).pricingTypes.map((pt: string) => getPricingTypeLabel(pt)).join(', ')}
                     </p>
-                  </div>
+                  )}
                 </div>
               </div>
+              {selectedActivities.includes(activity.id) && (activity as any).pricingTypes?.length > 0 && (
+                <div className="ml-6">
+                  <Label className="text-xs">{t("admin.orders.form.selectPricingType")}</Label>
+                  <Select
+                    value={activityPricingSelections[activity.id] || (activity as any).pricingTypes[0]}
+                    onValueChange={(val) => setActivityPricingSelections(prev => ({ ...prev, [activity.id]: val }))}
+                  >
+                    <SelectTrigger className="h-8 text-xs mt-1">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {(activity as any).pricingTypes.map((pt: string) => (
+                        <SelectItem key={pt} value={pt} className="text-xs">
+                          {getPricingTypeLabel(pt)}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
             </div>
           ))}
           {activities.length === 0 && (

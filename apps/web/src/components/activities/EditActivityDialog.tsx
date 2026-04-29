@@ -4,12 +4,14 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useTranslation } from '@/hooks/useTranslation';
 import { ActivityType } from '@/types/order';
 import { Plus, Trash2 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
+import { PRICING_TYPES, type PricingType } from './AddActivityDialog';
 
 interface Activity {
   id: string;
@@ -17,6 +19,12 @@ interface Activity {
   type: ActivityType;
   code?: string;
   unit: string;
+  basePrice?: number;
+  articleBasePrice?: number;
+  pricingTypes?: PricingType[];
+  hourlyRate?: number;
+  perPiecePrice?: number;
+  perArticlePrice?: number;
   prices?: Array<{
     id: string;
     minQuantity: number;
@@ -38,6 +46,10 @@ interface EditActivityDialogProps {
     unit: string;
     basePrice: number;
     articleBasePrice: number;
+    pricingTypes: PricingType[];
+    hourlyRate: number;
+    perPiecePrice: number;
+    perArticlePrice: number;
     priceRanges: Array<{ minQuantity: number; maxQuantity: number; price: number; validFrom: string }>;
   }) => Promise<void>;
 }
@@ -50,8 +62,12 @@ export const EditActivityDialog = ({ open, onOpenChange, activity, customerId, o
     code: '',
     unit: 'hour',
     basePrice: 0,
-    articleBasePrice: 0
+    articleBasePrice: 0,
+    hourlyRate: 0,
+    perPiecePrice: 0,
+    perArticlePrice: 0,
   });
+  const [selectedPricingTypes, setSelectedPricingTypes] = useState<PricingType[]>([]);
   const [priceRanges, setPriceRanges] = useState([
     { minQuantity: 1, maxQuantity: 10, price: 0, validFrom: new Date().toISOString().split('T')[0] }
   ]);
@@ -64,10 +80,13 @@ export const EditActivityDialog = ({ open, onOpenChange, activity, customerId, o
         type: activity.type,
         code: activity.code || '',
         unit: activity.unit,
-        basePrice: (activity as any).basePrice || 0,
-        articleBasePrice: (activity as any).articleBasePrice || 0
+        basePrice: Number(activity.basePrice) || 0,
+        articleBasePrice: Number(activity.articleBasePrice) || 0,
+        hourlyRate: Number(activity.hourlyRate) || 0,
+        perPiecePrice: Number(activity.perPiecePrice) || 0,
+        perArticlePrice: Number(activity.perArticlePrice) || 0,
       });
-      
+      setSelectedPricingTypes(activity.pricingTypes || []);
       if (activity.prices && activity.prices.length > 0) {
         setPriceRanges(activity.prices.map(p => ({
           minQuantity: p.minQuantity,
@@ -81,43 +100,34 @@ export const EditActivityDialog = ({ open, onOpenChange, activity, customerId, o
     }
   }, [activity]);
 
+  const togglePricingType = (pt: PricingType) => {
+    setSelectedPricingTypes(prev =>
+      prev.includes(pt) ? prev.filter(p => p !== pt) : [...prev, pt]
+    );
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Validate required fields
-    if (!formData.name.trim()) {
-      toast.error(t('activities.validation.nameRequired'));
-      return;
-    }
-    if (!formData.unit.trim()) {
-      toast.error(t('activities.validation.unitRequired'));
-      return;
-    }
-    
-    // Validate price ranges
-    for (let i = 0; i < priceRanges.length; i++) {
-      const range = priceRanges[i];
-      if (range.minQuantity <= 0 || range.maxQuantity <= 0) {
-        toast.error(t('activities.validation.quantityPositive'));
-        return;
-      }
-      if (range.minQuantity > range.maxQuantity) {
-        toast.error(t('activities.validation.minMaxQuantity'));
-        return;
-      }
-      if (range.maxQuantity > 2147483647) {
-        toast.error('Maximum quantity cannot exceed 2,147,483,647');
-        return;
-      }
-      if (range.price < 0) {
-        toast.error(t('activities.validation.pricePositive'));
-        return;
+    if (!formData.name.trim()) { toast.error(t('activities.validation.nameRequired')); return; }
+    if (!formData.unit.trim()) { toast.error(t('activities.validation.unitRequired')); return; }
+    if (selectedPricingTypes.length === 0) { toast.error(t('activities.validation.pricingTypeRequired')); return; }
+
+    if (selectedPricingTypes.includes('PER_CARTON')) {
+      for (const range of priceRanges) {
+        if (range.minQuantity <= 0 || range.maxQuantity <= 0) { toast.error(t('activities.validation.quantityPositive')); return; }
+        if (range.minQuantity > range.maxQuantity) { toast.error(t('activities.validation.minMaxQuantity')); return; }
+        if (range.maxQuantity > 2147483647) { toast.error('Maximum quantity cannot exceed 2,147,483,647'); return; }
+        if (range.price < 0) { toast.error(t('activities.validation.pricePositive')); return; }
       }
     }
-    
+
     setLoading(true);
     try {
-      await onSubmit({ ...formData, priceRanges });
+      await onSubmit({
+        ...formData,
+        pricingTypes: selectedPricingTypes,
+        priceRanges: selectedPricingTypes.includes('PER_CARTON') ? priceRanges : []
+      });
     } catch (error) {
       // Error handled by parent
     } finally {
@@ -125,18 +135,19 @@ export const EditActivityDialog = ({ open, onOpenChange, activity, customerId, o
     }
   };
 
-  const addPriceRange = () => {
-    setPriceRanges([...priceRanges, { minQuantity: 1, maxQuantity: 10, price: 0, validFrom: new Date().toISOString().split('T')[0] }]);
-  };
-
-  const removePriceRange = (index: number) => {
-    setPriceRanges(priceRanges.filter((_, i) => i !== index));
-  };
-
+  const addPriceRange = () => setPriceRanges([...priceRanges, { minQuantity: 1, maxQuantity: 10, price: 0, validFrom: new Date().toISOString().split('T')[0] }]);
+  const removePriceRange = (index: number) => setPriceRanges(priceRanges.filter((_, i) => i !== index));
   const updatePriceRange = (index: number, field: string, value: any) => {
     const updated = [...priceRanges];
     updated[index] = { ...updated[index], [field]: value };
     setPriceRanges(updated);
+  };
+
+  const pricingTypeLabels: Record<PricingType, string> = {
+    HOURLY: t('activities.pricingTypes.HOURLY'),
+    PER_PIECE: t('activities.pricingTypes.PER_PIECE'),
+    PER_CARTON: t('activities.pricingTypes.PER_CARTON'),
+    PER_ARTICLE: t('activities.pricingTypes.PER_ARTICLE'),
   };
 
   return (
@@ -149,18 +160,12 @@ export const EditActivityDialog = ({ open, onOpenChange, activity, customerId, o
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Label>{t("activities.form.name")} *</Label>
-              <Input
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                required
-              />
+              <Input value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} required />
             </div>
             <div>
               <Label>{t("activities.form.type")} *</Label>
               <Select value={formData.type} onValueChange={(v) => setFormData({ ...formData, type: v as ActivityType })}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
+                <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
                   {Object.values(ActivityType).map(type => (
                     <SelectItem key={type} value={type}>{t(`activities.types.${type}`)}</SelectItem>
@@ -169,108 +174,114 @@ export const EditActivityDialog = ({ open, onOpenChange, activity, customerId, o
               </Select>
             </div>
           </div>
+
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Label>{t("activities.form.code")}</Label>
-              <Input
-                value={formData.code}
-                onChange={(e) => setFormData({ ...formData, code: e.target.value })}
-              />
+              <Input value={formData.code} onChange={(e) => setFormData({ ...formData, code: e.target.value })} />
             </div>
             <div>
               <Label>{t("activities.form.unit")} *</Label>
-              <Input
-                value={formData.unit}
-                onChange={(e) => setFormData({ ...formData, unit: e.target.value })}
-                required
-              />
+              <Input value={formData.unit} onChange={(e) => setFormData({ ...formData, unit: e.target.value })} required />
             </div>
-          </div>
-          
-          <div>
-            <Label>{t("activities.form.articleBasePrice")}</Label>
-            <Label>{t("activities.form.articleBasePrice")}</Label>
-            <Input
-              type="number"
-              step="0.01"
-              min="0"
-              value={formData.articleBasePrice || ''}
-              onChange={(e) => setFormData({ ...formData, articleBasePrice: e.target.value ? parseFloat(e.target.value) : 0 })}
-              placeholder={t("activities.form.articleBasePricePlaceholder")}
-            />
-            <p className="text-xs text-muted-foreground mt-1">
-              {t("activities.form.articleBasePriceHelp")}
-            </p>
-          </div>
-          
-          <div>
-            <div className="flex justify-between items-center mb-2">
-              <Label>{t("activities.form.priceRanges")}</Label>
-              <Button type="button" variant="outline" size="sm" onClick={addPriceRange}>
-                <Plus className="w-4 h-4 mr-1" />
-                {t("activities.form.addRange")}
-              </Button>
-            </div>
-            {priceRanges.map((range, index) => (
-              <div key={index} className="grid grid-cols-5 gap-2 mb-2 items-end">
-                <div>
-                  <Label className="text-xs">{t("activities.form.minQty")}</Label>
-                  <Input
-                    type="number"
-                    min="1"
-                    value={range.minQuantity}
-                    onChange={(e) => updatePriceRange(index, 'minQuantity', Number(e.target.value))}
-                    required
-                    
-                  />
-                </div>
-                <div>
-                  <Label className="text-xs">{t("activities.form.maxQty")}</Label>
-                  <Input
-                    type="number"
-                    min="1"
-                    max="2147483647"
-                    value={range.maxQuantity}
-                    onChange={(e) => updatePriceRange(index, 'maxQuantity', Number(e.target.value))}
-                    required
-                  />
-                </div>
-                <div>
-                  <Label className="text-xs">{t("activities.form.price")}</Label>
-                  <Input
-                    type="number"
-                    step="0.01"
-                    min="0"
-                    value={range.price}
-                    onChange={(e) => updatePriceRange(index, 'price', Number(e.target.value))}
-                    required
-                  />
-                </div>
-                <div>
-                  <Label className="text-xs">{t("activities.form.validFrom")}</Label>
-                  <Input
-                    type="date"
-                    value={range.validFrom}
-                    onChange={(e) => updatePriceRange(index, 'validFrom', e.target.value)}
-                  />
-                </div>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => removePriceRange(index)}
-                  disabled={priceRanges.length === 1}
-                >
-                  <Trash2 className="w-4 h-4" />
-                </Button>
-              </div>
-            ))}
           </div>
 
+          {/* Pricing Types */}
+          <div>
+            <Label>{t("activities.form.pricingTypes")} *</Label>
+            <div className="grid grid-cols-2 gap-2 mt-2 border rounded-md p-3">
+              {PRICING_TYPES.map(pt => (
+                <div key={pt} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={`pt-edit-${pt}`}
+                    checked={selectedPricingTypes.includes(pt)}
+                    onCheckedChange={() => togglePricingType(pt)}
+                  />
+                  <Label htmlFor={`pt-edit-${pt}`} className="text-sm font-normal cursor-pointer">
+                    {pricingTypeLabels[pt]}
+                  </Label>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Hourly billing */}
+          {selectedPricingTypes.includes('HOURLY') && (
+            <div>
+              <Label>{t("activities.form.hourlyRate")} (€)</Label>
+              <Input
+                type="number" step="0.01" min="0"
+                value={formData.hourlyRate || ''}
+                onChange={(e) => setFormData({ ...formData, hourlyRate: e.target.value ? parseFloat(e.target.value) : 0 })}
+                placeholder={t("activities.form.hourlyRatePlaceholder")}
+              />
+              <p className="text-xs text-muted-foreground mt-1">{t("activities.form.hourlyRateHelp")}</p>
+            </div>
+          )}
+
+          {/* Per piece price */}
+          {selectedPricingTypes.includes('PER_PIECE') && (
+            <div>
+              <Label>{t("activities.form.perPiecePrice")} (€)</Label>
+              <Input
+                type="number" step="0.01" min="0"
+                value={formData.perPiecePrice || ''}
+                onChange={(e) => setFormData({ ...formData, perPiecePrice: e.target.value ? parseFloat(e.target.value) : 0 })}
+                placeholder={t("activities.form.perPiecePricePlaceholder")}
+              />
+            </div>
+          )}
+
+          {/* Per carton price ranges */}
+          {selectedPricingTypes.includes('PER_CARTON') && (
+            <div>
+              <div className="flex justify-between items-center mb-2">
+                <Label>{t("activities.form.priceRanges")}</Label>
+                <Button type="button" variant="outline" size="sm" onClick={addPriceRange}>
+                  <Plus className="w-4 h-4 mr-1" />{t("activities.form.addRange")}
+                </Button>
+              </div>
+              {priceRanges.map((range, index) => (
+                <div key={index} className="grid grid-cols-5 gap-2 mb-2 items-end">
+                  <div>
+                    <Label className="text-xs">{t("activities.form.minQty")}</Label>
+                    <Input type="number" min="1" value={range.minQuantity} onChange={(e) => updatePriceRange(index, 'minQuantity', Number(e.target.value))} required />
+                  </div>
+                  <div>
+                    <Label className="text-xs">{t("activities.form.maxQty")}</Label>
+                    <Input type="number" min="1" max="2147483647" value={range.maxQuantity} onChange={(e) => updatePriceRange(index, 'maxQuantity', Number(e.target.value))} required />
+                  </div>
+                  <div>
+                    <Label className="text-xs">{t("activities.form.price")}</Label>
+                    <Input type="number" step="0.01" min="0" value={range.price} onChange={(e) => updatePriceRange(index, 'price', Number(e.target.value))} required />
+                  </div>
+                  <div>
+                    <Label className="text-xs">{t("activities.form.validFrom")}</Label>
+                    <Input type="date" value={range.validFrom} onChange={(e) => updatePriceRange(index, 'validFrom', e.target.value)} />
+                  </div>
+                  <Button type="button" variant="outline" size="sm" onClick={() => removePriceRange(index)} disabled={priceRanges.length === 1}>
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Per article price */}
+          {selectedPricingTypes.includes('PER_ARTICLE') && (
+            <div>
+              <Label>{t("activities.form.perArticlePrice")} (€)</Label>
+              <Input
+                type="number" step="0.01" min="0"
+                value={formData.perArticlePrice || ''}
+                onChange={(e) => setFormData({ ...formData, perArticlePrice: e.target.value ? parseFloat(e.target.value) : 0 })}
+                placeholder={t("activities.form.perArticlePricePlaceholder")}
+              />
+            </div>
+          )}
+
           <div className="flex justify-end gap-2">
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-              {t("common.cancel")}
-            </Button>
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>{t("common.cancel")}</Button>
             <Button type="submit" disabled={loading}>
               {loading ? t("activities.form.updating") : t("activities.updateActivity")}
             </Button>
