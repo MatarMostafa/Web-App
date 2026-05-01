@@ -1,4 +1,4 @@
-import express from "express";
+﻿import express from "express";
 import { authMiddleware } from "../middleware/authMiddleware";
 import { roleMiddleware } from "../middleware/roleMiddleware";
 import {
@@ -50,34 +50,12 @@ router.get(
         return res.status(404).json({ message: "Customer profile not found" });
       }
 
-      // Get ONLY customer-specific activities (no shared activities)
-      // Only return activities that have pricing configured for this customer
-      const customerActivities = await prisma.customerActivity.findMany({
-        where: {
-          customerId,
-          orderId: null, // Only standalone activities, not order-specific ones
-          isActive: true
-        },
-        // include: { activity: true } // Removed
-        orderBy: { createdAt: 'desc' }
-      });
-
-      // Alternative: Get activities that have customer pricing configured
+      // Get all active definition-level activities for this customer, with their prices if any
       const activitiesWithPricing = await prisma.customerActivity.findMany({
         where: {
           customerId,
           orderId: null,
-          isActive: true,
-          prices: {
-            some: {
-              isActive: true,
-              effectiveFrom: { lte: new Date() },
-              OR: [
-                { effectiveTo: null },
-                { effectiveTo: { gte: new Date() } }
-              ]
-            }
-          }
+          isActive: true
         },
         include: {
           prices: {
@@ -95,7 +73,17 @@ router.get(
         orderBy: { name: 'asc' }
       });
 
-      res.json({ success: true, data: activitiesWithPricing });
+      // Deduplicate by name+type — keep the one with prices if duplicates exist
+      const seen = new Map<string, typeof activitiesWithPricing[0]>();
+      for (const activity of activitiesWithPricing) {
+        const key = `${activity.name}__${activity.type}`;
+        const existing = seen.get(key);
+        if (!existing || (activity.prices.length > 0 && existing.prices.length === 0)) {
+          seen.set(key, activity);
+        }
+      }
+      const deduplicated = Array.from(seen.values());
+      res.json({ success: true, data: deduplicated });
     } catch (error) {
       console.error("Get customer activities error:", error);
       res.status(500).json({
