@@ -89,7 +89,7 @@ export const getOrderByIdService = async (id: string) => {
   return order;
 };
 
-export const createOrderService = async (data: OrderCreateInput & { assignedEmployeeIds?: string[]; activities?: Array<{ activityId: string; quantity?: number; basePrice?: number; articleBasePrice?: number }>; customerId: string; templateData?: Record<string, string> | null; createdBySubAccountId?: string; cartonQuantity?: number; articleQuantity?: number; pieceQuantity?: number; containers?: Array<{ serialNumber: string; cartonQuantity: number; articleQuantity?: number; pieceQuantity: number; cartonPrice: number; piecePrice: number }>; totalPrice?: number; teamId?: string }, createdBy?: string) => {
+export const createOrderService = async (data: OrderCreateInput & { assignedEmployeeIds?: string[]; activities?: Array<{ activityId: string; quantity?: number; basePrice?: number; articleBasePrice?: number; selectedPricingType?: string; notes?: string }>; customerId: string; templateData?: Record<string, string> | null; createdBySubAccountId?: string; cartonQuantity?: number; articleQuantity?: number; pieceQuantity?: number; containers?: Array<{ serialNumber: string; cartonQuantity: number; articleQuantity?: number; pieceQuantity: number; cartonPrice: number; piecePrice: number }>; totalPrice?: number; teamId?: string }, createdBy?: string) => {
   let { assignedEmployeeIds, activities, customerId, templateData, createdBySubAccountId, cartonQuantity, articleQuantity: _orderArticleQuantity, pieceQuantity, containers, totalPrice, teamId, ...orderData } = data;
 
   console.log('Creating order with data:', { containers: containers?.length || 0, containerData: containers }); // Debug log
@@ -216,10 +216,21 @@ export const createOrderService = async (data: OrderCreateInput & { assignedEmpl
             }
           }
 
-          // For direct-rate activities, unitPrice is 0 at creation (billed later via actualHours)
+          // Calculate unitPrice and lineTotal based on selectedPricingType
           let unitPrice = 0;
           let lineTotal = 0;
-          if (!hasDirectRate) {
+          const qty = new Decimal(activity.quantity || 1);
+
+          if (activity.selectedPricingType === 'HOURLY') {
+            unitPrice = Number(definition.hourlyRate) || 0;
+            lineTotal = Number(qty.mul(unitPrice));
+          } else if (activity.selectedPricingType === 'PER_PIECE') {
+            unitPrice = Number(definition.perPiecePrice) || 0;
+            lineTotal = Number(qty.mul(unitPrice));
+          } else if (activity.selectedPricingType === 'PER_ARTICLE') {
+            unitPrice = Number(definition.perArticlePrice) || 0;
+            lineTotal = Number(qty.mul(unitPrice));
+          } else if (!hasDirectRate || activity.selectedPricingType === 'PER_CARTON') {
             const priceResult = await getPriceForCustomer(
               customerId!,
               activity.activityId,
@@ -227,14 +238,14 @@ export const createOrderService = async (data: OrderCreateInput & { assignedEmpl
               orderData.scheduledDate as Date
             );
             unitPrice = priceResult.price.toNumber();
-            lineTotal = priceResult.price.toNumber();
+            lineTotal = Number(qty.mul(unitPrice));
           }
 
           const customerActivity = await tx.customerActivity.create({
             data: {
               customerId: customerId!,
               orderId: newOrder.id,
-              quantity: activity.quantity ?? 1,
+              quantity: qty,
               unitPrice,
               lineTotal,
               basePrice: activity.basePrice ? new Decimal(activity.basePrice) : new Decimal(0),
@@ -250,7 +261,9 @@ export const createOrderService = async (data: OrderCreateInput & { assignedEmpl
               code: definition.code,
               description: definition.description,
               unit: definition.unit,
-              isActive: true
+              isActive: true,
+              selectedPricingType: activity.selectedPricingType || null,
+              notes: activity.notes || null
             }
           });
           console.log(`Created customer activity ${customerActivity.id} for order ${newOrder.id}`);
@@ -354,7 +367,7 @@ export const createOrderService = async (data: OrderCreateInput & { assignedEmpl
 
 export const updateOrderService = async (
   id: string,
-  data: OrderUpdateInput & { assignedEmployeeIds?: string[]; activities?: Array<{ activityId: string; quantity?: number; basePrice?: number; articleBasePrice?: number }>; templateData?: Record<string, string> | null; cartonQuantity?: number; articleQuantity?: number; pieceQuantity?: number; containers?: Array<{ serialNumber: string; cartonQuantity: number; articleQuantity?: number; pieceQuantity: number; cartonPrice: number; piecePrice: number }>; totalPrice?: number; teamId?: string },
+  data: OrderUpdateInput & { assignedEmployeeIds?: string[]; activities?: Array<{ activityId: string; quantity?: number; basePrice?: number; articleBasePrice?: number; selectedPricingType?: string; notes?: string }>; templateData?: Record<string, string> | null; cartonQuantity?: number; articleQuantity?: number; pieceQuantity?: number; containers?: Array<{ serialNumber: string; cartonQuantity: number; articleQuantity?: number; pieceQuantity: number; cartonPrice: number; piecePrice: number }>; totalPrice?: number; teamId?: string },
   updatedBy?: string
 ) => {
   let { assignedEmployeeIds, activities, templateData, cartonQuantity, articleQuantity, pieceQuantity, containers, totalPrice, teamId, ...orderData } = data;
@@ -456,7 +469,18 @@ export const updateOrderService = async (
 
             let unitPrice = 0;
             let lineTotal = 0;
-            if (!hasDirectRate) {
+            const qty = new Decimal(activity.quantity || 1);
+
+            if (activity.selectedPricingType === 'HOURLY') {
+              unitPrice = Number(definition.hourlyRate) || 0;
+              lineTotal = Number(qty.mul(unitPrice));
+            } else if (activity.selectedPricingType === 'PER_PIECE') {
+              unitPrice = Number(definition.perPiecePrice) || 0;
+              lineTotal = Number(qty.mul(unitPrice));
+            } else if (activity.selectedPricingType === 'PER_ARTICLE') {
+              unitPrice = Number(definition.perArticlePrice) || 0;
+              lineTotal = Number(qty.mul(unitPrice));
+            } else if (!hasDirectRate || activity.selectedPricingType === 'PER_CARTON') {
               const priceResult = await getPriceForCustomer(
                 updatedOrder.customerId,
                 activity.activityId,
@@ -464,14 +488,14 @@ export const updateOrderService = async (
                 updatedOrder.scheduledDate
               );
               unitPrice = priceResult.price.toNumber();
-              lineTotal = priceResult.price.toNumber();
+              lineTotal = Number(qty.mul(unitPrice));
             }
 
             await tx.customerActivity.create({
               data: {
                 customerId: updatedOrder.customerId,
                 orderId: id,
-                quantity: activity.quantity ?? 1,
+                quantity: qty,
                 unitPrice,
                 lineTotal,
                 basePrice: activity.basePrice ? new Decimal(activity.basePrice) : new Decimal(0),
@@ -487,7 +511,9 @@ export const updateOrderService = async (
                 code: definition.code,
                 description: definition.description,
                 unit: definition.unit,
-                isActive: true
+                isActive: true,
+                selectedPricingType: activity.selectedPricingType || null,
+                notes: activity.notes || null
               }
             });
           } catch (error) {

@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui";
 import { Input } from "@/components/ui";
@@ -65,6 +65,8 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
   const [activityPricingSelections, setActivityPricingSelections] = useState<Record<string, string>>({});
   const [templateData, setTemplateData] = useState<Record<string, string> | null>(null);
   const [containers, setContainers] = useState<Container[]>([]);
+  const [pieceEntries, setPieceEntries] = useState<Array<{ id: string; quantity: number; notes: string }>>([]);
+  const [hourEntries, setHourEntries] = useState<Array<{ id: string; quantity: number; notes: string }>>([]);
   const [cartonQuantity, setCartonQuantity] = useState<number>(0);
   const [pieceQuantity, setArticleQuantity] = useState<number>(0);
   const [formData, setFormData] = useState<CreateOrderData>({
@@ -177,6 +179,8 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
     setActivityPricingSelections({});
     setTemplateData(null);
     setContainers([]);
+    setPieceEntries([]);
+    setHourEntries([]);
     setCartonQuantity(0);
     setArticleQuantity(0);
     setCurrentStep(1);
@@ -188,9 +192,12 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
       toast.error(t("admin.orders.form.selectActivityRequired"));
       return;
     }
-    if (currentStep === 3 && containers.length === 0) {
-      toast.error(t("admin.orders.form.addContainerRequired"));
-      return;
+    if (currentStep === 3) {
+      const hasCartonOrArticle = isTypeSelected('PER_CARTON') || isTypeSelected('PER_ARTICLE');
+      if (hasCartonOrArticle && containers.length === 0) {
+        toast.error(t("admin.orders.form.addContainerRequired"));
+        return;
+      }
     }
     if (currentStep < 4) setCurrentStep(currentStep + 1);
   };
@@ -208,7 +215,8 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
     if (!formData.customerId) newErrors.customerId = t("admin.orders.form.customerRequired");
     if (!formData.scheduledDate) newErrors.scheduledDate = t("admin.orders.form.scheduledDateRequired");
     if (!formData.priority || formData.priority < 1) newErrors.priority = t("admin.orders.form.priorityRequired");
-    if (containers.length === 0) newErrors.containers = t("admin.orders.form.containerRequired");
+    const hasCartonOrArticle = isTypeSelected('PER_CARTON') || isTypeSelected('PER_ARTICLE');
+    if (hasCartonOrArticle && containers.length === 0) newErrors.containers = t("admin.orders.form.containerRequired");
 
     setErrors(newErrors);
 
@@ -221,20 +229,49 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
     try {
       const submitData = {
         ...formData,
-        activities: selectedActivities.map(activityId => {
-          const activity = activities.find(a => a.id === activityId);
-          const selectedPricingType = activityPricingSelections[activityId] || (activity?.pricingTypes?.[0] ?? null);
-          return {
-            activityId,
-            quantity: containers.reduce((sum, c) => sum + c.cartonQuantity, 0),
-            articleBasePrice: Number(activity?.articleBasePrice) || 0,
-            basePrice: Number(activity?.basePrice) || 0,
-            selectedPricingType,
-            hourlyRate: Number(activity?.hourlyRate) || 0,
-            perPiecePrice: Number(activity?.perPiecePrice) || 0,
-            perArticlePrice: Number(activity?.perArticlePrice) || 0,
-          };
-        }),
+        activities: (() => {
+          const allActivities: any[] = [];
+          for (const activityId of selectedActivities) {
+            const activity = activities.find(a => a.id === activityId);
+            const selectedPricingType = activityPricingSelections[activityId] || (activity?.pricingTypes?.[0] ?? null);
+            
+            const baseActivity = {
+              activityId,
+              articleBasePrice: Number(activity?.articleBasePrice) || 0,
+              basePrice: Number(activity?.basePrice) || 0,
+              selectedPricingType,
+              hourlyRate: Number(activity?.hourlyRate) || 0,
+              perPiecePrice: Number(activity?.perPiecePrice) || 0,
+              perArticlePrice: Number(activity?.perArticlePrice) || 0,
+            };
+
+            if (selectedPricingType === 'PER_CARTON' || selectedPricingType === 'PER_ARTICLE') {
+              allActivities.push({
+                ...baseActivity,
+                quantity: containers.reduce((sum, c) => sum + c.cartonQuantity, 0),
+              });
+            } else if (selectedPricingType === 'PER_PIECE') {
+              if (pieceEntries.length > 0) {
+                pieceEntries.forEach(entry => {
+                  allActivities.push({ ...baseActivity, quantity: entry.quantity, notes: entry.notes });
+                });
+              } else {
+                allActivities.push({ ...baseActivity, quantity: 1, notes: "" });
+              }
+            } else if (selectedPricingType === 'HOURLY') {
+              if (hourEntries.length > 0) {
+                hourEntries.forEach(entry => {
+                  allActivities.push({ ...baseActivity, quantity: entry.quantity, notes: entry.notes });
+                });
+              } else {
+                allActivities.push({ ...baseActivity, quantity: 1, notes: "" });
+              }
+            } else {
+              allActivities.push({ ...baseActivity, quantity: 1 });
+            }
+          }
+          return allActivities;
+        })(),
         containers,
         cartonQuantity: containers.reduce((sum, c) => sum + c.cartonQuantity, 0),
         articleQuantity: containers.reduce((sum, c) => sum + c.articleQuantity, 0),
@@ -621,20 +658,22 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
           <p className="text-sm text-muted-foreground">{t("admin.orders.form.step3Description")}</p>
         </div>
 
-        <div className="flex justify-between items-center">
-          <h4 className="font-medium">{t("admin.orders.form.containers")} ({containers.length})</h4>
-          <Button type="button" onClick={addContainer} size="sm">
-            <Plus className="w-4 h-4 mr-2" />
-            {t("admin.orders.form.addContainer")}
-          </Button>
-        </div>
+        {(isTypeSelected('PER_CARTON') || isTypeSelected('PER_ARTICLE')) && (
+          <>
+            <div className="flex justify-between items-center">
+              <h4 className="font-medium">{t("admin.orders.form.containers")} ({containers.length})</h4>
+              <Button type="button" onClick={addContainer} size="sm">
+                <Plus className="w-4 h-4 mr-2" />
+                {t("admin.orders.form.addContainer")}
+              </Button>
+            </div>
 
-        {containers.length === 0 ? (
-          <div className="text-center py-8 text-muted-foreground border-2 border-dashed rounded-lg">
-            <p>{t("admin.orders.form.noContainersAdded")}</p>
-            <p className="text-sm">{t("admin.orders.form.clickAddContainer")}</p>
-          </div>
-        ) : (
+            {containers.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground border-2 border-dashed rounded-lg">
+                <p>{t("admin.orders.form.noContainersAdded")}</p>
+                <p className="text-sm">{t("admin.orders.form.clickAddContainer")}</p>
+              </div>
+            ) : (
           <div className="space-y-4 max-h-96 overflow-y-auto">
             {containers.map((container, containerIndex) => (
               <div key={containerIndex} className="border rounded-lg p-4 space-y-4">
@@ -745,8 +784,90 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ trigger }) => {
             ))}
           </div>
         )}
+        </>
+        )}
 
-        {containers.length > 0 && (
+        {isTypeSelected('PER_PIECE') && (
+          <div className="space-y-4 border-t pt-4">
+            <div className="flex justify-between items-center">
+              <h4 className="font-medium">{t("activities.pricingTypes.PER_PIECE", "Per Piece")} ({pieceEntries.length})</h4>
+              <Button type="button" onClick={() => setPieceEntries([...pieceEntries, { id: `piece-${Date.now()}`, quantity: 1, notes: "" }])} size="sm">
+                <Plus className="w-4 h-4 mr-2" />
+                {t("common.add", "Add")}
+              </Button>
+            </div>
+            {pieceEntries.length > 0 && (
+              <div className="space-y-4">
+                {pieceEntries.map((entry, idx) => (
+                  <div key={entry.id} className="border rounded-lg p-4 grid grid-cols-1 md:grid-cols-2 gap-4 relative">
+                    <Button
+                      type="button" variant="outline" size="sm" className="absolute top-2 right-2"
+                      onClick={() => setPieceEntries(pieceEntries.filter((_, i) => i !== idx))}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                    <div>
+                      <Label>{t("admin.orders.form.pieceQuantity")}</Label>
+                      <Input
+                        type="number" min="1" value={entry.quantity}
+                        onChange={(e) => setPieceEntries(pieceEntries.map((pe, i) => i === idx ? { ...pe, quantity: parseInt(e.target.value) || 0 } : pe))}
+                      />
+                    </div>
+                    <div>
+                      <Label>{t("common.notes", "Notes")}</Label>
+                      <Input
+                        value={entry.notes} placeholder={t("common.optional", "Optional")}
+                        onChange={(e) => setPieceEntries(pieceEntries.map((pe, i) => i === idx ? { ...pe, notes: e.target.value } : pe))}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {isTypeSelected('HOURLY') && (
+          <div className="space-y-4 border-t pt-4">
+            <div className="flex justify-between items-center">
+              <h4 className="font-medium">{t("activities.pricingTypes.HOURLY", "Hourly")} ({hourEntries.length})</h4>
+              <Button type="button" onClick={() => setHourEntries([...hourEntries, { id: `hour-${Date.now()}`, quantity: 1, notes: "" }])} size="sm">
+                <Plus className="w-4 h-4 mr-2" />
+                {t("common.add", "Add")}
+              </Button>
+            </div>
+            {hourEntries.length > 0 && (
+              <div className="space-y-4">
+                {hourEntries.map((entry, idx) => (
+                  <div key={entry.id} className="border rounded-lg p-4 grid grid-cols-1 md:grid-cols-2 gap-4 relative">
+                    <Button
+                      type="button" variant="outline" size="sm" className="absolute top-2 right-2"
+                      onClick={() => setHourEntries(hourEntries.filter((_, i) => i !== idx))}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                    <div>
+                      <Label>{t("admin.orders.form.hours", "Hours")}</Label>
+                      <Input
+                        type="number" min="1" step="0.5" value={entry.quantity}
+                        onChange={(e) => setHourEntries(hourEntries.map((he, i) => i === idx ? { ...he, quantity: parseFloat(e.target.value) || 0 } : he))}
+                      />
+                    </div>
+                    <div>
+                      <Label>{t("common.notes", "Notes")}</Label>
+                      <Input
+                        value={entry.notes} placeholder={t("common.optional", "Optional")}
+                        onChange={(e) => setHourEntries(hourEntries.map((he, i) => i === idx ? { ...he, notes: e.target.value } : he))}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {containers.length > 0 && (isTypeSelected('PER_CARTON') || isTypeSelected('PER_ARTICLE')) && (
           <div className="bg-muted/50 p-4 rounded-lg">
             <h4 className="font-medium mb-2">{t("admin.orders.form.orderSummary")}</h4>
             <div className="space-y-1 text-sm">

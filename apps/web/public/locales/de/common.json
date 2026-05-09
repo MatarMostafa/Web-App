@@ -779,7 +779,7 @@
         "stepTitles": {
           "step1": "Schritt 1: Kunde auswählen",
           "step2": "Schritt 2: Aktivitäten auswählen",
-          "step3": "Schritt 3: Container-Verwaltung",
+          "step3": "Schritt 3: Auftragsverwaltung",
           "step4": "Schritt 4: Auftragsdetails"
         },
         "stepDescriptions": {
@@ -792,7 +792,7 @@
         "step1Description": "Wählen Sie den Kunden für diesen Auftrag",
         "step2Title": "Schritt 2: Aktivitäten auswählen",
         "step2Description": "Wählen Sie Aktivitäten für diesen Auftrag",
-        "step3Title": "Schritt 3: Container-Verwaltung",
+        "step3Title": "Schritt 3: Auftragsverwaltung",
         "step3Description": "Container mit ihren Details hinzufügen",
         "step4Title": "Schritt 4: Auftragsdetails",
         "step4Description": "Vervollständigen Sie die Auftragsinformationen",

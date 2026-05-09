@@ -50,6 +50,7 @@ interface CustomerActivity {
     maxQuantity: number;
     price: number;
   }>;
+  pricingTypes?: string[];
 }
 
 const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
@@ -71,6 +72,9 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
   const [templateData, setTemplateData] = useState<Record<string, string> | null>(null);
   const [templateLines, setTemplateLines] = useState<string[]>([]);
   const [containers, setContainers] = useState<Container[]>([]);
+  const [pieceEntries, setPieceEntries] = useState<Array<{ id: string; activityId: string; quantity: number; notes: string }>>([]);
+  const [hourEntries, setHourEntries] = useState<Array<{ id: string; activityId: string; quantity: number; notes: string }>>([]);
+  const [activityPricingSelections, setActivityPricingSelections] = useState<Record<string, string>>({});
 
   const [formData, setFormData] = useState<CreateOrderData>({
     description: "",
@@ -160,8 +164,37 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
           setEndTimeOnly(`${endTime.getHours().toString().padStart(2, '0')}:${endTime.getMinutes().toString().padStart(2, '0')}`);
         }
 
-        // Load activities
-        if (orderData.activityIds) {
+        // Load activities and entries
+        if (orderData.customerActivities && Array.isArray(orderData.customerActivities)) {
+          const loadedActivityIds = Array.from(new Set(orderData.customerActivities.map((a: any) => {
+            const def = customerActivities.find(d => d.name === a.name && d.type === a.type && d.unit === a.unit);
+            return def?.id;
+          }).filter(Boolean))) as string[];
+          setSelectedActivities(loadedActivityIds);
+
+          const newPricingSelections: Record<string, string> = {};
+          const loadedPieceEntries: any[] = [];
+          const loadedHourEntries: any[] = [];
+
+          orderData.customerActivities.forEach((a: any) => {
+            const def = customerActivities.find(d => d.name === a.name && d.type === a.type && d.unit === a.unit);
+            if (def) {
+              if (a.selectedPricingType) {
+                newPricingSelections[def.id] = a.selectedPricingType;
+              }
+              if (a.selectedPricingType === 'PER_PIECE') {
+                loadedPieceEntries.push({ id: `piece-${Date.now()}-${Math.random()}`, activityId: def.id, quantity: Number(a.quantity) || 1, notes: a.notes || "" });
+              } else if (a.selectedPricingType === 'HOURLY') {
+                loadedHourEntries.push({ id: `hour-${Date.now()}-${Math.random()}`, activityId: def.id, quantity: Number(a.quantity) || 1, notes: a.notes || "" });
+              }
+            }
+          });
+
+          setActivityPricingSelections(newPricingSelections);
+          setPieceEntries(loadedPieceEntries);
+          setHourEntries(loadedHourEntries);
+        } else if (orderData.activityIds) {
+          // Fallback if full activities are not provided
           setSelectedActivities(orderData.activityIds);
         }
 
@@ -247,9 +280,12 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
       toast.error(t("customerPortal.createOrder.activitiesRequired"));
       return;
     }
-    if (currentStep === 2 && containers.length === 0) {
-      toast.error(t("customerPortal.createOrder.containerRequired"));
-      return;
+    if (currentStep === 2) {
+      const hasCartonOrArticle = isTypeSelected('PER_CARTON') || isTypeSelected('PER_ARTICLE');
+      if (hasCartonOrArticle && containers.length === 0) {
+        toast.error(t("customerPortal.createOrder.containerRequired"));
+        return;
+      }
     }
     if (currentStep < 3) setCurrentStep(currentStep + 1);
   };
@@ -324,7 +360,8 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
       return;
     }
 
-    if (containers.length === 0) {
+    const hasCartonOrArticle = isTypeSelected('PER_CARTON') || isTypeSelected('PER_ARTICLE');
+    if (hasCartonOrArticle && containers.length === 0) {
       toast.error(t("customerPortal.createOrder.containerRequired"));
       return;
     }
@@ -341,15 +378,48 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
           new Date(`${formData.scheduledDate}T${endTimeOnly}`).toISOString() : null,
         location: formData.location || "",
         specialInstructions: formData.specialInstructions || "",
-        activities: selectedActivities.map(activityId => {
-          const activity = activities.find(a => a.id === activityId);
-          return {
-            activityId,
-            quantity: containers.reduce((sum, c) => sum + c.cartonQuantity, 0),
-            basePrice: Number(activity?.basePrice) || 0,
-            articleBasePrice: Number(activity?.articleBasePrice) || 0
-          };
-        }),
+        activities: (() => {
+          const allActivities: any[] = [];
+          for (const activityId of selectedActivities) {
+            const activity = activities.find(a => a.id === activityId);
+            const selectedPricingType = activityPricingSelections[activityId] || (activity?.pricingTypes?.[0] ?? null);
+            
+            const baseActivity = {
+              activityId,
+              basePrice: Number(activity?.basePrice) || 0,
+              articleBasePrice: Number(activity?.articleBasePrice) || 0,
+              selectedPricingType,
+            };
+
+            if (selectedPricingType === 'PER_CARTON' || selectedPricingType === 'PER_ARTICLE') {
+              allActivities.push({
+                ...baseActivity,
+                quantity: containers.reduce((sum, c) => sum + c.cartonQuantity, 0),
+              });
+            } else if (selectedPricingType === 'PER_PIECE') {
+              const entries = pieceEntries.filter(e => e.activityId === activityId);
+              if (entries.length > 0) {
+                entries.forEach(entry => {
+                  allActivities.push({ ...baseActivity, quantity: entry.quantity, notes: entry.notes });
+                });
+              } else {
+                allActivities.push({ ...baseActivity, quantity: 1, notes: "" });
+              }
+            } else if (selectedPricingType === 'HOURLY') {
+              const entries = hourEntries.filter(e => e.activityId === activityId);
+              if (entries.length > 0) {
+                entries.forEach(entry => {
+                  allActivities.push({ ...baseActivity, quantity: entry.quantity, notes: entry.notes });
+                });
+              } else {
+                allActivities.push({ ...baseActivity, quantity: 1, notes: "" });
+              }
+            } else {
+              allActivities.push({ ...baseActivity, quantity: 1 });
+            }
+          }
+          return allActivities;
+        })(),
         containers: containers.map(c => ({
           id: c.id, // Include ID for updates
           serialNumber: c.serialNumber,
@@ -402,6 +472,26 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
     }));
   };
 
+  const getSelectedPricingType = (activityId: string) =>
+    activityPricingSelections[activityId] ||
+    activities.find(a => a.id === activityId)?.pricingTypes?.[0] ||
+    null;
+
+  const getSelectedPricingTypes = () =>
+    selectedActivities.map(id => getSelectedPricingType(id)).filter(Boolean) as string[];
+
+  const isTypeSelected = (type: string) => getSelectedPricingTypes().includes(type);
+
+  const getPricingTypeLabel = (pt: string) => {
+    const labels: Record<string, string> = {
+      HOURLY: t('activities.pricingTypes.HOURLY', 'Hourly'),
+      PER_PIECE: t('activities.pricingTypes.PER_PIECE', 'Per Piece'),
+      PER_CARTON: t('activities.pricingTypes.PER_CARTON', 'Per Carton'),
+      PER_ARTICLE: t('activities.pricingTypes.PER_ARTICLE', 'Per Article'),
+    };
+    return labels[pt] || pt;
+  };
+
   const renderStep1 = () => (
     <div className="space-y-4">
       <div className="text-center mb-6">
@@ -438,6 +528,30 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
                     </p>
                   </div>
                 </div>
+                {/* Pricing type selector */}
+                {selectedActivities.includes(activity.id) && activity.pricingTypes && activity.pricingTypes.length > 0 && (
+                  <div className="mt-2 pl-6">
+                    <Label className="text-xs">{t("admin.orders.form.selectPricingType", "Select Pricing Type")}</Label>
+                    <div className="flex gap-2 flex-wrap mt-1">
+                      {activity.pricingTypes.map((pt: string) => (
+                        <Button
+                          key={pt}
+                          type="button"
+                          variant={
+                            (activityPricingSelections[activity.id] || activity.pricingTypes![0]) === pt
+                              ? "default"
+                              : "outline"
+                          }
+                          size="sm"
+                          className="h-7 text-xs"
+                          onClick={() => setActivityPricingSelections(prev => ({ ...prev, [activity.id]: pt }))}
+                        >
+                          {getPricingTypeLabel(pt)}
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           ))}
@@ -506,20 +620,22 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
           <p className="text-sm text-muted-foreground">{t("customerPortal.createOrder.step2Description")}</p>
         </div>
 
-        <div className="flex justify-between items-center">
-          <h4 className="font-medium">{t("admin.orders.form.containers")} ({containers.length})</h4>
-          <Button type="button" onClick={addContainer} size="sm">
-            <Plus className="w-4 h-4 mr-2" />
-            {t("admin.orders.form.addContainer")}
-          </Button>
-        </div>
+        {(isTypeSelected('PER_CARTON') || isTypeSelected('PER_ARTICLE')) && (
+          <>
+            <div className="flex justify-between items-center">
+              <h4 className="font-medium">{t("admin.orders.form.containers")} ({containers.length})</h4>
+              <Button type="button" onClick={addContainer} size="sm">
+                <Plus className="w-4 h-4 mr-2" />
+                {t("admin.orders.form.addContainer")}
+              </Button>
+            </div>
 
-        {containers.length === 0 ? (
-          <div className="text-center py-8 text-muted-foreground border-2 border-dashed rounded-lg">
-            <p>{t("admin.orders.form.noContainersAdded")}</p>
-            <p className="text-sm">{t("admin.orders.form.clickAddContainer")}</p>
-          </div>
-        ) : (
+            {containers.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground border-2 border-dashed rounded-lg">
+                <p>{t("admin.orders.form.noContainersAdded")}</p>
+                <p className="text-sm">{t("admin.orders.form.clickAddContainer")}</p>
+              </div>
+            ) : (
           <div className="space-y-4 max-h-96 overflow-y-auto">
             {containers.map((container, containerIndex) => (
               <div key={containerIndex} className="border rounded-lg p-4 space-y-4">
@@ -572,8 +688,90 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
             ))}
           </div>
         )}
+        </>
+        )}
 
-        {containers.length > 0 && (
+        {isTypeSelected('PER_PIECE') && (
+          <div className="space-y-4 border-t pt-4">
+            <div className="flex justify-between items-center">
+              <h4 className="font-medium">{t("activities.pricingTypes.PER_PIECE", "Per Piece")} ({pieceEntries.length})</h4>
+              <Button type="button" onClick={() => setPieceEntries([...pieceEntries, { id: `piece-${Date.now()}`, activityId: selectedActivities.find(id => getSelectedPricingType(id) === 'PER_PIECE') || '', quantity: 1, notes: "" }])} size="sm">
+                <Plus className="w-4 h-4 mr-2" />
+                {t("common.add", "Add")}
+              </Button>
+            </div>
+            {pieceEntries.length > 0 && (
+              <div className="space-y-4">
+                {pieceEntries.map((entry, idx) => (
+                  <div key={entry.id} className="border rounded-lg p-4 grid grid-cols-1 md:grid-cols-2 gap-4 relative">
+                    <Button
+                      type="button" variant="outline" size="sm" className="absolute top-2 right-2"
+                      onClick={() => setPieceEntries(pieceEntries.filter((_, i) => i !== idx))}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                    <div>
+                      <Label>{t("admin.orders.form.pieceQuantity")}</Label>
+                      <Input
+                        type="number" min="1" value={entry.quantity}
+                        onChange={(e) => setPieceEntries(pieceEntries.map((pe, i) => i === idx ? { ...pe, quantity: parseInt(e.target.value) || 0 } : pe))}
+                      />
+                    </div>
+                    <div>
+                      <Label>{t("common.notes", "Notes")}</Label>
+                      <Input
+                        value={entry.notes} placeholder={t("common.optional", "Optional")}
+                        onChange={(e) => setPieceEntries(pieceEntries.map((pe, i) => i === idx ? { ...pe, notes: e.target.value } : pe))}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {isTypeSelected('HOURLY') && (
+          <div className="space-y-4 border-t pt-4">
+            <div className="flex justify-between items-center">
+              <h4 className="font-medium">{t("activities.pricingTypes.HOURLY", "Hourly")} ({hourEntries.length})</h4>
+              <Button type="button" onClick={() => setHourEntries([...hourEntries, { id: `hour-${Date.now()}`, activityId: selectedActivities.find(id => getSelectedPricingType(id) === 'HOURLY') || '', quantity: 1, notes: "" }])} size="sm">
+                <Plus className="w-4 h-4 mr-2" />
+                {t("common.add", "Add")}
+              </Button>
+            </div>
+            {hourEntries.length > 0 && (
+              <div className="space-y-4">
+                {hourEntries.map((entry, idx) => (
+                  <div key={entry.id} className="border rounded-lg p-4 grid grid-cols-1 md:grid-cols-2 gap-4 relative">
+                    <Button
+                      type="button" variant="outline" size="sm" className="absolute top-2 right-2"
+                      onClick={() => setHourEntries(hourEntries.filter((_, i) => i !== idx))}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                    <div>
+                      <Label>{t("admin.orders.form.hours", "Hours")}</Label>
+                      <Input
+                        type="number" min="1" step="0.5" value={entry.quantity}
+                        onChange={(e) => setHourEntries(hourEntries.map((he, i) => i === idx ? { ...he, quantity: parseFloat(e.target.value) || 0 } : he))}
+                      />
+                    </div>
+                    <div>
+                      <Label>{t("common.notes", "Notes")}</Label>
+                      <Input
+                        value={entry.notes} placeholder={t("common.optional", "Optional")}
+                        onChange={(e) => setHourEntries(hourEntries.map((he, i) => i === idx ? { ...he, notes: e.target.value } : he))}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {containers.length > 0 && (isTypeSelected('PER_CARTON') || isTypeSelected('PER_ARTICLE')) && (
           <div className="bg-muted/50 p-4 rounded-lg">
             <h4 className="font-medium mb-2">{t("admin.orders.form.orderSummary")}</h4>
             <div className="space-y-1 text-sm">

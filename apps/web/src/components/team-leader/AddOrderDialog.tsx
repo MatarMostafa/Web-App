@@ -65,6 +65,8 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({
   const [activityPricingSelections, setActivityPricingSelections] = useState<Record<string, string>>({});
   const [templateData, setTemplateData] = useState<Record<string, string> | null>(null);
   const [containers, setContainers] = useState<Container[]>([]);
+  const [pieceEntries, setPieceEntries] = useState<Array<{ activityId: string; quantity: number; notes: string }>>([]);
+  const [hourEntries, setHourEntries] = useState<Array<{ activityId: string; quantity: number; notes: string }>>([]);
 
   const [formData, setFormData] = useState<CreateOrderData>({
     description: "",
@@ -200,6 +202,8 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({
     setActivityPricingSelections({});
     setTemplateData(null);
     setContainers([]);
+    setPieceEntries([]);
+    setHourEntries([]);
     setCurrentStep(1);
   };
 
@@ -209,9 +213,14 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({
       toast.error(t("admin.orders.form.selectActivityRequired"));
       return;
     }
-    if (currentStep === 3 && containers.length === 0) {
-      toast.error(t("admin.orders.form.addContainerRequired"));
-      return;
+    if (currentStep === 3) {
+      const hasCartonOrArticle = Object.values(activityPricingSelections).some(
+        pt => pt === 'PER_CARTON' || pt === 'PER_ARTICLE'
+      );
+      if (hasCartonOrArticle && containers.length === 0) {
+        toast.error(t("admin.orders.form.containerRequired"));
+        return;
+      }
     }
     if (currentStep < 4) setCurrentStep(currentStep + 1);
   };
@@ -228,7 +237,12 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({
     if (!formData.customerId) newErrors.customerId = t("admin.orders.form.customerRequired");
     if (!formData.scheduledDate) newErrors.scheduledDate = t("admin.orders.form.scheduledDateRequired");
     if (!formData.priority || formData.priority < 1) newErrors.priority = t("admin.orders.form.priorityRequired");
-    if (containers.length === 0) newErrors.containers = t("admin.orders.form.containerRequired");
+    const hasCartonOrArticle = Object.values(activityPricingSelections).some(
+      pt => pt === 'PER_CARTON' || pt === 'PER_ARTICLE'
+    );
+    if (hasCartonOrArticle && containers.length === 0) {
+      newErrors.containers = t("admin.orders.form.containerRequired");
+    }
 
     setErrors(newErrors);
 
@@ -244,9 +258,28 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({
         activities: selectedActivities.map(activityId => {
           const activity = activities.find(a => a.id === activityId);
           const selectedPricingType = activityPricingSelections[activityId] || (activity?.pricingTypes?.[0] ?? null);
+          
+          let quantity = 1;
+          let notes = "";
+          
+          if (selectedPricingType === 'PER_CARTON') {
+            quantity = containers.reduce((sum, c) => sum + c.cartonQuantity, 0);
+          } else if (selectedPricingType === 'PER_ARTICLE') {
+            quantity = containers.reduce((sum, c) => sum + c.articleQuantity, 0);
+          } else if (selectedPricingType === 'PER_PIECE') {
+            const entry = pieceEntries.find(e => e.activityId === activityId);
+            quantity = entry?.quantity || 1;
+            notes = entry?.notes || "";
+          } else if (selectedPricingType === 'HOURLY') {
+            const entry = hourEntries.find(e => e.activityId === activityId);
+            quantity = entry?.quantity || 1;
+            notes = entry?.notes || "";
+          }
+          
           return {
             activityId,
-            quantity: containers.reduce((sum, c) => sum + c.cartonQuantity, 0),
+            quantity,
+            notes,
             articleBasePrice: Number(activity?.articleBasePrice) || 0,
             basePrice: Number(activity?.basePrice) || 0,
             selectedPricingType,
@@ -346,8 +379,12 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({
       if (activity?.pricingTypes?.length > 0) {
         setActivityPricingSelections(prev => ({ ...prev, [activityId]: activity.pricingTypes[0] }));
       }
+      setPieceEntries(prev => [...prev, { activityId, quantity: 1, notes: '' }]);
+      setHourEntries(prev => [...prev, { activityId, quantity: 1, notes: '' }]);
     } else {
       setActivityPricingSelections(prev => { const next = { ...prev }; delete next[activityId]; return next; });
+      setPieceEntries(prev => prev.filter(e => e.activityId !== activityId));
+      setHourEntries(prev => prev.filter(e => e.activityId !== activityId));
     }
   };
 
@@ -446,8 +483,79 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({
                   </Select>
                   {(() => {
                     const selectedPt = activityPricingSelections[activity.id] || activity.pricingTypes[0];
-                    if (selectedPt === 'HOURLY') return <p className="text-xs text-muted-foreground mt-1">{t("activities.form.hourlyRate")}: €{Number(activity.hourlyRate || 0).toFixed(2)}/h</p>;
-                    if (selectedPt === 'PER_PIECE') return <p className="text-xs text-muted-foreground mt-1">{t("activities.form.perPiecePrice")}: €{Number(activity.perPiecePrice || 0).toFixed(2)}</p>;
+                    if (selectedPt === 'HOURLY') {
+                      const entry = hourEntries.find(e => e.activityId === activity.id) || { quantity: 1, notes: '' };
+                      return (
+                        <div className="mt-3 p-3 bg-muted/30 rounded-md border border-muted space-y-3">
+                          <p className="text-xs text-muted-foreground font-medium flex items-center justify-between">
+                            <span>{t("activities.form.hourlyRate")}: €{Number(activity.hourlyRate || 0).toFixed(2)}/h</span>
+                          </p>
+                          <div className="space-y-2">
+                            <div>
+                              <Label className="text-xs">{t("admin.orders.form.estimatedHours")}</Label>
+                              <Input 
+                                type="number" 
+                                min="0.5" 
+                                step="0.5" 
+                                value={entry.quantity}
+                                onChange={(e) => {
+                                  const val = parseFloat(e.target.value) || 0;
+                                  setHourEntries(prev => prev.map(p => p.activityId === activity.id ? { ...p, quantity: val } : p));
+                                }}
+                                className="h-8 text-xs mt-1" 
+                              />
+                            </div>
+                            <div>
+                              <Label className="text-xs">{t("admin.orders.form.notesOptional")}</Label>
+                              <Input 
+                                value={entry.notes}
+                                onChange={(e) => {
+                                  setHourEntries(prev => prev.map(p => p.activityId === activity.id ? { ...p, notes: e.target.value } : p));
+                                }}
+                                placeholder={t("admin.orders.form.notesPlaceholder")}
+                                className="h-8 text-xs mt-1" 
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    }
+                    if (selectedPt === 'PER_PIECE') {
+                      const entry = pieceEntries.find(e => e.activityId === activity.id) || { quantity: 1, notes: '' };
+                      return (
+                        <div className="mt-3 p-3 bg-muted/30 rounded-md border border-muted space-y-3">
+                          <p className="text-xs text-muted-foreground font-medium flex items-center justify-between">
+                            <span>{t("activities.form.perPiecePrice")}: €{Number(activity.perPiecePrice || 0).toFixed(2)}</span>
+                          </p>
+                          <div className="space-y-2">
+                            <div>
+                              <Label className="text-xs">{t("admin.orders.form.quantity")}</Label>
+                              <Input 
+                                type="number" 
+                                min="1" 
+                                value={entry.quantity}
+                                onChange={(e) => {
+                                  const val = parseInt(e.target.value, 10) || 1;
+                                  setPieceEntries(prev => prev.map(p => p.activityId === activity.id ? { ...p, quantity: val } : p));
+                                }}
+                                className="h-8 text-xs mt-1" 
+                              />
+                            </div>
+                            <div>
+                              <Label className="text-xs">{t("admin.orders.form.notesOptional")}</Label>
+                              <Input 
+                                value={entry.notes}
+                                onChange={(e) => {
+                                  setPieceEntries(prev => prev.map(p => p.activityId === activity.id ? { ...p, notes: e.target.value } : p));
+                                }}
+                                placeholder={t("admin.orders.form.notesPlaceholder")}
+                                className="h-8 text-xs mt-1" 
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    }
                     if (selectedPt === 'PER_CARTON' && activity.customerPrices?.length > 0) return (
                       <div className="mt-1 grid grid-cols-2 gap-1 text-xs">
                         {activity.customerPrices.map((price: any, idx: number) => (
