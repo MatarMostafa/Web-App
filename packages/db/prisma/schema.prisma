@@ -300,8 +300,9 @@ model CustomerPrice {
   minQuantity        Int
   customerActivity   CustomerActivity @relation(fields: [customerActivityId], references: [id], onDelete: Cascade)
   customer           Customer         @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  pricingType        String           @default("PER_CARTON")
 
-  @@unique([customerId, customerActivityId, minQuantity, maxQuantity, effectiveFrom])
+  @@unique([customerId, customerActivityId, minQuantity, maxQuantity, effectiveFrom, pricingType])
   @@index([customerId])
   @@index([customerActivityId])
   @@index([customerId, customerActivityId])
@@ -312,7 +313,7 @@ model CustomerActivity {
   id               String               @id @default(cuid())
   customerId       String
   orderId          String?
-  quantity         Int?
+  quantity         Decimal?             @db.Decimal(10, 2)
   unitPrice        Decimal?             @db.Decimal(10, 2)
   lineTotal        Decimal?             @db.Decimal(12, 2)
   isActive         Boolean              @default(true)
@@ -329,6 +330,8 @@ model CustomerActivity {
   hourlyRate       Decimal?             @default(0) @db.Decimal(10, 2)
   perPiecePrice    Decimal?             @default(0) @db.Decimal(10, 2)
   perArticlePrice  Decimal?             @default(0) @db.Decimal(10, 2)
+  selectedPricingType String?
+  notes            String?
   assignments      Assignment[]
   customer         Customer             @relation(fields: [customerId], references: [id], onDelete: Cascade)
   order            Order?               @relation(fields: [orderId], references: [id], onDelete: Cascade)

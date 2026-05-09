@@ -220,7 +220,7 @@ export const getActivities = async (req: Request, res: Response) => {
 export const updateActivity = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const { name, type, code, description, unit, basePrice, articleBasePrice, pricingTypes, hourlyRate, perPiecePrice, perArticlePrice, customerId, priceRanges } = req.body;
+    const { name, type, code, description, unit, basePrice, articleBasePrice, pricingTypes, hourlyRate, perPiecePrice, perArticlePrice, customerId, priceRanges, articlePriceRanges } = req.body;
 
     if (!name || !type) {
       return res.status(400).json({ error: 'name and type are required' });
@@ -249,9 +249,10 @@ export const updateActivity = async (req: Request, res: Response) => {
       });
 
       // Replace price ranges if provided
-      if (Array.isArray(priceRanges) && customerId) {
+      if (customerId && (Array.isArray(priceRanges) || Array.isArray(articlePriceRanges))) {
         await tx.customerPrice.deleteMany({ where: { customerActivityId: id, customerId } });
-        if (priceRanges.length > 0) {
+        
+        if (Array.isArray(priceRanges) && priceRanges.length > 0) {
           await tx.customerPrice.createMany({
             data: priceRanges.map((range: any) => ({
               customerId,
@@ -261,7 +262,24 @@ export const updateActivity = async (req: Request, res: Response) => {
               price: new Decimal(range.price),
               currency: 'EUR',
               effectiveFrom: new Date(range.validFrom),
-              isActive: true
+              isActive: true,
+              pricingType: 'PER_CARTON'
+            }))
+          });
+        }
+
+        if (Array.isArray(articlePriceRanges) && articlePriceRanges.length > 0) {
+          await tx.customerPrice.createMany({
+            data: articlePriceRanges.map((range: any) => ({
+              customerId,
+              customerActivityId: id,
+              minQuantity: range.minQuantity,
+              maxQuantity: range.maxQuantity,
+              price: new Decimal(range.price),
+              currency: 'EUR',
+              effectiveFrom: new Date(range.validFrom),
+              isActive: true,
+              pricingType: 'PER_ARTICLE'
             }))
           });
         }
@@ -294,7 +312,7 @@ export const deleteActivity = async (req: Request, res: Response) => {
 
 export const createActivity = async (req: Request, res: Response) => {
   try {
-    const { name, type, code, description, unit = 'hour', customerId, basePrice, articleBasePrice, pricingTypes, hourlyRate, perPiecePrice, perArticlePrice, priceRanges } = req.body;
+    const { name, type, code, description, unit = 'hour', customerId, basePrice, articleBasePrice, pricingTypes, hourlyRate, perPiecePrice, perArticlePrice, priceRanges, articlePriceRanges } = req.body;
 
     // customerId is now required to create a definition
     if (!customerId) {
@@ -373,7 +391,25 @@ export const createActivity = async (req: Request, res: Response) => {
             price: new Decimal(range.price),
             currency: 'EUR',
             effectiveFrom: new Date(range.validFrom),
-            isActive: true
+            isActive: true,
+            pricingType: 'PER_CARTON'
+          }))
+        });
+      }
+
+      // Create article price ranges if provided (for PER_ARTICLE pricing)
+      if (Array.isArray(articlePriceRanges) && articlePriceRanges.length > 0) {
+        await tx.customerPrice.createMany({
+          data: articlePriceRanges.map((range: any) => ({
+            customerId,
+            customerActivityId: created.id,
+            minQuantity: range.minQuantity,
+            maxQuantity: range.maxQuantity,
+            price: new Decimal(range.price),
+            currency: 'EUR',
+            effectiveFrom: new Date(range.validFrom),
+            isActive: true,
+            pricingType: 'PER_ARTICLE'
           }))
         });
       }

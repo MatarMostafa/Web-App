@@ -96,6 +96,9 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
   const [selectedActivities, setSelectedActivities] = useState<string[]>([]);
   const [templateData, setTemplateData] = useState<Record<string, string> | null>(null);
   const [containers, setContainers] = useState<Container[]>([]);
+  const [pieceEntries, setPieceEntries] = useState<Array<{ activityId: string; quantity: number; notes: string }>>([]);
+  const [hourEntries, setHourEntries] = useState<Array<{ activityId: string; quantity: number; notes: string }>>([]);
+  const [activityPricingSelections, setActivityPricingSelections] = useState<Record<string, string>>({});
   const [currentEmployeeId, setCurrentEmployeeId] = useState<string | null>(null);
 
   const [formData, setFormData] = useState<UpdateOrderData>({
@@ -258,6 +261,26 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
       setFormData(prev => ({ ...prev, assignedEmployeeIds: assignmentIds }));
       setSelectedActivities(selectedActivityIds);
 
+      const newPricingSelections: Record<string, string> = {};
+      const loadedPieceEntries: any[] = [];
+      const loadedHourEntries: any[] = [];
+
+      // Extract details from order.customerActivities if available
+      const existingActivities = (order as any).customerActivities || [];
+      existingActivities.forEach((a: any) => {
+        if (a.selectedPricingType) {
+          newPricingSelections[a.activityId || a.id] = a.selectedPricingType;
+        }
+        if (a.selectedPricingType === 'PER_PIECE') {
+          loadedPieceEntries.push({ activityId: a.activityId || a.id, quantity: a.quantity ? Number(a.quantity) : 1, notes: a.notes || '' });
+        } else if (a.selectedPricingType === 'HOURLY') {
+          loadedHourEntries.push({ activityId: a.activityId || a.id, quantity: a.quantity ? Number(a.quantity) : 1, notes: a.notes || '' });
+        }
+      });
+      setActivityPricingSelections(newPricingSelections);
+      setPieceEntries(loadedPieceEntries);
+      setHourEntries(loadedHourEntries);
+
       setContainers(loadedContainers);
     } catch (error) {
       console.error("Error loading order data:", error);
@@ -288,9 +311,14 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
       toast.error(t("admin.orders.form.selectActivityRequired"));
       return;
     }
-    if (currentStep === 3 && containers.length === 0) {
-      toast.error(t("admin.orders.form.addContainerRequired"));
-      return;
+    if (currentStep === 3) {
+      const hasCartonOrArticle = Object.values(activityPricingSelections).some(
+        pt => pt === 'PER_CARTON' || pt === 'PER_ARTICLE'
+      );
+      if (hasCartonOrArticle && containers.length === 0) {
+        toast.error(t("admin.orders.form.containerRequired"));
+        return;
+      }
     }
     if (currentStep < 4) setCurrentStep(currentStep + 1);
   };
@@ -307,7 +335,12 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
     if (!formData.customerId) newErrors.customerId = t("admin.orders.form.customerRequired");
     if (!formData.scheduledDate) newErrors.scheduledDate = t("admin.orders.form.scheduledDateRequired");
     if (!formData.priority || formData.priority < 1) newErrors.priority = t("admin.orders.form.priorityRequired");
-    if (containers.length === 0) newErrors.containers = t("admin.orders.form.containerRequired");
+    const hasCartonOrArticle = Object.values(activityPricingSelections).some(
+      pt => pt === 'PER_CARTON' || pt === 'PER_ARTICLE'
+    );
+    if (hasCartonOrArticle && containers.length === 0) {
+      newErrors.containers = t("admin.orders.form.containerRequired");
+    }
 
     setErrors(newErrors);
 
@@ -322,11 +355,35 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
         ...formData,
         activities: selectedActivities.map(activityId => {
           const activity = activities.find(a => a.id === activityId);
+          const selectedPricingType = activityPricingSelections[activityId] || (activity?.pricingTypes?.[0] ?? null);
+          
+          let quantity = 1;
+          let notes = "";
+          
+          if (selectedPricingType === 'PER_CARTON') {
+            quantity = containers.reduce((sum, c) => sum + c.cartonQuantity, 0);
+          } else if (selectedPricingType === 'PER_ARTICLE') {
+            quantity = containers.reduce((sum, c) => sum + c.articleQuantity, 0);
+          } else if (selectedPricingType === 'PER_PIECE') {
+            const entry = pieceEntries.find(e => e.activityId === activityId);
+            quantity = entry?.quantity || 1;
+            notes = entry?.notes || "";
+          } else if (selectedPricingType === 'HOURLY') {
+            const entry = hourEntries.find(e => e.activityId === activityId);
+            quantity = entry?.quantity || 1;
+            notes = entry?.notes || "";
+          }
+          
           return {
             activityId,
-            quantity: containers.reduce((sum, c) => sum + c.cartonQuantity, 0),
+            quantity,
+            notes,
             articleBasePrice: Number(activity?.articleBasePrice) || 0,
-            basePrice: Number(activity?.basePrice) || 0
+            basePrice: Number(activity?.basePrice) || 0,
+            selectedPricingType,
+            hourlyRate: Number(activity?.hourlyRate) || 0,
+            perPiecePrice: Number(activity?.perPiecePrice) || 0,
+            perArticlePrice: Number(activity?.perArticlePrice) || 0,
           };
         }),
         containers,
@@ -403,6 +460,28 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
     setSelectedActivities(prev =>
       checked ? [...prev, activityId] : prev.filter(id => id !== activityId)
     );
+    if (checked) {
+      const activity = activities.find(a => a.id === activityId);
+      if (activity?.pricingTypes?.length > 0) {
+        setActivityPricingSelections(prev => ({ ...prev, [activityId]: activity.pricingTypes[0] }));
+      }
+      setPieceEntries(prev => [...prev, { activityId, quantity: 1, notes: '' }]);
+      setHourEntries(prev => [...prev, { activityId, quantity: 1, notes: '' }]);
+    } else {
+      setActivityPricingSelections(prev => { const next = { ...prev }; delete next[activityId]; return next; });
+      setPieceEntries(prev => prev.filter(e => e.activityId !== activityId));
+      setHourEntries(prev => prev.filter(e => e.activityId !== activityId));
+    }
+  };
+
+  const getPricingTypeLabel = (pt: string) => {
+    const labels: Record<string, string> = {
+      HOURLY: t('activities.pricingTypes.HOURLY'),
+      PER_PIECE: t('activities.pricingTypes.PER_PIECE'),
+      PER_CARTON: t('activities.pricingTypes.PER_CARTON'),
+      PER_ARTICLE: t('activities.pricingTypes.PER_ARTICLE'),
+    };
+    return labels[pt] || pt;
   };
 
   if (!ready) return null;
@@ -452,22 +531,132 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
         </div>
         <div className="max-h-60 overflow-y-auto border rounded-md p-3 space-y-3">
           {activities.map((activity) => (
-            <div key={activity.id} className="border rounded-lg p-3">
+            <div key={activity.id} className="border rounded-lg p-3 space-y-2">
               <div className="flex items-center space-x-2">
                 <Checkbox
                   id={`activity-${activity.id}`}
                   checked={selectedActivities.includes(activity.id)}
                   onCheckedChange={(checked) => handleActivityToggle(activity.id, checked as boolean)}
                 />
-                <div>
-                  <Label htmlFor={`activity-${activity.id}`} className="text-sm font-medium">
+                <div className="flex-1">
+                  <Label htmlFor={`activity-${activity.id}`} className="text-sm font-medium cursor-pointer">
                     {activity.name}
                   </Label>
                   <p className="text-xs text-muted-foreground">
-                    {t("admin.orders.form.activityType")}: {activity.type?.replace('_', ' ')} | {t("admin.orders.form.activityUnit")}: {activity.unit}
+                    {t("admin.orders.form.activityType")}: {activity.type?.replace(/_/g, ' ')} | {t("admin.orders.form.activityUnit")}: {activity.unit}
                   </p>
+                  {activity.pricingTypes && activity.pricingTypes.length > 0 && (
+                    <p className="text-xs text-muted-foreground">
+                      {t("activities.form.pricingTypes")}: {activity.pricingTypes.map((pt: string) => getPricingTypeLabel(pt)).join(', ')}
+                    </p>
+                  )}
                 </div>
               </div>
+              {selectedActivities.includes(activity.id) && activity.pricingTypes && activity.pricingTypes.length > 0 && (
+                <div className="ml-6">
+                  <Label className="text-xs">{t("admin.orders.form.selectPricingType")}</Label>
+                  <Select
+                    value={activityPricingSelections[activity.id] || activity.pricingTypes[0]}
+                    onValueChange={(val) => setActivityPricingSelections(prev => ({ ...prev, [activity.id]: val }))}
+                  >
+                    <SelectTrigger className="h-8 text-xs mt-1">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {activity.pricingTypes.map((pt: string) => (
+                        <SelectItem key={pt} value={pt} className="text-xs">
+                          {getPricingTypeLabel(pt)}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {(() => {
+                    const selectedPt = activityPricingSelections[activity.id] || activity.pricingTypes[0];
+                    if (selectedPt === 'HOURLY') {
+                      const entry = hourEntries.find(e => e.activityId === activity.id) || { quantity: 1, notes: '' };
+                      return (
+                        <div className="mt-3 p-3 bg-muted/30 rounded-md border border-muted space-y-3">
+                          <p className="text-xs text-muted-foreground font-medium flex items-center justify-between">
+                            <span>{t("activities.form.hourlyRate")}: €{Number(activity.hourlyRate || 0).toFixed(2)}/h</span>
+                          </p>
+                          <div className="space-y-2">
+                            <div>
+                              <Label className="text-xs">{t("admin.orders.form.estimatedHours")}</Label>
+                              <Input 
+                                type="number" 
+                                min="0.5" 
+                                step="0.5" 
+                                value={entry.quantity}
+                                onChange={(e) => {
+                                  const val = parseFloat(e.target.value) || 0;
+                                  setHourEntries(prev => prev.map(p => p.activityId === activity.id ? { ...p, quantity: val } : p));
+                                }}
+                                className="h-8 text-xs mt-1" 
+                              />
+                            </div>
+                            <div>
+                              <Label className="text-xs">{t("admin.orders.form.notesOptional")}</Label>
+                              <Input 
+                                value={entry.notes}
+                                onChange={(e) => {
+                                  setHourEntries(prev => prev.map(p => p.activityId === activity.id ? { ...p, notes: e.target.value } : p));
+                                }}
+                                placeholder={t("admin.orders.form.notesPlaceholder")}
+                                className="h-8 text-xs mt-1" 
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    }
+                    if (selectedPt === 'PER_PIECE') {
+                      const entry = pieceEntries.find(e => e.activityId === activity.id) || { quantity: 1, notes: '' };
+                      return (
+                        <div className="mt-3 p-3 bg-muted/30 rounded-md border border-muted space-y-3">
+                          <p className="text-xs text-muted-foreground font-medium flex items-center justify-between">
+                            <span>{t("activities.form.perPiecePrice")}: €{Number(activity.perPiecePrice || 0).toFixed(2)}</span>
+                          </p>
+                          <div className="space-y-2">
+                            <div>
+                              <Label className="text-xs">{t("admin.orders.form.quantity")}</Label>
+                              <Input 
+                                type="number" 
+                                min="1" 
+                                value={entry.quantity}
+                                onChange={(e) => {
+                                  const val = parseInt(e.target.value, 10) || 1;
+                                  setPieceEntries(prev => prev.map(p => p.activityId === activity.id ? { ...p, quantity: val } : p));
+                                }}
+                                className="h-8 text-xs mt-1" 
+                              />
+                            </div>
+                            <div>
+                              <Label className="text-xs">{t("admin.orders.form.notesOptional")}</Label>
+                              <Input 
+                                value={entry.notes}
+                                onChange={(e) => {
+                                  setPieceEntries(prev => prev.map(p => p.activityId === activity.id ? { ...p, notes: e.target.value } : p));
+                                }}
+                                placeholder={t("admin.orders.form.notesPlaceholder")}
+                                className="h-8 text-xs mt-1" 
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    }
+                    if (selectedPt === 'PER_CARTON' && activity.customerPrices?.length > 0) return (
+                      <div className="mt-1 grid grid-cols-2 gap-1 text-xs">
+                        {activity.customerPrices.map((price: any, idx: number) => (
+                          <div key={idx} className="bg-muted/50 px-2 py-1 rounded">{price.minQuantity}-{price.maxQuantity}: €{Number(price.price).toFixed(2)}</div>
+                        ))}
+                      </div>
+                    );
+                    if (selectedPt === 'PER_ARTICLE') return <p className="text-xs text-muted-foreground mt-1">{t("activities.form.perArticlePrice")}: €{Number(activity.perArticlePrice || 0).toFixed(2)}</p>;
+                    return null;
+                  })()}
+                </div>
+              )}
             </div>
           ))}
           {activities.length === 0 && (

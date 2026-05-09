@@ -31,6 +31,7 @@ interface AddActivityDialogProps {
     perPiecePrice: number;
     perArticlePrice: number;
     priceRanges: Array<{ minQuantity: number; maxQuantity: number; price: number; validFrom: string }>;
+    articlePriceRanges: Array<{ minQuantity: number; maxQuantity: number; price: number; validFrom: string }>;
   }) => Promise<void>;
 }
 
@@ -49,6 +50,9 @@ export const AddActivityDialog = ({ open, onOpenChange, customerId, onSubmit }: 
   });
   const [selectedPricingTypes, setSelectedPricingTypes] = useState<PricingType[]>([]);
   const [priceRanges, setPriceRanges] = useState([
+    { minQuantity: 1, maxQuantity: 10, price: 0, validFrom: new Date().toISOString().split('T')[0] }
+  ]);
+  const [articlePriceRanges, setArticlePriceRanges] = useState([
     { minQuantity: 1, maxQuantity: 10, price: 0, validFrom: new Date().toISOString().split('T')[0] }
   ]);
   const [loading, setLoading] = useState(false);
@@ -74,16 +78,27 @@ export const AddActivityDialog = ({ open, onOpenChange, customerId, onSubmit }: 
       }
     }
 
+    if (selectedPricingTypes.includes('PER_ARTICLE')) {
+      for (const range of articlePriceRanges) {
+        if (range.minQuantity <= 0 || range.maxQuantity <= 0) { toast.error(t('activities.validation.quantityPositive')); return; }
+        if (range.minQuantity > range.maxQuantity) { toast.error(t('activities.validation.minMaxQuantity')); return; }
+        if (range.maxQuantity > 2147483647) { toast.error('Maximum quantity cannot exceed 2,147,483,647'); return; }
+        if (range.price < 0) { toast.error(t('activities.validation.pricePositive')); return; }
+      }
+    }
+
     setLoading(true);
     try {
       await onSubmit({
         ...formData,
         pricingTypes: selectedPricingTypes,
-        priceRanges: selectedPricingTypes.includes('PER_CARTON') ? priceRanges : []
+        priceRanges: selectedPricingTypes.includes('PER_CARTON') ? priceRanges : [],
+        articlePriceRanges: selectedPricingTypes.includes('PER_ARTICLE') ? articlePriceRanges : []
       });
       setFormData({ name: '', type: ActivityType.CONTAINER_UNLOADING, code: '', unit: 'hour', basePrice: 0, articleBasePrice: 0, hourlyRate: 0, perPiecePrice: 0, perArticlePrice: 0 });
       setSelectedPricingTypes([]);
       setPriceRanges([{ minQuantity: 1, maxQuantity: 10, price: 0, validFrom: new Date().toISOString().split('T')[0] }]);
+      setArticlePriceRanges([{ minQuantity: 1, maxQuantity: 10, price: 0, validFrom: new Date().toISOString().split('T')[0] }]);
     } catch (error) {
       // Error handled by parent
     } finally {
@@ -97,6 +112,14 @@ export const AddActivityDialog = ({ open, onOpenChange, customerId, onSubmit }: 
     const updated = [...priceRanges];
     updated[index] = { ...updated[index], [field]: value };
     setPriceRanges(updated);
+  };
+
+  const addArticlePriceRange = () => setArticlePriceRanges([...articlePriceRanges, { minQuantity: 1, maxQuantity: 10, price: 0, validFrom: new Date().toISOString().split('T')[0] }]);
+  const removeArticlePriceRange = (index: number) => setArticlePriceRanges(articlePriceRanges.filter((_, i) => i !== index));
+  const updateArticlePriceRange = (index: number, field: string, value: any) => {
+    const updated = [...articlePriceRanges];
+    updated[index] = { ...updated[index], [field]: value };
+    setArticlePriceRanges(updated);
   };
 
   const pricingTypeLabels: Record<PricingType, string> = {
@@ -226,16 +249,38 @@ export const AddActivityDialog = ({ open, onOpenChange, customerId, onSubmit }: 
             </div>
           )}
 
-          {/* Per article price */}
+          {/* Per article price ranges */}
           {selectedPricingTypes.includes('PER_ARTICLE') && (
             <div>
-              <Label>{t("activities.form.perArticlePrice")} (€)</Label>
-              <Input
-                type="number" step="0.01" min="0"
-                value={formData.perArticlePrice || ''}
-                onChange={(e) => setFormData({ ...formData, perArticlePrice: e.target.value ? parseFloat(e.target.value) : 0 })}
-                placeholder={t("activities.form.perArticlePricePlaceholder")}
-              />
+              <div className="flex justify-between items-center mb-2">
+                <Label>{t("activities.form.articlePriceRanges", "Article Price Ranges")}</Label>
+                <Button type="button" variant="outline" size="sm" onClick={addArticlePriceRange}>
+                  <Plus className="w-4 h-4 mr-1" />{t("activities.form.addRange")}
+                </Button>
+              </div>
+              {articlePriceRanges.map((range, index) => (
+                <div key={`article-${index}`} className="grid grid-cols-5 gap-2 mb-2 items-end">
+                  <div>
+                    <Label className="text-xs">{t("activities.form.minQty")}</Label>
+                    <Input type="number" min="1" value={range.minQuantity} onChange={(e) => updateArticlePriceRange(index, 'minQuantity', Number(e.target.value))} required />
+                  </div>
+                  <div>
+                    <Label className="text-xs">{t("activities.form.maxQty")}</Label>
+                    <Input type="number" min="1" max="2147483647" value={range.maxQuantity} onChange={(e) => updateArticlePriceRange(index, 'maxQuantity', Number(e.target.value))} required />
+                  </div>
+                  <div>
+                    <Label className="text-xs">{t("activities.form.price")}</Label>
+                    <Input type="number" step="0.01" min="0" value={range.price} onChange={(e) => updateArticlePriceRange(index, 'price', Number(e.target.value))} required />
+                  </div>
+                  <div>
+                    <Label className="text-xs">{t("activities.form.validFrom")}</Label>
+                    <Input type="date" value={range.validFrom} onChange={(e) => updateArticlePriceRange(index, 'validFrom', e.target.value)} required />
+                  </div>
+                  <Button type="button" variant="outline" size="sm" onClick={() => removeArticlePriceRange(index)} disabled={articlePriceRanges.length === 1}>
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
+              ))}
             </div>
           )}
 

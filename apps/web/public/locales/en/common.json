@@ -776,7 +776,7 @@
         "stepTitles": {
           "step1": "Step 1: Select Customer",
           "step2": "Step 2: Select Activities",
-          "step3": "Step 3: Container Management",
+          "step3": "Step 3: Order Management",
           "step4": "Step 4: Order Details"
         },
         "stepDescriptions": {
@@ -789,7 +789,7 @@
         "step1Description": "Choose the customer for this order",
         "step2Title": "Step 2: Select Activities",
         "step2Description": "Choose activities for this order",
-        "step3Title": "Step 3: Container Management",
+        "step3Title": "Step 3: Order Management",
         "step3Description": "Add containers with their details",
         "step4Title": "Step 4: Order Details",
         "step4Description": "Complete the order information",

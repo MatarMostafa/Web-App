@@ -72,6 +72,9 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
   const [selectedActivities, setSelectedActivities] = useState<string[]>([]);
   const [templateData, setTemplateData] = useState<Record<string, string> | null>(null);
   const [containers, setContainers] = useState<Container[]>([]);
+  const [pieceEntries, setPieceEntries] = useState<Array<{ id: string; activityId: string; quantity: number; notes: string }>>([]);
+  const [hourEntries, setHourEntries] = useState<Array<{ id: string; activityId: string; quantity: number; notes: string }>>([]);
+  const [activityPricingSelections, setActivityPricingSelections] = useState<Record<string, string>>({});
   const [cartonQuantity, setCartonQuantity] = useState<number>(0);
   const [pieceQuantity, setArticleQuantity] = useState<number>(0);
   const [assignedEmployeeIds, setAssignedEmployeeIds] = useState<string[]>([]);
@@ -140,18 +143,47 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
         activitiesData = await fetchActivities(order.customerId);
       }
 
-      const [employeeIds, activityIds, containerData] = await Promise.all([
+      const [employeeIds, orderActivitiesRaw, containerData] = await Promise.all([
         getOrderAssignments(order.id),
-        fetchOrderActivities(order.id),
+        fetchOrderActivitiesObjects(order.id),
         getOrderContainers(order.id)
       ]);
 
+      const loadedActivityIds = Array.from(new Set(orderActivitiesRaw.map((a: any) => {
+        // Find corresponding definition ID based on name, type, unit
+        const def = activitiesData.find(d => d.name === a.name && d.type === a.type && d.unit === a.unit);
+        return def?.id;
+      }).filter(Boolean))) as string[];
+
       setAssignedEmployeeIds(employeeIds);
-      setSelectedActivities(activityIds);
+      setSelectedActivities(loadedActivityIds);
+
+      // Load pricing selections and entries
+      const newPricingSelections: Record<string, string> = {};
+      const loadedPieceEntries: any[] = [];
+      const loadedHourEntries: any[] = [];
+
+      orderActivitiesRaw.forEach((a: any) => {
+        const def = activitiesData.find(d => d.name === a.name && d.type === a.type && d.unit === a.unit);
+        if (def) {
+          if (a.selectedPricingType) {
+            newPricingSelections[def.id] = a.selectedPricingType;
+          }
+          if (a.selectedPricingType === 'PER_PIECE') {
+            loadedPieceEntries.push({ id: `piece-${Date.now()}-${Math.random()}`, activityId: def.id, quantity: Number(a.quantity) || 1, notes: a.notes || "" });
+          } else if (a.selectedPricingType === 'HOURLY') {
+            loadedHourEntries.push({ id: `hour-${Date.now()}-${Math.random()}`, activityId: def.id, quantity: Number(a.quantity) || 1, notes: a.notes || "" });
+          }
+        }
+      });
+
+      setActivityPricingSelections(newPricingSelections);
+      setPieceEntries(loadedPieceEntries);
+      setHourEntries(loadedHourEntries);
 
       // Recalculate prices for loaded containers based on activities
       const currentActivities = activitiesData;
-      const filteredActivities = currentActivities.filter((a: any) => activityIds.includes(a.id));
+      const filteredActivities = currentActivities.filter((a: any) => loadedActivityIds.includes(a.id));
       const calculatedArticlePrice = filteredActivities.reduce((total: number, a: any) => total + (Number(a.articleBasePrice) || 0), 0);
       const calculatedBasePrice = filteredActivities.reduce((total: number, a: any) => total + (Number(a.basePrice) || 0), 0);
 
@@ -159,13 +191,28 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
         ...container,
         piecePrice: calculatedArticlePrice,
         basePrice: calculatedBasePrice,
-        cartonPrice: calculateCartonPriceForLoadedQuantity(container.cartonQuantity, activityIds, currentActivities)
+        cartonPrice: calculateCartonPriceForLoadedQuantity(container.cartonQuantity, loadedActivityIds, currentActivities)
       }));
 
       setContainers(enhancedContainers);
     } catch (error) {
       console.error("Error loading order data:", error);
     }
+  };
+
+  const fetchOrderActivitiesObjects = async (orderId: string) => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/orders/${orderId}/activities`, {
+        headers: { Authorization: `Bearer ${session?.accessToken}` },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        return data.data || [];
+      }
+    } catch (error) {
+      console.error("Error fetching order activities:", error);
+    }
+    return [];
   };
 
   const calculateCartonPriceForLoadedQuantity = (cartonQuantity: number, activityIds: string[], loadedActivities: any[]) => {
@@ -186,20 +233,7 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
     }, 0);
   };
 
-  const fetchOrderActivities = async (orderId: string) => {
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/orders/${orderId}/activity-ids`, {
-        headers: { Authorization: `Bearer ${session?.accessToken}` },
-      });
-      if (response.ok) {
-        const data = await response.json();
-        return data.data || [];
-      }
-    } catch (error) {
-      console.error("Error fetching order activities:", error);
-    }
-    return [];
-  };
+
 
 
 
@@ -257,9 +291,12 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
       toast.error("Please select at least one activity");
       return;
     }
-    if (currentStep === 3 && containers.length === 0) {
-      toast.error("Please add at least one container");
-      return;
+    if (currentStep === 3) {
+      const hasCartonOrArticle = isTypeSelected('PER_CARTON') || isTypeSelected('PER_ARTICLE');
+      if (hasCartonOrArticle && containers.length === 0) {
+        toast.error("Please add at least one container");
+        return;
+      }
     }
     if (currentStep < 4) setCurrentStep(currentStep + 1);
   };
@@ -275,7 +312,8 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
     if (!formData.customerId) newErrors.customerId = "Customer is required";
     if (!formData.scheduledDate) newErrors.scheduledDate = "Scheduled date is required";
     if (!formData.priority || formData.priority < 1) newErrors.priority = "Priority is required";
-    if (containers.length === 0) newErrors.containers = "At least one container is required";
+    const hasCartonOrArticle = isTypeSelected('PER_CARTON') || isTypeSelected('PER_ARTICLE');
+    if (hasCartonOrArticle && containers.length === 0) newErrors.containers = "At least one container is required";
 
     setErrors(newErrors);
 
@@ -289,15 +327,51 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
     try {
       const submitData = {
         ...formData,
-        activities: selectedActivities.map(activityId => {
-          const activity = activities.find(a => a.id === activityId);
-          return {
-            activityId,
-            quantity: containers.reduce((sum, c) => sum + c.cartonQuantity, 0),
-            articleBasePrice: Number(activity?.articleBasePrice) || 0,
-            basePrice: Number(activity?.basePrice) || 0
-          };
-        }),
+        activities: (() => {
+          const allActivities: any[] = [];
+          for (const activityId of selectedActivities) {
+            const activity = activities.find(a => a.id === activityId);
+            const selectedPricingType = activityPricingSelections[activityId] || (activity?.pricingTypes?.[0] ?? null);
+            
+            const baseActivity = {
+              activityId,
+              articleBasePrice: Number(activity?.articleBasePrice) || 0,
+              basePrice: Number(activity?.basePrice) || 0,
+              selectedPricingType,
+              hourlyRate: Number(activity?.hourlyRate) || 0,
+              perPiecePrice: Number(activity?.perPiecePrice) || 0,
+              perArticlePrice: Number(activity?.perArticlePrice) || 0,
+            };
+
+            if (selectedPricingType === 'PER_CARTON' || selectedPricingType === 'PER_ARTICLE') {
+              allActivities.push({
+                ...baseActivity,
+                quantity: containers.reduce((sum, c) => sum + c.cartonQuantity, 0),
+              });
+            } else if (selectedPricingType === 'PER_PIECE') {
+              const entries = pieceEntries.filter(e => e.activityId === activityId);
+              if (entries.length > 0) {
+                entries.forEach(entry => {
+                  allActivities.push({ ...baseActivity, quantity: entry.quantity, notes: entry.notes });
+                });
+              } else {
+                allActivities.push({ ...baseActivity, quantity: 1, notes: "" });
+              }
+            } else if (selectedPricingType === 'HOURLY') {
+              const entries = hourEntries.filter(e => e.activityId === activityId);
+              if (entries.length > 0) {
+                entries.forEach(entry => {
+                  allActivities.push({ ...baseActivity, quantity: entry.quantity, notes: entry.notes });
+                });
+              } else {
+                allActivities.push({ ...baseActivity, quantity: 1, notes: "" });
+              }
+            } else {
+              allActivities.push({ ...baseActivity, quantity: 1 });
+            }
+          }
+          return allActivities;
+        })(),
         containers,
         cartonQuantity: containers.reduce((sum, c) => sum + c.cartonQuantity, 0),
         articleQuantity: containers.reduce((sum, c) => sum + c.articleQuantity, 0),
@@ -401,6 +475,26 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
     });
   };
 
+  const getSelectedPricingType = (activityId: string) =>
+    activityPricingSelections[activityId] ||
+    activities.find(a => a.id === activityId)?.pricingTypes?.[0] ||
+    null;
+
+  const getSelectedPricingTypes = () =>
+    selectedActivities.map(id => getSelectedPricingType(id)).filter(Boolean) as string[];
+
+  const isTypeSelected = (type: string) => getSelectedPricingTypes().includes(type);
+
+  const getPricingTypeLabel = (pt: string) => {
+    const labels: Record<string, string> = {
+      HOURLY: t('activities.pricingTypes.HOURLY', 'Hourly'),
+      PER_PIECE: t('activities.pricingTypes.PER_PIECE', 'Per Piece'),
+      PER_CARTON: t('activities.pricingTypes.PER_CARTON', 'Per Carton'),
+      PER_ARTICLE: t('activities.pricingTypes.PER_ARTICLE', 'Per Article'),
+    };
+    return labels[pt] || pt;
+  };
+
   const getCartonPriceTotal = () =>
     containers.reduce((sum, c) => sum + (c.cartonPrice || 0), 0);
 
@@ -483,6 +577,27 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
                   </div>
                 )}
               </div>
+              {/* Pricing type selector */}
+              {selectedActivities.includes(activity.id) && activity.pricingTypes && activity.pricingTypes.length > 0 && (
+                <div className="ml-6">
+                  <Label className="text-xs">{t("admin.orders.form.selectPricingType", "Select Pricing Type")}</Label>
+                  <Select
+                    value={activityPricingSelections[activity.id] || activity.pricingTypes[0]}
+                    onValueChange={(val) => setActivityPricingSelections(prev => ({ ...prev, [activity.id]: val }))}
+                  >
+                    <SelectTrigger className="h-8 text-xs mt-1">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {activity.pricingTypes.map((pt: string) => (
+                        <SelectItem key={pt} value={pt} className="text-xs">
+                          {getPricingTypeLabel(pt)}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
               {activity.customerPrices && activity.customerPrices.length > 0 && (
                 <div className="ml-6">
                   <p className="text-xs font-medium text-muted-foreground mb-1">Price Ranges:</p>
@@ -593,20 +708,22 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
           <p className="text-sm text-muted-foreground">{t("admin.orders.form.step3Description")}</p>
         </div>
 
-        <div className="flex justify-between items-center">
-          <h4 className="font-medium">Containers ({containers.length})</h4>
-          <Button type="button" onClick={addContainer} size="sm">
-            <Plus className="w-4 h-4 mr-2" />
-            Add Container
-          </Button>
-        </div>
+        {(isTypeSelected('PER_CARTON') || isTypeSelected('PER_ARTICLE')) && (
+          <>
+            <div className="flex justify-between items-center">
+              <h4 className="font-medium">Containers ({containers.length})</h4>
+              <Button type="button" onClick={addContainer} size="sm">
+                <Plus className="w-4 h-4 mr-2" />
+                Add Container
+              </Button>
+            </div>
 
-        {containers.length === 0 ? (
-          <div className="text-center py-8 text-muted-foreground border-2 border-dashed rounded-lg">
-            <p>No containers added yet</p>
-            <p className="text-sm">Click "Add Container" to get started</p>
-          </div>
-        ) : (
+            {containers.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground border-2 border-dashed rounded-lg">
+                <p>No containers added yet</p>
+                <p className="text-sm">Click "Add Container" to get started</p>
+              </div>
+            ) : (
           <div className="space-y-4 max-h-96 overflow-y-auto">
             {containers.map((container, containerIndex) => (
               <div key={containerIndex} className="border rounded-lg p-4 space-y-4">
@@ -768,8 +885,90 @@ const EditOrderDialog: React.FC<EditOrderDialogProps> = ({
             ))}
           </div>
         )}
+        </>
+        )}
 
-        {containers.length > 0 && (
+        {isTypeSelected('PER_PIECE') && (
+          <div className="space-y-4 border-t pt-4">
+            <div className="flex justify-between items-center">
+              <h4 className="font-medium">{t("activities.pricingTypes.PER_PIECE", "Per Piece")} ({pieceEntries.length})</h4>
+              <Button type="button" onClick={() => setPieceEntries([...pieceEntries, { id: `piece-${Date.now()}`, activityId: selectedActivities.find(id => getSelectedPricingType(id) === 'PER_PIECE') || '', quantity: 1, notes: "" }])} size="sm">
+                <Plus className="w-4 h-4 mr-2" />
+                {t("common.add", "Add")}
+              </Button>
+            </div>
+            {pieceEntries.length > 0 && (
+              <div className="space-y-4">
+                {pieceEntries.map((entry, idx) => (
+                  <div key={entry.id} className="border rounded-lg p-4 grid grid-cols-1 md:grid-cols-2 gap-4 relative">
+                    <Button
+                      type="button" variant="outline" size="sm" className="absolute top-2 right-2"
+                      onClick={() => setPieceEntries(pieceEntries.filter((_, i) => i !== idx))}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                    <div>
+                      <Label>{t("admin.orders.form.pieceQuantity")}</Label>
+                      <Input
+                        type="number" min="1" value={entry.quantity}
+                        onChange={(e) => setPieceEntries(pieceEntries.map((pe, i) => i === idx ? { ...pe, quantity: parseInt(e.target.value) || 0 } : pe))}
+                      />
+                    </div>
+                    <div>
+                      <Label>{t("common.notes", "Notes")}</Label>
+                      <Input
+                        value={entry.notes} placeholder={t("common.optional", "Optional")}
+                        onChange={(e) => setPieceEntries(pieceEntries.map((pe, i) => i === idx ? { ...pe, notes: e.target.value } : pe))}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {isTypeSelected('HOURLY') && (
+          <div className="space-y-4 border-t pt-4">
+            <div className="flex justify-between items-center">
+              <h4 className="font-medium">{t("activities.pricingTypes.HOURLY", "Hourly")} ({hourEntries.length})</h4>
+              <Button type="button" onClick={() => setHourEntries([...hourEntries, { id: `hour-${Date.now()}`, activityId: selectedActivities.find(id => getSelectedPricingType(id) === 'HOURLY') || '', quantity: 1, notes: "" }])} size="sm">
+                <Plus className="w-4 h-4 mr-2" />
+                {t("common.add", "Add")}
+              </Button>
+            </div>
+            {hourEntries.length > 0 && (
+              <div className="space-y-4">
+                {hourEntries.map((entry, idx) => (
+                  <div key={entry.id} className="border rounded-lg p-4 grid grid-cols-1 md:grid-cols-2 gap-4 relative">
+                    <Button
+                      type="button" variant="outline" size="sm" className="absolute top-2 right-2"
+                      onClick={() => setHourEntries(hourEntries.filter((_, i) => i !== idx))}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                    <div>
+                      <Label>{t("admin.orders.form.hours", "Hours")}</Label>
+                      <Input
+                        type="number" min="1" step="0.5" value={entry.quantity}
+                        onChange={(e) => setHourEntries(hourEntries.map((he, i) => i === idx ? { ...he, quantity: parseFloat(e.target.value) || 0 } : he))}
+                      />
+                    </div>
+                    <div>
+                      <Label>{t("common.notes", "Notes")}</Label>
+                      <Input
+                        value={entry.notes} placeholder={t("common.optional", "Optional")}
+                        onChange={(e) => setHourEntries(hourEntries.map((he, i) => i === idx ? { ...he, notes: e.target.value } : he))}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {containers.length > 0 && (isTypeSelected('PER_CARTON') || isTypeSelected('PER_ARTICLE')) && (
           <div className="bg-muted/50 p-4 rounded-lg">
             <h4 className="font-medium mb-2">Order Summary</h4>
             <div className="space-y-1 text-sm">
